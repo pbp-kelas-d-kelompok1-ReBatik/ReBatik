@@ -5,6 +5,10 @@
     font-style: normal;
 }
 
+html{
+    scroll-behavior: smooth;
+}
+
 html,
 body {
     margin: 0;
@@ -17,7 +21,13 @@ body {
 
 .bg {
     min-height: 100vh;
-    background-image: url('/static/img/background.png');
+    background-image:
+        linear-gradient(
+            rgba(255, 235, 210, 0.35),
+            rgba(255, 235, 210, 0.35)
+        ),
+        url('/static/img/background.png');
+
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -49,18 +59,15 @@ header a {
     line-height: 1.5;
     max-width: 1400px;
     margin: 10px auto 0;
-    overflow: hidden;
-    border-right: 3px solid black;
+    text-align: center;
 
-    animation: typing 5s steps(90, end) forwards;
+    border-right: 3px solid black;
+    width: fit-content;
+    animation: blink 0.7s step-end infinite;
 }
 
-@keyframes typing {
-    from {
-        max-height: 0;
-    }
-
-    to {
-        max-height: 200px;
+@keyframes blink {
+    50% {
+        border-color: transparent;
     }
 }

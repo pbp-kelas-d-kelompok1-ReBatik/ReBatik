@@ -7,6 +7,9 @@ from django.db import models
 class BatikMotif(models.Model):
     nama=models.CharField(max_length=255, null=False, blank=False)
     ASAL_CHOICES = [
+        #Jakarta
+        ('JAKARTA', 'Jakarta'),
+        
         # Yogyakarta & Jawa Tengah
         ('YOGYAKARTA', 'Yogyakarta'),
         ('SOLO', 'Solo'),
@@ -86,12 +89,13 @@ class BatikMotif(models.Model):
         # Maluku
         ('MALUKU', 'Maluku'),
     ]
+    ASAL_CHOICES.sort(key=lambda x: x[1])
     asal=models.CharField(choices=ASAL_CHOICES,max_length=300, null=False, blank=False)
     filosofi=models.TextField()
     deskripsi=models.TextField()
-    gambar=models.ImageField(upload_to='batik',blank=True, null=True)
+    gambar=models.ImageField(upload_to='batik/',blank=True, null=True)
 
     def __str__(self):
-        return super().__str__()
+        return self.nama
 
     

@@ -14,10 +14,36 @@
         <div class="typing-text">
             <p>{{ ket1 }}</p>
         </div>
-
-
+        <a href="{% url 'main:show_batik_story' %}#story-section" class="explore-btn">
+            ↓ Explore
+        </a>
     </div>
+</section>
 
+<section id="story-section" class="story-section">
+    <h2>Discover Batik Stories</h2>
+    <div class="story-cards">
+        {% for batik in batiks %}
+        <div class="story-card">
+            <div class="card-image">
+                <img src="{{ batik.gambar.url }}" alt="{{ batik.nama }}">
+            </div>
+            <div class="card-content">
+                <div class="card-title">
+                    <h3>{{ batik.nama }}</h3>
+                    <label class="love">
+                        <input type="checkbox">
+                        <span>♡</span>
+                    </label>
+                </div>
+                <p class="asal">{{ batik.asal }}</p>
+                <a href="#" class="story-button">
+                    Read Story →
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </section>
 
 {% endblock content %}
