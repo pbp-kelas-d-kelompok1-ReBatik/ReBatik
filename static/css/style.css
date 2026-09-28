@@ -1,0 +1,66 @@
+@font-face {
+    font-family: "Garamond";
+    src: url("/static/font/Garamond.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+}
+
+.bg {
+    min-height: 100vh;
+    background-image: url('/static/img/background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #4a2509;
+}
+
+header nav {
+    display: flex;
+    gap: 20px;
+}
+
+header a {
+    text-decoration: none;
+    font-family: "Garamond";
+    color: white;
+    font-size: 25px;
+}
+
+.typing-text {
+    font-family: "Garamond";
+    font-size: 32px;
+    line-height: 1.5;
+    max-width: 1400px;
+    margin: 10px auto 0;
+    overflow: hidden;
+    border-right: 3px solid black;
+
+    animation: typing 5s steps(90, end) forwards;
+}
+
+@keyframes typing {
+    from {
+        max-height: 0;
+    }
+
+    to {
+        max-height: 200px;
+    }
+}

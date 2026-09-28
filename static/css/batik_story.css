@@ -1,0 +1,15 @@
+.judul{
+    font-family: "Garamond";
+    text-align: center;
+    margin: 0;
+    padding: 10px 15px;
+}
+
+.judul h1{
+    font-size: 100px;
+    text-transform: uppercase;
+}
+
+.judul p{
+     font-size: 50px;
+}

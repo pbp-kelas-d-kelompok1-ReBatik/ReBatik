@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<title>{{ judul }} - Batik Story</title>
+<link rel="stylesheet" href="{% static 'css/batik_story.css' %}">
+{% endblock meta %}
+
+{% block content %}
+
+<section class="batik-story">
+    <div class="judul">
+        <h1>Batik Story</h1>
+        <div class="typing-text">
+            <p>{{ ket1 }}</p>
+        </div>
+
+
+    </div>
+
+</section>
+
+{% endblock content %}
