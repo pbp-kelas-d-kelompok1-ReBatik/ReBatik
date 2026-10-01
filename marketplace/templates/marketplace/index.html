@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Scoped Marketplace CSS -->
+<link rel="stylesheet" href="{% static 'css/marketplace.css' %}">
+{% endblock meta %}
+
+{% block content %}
+<div class="mp-wrapper">
+    <div class="mp-container">
+        
+        <!-- Hero Section Minimalis & Bersih Sesuai Desain Asli -->
+        <section class="mp-hero">
+            <p class="mp-hero-kicker">K A R Y A &nbsp; P E N G R A J I N &nbsp; N U S A N T A R A</p>
+            <h1 class="mp-hero-title">MARKETPLACE</h1>
+            <p class="mp-hero-tagline">Give old batik a new story</p>
+            <p class="mp-hero-desc">
+                Semua produk dibuat ulang dari kain batik sisa dan pakaian bekas yang dikumpulkan lewat Drop-off Point kami.
+            </p>
+        </section>
+
+        <!-- Filter & Search Toolbar (Boutique Pill Style) -->
+        <div class="mp-filter-bar">
+            <!-- Tab Kategori -->
+            <div class="mp-category-tabs">
+                <button onclick="filterCategory('Semua', this)" class="mp-cat-pill active">Semua</button>
+                <button onclick="filterCategory('Tas', this)" class="mp-cat-pill">Tas</button>
+                <button onclick="filterCategory('Pouch', this)" class="mp-cat-pill">Pouch</button>
+                <button onclick="filterCategory('Pakaian', this)" class="mp-cat-pill">Pakaian</button>
+                <button onclick="filterCategory('Aksesoris', this)" class="mp-cat-pill">Aksesoris</button>
+            </div>
+            
+            <!-- Pencarian & Pengurutan -->
+            <div class="mp-filter-right">
+                <!-- Search Input Terintegrasi -->
+                <div class="mp-search-box">
+                    <svg class="mp-search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="mpSearchInput" placeholder="Cari karya..." onkeyup="filterCards()" class="mp-search-input">
+                </div>
+
+                <!-- Dropdown Urutkan dengan Panah Custom -->
+                <div class="mp-sort-box">
+                    <span class="mp-sort-label">Urutkan:</span>
+                    <div class="mp-select-wrapper">
+                        <select id="mpSortSelect" onchange="sortCards()" class="mp-sort-select">
+                            <option value="default">Rekomendasi</option>
+                            <option value="asc">Harga Terendah</option>
+                            <option value="desc">Harga Tertinggi</option>
+                        </select>
+                        <svg class="mp-select-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Product Catalogue Box (Ivory Box) -->
+        <main class="mp-content-box">
+            <div class="mp-box-header">
+                <h2 class="mp-box-title">Semua Produk Upcycling</h2>
+                <span id="mpCounter" class="mp-item-count">{{ products.count }} karya</span>
+            </div>
+
+            <!-- Grid 2 Kolom Katalog -->
+            <div id="mpGrid" class="mp-product-grid">
+                {% for product in products %}
+                <div class="mp-product-card" data-category="{{ product.category }}" data-name="{{ product.name|lower }}" data-price="{{ product.price }}">
+                    <div>
+                        <!-- Foto & Badges (1:1 Ratio) -->
+                        <div class="mp-img-box">
+                            {% if product.image_url %}
+                                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <div class="mp-no-img">Gambar Produk</div>
+                            {% endif %}
+
+                            {% if product.badge_status %}
+                                <span class="mp-badge-status">{{ product.badge_status }}</span>
+                            {% endif %}
+
+                            <button class="mp-wishlist-btn" title="Simpan ke Wishlist">♡</button>
+                            <div class="mp-badge-upcycled">♻ Upcycled</div>
+                        </div>
+
+                        <!-- Info Spesifikasi Produk -->
+                        <p class="mp-motif">{{ product.motif }}</p>
+                        <h3 class="mp-prod-name">{{ product.name }}</h3>
+
+                        <div class="mp-material-tag">
+                            <p>{{ product.material_source }}</p>
+                        </div>
+                        <p class="mp-artisan">{{ product.artisan_origin }}</p>
+                    </div>
+
+                    <!-- Footer: Harga & Aksi Beli -->
+                    <div class="mp-card-footer">
+                        <span class="mp-price">Rp {{ product.price }}</span>
+                        <button class="mp-btn-buy">Beli →</button>
+                    </div>
+                </div>
+                {% empty %}
+                <!-- Empty State jika Belum Ada Data -->
+                <div class="mp-empty-state">
+                    <div class="mp-empty-icon">🧵</div>
+                    <h3 class="mp-empty-title">Katalog Belum Memiliki Produk</h3>
+                    <p class="mp-empty-text">
+                        Karya upcycling sedang diproses oleh mitra pengrajin kami. Masukkan data sampel untuk menguji tampilan katalog.
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+
+    </div>
+</div>
+
+<!-- JavaScript Interaktivitas Pencarian & Filter Sisi Klien -->
+<script>
+let activeCategory = 'Semua';
+
+function filterCategory(category, el) {
+    activeCategory = category;
+    document.querySelectorAll('.mp-cat-pill').forEach(btn => btn.classList.remove('active'));
+    el.classList.add('active');
+    filterCards();
+}
+
+function filterCards() {
+    const searchVal = (document.getElementById('mpSearchInput')?.value || '').toLowerCase().trim();
+    const cards = document.querySelectorAll('.mp-product-card');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+        const cat = card.getAttribute('data-category');
+        const name = (card.getAttribute('data-name') || '').toLowerCase();
+        const matchesCategory = (activeCategory === 'Semua' || cat === activeCategory);
+        const matchesSearch = name.includes(searchVal);
+
+        if (matchesCategory && matchesSearch) {
+            card.style.display = 'flex';
+            visibleCount++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+
+    const counter = document.getElementById('mpCounter');
+    if (counter) counter.textContent = visibleCount + ' karya';
+}
+
+function sortCards() {
+    const val = document.getElementById('mpSortSelect').value;
+    const grid = document.getElementById('mpGrid');
+    const cards = Array.from(grid.querySelectorAll('.mp-product-card'));
+
+    cards.sort((a, b) => {
+        const pA = parseInt(a.getAttribute('data-price')) || 0;
+        const pB = parseInt(b.getAttribute('data-price')) || 0;
+        if (val === 'asc') return pA - pB;
+        if (val === 'desc') return pB - pA;
+        return 0;
+    });
+
+    cards.forEach(card => grid.appendChild(card));
+}
+</script>
+{% endblock content %}

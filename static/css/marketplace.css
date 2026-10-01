@@ -1,0 +1,640 @@
+/* ==========================================================================
+   ReBatik - Marketplace & Drop-off Point Stylesheet
+   Author: Ahyan Timuardi (Modul 3)
+   Aesthetic: Heritage Editorial Luxury & Sustainable Fashion
+   ========================================================================== */
+
+/* 1. Global Wrapper & Textured Kawung Background */
+.mp-wrapper {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    padding: 32px 20px 100px 20px;
+    box-sizing: border-box;
+    position: relative;
+    overflow-x: hidden;
+    color: #2D241E;
+
+    /* Base Terracotta Warm Tone */
+    background-color: #8C583E;
+
+    /* Tekstur Kain: Pendaran Cahaya Tengah + Pola Kawung Halus + Gradien Vertikal */
+    background-image: 
+        radial-gradient(circle at 50% 18%, rgba(255, 238, 220, 0.22) 0%, rgba(140, 88, 62, 0) 65%),
+        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.045' fill-rule='evenodd'%3E%3Cpath d='M30 30c0-11.046-8.954-20-20-20S-10 18.954-10 30s8.954 20 20 20 20-8.954 20-20zm0 0c0 11.046 8.954 20 20 20s20-8.954 20-20-8.954-20-20-20-20 8.954-20 20zm0 0c-11.046 0-20 8.954-20 20s8.954 20 20 20 20-8.954 20-20-8.954-20-20-20zm0 0c11.046 0 20-8.954 20-20s-8.954-20-20-20-20 8.954-20 20 8.954 20 20 20z'/%3E%3C/g%3E%3C/svg%3E"),
+        linear-gradient(180deg, #9C6448 0%, #834E35 55%, #693A22 100%);
+}
+
+.mp-container {
+    max-width: 1080px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+/* ==========================================================================
+   2. Hero Section Typography (Presisi Sesuai Referensi)
+   ========================================================================== */
+.mp-hero {
+    text-align: center;
+    padding: 24px 16px 20px 16px;
+    margin-bottom: 24px;
+}
+
+/* Kicker Atas (Kapital, Spasi Lebar) */
+.mp-hero-kicker {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.38em;
+    text-transform: uppercase;
+    color: #EFE2D3;
+    margin: 0 0 16px 0;
+}
+
+/* Judul Utama (Italic Serif Bold) */
+.mp-hero-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: clamp(2.8rem, 5.5vw, 4.3rem);
+    letter-spacing: 0.03em;
+    line-height: 1.05;
+    color: #EFE2D3;
+    margin: 0 0 16px 0;
+}
+
+/* Tagline Tengah */
+.mp-hero-tagline {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: #EFE2D3;
+    margin: 0 0 14px 0;
+    line-height: 1.4;
+}
+
+/* Deskripsi Bawah */
+.mp-hero-desc {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: #EFE2D3;
+    max-width: 620px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* ==========================================================================
+   3. Boutique Toolbar (Filter Tabs, Search, & Custom Dropdown)
+   ========================================================================== */
+.mp-filter-bar {
+    background: #F7F3EC;
+    border-radius: 999px;
+    padding: 8px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    box-shadow: 
+        0 12px 28px -6px rgba(45, 20, 10, 0.18),
+        0 0 0 1px rgba(255, 255, 255, 0.45);
+    gap: 14px;
+}
+
+.mp-category-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.mp-cat-pill {
+    background: transparent;
+    border: none;
+    padding: 7px 18px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #695D56;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mp-cat-pill:hover {
+    color: #1C1816;
+}
+
+.mp-cat-pill.active {
+    background-color: #925B36;
+    color: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(146, 91, 54, 0.35);
+}
+
+.mp-filter-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Integrated Search Box */
+.mp-search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.mp-search-icon {
+    position: absolute;
+    left: 14px;
+    width: 14px;
+    height: 14px;
+    color: #9E8F84;
+    pointer-events: none;
+    transition: color 0.2s ease;
+}
+
+.mp-search-input {
+    width: 175px;
+    padding: 7px 16px 7px 36px;
+    font-size: 0.76rem;
+    font-family: inherit;
+    font-weight: 500;
+    color: #2D231E;
+    background-color: #FFFFFF;
+    border: 1.5px solid #E0D5C7;
+    border-radius: 999px;
+    outline: none;
+    box-shadow: 0 1px 3px rgba(45, 25, 15, 0.03);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mp-search-input::placeholder {
+    color: #A6988E;
+    font-weight: 400;
+}
+
+.mp-search-input:hover {
+    border-color: #CBBCAE;
+}
+
+.mp-search-input:focus {
+    width: 205px;
+    border-color: #925B36;
+    background-color: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(146, 91, 54, 0.12);
+}
+
+.mp-search-box:focus-within .mp-search-icon {
+    color: #925B36;
+}
+
+/* Custom Sort Dropdown */
+.mp-sort-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mp-sort-label {
+    font-size: 0.75rem;
+    color: #73655C;
+    font-weight: 500;
+}
+
+.mp-select-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.mp-sort-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #FFFFFF;
+    border: 1.5px solid #E0D5C7;
+    border-radius: 999px;
+    padding: 7px 32px 7px 16px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: #382B23;
+    cursor: pointer;
+    outline: none;
+    box-shadow: 0 1px 3px rgba(45, 25, 15, 0.03);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mp-sort-select:hover {
+    border-color: #CBBCAE;
+    background-color: #FAF7F2;
+}
+
+.mp-sort-select:focus {
+    border-color: #925B36;
+    box-shadow: 0 0 0 3px rgba(146, 91, 54, 0.12);
+}
+
+.mp-select-arrow {
+    position: absolute;
+    right: 12px;
+    width: 14px;
+    height: 14px;
+    color: #73655C;
+    pointer-events: none;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.mp-select-wrapper:focus-within .mp-select-arrow {
+    transform: rotate(180deg);
+    color: #925B36;
+}
+
+/* ==========================================================================
+   4. Ivory Box Container (Figma Spec)
+   ========================================================================== */
+.mp-content-box {
+    background: #F3ECE2;
+    border-radius: 32px;
+    padding: 40px 44px;
+    box-shadow: 
+        0 24px 50px -10px rgba(40, 20, 10, 0.24),
+        0 1px 2px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.mp-box-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1.5px solid #E2D7C8;
+    padding-bottom: 16px;
+    margin-bottom: 32px;
+}
+
+.mp-box-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-size: 1.65rem;
+    font-weight: 600;
+    color: #38251A;
+    letter-spacing: 0.02em;
+    margin: 0;
+}
+
+.mp-item-count {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: #8C7B70;
+}
+
+/* ==========================================================================
+   5. Product Grid & Luxury Cards (Marketplace)
+   ========================================================================== */
+.mp-product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.mp-product-card {
+    background-color: #FFFFFF;
+    border-radius: 22px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 14px rgba(45, 25, 15, 0.05);
+    border: 1px solid #ECE3D7;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mp-product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 30px -8px rgba(45, 25, 15, 0.12);
+    border-color: #DCCFBF;
+}
+
+.mp-img-box {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 16px;
+    overflow: hidden;
+    background-color: #F5EFEB;
+    margin-bottom: 16px;
+}
+
+.mp-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.mp-product-card:hover .mp-img-box img {
+    transform: scale(1.04);
+}
+
+.mp-no-img {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: 0.75rem;
+}
+
+.mp-badge-status {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(30, 20, 15, 0.85);
+    backdrop-filter: blur(6px);
+    color: #FFFFFF;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.05em;
+}
+
+.mp-wishlist-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 30px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(4px);
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mp-wishlist-btn:hover {
+    color: #E63946;
+    background: #FFFFFF;
+}
+
+.mp-badge-upcycled {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(4px);
+    color: #1A693B;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.mp-motif {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-size: 0.78rem;
+    color: #94857A;
+    margin: 0 0 4px 0;
+}
+
+.mp-prod-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1F1916;
+    line-height: 1.35;
+    margin: 0;
+}
+
+.mp-material-tag {
+    background-color: #F7F3EC;
+    padding: 5px 11px;
+    border-radius: 8px;
+    margin-top: 10px;
+    display: inline-block;
+    border: 1px solid #ECE3D7;
+}
+
+.mp-material-tag p {
+    font-size: 0.68rem;
+    color: #6C5F56;
+    margin: 0;
+    font-weight: 500;
+}
+
+.mp-artisan {
+    font-size: 0.72rem;
+    color: #8E7F75;
+    margin-top: 10px;
+}
+
+.mp-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #F1E9DE;
+    padding-top: 14px;
+    margin-top: 16px;
+}
+
+.mp-price {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #1F1916;
+}
+
+.mp-btn-buy {
+    background-color: #1C1816;
+    color: #FFFFFF;
+    border: none;
+    padding: 7px 20px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mp-btn-buy:hover {
+    background-color: #000000;
+    transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   6. Drop-off Point Directory
+   ========================================================================== */
+.mp-dropoff-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 24px;
+}
+
+.mp-dropoff-card {
+    background-color: #FFFFFF;
+    border-radius: 20px;
+    padding: 22px;
+    border: 1px solid #ECE3D7;
+    box-shadow: 0 4px 14px rgba(45, 25, 15, 0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mp-dropoff-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 26px -6px rgba(45, 25, 15, 0.12);
+    border-color: #DCCFBF;
+}
+
+.mp-drop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.mp-city-badge {
+    background-color: #F8E8DA;
+    color: #925B36;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.mp-drop-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #211B17;
+    margin: 0 0 8px 0;
+    line-height: 1.35;
+}
+
+.mp-drop-address {
+    font-size: 0.78rem;
+    color: #6C5F56;
+    line-height: 1.5;
+    margin: 0 0 14px 0;
+}
+
+.mp-drop-meta {
+    border-top: 1px solid #F1E9DE;
+    padding-top: 12px;
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mp-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.72rem;
+    color: #8E7F75;
+}
+
+.mp-meta-icon {
+    font-size: 0.82rem;
+}
+
+.mp-map-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    box-sizing: border-box;
+    background: #1C1816;
+    color: #FFFFFF;
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 9px 16px;
+    border-radius: 999px;
+    margin-top: 16px;
+    transition: background 0.2s ease;
+}
+
+.mp-map-btn:hover {
+    background: #000000;
+}
+
+/* ==========================================================================
+   7. Empty State
+   ========================================================================== */
+.mp-empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(255, 255, 255, 0.45);
+    border-radius: 24px;
+    border: 1.5px dashed #D8CABE;
+    margin: 10px 0;
+}
+
+.mp-empty-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 16px auto;
+    background: #EAE0D3;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #925B36;
+}
+
+.mp-empty-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-size: 1.25rem;
+    color: #3D2C22;
+    margin: 0 0 6px 0;
+}
+
+.mp-empty-text {
+    font-size: 0.78rem;
+    color: #7A6C62;
+    max-width: 440px;
+    margin: 0 auto;
+    line-height: 1.55;
+}
+
+/* ==========================================================================
+   8. Responsive Adaptations (Mobile & Tablet)
+   ========================================================================== */
+@media (max-width: 860px) {
+    .mp-product-grid { 
+        grid-template-columns: 1fr; 
+    }
+    .mp-filter-bar {
+        border-radius: 20px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .mp-filter-right {
+        justify-content: space-between;
+    }
+    .mp-search-input { 
+        width: 100%; 
+    }
+    .mp-content-box { 
+        padding: 26px 18px; 
+        border-radius: 24px;
+    }
+}
