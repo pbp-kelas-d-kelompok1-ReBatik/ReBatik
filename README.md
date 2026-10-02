@@ -67,7 +67,7 @@ ReBatik adalah platform yang menghadirkan konsep upcycling dengan mengolah pakai
 
 ## Link Deployment PWS
 
-[Deployment ReBatik](BELUM TERSEDIA)
+[Deployment ReBatik](https://alisa-selvia-rebatik.pws.cs.ui.ac.id/)
 
 ## Link Figma
 
