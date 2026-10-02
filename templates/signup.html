@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="auth-page">
+
+    <div class="auth-card">
+
+        <h1>Sign-Up</h1>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <button type="submit">
+                Sign-Up
+            </button>
+        </form>
+
+        <p>
+            Sudah punya akun?
+            <a href="{% url 'main:login' %}">
+                Sign-in di sini
+            </a>
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock content %}

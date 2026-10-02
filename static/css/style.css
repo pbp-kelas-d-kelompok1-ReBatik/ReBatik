@@ -1,4 +1,3 @@
-
 @font-face {
     font-family: "Garamond";
     src: url("/static/font/Garamond.ttf") format("truetype");
@@ -23,12 +22,10 @@ body {
 
 .bg {
     min-height: 100vh;
-    background: linear-gradient(
-        120deg,
-        #F7EFE3 0%,
-        #EAD8C5 45%,
-        #D2A98F 100%
-    );
+    background: linear-gradient(120deg,
+            #F7EFE3 0%,
+            #EAD8C5 45%,
+            #D2A98F 100%);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -123,4 +120,244 @@ button:hover {
 .card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 25px rgba(90, 48, 34, 0.15);
+}
+
+
+:root {
+    --bar: #6b4a3a;
+    --cream: #f1e2c2;
+    --brown: #8a4a14;
+    --bubble: #d9d9d9;
+    --ink: #1a1a1a;
+    --focus: #fff3cf;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: "EB Garamond", Georgia, serif;
+    color: var(--ink);
+    background: radial-gradient(circle at 50% 50%, #f0ae8a 0%, #c48a72 45%, #a87a68 100%) fixed;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:focus-visible,
+button:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+}
+
+/* ---------- Navbar ---------- */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 1rem;
+    background: var(--bar);
+    color: var(--cream);
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-style: italic;
+    text-decoration: underline;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.05rem;
+}
+
+.nav-links a:hover {
+    text-decoration: underline;
+}
+
+.menu-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.menu-btn span {
+    display: block;
+    width: 22px;
+    height: 3px;
+    background: var(--cream);
+    border-radius: 2px;
+}
+
+/* ---------- Hero ---------- */
+.hero {
+    flex: 1;
+    padding: 1.5rem 1.5rem 3rem;
+}
+
+.title {
+    text-align: center;
+    font-size: clamp(1.6rem, 4.5vw, 2.4rem);
+    font-style: italic;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--cream);
+    text-shadow: 0 2px 3px rgba(80, 40, 20, 0.35);
+}
+
+.intro {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    max-width: 900px;
+    margin: 2rem auto 0;
+}
+
+.mascot {
+    width: clamp(150px, 28vw, 230px);
+    height: auto;
+    flex-shrink: 0;
+}
+
+.intro-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    flex: 1;
+    max-width: 420px;
+}
+
+/* Speech bubble */
+.bubble {
+    position: relative;
+    width: 100%;
+    padding: 1.2rem 1.5rem;
+    background: var(--bubble);
+    border-radius: 40px;
+    text-align: center;
+    color: var(--brown);
+    font-size: clamp(1.6rem, 4vw, 2.3rem);
+    font-style: italic;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.bubble::after {
+    content: "";
+    position: absolute;
+    left: -14px;
+    bottom: 14px;
+    border-style: solid;
+    border-width: 0 0 28px 28px;
+    border-color: transparent transparent var(--bubble) transparent;
+}
+
+/* Buttons */
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    width: 140px;
+}
+
+.btn {
+    display: block;
+    padding: 0.3rem 0.8rem;
+    background: var(--bubble);
+    border: 1px solid #bdbdbd;
+    border-radius: 3px;
+    text-align: center;
+    font-size: 1.3rem;
+    font-style: italic;
+    font-weight: 700;
+    transition: background 0.15s;
+}
+
+.btn:hover {
+    background: #ececec;
+}
+
+/* ---------- Footer ---------- */
+.footer {
+    padding: 0.9rem 1rem;
+    background: var(--bar);
+    color: var(--cream);
+    text-align: center;
+    font-size: 1.05rem;
+    font-style: italic;
+}
+
+.site-footer {
+    width: calc(100% - 60px);
+    margin: 32px auto 0;
+
+    background: #6b4d3b;
+
+    min-height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+}
+
+.site-footer p {
+    margin: 0;
+    padding: 12px 20px;
+
+    color: #f5f0eb;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 24px;
+    font-style: italic;
+
+    text-align: center;
+    line-height: 1.3;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 720px) {
+    .nav-links a {
+        display: none;
+    }
+
+    .intro {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .bubble::after {
+        left: 50%;
+        bottom: -18px;
+        margin-left: -14px;
+        border-width: 20px 14px 0 14px;
+        border-color: var(--bubble) transparent transparent transparent;
+    }
+
+    .mascot {
+        order: 2;
+    }
 }

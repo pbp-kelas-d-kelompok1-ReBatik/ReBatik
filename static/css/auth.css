@@ -1,0 +1,242 @@
+/* =========================
+   AUTH PAGE
+   ReBatik - Sign In / Sign Up
+   ========================= */
+
+.auth-page {
+    min-height: calc(100vh - 150px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 50px 20px;
+
+    font-family: "Garamond", Georgia, serif;
+}
+
+
+/* ---------- Auth Card ---------- */
+
+.auth-card {
+    width: 100%;
+    max-width: 500px;
+    padding: 40px 45px;
+    background-color: #FFF9F1;
+
+    border: 1px solid #E2CDB9;
+    border-radius: 15px;
+
+    box-shadow:
+        0 10px 30px rgba(90, 48, 34, 0.18);
+}
+
+
+/* ---------- Title ---------- */
+
+.auth-card h1 {
+    margin: 0 0 30px;
+
+    font-family: "Garamond", Georgia, serif;
+
+    font-size: 48px;
+    font-weight: normal;
+
+    color: #5A3022;
+
+    text-align: center;
+}
+
+.auth-card h1::after {
+    content: "";
+
+    display: block;
+
+    width: 70px;
+    height: 3px;
+
+    margin: 12px auto 0;
+
+    background-color: #D9A441;
+
+    border-radius: 10px;
+}
+
+
+/* ---------- Form ---------- */
+
+.auth-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.auth-card p {
+    margin: 8px 0;
+
+    color: #6B4638;
+
+    font-family: "Garamond", Georgia, serif;
+    font-size: 20px;
+}
+
+
+/* Django form labels */
+
+.auth-card label {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #5A3022;
+
+    font-family: "Garamond", Georgia, serif;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
+/* Username & password */
+
+.auth-card input {
+    width: 100%;
+
+    padding: 11px 14px;
+
+    box-sizing: border-box;
+
+    background-color: #FFF8ED;
+
+    border: 1px solid #D2A98F;
+    border-radius: 8px;
+
+    color: #4A2E23;
+
+    font-family: "Garamond", Georgia, serif;
+    font-size: 18px;
+
+    outline: none;
+
+    transition: border-color 0.3s ease,
+                box-shadow 0.3s ease;
+}
+
+.auth-card input:focus {
+    border-color: #D9A441;
+
+    box-shadow: 0 0 0 3px rgba(217, 164, 65, 0.15);
+}
+
+
+/* ---------- Help Text ---------- */
+
+.auth-card ul.helptext,
+.auth-card .helptext {
+    margin-top: 4px;
+
+    color: #8A6A5A;
+
+    font-family: "Garamond", Georgia, serif;
+    font-size: 15px;
+}
+
+
+/* ---------- Error ---------- */
+
+.auth-card .errorlist {
+    margin: 5px 0;
+    padding-left: 20px;
+
+    color: #8A2F23;
+
+    font-family: "Garamond", Georgia, serif;
+    font-size: 16px;
+}
+
+
+/* ---------- Button ---------- */
+
+.auth-card button {
+    width: 100%;
+
+    margin-top: 15px;
+
+    padding: 11px 22px;
+
+    background-color: #A8613E;
+
+    color: #FFF8ED;
+
+    border: 1px solid #D9A441;
+    border-radius: 20px;
+
+    cursor: pointer;
+
+    font-family: "Garamond", Georgia, serif;
+    font-size: 21px;
+    font-style: italic;
+
+    transition: all 0.3s ease;
+}
+
+.auth-card button:hover {
+    background-color: #7D422D;
+
+    border-color: #D9A441;
+
+    transform: translateY(-2px);
+}
+
+
+/* ---------- Link ---------- */
+
+.auth-card a {
+    color: #8A4A14;
+
+    font-family: "Garamond", Georgia, serif;
+
+    font-weight: bold;
+
+    text-decoration: none;
+
+    transition: color 0.3s ease;
+}
+
+.auth-card a:hover {
+    color: #D9A441;
+
+    text-decoration: underline;
+}
+
+
+/* ---------- Bottom Text ---------- */
+
+.auth-card form > p:last-child {
+    margin-top: 20px;
+
+    text-align: center;
+
+    font-size: 18px;
+}
+
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 600px) {
+
+    .auth-page {
+        padding: 30px 15px;
+    }
+
+    .auth-card {
+        padding: 30px 25px;
+    }
+
+    .auth-card h1 {
+        font-size: 40px;
+    }
+
+    .auth-card p,
+    .auth-card label {
+        font-size: 18px;
+    }
+}

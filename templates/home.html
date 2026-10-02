@@ -1,1 +1,70 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+
+<main class="hero">
+
+    <h1 class="title">
+        Selamat Datang di ReBatik
+    </h1>
+
+    <section class="intro">
+
+        <img
+            class="mascot"
+            src="{% static 'img/kapy nunjuk.png' %}"
+            alt="Kapy, maskot beruang berbaju batik"
+        >
+
+        <div class="intro-content">
+
+            <div class="bubble">
+                <p>Hai perkenalkan aku kapy &gt;-&lt;</p>
+            </div>
+
+            <div class="actions">
+
+                <a
+                    href="{% url 'main:login' %}"
+                    class="btn"
+                >
+                    Sign-in
+                </a>
+
+                <a
+                    href="{% url 'main:signup' %}"
+                    class="btn"
+                >
+                    Sign-Up
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+{% endblock %}
+
+
+{% block footer %}
+
+<footer class="footer">
+    <p>
+        &copy; 2026 ReBatik.
+        Fakultas Ilmu Komputer, Universitas Indonesia.
+    </p>
+</footer>
+
+{% endblock %}
