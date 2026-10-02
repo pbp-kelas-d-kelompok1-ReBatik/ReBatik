@@ -1,0 +1,126 @@
+
+@font-face {
+    font-family: "Garamond";
+    src: url("/static/font/Garamond.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    color: #4A2E23;
+}
+
+.bg {
+    min-height: 100vh;
+    background: linear-gradient(
+        120deg,
+        #F7EFE3 0%,
+        #EAD8C5 45%,
+        #D2A98F 100%
+    );
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 30px;
+    background-color: #5A3022;
+}
+
+header nav {
+    display: flex;
+    gap: 25px;
+}
+
+header a {
+    text-decoration: none;
+    font-family: "Garamond";
+    color: #FFF8ED;
+    font-size: 25px;
+    transition: color 0.3s ease;
+}
+
+header a:hover {
+    color: #D9A441;
+}
+
+h1 {
+    font-family: "Garamond";
+    color: #5A3022;
+    text-align: center;
+    font-size: 60px;
+    margin-bottom: 10px;
+}
+
+h1::after {
+    content: "";
+    display: block;
+    width: 80px;
+    height: 3px;
+    background-color: #D9A441;
+    margin: 15px auto 0;
+    border-radius: 10px;
+}
+
+.typing-text {
+    font-family: "Garamond";
+    font-size: 32px;
+    line-height: 1.5;
+    max-width: 1400px;
+    margin: 10px auto 0;
+    text-align: center;
+    color: #6B4638;
+    border-right: 3px solid #D9A441;
+    width: fit-content;
+    animation: blink 0.7s step-end infinite;
+}
+
+@keyframes blink {
+    50% {
+        border-color: transparent;
+    }
+}
+
+button {
+    font-family: "Garamond";
+    background-color: #A8613E;
+    color: #FFF8ED;
+    border: 1px solid #D9A441;
+    border-radius: 20px;
+    padding: 10px 22px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #7D422D;
+    border-color: #D9A441;
+}
+
+.card {
+    background-color: #FFF9F1;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #E2CDB9;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(90, 48, 34, 0.15);
+}

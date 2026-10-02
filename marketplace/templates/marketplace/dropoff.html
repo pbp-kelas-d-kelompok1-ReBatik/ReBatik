@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/marketplace.css' %}">
+{% endblock meta %}
+
+{% block content %}
+<div class="mp-wrapper">
+    <div class="mp-container">
+        
+        <!-- Hero Section Drop-off Point -->
+        <section class="mp-hero">
+            <p class="mp-hero-kicker">T I T I K &nbsp; P E N G U M P U L A N &nbsp; K A I N</p>
+            <h1 class="mp-hero-title">DROP-OFF POINT</h1>
+            <p class="mp-hero-tagline">“Your old batik becomes someone’s new story”</p>
+            <p class="mp-hero-desc">
+                Setorkan pakaian batik bekas, kain perca, atau potongan sisa jahit ke titik pengumpulan resmi terdekat untuk dipilah dan didaur ulang menjadi karya upcycling bernilai tinggi.
+            </p>
+        </section>
+
+        <!-- Filter Kota & Search Toolbar -->
+        <div class="mp-filter-bar">
+            <div class="mp-category-tabs">
+                <button onclick="filterCity('Semua', this)" class="mp-cat-pill active">Semua Kota</button>
+                {% for city in cities %}
+                <button onclick="filterCity('{{ city }}', this)" class="mp-cat-pill">{{ city }}</button>
+                {% endfor %}
+            </div>
+            
+            <div class="mp-filter-right">
+                <div class="mp-search-box">
+                    <svg class="mp-search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="mpDropSearch" placeholder="Cari titik / alamat..." onkeyup="filterDropCards()" class="mp-search-input">
+                </div>
+            </div>
+        </div>
+
+        <!-- Directory Container -->
+        <main class="mp-content-box">
+            <div class="mp-box-header">
+                <h2 class="mp-box-title">Lokasi Titik Pengumpulan</h2>
+                <span id="mpDropCounter" class="mp-item-count">{{ drop_points.count }} titik aktif</span>
+            </div>
+
+            <div id="mpDropGrid" class="mp-dropoff-grid">
+                {% for drop in drop_points %}
+                <div class="mp-dropoff-card" data-city="{{ drop.city }}" data-search="{{ drop.name|lower }} {{ drop.address|lower }} {{ drop.city|lower }}">
+                    <div>
+                        <div class="mp-drop-header">
+                            <span class="mp-city-badge">{{ drop.city }}</span>
+                            <span style="font-size: 0.7rem; color: #10B981; font-weight: 600;">● Menerima Kain</span>
+                        </div>
+
+                        <h3 class="mp-drop-name">{{ drop.name }}</h3>
+                        <p class="mp-drop-address">{{ drop.address }}</p>
+                    </div>
+
+                    <div>
+                        <div class="mp-drop-meta">
+                            <div class="mp-meta-row">
+                                <span class="mp-meta-icon">🕒</span>
+                                <span>{{ drop.operating_hours }}</span>
+                            </div>
+                            {% if drop.contact_person %}
+                            <div class="mp-meta-row">
+                                <span class="mp-meta-icon">📞</span>
+                                <span>{{ drop.contact_person }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        {% if drop.latitude and drop.longitude %}
+                        <a href="https://www.google.com/maps?q={{ drop.latitude }},{{ drop.longitude }}" target="_blank" class="mp-map-btn">
+                            Petunjuk Rute Peta ↗
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="mp-empty-state">
+                    <div class="mp-empty-icon">📍</div>
+                    <h3 class="mp-empty-title">Titik Drop-off Sedang Disiapkan</h3>
+                    <p class="mp-empty-text">
+                        Lokasi pengumpulan kain sedang dalam proses verifikasi kemitraan di berbagai kota.
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+
+    </div>
+</div>
+
+<script>
+let activeCity = 'Semua';
+
+function filterCity(city, el) {
+    activeCity = city;
+    document.querySelectorAll('.mp-cat-pill').forEach(btn => btn.classList.remove('active'));
+    el.classList.add('active');
+    filterDropCards();
+}
+
+function filterDropCards() {
+    const searchVal = (document.getElementById('mpDropSearch')?.value || '').toLowerCase().trim();
+    const cards = document.querySelectorAll('.mp-dropoff-card');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+        const city = card.getAttribute('data-city');
+        const text = card.getAttribute('data-search') || '';
+        const matchesCity = (activeCity === 'Semua' || city === activeCity);
+        const matchesSearch = text.includes(searchVal);
+
+        if (matchesCity && matchesSearch) {
+            card.style.display = 'flex';
+            visibleCount++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+
+    const counter = document.getElementById('mpDropCounter');
+    if (counter) counter.textContent = visibleCount + ' titik aktif';
+}
+</script>
+{% endblock content %}
