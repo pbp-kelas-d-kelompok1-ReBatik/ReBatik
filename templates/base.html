@@ -6,44 +6,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rebatik</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <title>ReBatik</title>
 
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
     {% block meta %}
     {% endblock meta %}
+
+    {% block css %}
+    {% endblock css %}
 </head>
 
 <body>
+
     <div class="bg">
 
-        <header>
-            <a href="{% url 'main:show_home' %}">
-                <h3>ReBatik</h3>
+        <header class="navbar">
+
+            <a href="{% url 'main:show_home' %}" class="logo">
+                ReBatik
             </a>
 
-            <nav>
-                <a href="{% url 'main:show_home' %}">Home</a>
-                <a href="{% url 'main:show_batik_story' %}">Batik Story</a>
-                <a href="{% url 'main:show_batik_custom' %}">Custom</a>
-                <a href="{% url 'marketplace:home' %}">Marketplace</a>
-                <a href="{% url 'marketplace:dropoff' %}">Drop-off Point</a>
+            <nav class="nav-links">
+
+                <a href="{% url 'main:show_home' %}">
+                    Home
+                </a>
+
+                <a href="{% url 'main:login' %}">
+                    Sign-in
+                </a>
+
+                <a href="{% url 'main:signup' %}">
+                    Sign-up
+                </a>
+
+
+                <a href="{% url 'main:show_batik_story' %}">
+                    Batik Story
+                </a>
+
+                <!-- <a href="{% url 'main:show_batik_custom' %}">
+                    Custom
+                </a> 
+
+                <a href="{% url 'marketplace:home' %}">
+                    Marketplace
+                </a>
+
+                <a href="{% url 'marketplace:dropoff' %}">
+                    Drop-off Point
+                </a> -->
+
             </nav>
+
+            <button type="button" class="menu-btn" onclick="toggleMenu()" aria-label="Open menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <div class="nav-menu" id="navMenu">
+
+                <a href="#">
+                    Profile
+                </a>
+
+                <a href="{% url 'main:show_home' %}">
+                    Landing page
+                </a>
+
+                <a href="{% url 'marketplace:home' %}">
+                    MarketPlace
+                </a>
+
+                <a href="#">
+                    Donasi Kain
+                </a>
+
+                <a href="{% url 'marketplace:dropoff' %}">
+                    Drop-off Point
+                </a>
+
+                <a href="#">
+                    Upcycling Request
+                </a>
+
+                <a href="{% url 'main:show_batik_custom' %}">
+                    Custom Batik
+                </a>
+
+                <a href="#">
+                    Impact Tracker
+                </a>
+
+
+
+
+            </div>
+
         </header>
 
+
         <main>
+
             {% block content %}
             {% endblock content %}
+
         </main>
 
     </div>
-    <footer>
-        <h2>© 2026 ReBatik. Fakultas Ilmu Komputer, Universitas Indonesia.</h2>
+
+
+    <footer class="site-footer">
+
+        <p>
+            © 2026 ReBatik. Fakultas Ilmu Komputer, Universitas Indonesia.
+        </p>
+
     </footer>
+
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById("navMenu");
+
+            menu.classList.toggle("active");
+        }
+    </script>
+
 </body>
 
 </html>

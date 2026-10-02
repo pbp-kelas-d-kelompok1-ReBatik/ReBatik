@@ -34,12 +34,10 @@ html {
 
 body {
     min-height: 100vh;
-
     display: flex;
     flex-direction: column;
 
     font-family: "Garamond", Georgia, "Times New Roman", serif;
-
     color: var(--cream);
 
     background: radial-gradient(
@@ -61,127 +59,8 @@ button:focus-visible {
     outline-offset: 3px;
 }
 
-
-/* Navbar */
-
-header {
-    width: 100%;
-
-    min-height: 64px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    padding: 8px 30px;
-
-    background-color: var(--bar);
-
-    color: var(--cream);
-}
-
-header .logo,
-.logo {
-    color: var(--cream);
-
-    font-family: "Garamond", Georgia, serif;
-
-    font-size: 34px;
-    font-style: italic;
-    font-weight: normal;
-
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 4px;
-
-    white-space: nowrap;
-}
-
-header nav,
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 25px;
-}
-
-header nav a,
-.nav-links a {
-    color: var(--cream);
-
-    font-family: "Garamond", Georgia, serif;
-
-    font-size: 20px;
-    font-weight: normal;
-
-    text-decoration: none;
-
-    white-space: nowrap;
-
-    transition: color 0.3s ease;
-}
-
-header nav a:hover,
-.nav-links a:hover {
-    color: #FFF3D8;
-}
-
-
-/* Menu */
-
-.menu-btn {
-    display: flex;
-    flex-direction: column;
-
-    justify-content: center;
-    align-items: center;
-
-    gap: 5px;
-
-    width: 34px;
-    height: 34px;
-
-    padding: 4px;
-
-    background: none;
-
-    border: 0;
-
-    cursor: pointer;
-}
-
-.menu-btn span {
-    display: block;
-
-    width: 24px;
-    height: 3px;
-
-    background: var(--cream);
-
-    border-radius: 2px;
-}
-
-
-/* Main */
-
-main {
-    flex: 1;
-
-    width: 100%;
-
-    background: radial-gradient(
-        circle at 50% 50%,
-        #EEAF87 0%,
-        #A87D65 75%,
-        #A87761 100%
-    );
-}
-
-
-/* Background */
-
 .bg {
     min-height: 100vh;
-
     width: 100%;
 
     background: radial-gradient(
@@ -196,24 +75,167 @@ main {
     background-repeat: no-repeat;
 }
 
-
-/* Hero */
-
-.hero {
+main {
     flex: 1;
-
-    padding: 1.5rem 1.5rem 3rem;
+    width: 100%;
 }
 
+.navbar {
+    width: calc(100% - 24px);
+    min-height: 66px;
 
-/* Title */
+    margin: 12px auto 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 14px;
+
+    background: var(--bar);
+    color: var(--cream);
+
+    position: relative;
+    z-index: 100;
+}
+
+.logo {
+    color: var(--cream);
+
+    font-family: "Garamond", Georgia, serif;
+
+    font-size: 22px;
+    font-style: italic;
+    font-weight: normal;
+
+    line-height: 1;
+
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+
+    white-space: nowrap;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+
+    gap: 32px;
+
+    margin-left: auto;
+    margin-right: 25px;
+}
+
+.nav-links a {
+    color: var(--cream);
+
+    font-family: "Garamond", Georgia, serif;
+
+    font-size: 20px;
+    font-weight: normal;
+
+    text-decoration: none;
+
+    white-space: nowrap;
+
+    transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+    color: #FFF3D8;
+}
+
+.menu-btn {
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 4px;
+
+    padding: 0;
+
+    background: transparent;
+    border: none;
+
+    cursor: pointer;
+}
+
+.menu-btn span {
+    display: block;
+
+    width: 14px;
+    height: 2px;
+
+    background: var(--cream);
+
+    border-radius: 2px;
+}
+
+.nav-menu {
+    position: absolute;
+
+    top: 66px;
+    right: 0;
+
+    width: 210px;
+
+    padding: 10px 0;
+
+    background: var(--bar);
+
+    border-radius: 0 0 5px 5px;
+
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+
+    display: none;
+}
+
+.nav-menu a {
+    display: block;
+
+    padding: 10px 18px;
+
+    color: var(--cream);
+
+    font-family: "Garamond", Georgia, serif;
+
+    font-size: 20px;
+
+    text-decoration: none;
+}
+
+.nav-menu a:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-menu.active {
+    display: block;
+}
+
+.hero {
+    min-height: calc(100vh - 100px);
+
+    padding: 40px 30px 70px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
 .title {
+    margin: 0;
+
     text-align: center;
 
     font-family: "Garamond", Georgia, serif;
 
-    font-size: clamp(1.6rem, 4.5vw, 2.4rem);
+    font-size: clamp(2rem, 4.5vw, 3rem);
 
     font-style: italic;
     font-weight: 700;
@@ -225,9 +247,6 @@ main {
     text-shadow:
         0 2px 3px rgba(80, 40, 20, 0.35);
 }
-
-
-/* H1 */
 
 h1 {
     font-family: "Garamond", Georgia, serif;
@@ -256,14 +275,10 @@ h1::after {
     border-radius: 10px;
 }
 
-
-/* Typing text */
-
 .typing-text {
     font-family: "Garamond", Georgia, serif;
 
     font-size: 32px;
-
     line-height: 1.5;
 
     max-width: 1400px;
@@ -287,25 +302,29 @@ h1::after {
     }
 }
 
-
-/* Intro */
-
 .intro {
     width: 100%;
-    max-width: 1000px;
+    max-width: 1200px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    gap: 55px;
+    gap: 50px;
 
     margin: 45px auto 0;
 }
 
+.mascot {
+    width: 300px;
+    height: auto;
+
+    flex-shrink: 0;
+}
+
 .intro-content {
     width: 100%;
-    max-width: 850px;
+    max-width: 750px;
 
     display: flex;
     flex-direction: column;
@@ -314,18 +333,6 @@ h1::after {
     gap: 30px;
 }
 
-
-.mascot {
-    width: 500px;
-
-    height: auto;
-
-    flex-shrink: 0;
-}
-
-
-
-/* Speech bubble */
 .bubble {
     position: relative;
 
@@ -350,18 +357,17 @@ h1::after {
     line-height: 1.25;
 }
 
-
 .bubble::after {
     content: "";
 
     position: absolute;
 
-    left: -14px;
-    bottom: 14px;
+    left: -20px;
+    bottom: 20px;
 
     border-style: solid;
 
-    border-width: 0 0 28px 28px;
+    border-width: 0 0 30px 30px;
 
     border-color:
         transparent
@@ -370,8 +376,43 @@ h1::after {
         transparent;
 }
 
+.actions {
+    width: 210px;
 
-/* Buttons */
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+.btn {
+    display: block;
+
+    width: 100%;
+
+    padding: 10px 15px;
+
+    background: var(--bubble);
+
+    border: 1px solid #BDBDBD;
+    border-radius: 4px;
+
+    text-align: center;
+
+    color: var(--brown);
+
+    font-family: "Garamond", Georgia, serif;
+
+    font-size: 1.5rem;
+    font-style: italic;
+    font-weight: 700;
+
+    transition: background 0.15s ease;
+}
+
+.btn:hover {
+    background: #ECECEC;
+}
 
 button {
     font-family: "Garamond", Georgia, serif;
@@ -393,49 +434,8 @@ button {
 
 button:hover {
     background-color: var(--button-hover);
-
     border-color: var(--gold);
 }
-
-.actions {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 0.8rem;
-
-    width: 140px;
-}
-
-.btn {
-    display: block;
-
-    padding: 0.3rem 0.8rem;
-
-    background: var(--bubble);
-
-    border: 1px solid #BDBDBD;
-
-    border-radius: 3px;
-
-    text-align: center;
-
-    color: var(--brown);
-
-    font-size: 1.3rem;
-
-    font-style: italic;
-    font-weight: 700;
-
-    transition: background 0.15s;
-}
-
-.btn:hover {
-    background: #ECECEC;
-}
-
-
-/* Card */
 
 .card {
     background-color: var(--card);
@@ -458,11 +458,10 @@ button:hover {
         0 10px 25px rgba(90, 48, 34, 0.15);
 }
 
-
-/* Footer */
-
 footer {
-    padding: 0.9rem 1rem;
+    width: 100%;
+
+    padding: 14px 20px;
 
     background: var(--bar);
 
@@ -470,34 +469,41 @@ footer {
 
     text-align: center;
 
-    font-size: 1.05rem;
+    font-family: "Garamond", Georgia, serif;
 
+    font-size: 1.05rem;
     font-style: italic;
 }
 
-footer h2{
-    text-align: center;
-}
+footer h3 {
+    margin: 0;
 
+    text-align: center;
+
+    font-weight: normal;
+}
 
 .site-footer {
     width: calc(100% - 60px);
 
-    margin: 32px auto 0;
-
-    background: var(--bar);
-
     min-height: 58px;
+
+    margin: 32px auto 0;
 
     display: flex;
 
     align-items: center;
     justify-content: center;
+
+    background: var(--bar);
+
+    text-align: center;
 }
 
 .site-footer p {
-    margin: 0;
+    width: 100%;
 
+    margin: 0;
     padding: 12px 20px;
 
     color: var(--cream);
@@ -505,32 +511,106 @@ footer h2{
     font-family: "Garamond", Georgia, serif;
 
     font-size: 24px;
-
     font-style: italic;
 
-    text-align: center;
-
     line-height: 1.3;
+
+    text-align: center;
 }
 
-
-/* Responsive */
-
-@media (max-width: 720px) {
+@media (max-width: 1100px) {
+    .nav-links {
+        gap: 18px;
+        margin-right: 15px;
+    }
 
     .nav-links a {
+        font-size: 18px;
+    }
+
+    .intro {
+        max-width: 1000px;
+        gap: 35px;
+    }
+
+    .mascot {
+        width: 260px;
+    }
+
+    .intro-content {
+        max-width: 650px;
+    }
+
+    .bubble {
+        font-size: 34px;
+    }
+}
+
+@media (max-width: 850px) {
+    .nav-links {
         display: none;
     }
 
     .intro {
         flex-direction: column;
+        gap: 30px;
+    }
 
-        gap: 1rem;
+    .mascot {
+        width: 250px;
+        order: 2;
+    }
+
+    .intro-content {
+        max-width: 700px;
+    }
+
+    .bubble {
+        font-size: 32px;
+    }
+}
+
+@media (max-width: 720px) {
+    .navbar {
+        width: calc(100% - 16px);
+        margin-top: 8px;
+
+        min-height: 60px;
+
+        padding: 0 12px;
+    }
+
+    .logo {
+        font-size: 22px;
+    }
+
+    .nav-menu {
+        top: 60px;
+        right: 0;
+
+        width: 210px;
+    }
+
+    .hero {
+        padding: 30px 15px 50px;
+    }
+
+    h1 {
+        font-size: 45px;
+    }
+
+    .typing-text {
+        font-size: 25px;
+        padding: 0 15px;
+    }
+
+    .bubble {
+        padding: 25px 25px;
+        font-size: 28px;
     }
 
     .bubble::after {
         left: 50%;
-
         bottom: -18px;
 
         margin-left: -14px;
@@ -545,6 +625,36 @@ footer h2{
     }
 
     .mascot {
-        order: 2;
+        width: 220px;
+    }
+}
+
+@media (max-width: 500px) {
+    .logo {
+        font-size: 20px;
+    }
+
+    .nav-menu {
+        width: 190px;
+    }
+
+    .nav-menu a {
+        font-size: 18px;
+    }
+
+    .bubble {
+        font-size: 24px;
+    }
+
+    .actions {
+        width: 180px;
+    }
+
+    .site-footer {
+        width: calc(100% - 30px);
+    }
+
+    .site-footer p {
+        font-size: 18px;
     }
 }
