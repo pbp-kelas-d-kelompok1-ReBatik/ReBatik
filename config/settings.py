@@ -31,6 +31,9 @@ ALLOWED_HOSTS = [
     "alisa-selvia-rebatik.pws.cs.ui.ac.id",
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://alisa-selvia-rebatik.pws.cs.ui.ac.id",
+]
 
 # Application definition
 
