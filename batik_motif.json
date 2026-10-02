@@ -1,0 +1,35 @@
+[
+{
+  "model": "main.batikmotif",
+  "pk": 1,
+  "fields": {
+    "nama": "Batik Parang",
+    "asal": "YOGYAKARTA",
+    "filosofi": "Melambangkan keteguhan, keberanian, dan semangat pantang menyerah. Pola diagonal yang berkesinambungan menggambarkan perjuangan hidup yang terus bergerak maju.",
+    "deskripsi": "Batik Parang merupakan salah satu motif batik yang memiliki ciri khas berupa pola menyerupai huruf “S” yang tersusun secara miring dan saling berkaitan. Motif tersebut menyerupai ombak laut yang terus bergerak, sehingga menggambarkan semangat manusia untuk terus berjuang dan tidak mudah menyerah. Pola yang saling terhubung juga menggambarkan kesinambungan perjuangan dari orang tua kepada anak.",
+    "gambar": "batik/parang_yoMvvLE.png"
+  }
+},
+{
+  "model": "main.batikmotif",
+  "pk": 2,
+  "fields": {
+    "nama": "Batik Ondel-Ondel",
+    "asal": "JAKARTA",
+    "filosofi": "Motif Batik Ondel-Ondel melambangkan perlindungan, keberanian, dan identitas budaya Betawi. Terinspirasi dari ondel-ondel sebagai ikon Jakarta, motif ini juga mencerminkan semangat kebersamaan serta upaya melestarikan warisan budaya Betawi melalui seni batik.",
+    "deskripsi": "Batik Ondel-Ondel merupakan motif batik yang terinspirasi dari salah satu ikon budaya Betawi yang sangat dikenal di Jakarta. Motif ini menampilkan karakter ondel-ondel dengan bentuk dan ornamen khas yang menggambarkan kekayaan budaya masyarakat Betawi. Perpaduan motif dan warna pada batik ini memberikan kesan ceria, kuat, dan penuh karakter. Batik Ondel-Ondel tidak hanya memiliki nilai estetika, tetapi juga menjadi salah satu bentuk pengenalan dan pelestarian budaya Betawi melalui seni batik.",
+    "gambar": "batik/ondel2_2RuT1tx.png"
+  }
+},
+{
+  "model": "main.batikmotif",
+  "pk": 3,
+  "fields": {
+    "nama": "Batik Mega Mendung",
+    "asal": "CIREBON",
+    "filosofi": "Melambangkan ketenangan, keluasan hati, dan kesuburan. Motif awan juga menggambarkan kehidupan yang dinamis serta harapan akan kehidupan yang cerah.",
+    "deskripsi": "Batik Megamendung merupakan motif khas Cirebon yang menampilkan bentuk awan dengan warna-warna khas. Motif ini menjadi salah satu identitas budaya Cirebon. Secara filosofis, Megamendung melambangkan ketenangan, keluasan hati, keramahan, serta kesuburan dan kehidupan yang dibawa oleh hujan.",
+    "gambar": "batik/megamendung_Sht7s4M.png"
+  }
+}
+]
