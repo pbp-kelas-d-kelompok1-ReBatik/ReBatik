@@ -40,12 +40,10 @@ body {
     font-family: "Garamond", Georgia, "Times New Roman", serif;
     color: var(--cream);
 
-    background: radial-gradient(
-        circle at 50% 50%,
-        #EEAF87 0%,
-        #A87D65 75%,
-        #A87761 100%
-    ) fixed;
+    background: radial-gradient(circle at 50% 50%,
+            #EEAF87 0%,
+            #A87D65 75%,
+            #A87761 100%) fixed;
 }
 
 a {
@@ -63,12 +61,10 @@ button:focus-visible {
     min-height: 100vh;
     width: 100%;
 
-    background: radial-gradient(
-        circle at 50% 50%,
-        #EEAF87 0%,
-        #A87D65 75%,
-        #A87761 100%
-    );
+    background: radial-gradient(circle at 50% 50%,
+            #EEAF87 0%,
+            #A87D65 75%,
+            #A87761 100%);
 
     background-size: cover;
     background-position: center;
@@ -275,25 +271,25 @@ h1::after {
     border-radius: 10px;
 }
 
-.typing-text {
-    font-family: "Garamond", Georgia, serif;
 
-    font-size: 32px;
-    line-height: 1.5;
 
-    max-width: 1400px;
+@keyframes cursorBlink {
+    0%,
+    100% {
+        border-color: transparent;
+    }
 
-    margin: 10px auto 0;
+    50% {
+        border-color: var(--cream);
+    }
+}
 
-    text-align: center;
 
-    color: var(--cream);
 
-    border-right: 3px solid var(--gold);
-
-    width: fit-content;
-
-    animation: blink 0.7s step-end infinite;
+@keyframes cursor {
+    50% {
+        border-color: transparent;
+    }
 }
 
 @keyframes blink {
@@ -370,10 +366,7 @@ h1::after {
     border-width: 0 0 30px 30px;
 
     border-color:
-        transparent
-        transparent
-        var(--bubble)
-        transparent;
+        transparent transparent var(--bubble) transparent;
 }
 
 .actions {
@@ -618,10 +611,7 @@ footer h3 {
         border-width: 20px 14px 0 14px;
 
         border-color:
-            var(--bubble)
-            transparent
-            transparent
-            transparent;
+            var(--bubble) transparent transparent transparent;
     }
 
     .mascot {
@@ -656,5 +646,71 @@ footer h3 {
 
     .site-footer p {
         font-size: 18px;
+    }
+}
+
+.typing-text {
+    width: 100%;
+    max-width: 1400px;
+
+    margin: 10px auto 0;
+    padding: 0 20px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-family: "Garamond", Georgia, "Times New Roman", serif;
+    font-size: 32px;
+    line-height: 1.5;
+
+    text-align: center;
+    color: var(--cream);
+}
+
+.typing-text p {
+    position: relative;
+
+    width: 100%;
+    max-width: 1000px;
+
+    margin: 0;
+
+    min-height: 1.5em;
+
+    white-space: normal;
+    overflow-wrap: break-word;
+
+    text-shadow:
+        0 1px 2px rgba(80, 40, 20, 0.2);
+}
+
+/* Cursor */
+.typing-text p::after {
+    content: "";
+
+    display: inline-block;
+
+    width: 2px;
+    height: 0.9em;
+
+    margin-left: 6px;
+
+    vertical-align: -0.08em;
+
+    background-color: var(--cream);
+
+    animation: typingCursor 0.7s ease-in-out infinite;
+}
+
+/* Cursor berkedip smooth */
+@keyframes typingCursor {
+    0%,
+    100% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
     }
 }

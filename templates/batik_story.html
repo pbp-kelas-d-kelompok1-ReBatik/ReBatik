@@ -12,8 +12,59 @@
     <div class="judul">
         <h1>Batik Story</h1>
         <div class="typing-text">
-            <p>{{ ket1 }}</p>
+            <p id="typing-text">{{ ket1 }}</p>
         </div>
+
+        <script>
+            (function () {
+                const element = document.getElementById("typing-text");
+
+                if (!element) return;
+
+                const text = element.textContent.trim();
+
+                element.textContent = "";
+
+                let index = 0;
+                let deleting = false;
+
+                function typeWriter() {
+
+                    if (!deleting) {
+                        // Mengetik
+                        if (index < text.length) {
+                            element.textContent += text.charAt(index);
+                            index++;
+
+                            setTimeout(typeWriter, 45);
+                        } else {
+                            // Tunggu setelah selesai
+                            setTimeout(() => {
+                                deleting = true;
+                                typeWriter();
+                            }, 2000);
+                        }
+
+                    } else {
+                        // Menghapus
+                        if (index > 0) {
+                            index--;
+                            element.textContent = text.substring(0, index);
+
+                            setTimeout(typeWriter, 25);
+                        } else {
+                            // Mulai mengetik lagi
+                            deleting = false;
+
+                            setTimeout(typeWriter, 500);
+                        }
+                    }
+                }
+
+                typeWriter();
+            })();
+        </script>
+
         <a href="{% url 'main:show_batik_story' %}#story-section" class="explore-btn">
             ↓ Explore
         </a>
