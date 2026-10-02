@@ -316,7 +316,7 @@ h1::after {
 }
 
 .mascot {
-    width: 300px;
+    width: 500px;
     height: auto;
 
     flex-shrink: 0;
