@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main',
     'marketplace',
+    'upcycling',
 ]
 
 MIDDLEWARE = [
@@ -146,3 +147,5 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+LOGIN_URL = "/login/"
