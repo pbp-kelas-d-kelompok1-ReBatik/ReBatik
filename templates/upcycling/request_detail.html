@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section>
+    <h1>Detail Permintaan Upcycling</h1>
+
+    <p>Kain: {{ upcycling_request.get_fabric_display }}</p>
+    <p>Kategori: {{ upcycling_request.get_category_display }}</p>
+    <p>Produk: {{ upcycling_request.get_product_display }}</p>
+    <p>Jumlah: {{ upcycling_request.quantity }}</p>
+    <p>Catatan: {{ upcycling_request.notes|default:"Tidak ada catatan" }}</p>
+    <p>Metode pengiriman: {{ upcycling_request.get_delivery_method_display }}</p>
+    <p>Alamat: {{ upcycling_request.address }}</p>
+    <p>WhatsApp: {{ upcycling_request.whatsapp }}</p>
+    <p>Status: {{ upcycling_request.get_status_display }}</p>
+
+    <p>
+        <a href="{% url 'upcycling:request_update' upcycling_request.pk %}">
+            Edit
+        </a>
+        |
+        <a href="{% url 'upcycling:request_delete' upcycling_request.pk %}">
+            Hapus
+        </a>
+        |
+        <a href="{% url 'upcycling:request_list' %}">
+            Kembali ke daftar
+        </a>
+    </p>
+</section>
+{% endblock %}

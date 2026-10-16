@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section>
+    <h1>Permintaan Upcycling Saya</h1>
+    <p>
+        <a href="{% url 'upcycling:request_create' %}">
+            Buat Permintaan
+        </a>
+    </p>
+
+    <form method="get">
+        <label for="filter-status">Status:</label>
+        <select id="filter-status" name="status">
+            <option value="">Semua status</option>
+            {% for value, label in status_options %}
+                <option value="{{ value }}"
+                    {% if selected_status == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label for="filter-category">Kategori:</label>
+        <select id="filter-category" name="category">
+            <option value="">Semua kategori</option>
+            {% for value, label in category_options %}
+                <option value="{{ value }}"
+                    {% if selected_category == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Filter</button>
+        <a href="{% url 'upcycling:request_list' %}">Reset</a>
+    </form>
+    {% for item in requests %}
+        <article>
+            <h2>
+                <a href="{% url 'upcycling:request_detail' item.pk %}">
+                    {{ item.get_product_display }}
+                </a>
+            </h2>
+            <p>Kain: {{ item.get_fabric_display }}</p>
+            <p>Kategori: {{ item.get_category_display }}</p>
+            <p>Jumlah: {{ item.quantity }}</p>
+            <p>Status: {{ item.get_status_display }}</p>
+        </article>
+    {% empty %}
+        <p>Belum ada permintaan upcycling.</p>
+    {% endfor %}
+</section>
+{% endblock %}

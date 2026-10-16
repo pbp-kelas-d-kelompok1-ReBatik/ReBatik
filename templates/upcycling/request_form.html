@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section>
+    <h1>
+        {% if is_update %}
+            Edit Permintaan Upcycling
+        {% else %}
+            Ajukan Upcycling
+        {% endif %}
+    </h1>
+
+    <form method="post" id="upcycling-form" data-product-options-url="{% url 'upcycling:product_options' 'TAS' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">
+            {% if is_update %}
+                Simpan Perubahan
+            {% else %}
+                Ajukan Permintaan
+            {% endif %}
+        </button>
+    </form>
+
+    <p>
+        <a href="{% url 'upcycling:request_list' %}">
+            Kembali ke daftar
+        </a>
+    </p>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("upcycling-form");
+    const categoryField = document.getElementById("id_category");
+    const productField = document.getElementById("id_product");
+    const urlTemplate = form.dataset.productOptionsUrl;
+
+    async function loadProducts(keepSelection) {
+        const previousProduct = productField.value;
+        const category = categoryField.value;
+
+        productField.replaceChildren(new Option("---------", ""));
+
+        if (!category) {
+            return;
+        }
+
+        const url = urlTemplate.replace("TAS", encodeURIComponent(category));
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            console.error("Gagal mengambil pilihan produk.");
+            return;
+        }
+
+        const products = await response.json();
+
+        products.forEach((item) => {
+            productField.add(new Option(item.label, item.value));
+        });
+
+        if (
+            keepSelection &&
+            products.some((item) => item.value === previousProduct)
+        ) {
+            productField.value = previousProduct;
+        }
+    }
+
+    categoryField.addEventListener("change", () => loadProducts(false));
+    loadProducts(true);
+});
+</script>
+{% endblock %}

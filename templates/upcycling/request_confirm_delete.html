@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section>
+    <h1>Hapus Permintaan</h1>
+
+    <p>
+        Yakin ingin menghapus permintaan
+        untuk {{ upcycling_request.get_product_display }}?
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Ya, hapus</button>
+    </form>
+
+    <p>
+        <a href="{% url 'upcycling:request_detail' upcycling_request.pk %}">
+            Batal
+        </a>
+    </p>
+</section>
+{% endblock %}
