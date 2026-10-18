@@ -72,3 +72,61 @@ ReBatik adalah platform yang menghadirkan konsep upcycling dengan mengolah pakai
 ## Link Figma
 
 [Desain Figma ReBatik](https://www.figma.com/team_invite/redeem/xncR93E4zlnRJtCDqu4D7p?t=LXe1ZVPkQu6McFi1-21)
+
+## Menjalankan Tailwind CSS
+
+ReBatik menggunakan Tailwind CSS v4 untuk membantu membuat tampilan halaman. Django tetap digunakan untuk menjalankan aplikasi web, sedangkan Node.js dan npm digunakan untuk mengompilasi CSS Tailwind.
+
+### Persiapan pertama kali
+
+1. Pasang Node.js versi LTS dari [situs resmi Node.js](https://nodejs.org/en/download/). npm akan ikut terpasang bersama Node.js.
+2. Tutup dan buka kembali terminal, lalu pastikan keduanya sudah terdeteksi:
+
+   ```bash
+   node --version
+   npm --version
+   ```
+
+3. Buka terminal di folder utama ReBatik, yaitu folder yang berisi `manage.py` dan `package.json`.
+4. Pasang dependency sesuai versi yang dikunci proyek:
+
+   ```bash
+   npm ci
+   ```
+
+   Perintah ini membaca `package-lock.json`. Jalankan lagi jika baru pertama kali menyiapkan proyek di komputer atau jika dependency perlu dipasang ulang. Jangan commit folder `node_modules/`.
+
+### Mengompilasi CSS
+
+File sumber Tailwind ada di `static/css/tailwind.input.css`. Tailwind menghasilkan file `static/css/tailwind.css`, yang sudah dipanggil oleh `templates/base.html`.
+
+Untuk mengompilasi CSS satu kali, misalnya sebelum commit:
+
+```bash
+npm run tailwind:build
+```
+
+Simpan perubahan pada `static/css/tailwind.css` bersama perubahan tampilan yang menggunakannya agar CSS hasil kompilasi tersedia saat aplikasi dijalankan atau di-deploy. Jangan masukkan `node_modules/` ke commit.
+
+### Mengembangkan tampilan
+
+1. Buka satu terminal di folder utama proyek dan jalankan:
+
+   ```bash
+   npm run tailwind:watch
+   ```
+
+   Biarkan perintah ini tetap berjalan. Tailwind akan membuat ulang `static/css/tailwind.css` ketika file sumber berubah.
+
+2. Buka terminal kedua di folder utama proyek, aktifkan virtual environment Python, lalu jalankan Django:
+
+   ```bash
+   python manage.py runserver
+   ```
+
+3. Buka alamat lokal yang ditampilkan Django di browser. Setelah mengubah class Tailwind di template, muat ulang halaman untuk melihat hasilnya.
+4. Setelah selesai, hentikan mode watch dan server Django dengan menekan `Ctrl+C` pada masing-masing terminal.
+
+Gunakan class Tailwind langsung pada elemen HTML di template Django, misalnya `class="p-4 text-lg"`. Jika mengubah `tailwind.input.css` atau class pada template, jalankan `npm run tailwind:build` sebelum commit bila mode watch tidak sedang berjalan.
+
+Jika PowerShell menampilkan pesan bahwa `npm` tidak bisa dijalankan karena execution policy, gunakan `npm.cmd` sebagai pengganti `npm` pada perintah di atas, misalnya `npm.cmd ci` atau `npm.cmd run tailwind:build`.
