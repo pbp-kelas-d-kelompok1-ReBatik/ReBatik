@@ -10,6 +10,4 @@ urlpatterns = [
     path("signup/", views.register, name="signup"),
     path("logout/", views.logout_user, name="logout"),
 
-    path("batikstory/", views.show_batik_story, name="show_batik_story"),
-    path("batikcustom/", views.show_batik_custom, name="show_batik_custom"),
 ]

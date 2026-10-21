@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main',
     'marketplace',
+    'batik_story'
 ]
 
 MIDDLEWARE = [

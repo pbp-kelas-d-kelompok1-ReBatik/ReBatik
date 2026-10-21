@@ -12,13 +12,13 @@ ReBatik adalah platform yang menghadirkan konsep upcycling dengan mengolah pakai
 
 ## Daftar Modul Beserta Deskripsi dan Pembagian
 
-### Modul 1: Landing Page
-**Deskripsi:** Menjelaskan masalah limbah tekstil serta konsep ReBatik Impact Tracker yang menunjukkan jumlah kain yang berhasil dialihkan dari limbah.
+### Modul 1: Landing Page & Impact Tracker
+**Deskripsi:** Informasi limbah tekstil, konsep ReBatik, statistik kain yang dialihkan dari limbah
 
 **Penanggung Jawab:** Ausy Dhafa Adhitama
 
-### Modul 2: Batik Custom
-**Deskripsi:** User dapat memilih motif/jenis produk atau mengajukan desain Batik Story. Modul ini juga menampilkan informasi mengenai motif dan filosofi batik yang digunakan.
+### Modul 2: Batik Custom & Batik Story 
+**Deskripsi:** Pemilihan motif/produk batik, pengajuan desain Batik Story, filosofi motif
 
 **Penanggung Jawab:** Alisa Selvia Saharani
 
