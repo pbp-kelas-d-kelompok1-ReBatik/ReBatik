@@ -108,6 +108,8 @@ npm run tailwind:build
 
 Simpan perubahan pada `static/css/tailwind.css` bersama perubahan tampilan yang menggunakannya. Jangan masukkan `node_modules/` ke commit.
 
+Jika terjadi konflik Git pada `static/css/tailwind.css`, selesaikan konflik terlebih dahulu pada template Django atau file sumber CSS. Setelah sumbernya beres, jalankan ulang `npm run tailwind:build`, lalu stage dan commit hasil `static/css/tailwind.css` yang baru. Jangan menyelesaikan konflik dengan mengedit file hasil build secara manual.
+
 ### Mengembangkan tampilan
 
 1. Buka satu terminal di folder utama proyek dan jalankan:
@@ -125,6 +127,7 @@ Simpan perubahan pada `static/css/tailwind.css` bersama perubahan tampilan yang 
    ```
 
 3. Buka alamat lokal yang ditampilkan Django di browser. Setelah mengubah class Tailwind di template, muat ulang halaman untuk melihat hasilnya.
+
 Gunakan class Tailwind langsung pada elemen HTML di template Django, misalnya `class="p-4 text-lg"`. Jika mengubah `tailwind.input.css` atau class pada template, jalankan `npm run tailwind:build` sebelum commit bila mode watch tidak sedang berjalan.
 
 Jika PowerShell menampilkan pesan bahwa `npm` tidak bisa dijalankan karena execution policy, gunakan `npm.cmd` sebagai pengganti `npm` pada perintah di atas, misalnya `npm.cmd ci` atau `npm.cmd run tailwind:build`.
