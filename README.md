@@ -79,7 +79,7 @@ ReBatik menggunakan Tailwind CSS v4 untuk membantu membuat tampilan halaman. Dja
 
 ### Persiapan pertama kali
 
-1. Pasang Node.js versi LTS dari [situs resmi Node.js](https://nodejs.org/en/download/). npm akan ikut terpasang bersama Node.js.
+1. Tailwind CSS v4 membutuhkan Node.js versi 20 atau lebih baru. Untuk menyamakan lingkungan tim, gunakan Node.js versi 24 LTS dari [situs resmi Node.js](https://nodejs.org/en/download/). npm ikut terpasang bersama Node.js.
 2. Tutup dan buka kembali terminal, lalu pastikan keduanya sudah terdeteksi:
 
    ```bash
@@ -98,7 +98,7 @@ ReBatik menggunakan Tailwind CSS v4 untuk membantu membuat tampilan halaman. Dja
 
 ### Mengompilasi CSS
 
-File sumber Tailwind ada di `static/css/tailwind.input.css`. Tailwind menghasilkan file `static/css/tailwind.css`, yang sudah dipanggil oleh `templates/base.html`.
+File sumber Tailwind ada di `static/css/tailwind.input.css`. Tailwind menghasilkan file `static/css/tailwind.css`, yang sudah dipanggil oleh `templates/base.html`. File hasil build ini sengaja disimpan di Git agar tersedia saat aplikasi dijalankan dan di-deploy.
 
 Untuk mengompilasi CSS satu kali, misalnya sebelum commit:
 
@@ -106,7 +106,7 @@ Untuk mengompilasi CSS satu kali, misalnya sebelum commit:
 npm run tailwind:build
 ```
 
-Simpan perubahan pada `static/css/tailwind.css` bersama perubahan tampilan yang menggunakannya agar CSS hasil kompilasi tersedia saat aplikasi dijalankan atau di-deploy. Jangan masukkan `node_modules/` ke commit.
+Simpan perubahan pada `static/css/tailwind.css` bersama perubahan tampilan yang menggunakannya. Jangan masukkan `node_modules/` ke commit.
 
 ### Mengembangkan tampilan
 
@@ -125,8 +125,6 @@ Simpan perubahan pada `static/css/tailwind.css` bersama perubahan tampilan yang 
    ```
 
 3. Buka alamat lokal yang ditampilkan Django di browser. Setelah mengubah class Tailwind di template, muat ulang halaman untuk melihat hasilnya.
-4. Setelah selesai, hentikan mode watch dan server Django dengan menekan `Ctrl+C` pada masing-masing terminal.
-
 Gunakan class Tailwind langsung pada elemen HTML di template Django, misalnya `class="p-4 text-lg"`. Jika mengubah `tailwind.input.css` atau class pada template, jalankan `npm run tailwind:build` sebelum commit bila mode watch tidak sedang berjalan.
 
 Jika PowerShell menampilkan pesan bahwa `npm` tidak bisa dijalankan karena execution policy, gunakan `npm.cmd` sebagai pengganti `npm` pada perintah di atas, misalnya `npm.cmd ci` atau `npm.cmd run tailwind:build`.
