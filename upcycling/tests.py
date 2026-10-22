@@ -1,10 +1,14 @@
+from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
+
 from .forms import UpcyclingRequestForm
 from .models import UpcyclingRequest
 
+
 User = get_user_model()
+
 
 class UpcyclingRequestFormTests(SimpleTestCase):
     def setUp(self):
@@ -41,6 +45,21 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         self.assertFalse(form.is_valid())
         self.assertIn("quantity", form.errors)
 
+    def test_rejects_quantity_below_1(self):
+        data = self.valid_data.copy()
+        data["quantity"] = 0
+
+        form = UpcyclingRequestForm(data=data)
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("quantity", form.errors)
+
+
+class UpcyclingRequestAdminTests(SimpleTestCase):
+    def test_request_model_is_registered_in_admin(self):
+        self.assertIn(UpcyclingRequest, admin.site._registry)
+
+
 class UpcyclingRequestViewTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
@@ -62,34 +81,62 @@ class UpcyclingRequestViewTests(TestCase):
             "whatsapp": "081234567890",
         }
 
-    def make_request(self, user):
-        return UpcyclingRequest.objects.create(
-            user=user,
-            fabric="PARANG",
-            category="TAS",
-            product="TOTE_BAG",
-            quantity=1,
-            notes="",
-            delivery_method="DROP_OFF",
-            address="Depok",
-            whatsapp="081234567890",
-        )
+    def make_request(self, user, **overrides):
+        data = {
+            "fabric": "PARANG",
+            "category": "TAS",
+            "product": "TOTE_BAG",
+            "quantity": 1,
+            "notes": "",
+            "delivery_method": "DROP_OFF",
+            "address": "Depok",
+            "whatsapp": "081234567890",
+        }
+        data.update(overrides)
+        return UpcyclingRequest.objects.create(user=user, **data)
 
-    def test_user_can_create_request(self):
+    def test_user_can_create_request_and_is_redirected_to_success_page(self):
         self.client.force_login(self.user)
 
         response = self.client.post(
             reverse("upcycling:request_create"),
             self.form_data,
         )
+        upcycling_request = UpcyclingRequest.objects.get(user=self.user)
 
         self.assertRedirects(
             response,
-            reverse("upcycling:request_list"),
+            reverse("upcycling:request_success", args=[upcycling_request.pk]),
         )
-        self.assertTrue(
-            UpcyclingRequest.objects.filter(user=self.user).exists()
+        self.assertEqual(upcycling_request.status, "PENDING")
+
+    def test_user_can_view_success_page_for_own_request(self):
+        upcycling_request = self.make_request(self.user)
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_success", args=[upcycling_request.pk])
         )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["upcycling_request"],
+            upcycling_request,
+        )
+        self.assertEqual(
+            response.context["reference_code"],
+            f"RB-{str(upcycling_request.pk).split('-')[0].upper()}",
+        )
+
+    def test_user_cannot_view_another_users_success_page(self):
+        other_request = self.make_request(self.other_user)
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_success", args=[other_request.pk])
+        )
+
+        self.assertEqual(response.status_code, 404)
 
     def test_user_sees_only_own_requests(self):
         own_request = self.make_request(self.user)
@@ -98,55 +145,225 @@ class UpcyclingRequestViewTests(TestCase):
 
         response = self.client.get(reverse("upcycling:request_list"))
 
-        self.assertEqual(
-            list(response.context["requests"]),
-            [own_request],
-        )
+        self.assertEqual(list(response.context["requests"]), [own_request])
         self.assertNotIn(other_request, response.context["requests"])
+
+    def test_user_can_filter_requests_by_status_and_category(self):
+        self.make_request(self.user, status="PENDING")
+        matching_request = self.make_request(
+            self.user,
+            status="COMPLETED",
+            category="POUCH",
+            product="POUCH",
+        )
+        self.make_request(self.user, status="PROCESSING", category="TAS")
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_list"),
+            {"status": "COMPLETED", "category": "POUCH"},
+        )
+
+        self.assertEqual(list(response.context["requests"]), [matching_request])
+        self.assertEqual(response.context["selected_status"], "COMPLETED")
+        self.assertEqual(response.context["selected_category"], "POUCH")
+
+    def test_user_can_filter_ongoing_requests(self):
+        pending_request = self.make_request(self.user, status="PENDING")
+        processing_request = self.make_request(self.user, status="PROCESSING")
+        self.make_request(self.user, status="COMPLETED")
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_list"),
+            {"status": "ONGOING"},
+        )
+
+        self.assertCountEqual(
+            response.context["requests"],
+            [pending_request, processing_request],
+        )
+
+    def test_invalid_list_filters_are_ignored(self):
+        first_request = self.make_request(self.user)
+        second_request = self.make_request(self.user, category="POUCH", product="POUCH")
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_list"),
+            {"status": "INVALID", "category": "INVALID"},
+        )
+
+        self.assertCountEqual(
+            response.context["requests"],
+            [first_request, second_request],
+        )
+        self.assertEqual(response.context["selected_status"], "")
+        self.assertEqual(response.context["selected_category"], "")
 
     def test_user_cannot_open_another_users_request(self):
         other_request = self.make_request(self.other_user)
         self.client.force_login(self.user)
 
         response = self.client.get(
-            reverse(
-                "upcycling:request_detail",
-                args=[other_request.pk],
-            )
+            reverse("upcycling:request_detail", args=[other_request.pk])
         )
 
         self.assertEqual(response.status_code, 404)
 
-    def test_user_can_update_own_request(self):
+    def test_detail_timeline_matches_each_request_status(self):
+        self.client.force_login(self.user)
+        expected_states = {
+            "PENDING": ["done", "current", "upcoming", "upcoming"],
+            "PROCESSING": ["done", "done", "current", "upcoming"],
+            "COMPLETED": ["done", "done", "done", "done"],
+            "CANCELLED": ["done", "cancelled"],
+        }
+
+        for status, expected in expected_states.items():
+            with self.subTest(status=status):
+                upcycling_request = self.make_request(self.user, status=status)
+                response = self.client.get(
+                    reverse("upcycling:request_detail", args=[upcycling_request.pk])
+                )
+                states = [step["state"] for step in response.context["timeline_steps"]]
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(states, expected)
+
+    def test_user_can_update_own_pending_request_and_sees_toast(self):
         upcycling_request = self.make_request(self.user)
         self.client.force_login(self.user)
         data = self.form_data.copy()
         data["quantity"] = 2
 
         response = self.client.post(
-            reverse(
-                "upcycling:request_update",
-                args=[upcycling_request.pk],
-            ),
+            reverse("upcycling:request_update", args=[upcycling_request.pk]),
             data,
+            follow=True,
         )
 
         upcycling_request.refresh_from_db()
         self.assertEqual(upcycling_request.quantity, 2)
-        self.assertEqual(response.status_code, 302)
+        self.assertContains(response, "Permintaan berhasil diperbarui.")
 
-    def test_user_can_delete_own_request(self):
+    def test_user_can_open_edit_form_for_own_pending_request(self):
+        upcycling_request = self.make_request(self.user)
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_update", args=[upcycling_request.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["is_update"])
+        self.assertEqual(response.context["form"].instance, upcycling_request)
+
+    def test_user_cannot_update_request_after_review_begins(self):
+        upcycling_request = self.make_request(self.user, status="PROCESSING")
+        self.client.force_login(self.user)
+        data = self.form_data.copy()
+        data["quantity"] = 2
+
+        response = self.client.post(
+            reverse("upcycling:request_update", args=[upcycling_request.pk]),
+            data,
+            follow=True,
+        )
+
+        upcycling_request.refresh_from_db()
+        self.assertEqual(upcycling_request.quantity, 1)
+        self.assertContains(
+            response,
+            "Permintaan hanya bisa diedit saat masih menunggu tinjauan.",
+        )
+
+    def test_user_cannot_update_another_users_request(self):
+        other_request = self.make_request(self.other_user)
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("upcycling:request_update", args=[other_request.pk]),
+            self.form_data,
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_user_can_delete_own_pending_request_and_sees_toast(self):
         upcycling_request = self.make_request(self.user)
         self.client.force_login(self.user)
 
         response = self.client.post(
-            reverse(
-                "upcycling:request_delete",
-                args=[upcycling_request.pk],
-            )
+            reverse("upcycling:request_delete", args=[upcycling_request.pk]),
+            follow=True,
         )
 
-        self.assertEqual(response.status_code, 302)
         self.assertFalse(
             UpcyclingRequest.objects.filter(pk=upcycling_request.pk).exists()
         )
+        self.assertContains(response, "Permintaan berhasil dihapus.")
+
+    def test_user_can_open_delete_confirmation_for_own_pending_request(self):
+        upcycling_request = self.make_request(self.user)
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_delete", args=[upcycling_request.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["upcycling_request"], upcycling_request)
+
+    def test_user_cannot_delete_request_after_review_begins(self):
+        upcycling_request = self.make_request(self.user, status="PROCESSING")
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("upcycling:request_delete", args=[upcycling_request.pk]),
+            follow=True,
+        )
+
+        self.assertTrue(
+            UpcyclingRequest.objects.filter(pk=upcycling_request.pk).exists()
+        )
+        self.assertContains(
+            response,
+            "Permintaan hanya bisa dihapus saat masih menunggu tinjauan.",
+        )
+
+    def test_user_cannot_delete_another_users_request(self):
+        other_request = self.make_request(self.other_user)
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("upcycling:request_delete", args=[other_request.pk])
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_product_options_returns_products_for_category(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:product_options", args=["TAS"])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json(),
+            [
+                {"value": "TOTE_BAG", "label": "Tote Bag"},
+                {"value": "SLING_BAG", "label": "Sling Bag"},
+                {"value": "LAINNYA", "label": "Model lain"},
+            ],
+        )
+
+    def test_product_options_returns_empty_list_for_unknown_category(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:product_options", args=["UNKNOWN"])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), [])
