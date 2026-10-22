@@ -89,7 +89,7 @@
                     </span>
                     <h2 class="text-2xl font-bold">Pilih Kain</h2>
                 </div>
-                <p class="hidden text-sm italic text-[var(--button)] sm:block">Dari donasi Anda</p>
+                <p class="hidden text-sm italic text-[var(--brown-muted)] sm:block">Dari donasi Anda</p>
             </div>
 
             <fieldset class="space-y-3">
@@ -106,17 +106,17 @@
                                 <img src="{% static 'img/upcycling/motif-mega-mendung.png' %}" alt="" class="aspect-[1.8] w-full object-cover">
                             {% else %}
                                 <div class="grid aspect-[1.8] place-items-center bg-[#f0e2d5]">
-                                    <img src="{% static 'img/upcycling/mascot-question.png' %}" alt="" class="h-32 w-auto object-contain sm:h-40">
+                                    <img src="{% static 'img/upcycling/mascot-question.png' %}" alt="" class="h-40 w-auto object-contain sm:h-52">
                                 </div>
                             {% endif %}
-                            <span class="flex min-h-14 items-center justify-between gap-3 px-4 py-3 text-sm font-bold sm:text-base">
+                            <span class="flex min-h-14 items-center justify-between gap-3 px-4 py-3 text-base font-bold sm:text-lg">
                                 <span class="min-w-0">
                                     <span>{{ radio.choice_label }}</span>
                                     {% if radio.data.value == "NEW_DONATION" %}
-                                        <span class="block text-xs font-normal text-[var(--brown-dark)]">Belum ada di daftar? Donasikan dulu.</span>
+                                        <span class="block text-sm font-normal text-[var(--brown-muted)]">Belum ada di daftar? Donasikan dulu.</span>
                                     {% endif %}
                                 </span>
-                                <span class="shrink-0 rounded-md bg-[var(--brown)] px-3 py-1 text-xs font-medium text-[var(--cream-light)] group-has-[:checked]:bg-[var(--gold)] group-has-[:checked]:text-[var(--brown)]">
+                                <span class="shrink-0 rounded-md bg-[var(--brown)] px-3 py-1 text-sm font-medium text-[var(--cream-light)] group-has-[:checked]:bg-[var(--gold)] group-has-[:checked]:text-[var(--brown)]">
                                     <span class="hidden group-has-[:checked]:inline">Dipilih ✓</span>
                                     <span class="group-has-[:checked]:hidden">
                                         {% if radio.data.value == "NEW_DONATION" %}Donasi →{% else %}Pilih →{% endif %}
@@ -139,15 +139,15 @@
                     </span>
                     <h2 class="text-2xl font-bold">Pilih Produk</h2>
                 </div>
-                <p class="hidden text-sm italic text-[var(--button)] sm:block">Satu kategori, satu model</p>
+                <p class="hidden text-sm italic text-[var(--brown-muted)] sm:block">Satu kategori, satu model</p>
             </div>
-            <p class="text-sm text-[var(--brown-dark)]">Pilih kategori, lalu model yang paling Anda inginkan. Model lain bisa ditulis di catatan.</p>
+            <p class="text-base text-[var(--brown-muted)]">Pilih kategori, lalu model yang paling Anda inginkan. Model lain bisa ditulis di catatan.</p>
 
             <fieldset class="space-y-3">
                 <legend class="font-semibold">{{ form.category.label }} <span aria-hidden="true">*</span></legend>
                 <div class="flex flex-wrap gap-2 rounded-full border border-[var(--border)] bg-[var(--card)] p-2 shadow-sm sm:gap-3">
                     {% for radio in form.category %}
-                        <label data-summary-label="{{ radio.choice_label }}" class="cursor-pointer rounded-full px-4 py-2 text-sm transition hover:bg-[#f0e2d5] sm:px-6 sm:text-base [&:has(input:checked)]:bg-[var(--brown)] [&:has(input:checked)]:font-bold [&:has(input:checked)]:text-[var(--cream-light)] [&:has(input:focus-visible)]:outline [&:has(input:focus-visible)]:outline-2 [&:has(input:focus-visible)]:outline-[var(--gold)]">
+                        <label data-summary-label="{{ radio.choice_label }}" class="cursor-pointer rounded-full px-4 py-2 text-base transition hover:bg-[#f0e2d5] sm:px-6 sm:text-lg [&:has(input:checked)]:bg-[var(--brown)] [&:has(input:checked)]:font-bold [&:has(input:checked)]:text-[var(--cream-light)] [&:has(input:focus-visible)]:outline [&:has(input:focus-visible)]:outline-2 [&:has(input:focus-visible)]:outline-[var(--gold)]">
                             {{ radio.tag }}
                             <span>{{ radio.choice_label }}</span>
                         </label>
@@ -161,7 +161,7 @@
                 <label for="id_product" class="sr-only">{{ form.product.label }}</label>
                 {{ form.product }}
                 <div id="product-options" class="flex flex-wrap gap-2" role="group" aria-label="Pilihan model produk" aria-live="polite">
-                    <span class="text-sm text-[var(--brown-dark)]">Pilih kategori untuk melihat model.</span>
+                    <span class="text-base text-[var(--brown-muted)]">Pilih kategori untuk melihat model.</span>
                 </div>
                 {{ form.product.errors }}
             </fieldset>
@@ -176,9 +176,9 @@
                     </span>
                     <h2 class="text-2xl font-bold">Detail Permintaan</h2>
                 </div>
-                <p class="hidden text-sm italic text-[var(--button)] sm:block">Hampir selesai</p>
+                <p class="hidden text-sm italic text-[var(--brown-muted)] sm:block">Hampir selesai</p>
             </div>
-            <p class="text-sm text-[var(--brown-dark)]">Lengkapi detail agar tim kami bisa memproses permintaan Anda.</p>
+            <p class="text-base text-[var(--brown-muted)]">Lengkapi detail agar tim kami bisa memproses permintaan Anda.</p>
 
             <div class="grid gap-5 sm:grid-cols-2">
                 <div class="space-y-2">
@@ -218,7 +218,7 @@
 
         <div class="flex items-end gap-3 sm:gap-6">
             <aside class="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[#ecddce] p-4 sm:p-6">
-                <p class="text-xs font-bold uppercase tracking-[0.18em] text-[var(--button)]">Ringkasan Permintaan</p>
+                <p class="text-sm font-bold uppercase tracking-[0.18em] text-[var(--button)]">Ringkasan Permintaan</p>
                 <p class="mt-2 flex flex-wrap items-center gap-x-2 text-base font-bold sm:text-lg" aria-live="polite">
                     <span id="summary-fabric">Pilih kain</span>
                     <span aria-hidden="true">→</span>
@@ -226,14 +226,14 @@
                     <span aria-hidden="true">·</span>
                     <span id="summary-product">Pilih model</span>
                 </p>
-                <p class="mt-2 text-sm text-[var(--brown-dark)]">Poin Reward dan dampak Anda bertambah setelah kain kami terima.</p>
+                <p class="mt-2 text-base text-[var(--brown-muted)]">Poin Reward dan dampak Anda bertambah setelah kain kami terima.</p>
             </aside>
-            <img src="{% static 'img/upcycling/mascot-shirt.png' %}" alt="Maskot ReBatik membawa kain" class="hidden h-28 w-24 shrink-0 object-contain sm:block lg:h-36 lg:w-32">
+            <img src="{% static 'img/upcycling/mascot-shirt.png' %}" alt="Maskot ReBatik membawa kain" class="h-20 w-16 shrink-0 object-contain sm:h-28 sm:w-24 lg:h-36 lg:w-32">
         </div>
 
         <button
             type="submit"
-            class="upcycling-submit-button w-full rounded-xl py-3 text-lg font-bold text-[var(--brown)] transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]"
+            class="upcycling-submit-button inline-flex w-full items-center justify-center rounded-xl py-6 text-lg leading-none font-extrabold text-[var(--brown)] transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]"
         >
             {% if is_update %}Simpan Perubahan{% else %}Ajukan Upcycling →{% endif %}
         </button>

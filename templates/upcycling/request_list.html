@@ -139,9 +139,9 @@
             </div>
         {% else %}
             <div class="flex flex-col items-center gap-5 rounded-2xl border border-[var(--border)] bg-[#f3ebe1] px-5 py-10 text-center sm:gap-6 sm:px-10 sm:py-16">
-                <img src="{% static 'img/upcycling/mascot-shirt.png' %}" alt="Maskot ReBatik mengenakan batik" class="h-40 w-40 object-contain sm:h-48 sm:w-48">
+                <img src="{% static 'img/upcycling/mascot-crying.png' %}" alt="Maskot ReBatik menangis karena belum ada permintaan" class="h-40 w-40 object-contain sm:h-48 sm:w-48">
                 <h2 class="text-2xl font-bold sm:text-3xl">Belum ada permintaan</h2>
-                <p class="mx-auto max-w-xl text-[var(--brown-dark)]">Ubah kain tak terpakai menjadi karya baru dalam tiga langkah sederhana.</p>
+                <p class="mx-auto max-w-xl text-[var(--brown-muted)]">Ubah kain tak terpakai menjadi karya baru dalam tiga langkah sederhana.</p>
                 <a href="{% url 'upcycling:request_create' %}" class="rounded-lg bg-[var(--gold)] px-6 py-3 font-semibold text-[var(--brown)] shadow transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]">Mulai Upcycling →</a>
             </div>
         {% endif %}
