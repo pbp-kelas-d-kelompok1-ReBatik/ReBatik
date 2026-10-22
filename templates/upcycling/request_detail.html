@@ -17,6 +17,8 @@
             ← Permintaan Saya
         </a>
 
+        {% include "upcycling/_toast_messages.html" %}
+
         <div class="mt-6 flex flex-col gap-4 border-b border-[var(--border)] pb-5 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex flex-wrap items-center gap-3 sm:gap-5">
                 <h2 class="text-3xl font-bold sm:text-4xl">{{ upcycling_request.get_product_display }}</h2>
@@ -81,16 +83,24 @@
         </div>
 
         <div class="mt-7 flex flex-col gap-5 border-t border-[var(--border)] pt-5 sm:flex-row sm:items-center sm:justify-between">
-            <p class="text-sm text-[var(--brown-muted)]">Permintaan hanya bisa dibatalkan saat status Diajukan.</p>
+            <p class="text-sm text-[var(--brown-muted)]">
+                {% if upcycling_request.status == 'PENDING' %}
+                    Permintaan bisa diedit atau dihapus selama masih menunggu tinjauan.
+                {% else %}
+                    Permintaan tidak bisa diedit atau dihapus setelah mulai diproses.
+                {% endif %}
+            </p>
             <button type="button" disabled title="Kontak WhatsApp tim belum tersedia" class="min-h-12 w-full cursor-not-allowed rounded-xl border-2 border-[var(--brown)] px-5 py-3 font-semibold text-[var(--brown)] opacity-60 sm:w-auto">
                 Hubungi Tim via WhatsApp
             </button>
         </div>
 
-        <div class="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-[var(--brown-muted)]">
-            <a href="{% url 'upcycling:request_update' upcycling_request.pk %}" class="underline underline-offset-4 hover:text-[var(--brown)]">Edit permintaan</a>
-            <a href="{% url 'upcycling:request_delete' upcycling_request.pk %}" class="underline underline-offset-4 hover:text-[var(--brown)]">Hapus permintaan</a>
-        </div>
+        {% if upcycling_request.status == 'PENDING' %}
+            <div class="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-[var(--brown-muted)]">
+                <a href="{% url 'upcycling:request_update' upcycling_request.pk %}" class="underline underline-offset-4 hover:text-[var(--brown)]">Edit permintaan</a>
+                <a href="{% url 'upcycling:request_delete' upcycling_request.pk %}" class="underline underline-offset-4 hover:text-[var(--brown)]">Hapus permintaan</a>
+            </div>
+        {% endif %}
     </div>
 </section>
 {% endblock %}

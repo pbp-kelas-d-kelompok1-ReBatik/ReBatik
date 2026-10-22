@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import JsonResponse
@@ -49,7 +50,10 @@ def request_create(request):
             upcycling_request = form.save(commit=False)
             upcycling_request.user = request.user
             upcycling_request.save()
-            return redirect("upcycling:request_list")
+            return redirect(
+                "upcycling:request_success",
+                pk=upcycling_request.pk,
+            )
     else:
         form = UpcyclingRequestForm()
 
@@ -58,6 +62,25 @@ def request_create(request):
         "upcycling/request_form.html",
         {"form": form},
     )
+
+
+@login_required
+def request_success(request, pk):
+    upcycling_request = get_object_or_404(
+        UpcyclingRequest,
+        pk=pk,
+        user=request.user,
+    )
+
+    return render(
+        request,
+        "upcycling/request_success.html",
+        {
+            "upcycling_request": upcycling_request,
+            "reference_code": f"RB-{str(upcycling_request.pk).split('-')[0].upper()}",
+        },
+    )
+
 
 @login_required
 def request_detail(request, pk):
@@ -121,6 +144,13 @@ def request_update(request, pk):
         user=request.user,
     )
 
+    if upcycling_request.status != "PENDING":
+        messages.info(
+            request,
+            "Permintaan hanya bisa diedit saat masih menunggu tinjauan.",
+        )
+        return redirect("upcycling:request_detail", pk=upcycling_request.pk)
+
     if request.method == "POST":
         form = UpcyclingRequestForm(
             request.POST,
@@ -128,6 +158,7 @@ def request_update(request, pk):
         )
         if form.is_valid():
             form.save()
+            messages.success(request, "Permintaan berhasil diperbarui.")
             return redirect(
                 "upcycling:request_detail",
                 pk=upcycling_request.pk,
@@ -150,8 +181,16 @@ def request_delete(request, pk):
         user=request.user,
     )
 
+    if upcycling_request.status != "PENDING":
+        messages.info(
+            request,
+            "Permintaan hanya bisa dihapus saat masih menunggu tinjauan.",
+        )
+        return redirect("upcycling:request_detail", pk=upcycling_request.pk)
+
     if request.method == "POST":
         upcycling_request.delete()
+        messages.success(request, "Permintaan berhasil dihapus.")
         return redirect("upcycling:request_list")
 
     return render(

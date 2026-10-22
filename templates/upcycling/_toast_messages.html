@@ -1,0 +1,18 @@
+{% if messages %}
+    <div class="fixed right-4 top-20 z-[110] flex w-[calc(100%-2rem)] max-w-sm flex-col gap-3" aria-live="polite" aria-relevant="additions text" aria-atomic="false">
+        {% for message in messages %}
+            <div data-upcycling-toast class="flex items-start gap-3 rounded-xl border-2 border-[var(--upcycling-accent)] bg-[var(--upcycling-surface)] p-4 text-[var(--brown)] shadow-xl transition-[opacity,transform] duration-200 ease-out" role="status">
+                <span class="grid size-7 shrink-0 place-items-center rounded-full bg-[var(--upcycling-accent)] font-bold" aria-hidden="true">✓</span>
+                <p class="flex-1 pt-1 font-semibold">{{ message }}</p>
+            </div>
+        {% endfor %}
+    </div>
+    <script>
+        document.querySelectorAll("[data-upcycling-toast]").forEach((toast) => {
+            window.setTimeout(() => {
+                toast.classList.add("translate-y-2", "opacity-0");
+                window.setTimeout(() => toast.remove(), 200);
+            }, 5000);
+        });
+    </script>
+{% endif %}
