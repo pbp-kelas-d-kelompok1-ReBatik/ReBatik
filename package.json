@@ -1,0 +1,30 @@
+{
+  "name": "rebatik",
+  "version": "1.0.0",
+  "description": "ReBatik adalah platform yang menghadirkan konsep upcycling dengan mengolah pakaian dan kain yang sudah tidak terpakai menjadi karya baru melalui sentuhan seni dan budaya batik Nusantara. Dengan memadukan kreativitas dan warisan budaya Indonesia, ReBatik menghadirkan karya yang tidak hanya ramah lingkungan, tetapi juga memiliki nilai estetika, budaya, dan ekonomis.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tailwind:build": "tailwindcss -i ./static/css/tailwind.input.css -o ./static/css/tailwind.css --minify",
+    "tailwind:watch": "tailwindcss -i ./static/css/tailwind.input.css -o ./static/css/tailwind.css --watch"
+  },
+  "overrides": {
+    "@parcel/watcher": "2.6.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pbp-kelas-d-kelompok1-ReBatik/ReBatik.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/pbp-kelas-d-kelompok1-ReBatik/ReBatik/issues"
+  },
+  "homepage": "https://github.com/pbp-kelas-d-kelompok1-ReBatik/ReBatik#readme",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  }
+}
