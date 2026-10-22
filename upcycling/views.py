@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import JsonResponse
+from django.utils import timezone
 
 from .forms import UpcyclingRequestForm
 from .models import UpcyclingRequest
@@ -65,10 +66,50 @@ def request_detail(request, pk):
         pk=pk,
         user=request.user,
     )
+
+    status = upcycling_request.status
+    submitted_date = timezone.localtime(
+        upcycling_request.created_at
+    ).strftime("%d/%m/%Y")
+    timeline_steps = [
+        {"label": f"Diajukan · {submitted_date}", "state": "done"},
+    ]
+
+    if status == "PENDING":
+        timeline_steps.extend(
+            [
+                {"label": "Menunggu tinjauan", "state": "current"},
+                {"label": "Diproses", "state": "upcoming"},
+                {"label": "Selesai · estimasi 2 minggu", "state": "upcoming"},
+            ]
+        )
+    elif status == "PROCESSING":
+        timeline_steps.extend(
+            [
+                {"label": "Ditinjau", "state": "done"},
+                {"label": "Diproses · sedang berjalan", "state": "current"},
+                {"label": "Selesai · estimasi 2 minggu", "state": "upcoming"},
+            ]
+        )
+    elif status == "COMPLETED":
+        timeline_steps.extend(
+            [
+                {"label": "Ditinjau", "state": "done"},
+                {"label": "Diproses", "state": "done"},
+                {"label": "Selesai", "state": "done"},
+            ]
+        )
+    else:
+        timeline_steps.append({"label": "Dibatalkan", "state": "cancelled"})
+
     return render(
         request,
         "upcycling/request_detail.html",
-        {"upcycling_request": upcycling_request},
+        {
+            "upcycling_request": upcycling_request,
+            "reference_code": f"RB-{str(upcycling_request.pk).split('-')[0].upper()}",
+            "timeline_steps": timeline_steps,
+        },
     )
 
 

@@ -21,6 +21,11 @@
     --button-hover: #7D422D;
     --card: #FFF9F1;
     --border: #E2CDB9;
+    --upcycling-panel: #F3EBE1;
+    --upcycling-surface: #FCF9F5;
+    --upcycling-accent: #C9965F;
+    --upcycling-status-processing: #F3DCC0;
+    --upcycling-status-processing-text: #6A3B12;
 }
 
 * {
