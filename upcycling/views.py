@@ -9,6 +9,7 @@ from .models import UpcyclingRequest
 @login_required
 def request_list(request):
     requests = UpcyclingRequest.objects.filter(user=request.user)
+    has_any_requests = requests.exists()
 
     selected_status = request.GET.get("status", "")
     selected_category = request.GET.get("category", "")
@@ -16,7 +17,9 @@ def request_list(request):
     valid_statuses = dict(UpcyclingRequest.STATUS_CHOICES)
     valid_categories = dict(UpcyclingRequest.CATEGORY_CHOICES)
 
-    if selected_status in valid_statuses:
+    if selected_status == "ONGOING":
+        requests = requests.filter(status__in=["PENDING", "PROCESSING"])
+    elif selected_status in valid_statuses:
         requests = requests.filter(status=selected_status)
     else:
         selected_status = ""
@@ -32,6 +35,7 @@ def request_list(request):
         "category_options": UpcyclingRequest.CATEGORY_CHOICES,
         "selected_status": selected_status,
         "selected_category": selected_category,
+        "has_any_requests": has_any_requests,
     }
     return render(request, "upcycling/request_list.html", context)
 
