@@ -1,11 +1,9 @@
 from django import forms
 from .models import UpcyclingRequest
 
-INPUT_CLASSES = (
-    "block w-full rounded-xl border border-[var(--border)] "
-    "bg-[var(--card)] px-4 py-3 text-[var(--brown)] "
-    "focus:border-[var(--gold)] focus:outline-none "
-    "focus:ring-2 focus:ring-[var(--gold)]"
+FIELD_CLASSES = (
+    "block w-full px-4 py-3 text-[var(--brown)] "
+    "focus:outline-none focus:ring-2 focus:ring-[var(--gold)]"
 )
 
 
@@ -38,7 +36,7 @@ class UpcyclingRequestForm(forms.ModelForm):
             "category": "Kategori Produk",
             "product": "Model Produk",
             "quantity": "Jumlah Produk",
-            "notes": "Deskripsi dan Catatan Khusus",
+            "notes": "Deskripsi dan Catatan Khusus (opsional)",
             "delivery_method": "Metode Pengiriman Kain",
             "address": "Alamat / Lokasi",
             "whatsapp": "No. WhatsApp",
@@ -46,28 +44,34 @@ class UpcyclingRequestForm(forms.ModelForm):
         widgets = {
             "fabric": forms.RadioSelect(attrs={"class": "sr-only"}),
             "category": forms.RadioSelect(attrs={"class": "sr-only"}),
-            "product": forms.Select(attrs={"class": INPUT_CLASSES}),
+            # The product chips are rendered in the template; retain this
+            # select as the submitted form value.
+            "product": forms.Select(attrs={"class": "sr-only"}),
             "quantity": forms.NumberInput(
-                attrs={"min": 1, "max": 20, "class": INPUT_CLASSES}
+                attrs={
+                    "min": 1,
+                    "max": 20,
+                    "class": f"{FIELD_CLASSES} upcycling-field upcycling-input",
+                }
             ),
             "delivery_method": forms.RadioSelect(attrs={"class": "sr-only"}),
             "notes": forms.Textarea(
                 attrs={
                     "rows": 4,
-                    "class": INPUT_CLASSES,
+                    "class": f"{FIELD_CLASSES} upcycling-field upcycling-textarea",
                     "placeholder": "Ceritakan model, warna, ukuran, atau catatan khusus...",
                 }
             ),
             "address": forms.TextInput(
                 attrs={
-                    "class": INPUT_CLASSES,
+                    "class": f"{FIELD_CLASSES} upcycling-field upcycling-input",
                     "placeholder": "Alamat penjemputan (kurir) atau lokasi drop-off",
                 }
             ),
             "whatsapp": forms.TextInput(
                 attrs={
                     "type": "tel",
-                    "class": INPUT_CLASSES,
+                    "class": f"{FIELD_CLASSES} upcycling-field upcycling-input",
                     "placeholder": "Contoh: 0812xxxxxxx",
                 }
             ),

@@ -1,74 +1,128 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<section class="px-4 py-10 sm:py-14">
-    <header class="mx-auto mb-8 max-w-4xl text-center text-[var(--cream-light)]">
-        <p class="text-xs uppercase tracking-[0.3em]">
-            Upcycle · Culture · Value
-        </p>
+<section class="relative overflow-hidden px-4 pb-10 pt-8 sm:px-6 sm:pt-10">
+    <img
+        src="{% static 'img/upcycling/cloud-left.png' %}"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute left-0 top-28 w-20 -translate-x-1/3 sm:w-32 lg:w-40"
+    >
+    <img
+        src="{% static 'img/upcycling/cloud-right.png' %}"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute right-0 top-20 w-20 translate-x-1/4 sm:w-32 lg:w-40"
+    >
+    <img
+        src="{% static 'img/upcycling/cloud-left.png' %}"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute right-0 top-[30rem] w-20 translate-x-1/2 sm:w-28"
+    >
 
+    <header class="relative mx-auto mb-8 max-w-4xl text-center text-[var(--cream-light)]">
+        <p class="text-xs uppercase tracking-[0.3em]">Upcycle · Culture · Value</p>
         <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">
-            {% if is_update %}
-                Edit Upcycling Request
-            {% else %}
-                Upcycling Request
-            {% endif %}
+            {% if is_update %}Edit Upcycling Request{% else %}Upcycling Request{% endif %}
         </h1>
-
         <p class="mt-3 text-base sm:text-lg">
             Ubah kain tak terpakai menjadi karya baru dalam tiga langkah sederhana.
         </p>
-
-        <a
-            href="#upcycling-form"
-            class="mt-8 inline-block rounded-full bg-[var(--brown)] px-6 py-2 text-[var(--cream-light)] shadow"
-        >
-            ↓ Explore
-        </a>
     </header>
+
+    <div class="relative mx-auto mb-6 flex max-w-6xl justify-center">
+        <a
+            href="{% url 'upcycling:request_list' %}"
+            class="inline-flex items-center rounded-full border-2 border-[var(--gold)] bg-[var(--brown)] px-6 py-2 text-[var(--cream-light)] shadow-lg transition hover:bg-[var(--button-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cream-light)]"
+        >
+            ← Permintaan Saya
+        </a>
+    </div>
+
+    <nav aria-label="Tahapan permintaan" class="mx-auto mb-8 flex max-w-3xl items-center justify-center gap-3 rounded-full border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm text-[var(--brown)] shadow-md sm:gap-6 sm:px-8 sm:text-base">
+        <a href="#pilih-kain" class="flex items-center gap-2 font-semibold">
+            <span class="relative grid size-8 place-items-center overflow-hidden rounded-full text-[var(--cream-light)]">
+                <img src="{% static 'img/upcycling/b770b.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.086]">
+                <span class="relative">1</span>
+            </span>
+            Kain
+        </a>
+        <span aria-hidden="true" class="relative size-2 overflow-hidden">
+            <img src="{% static 'img/upcycling/ed3a2.svg' %}" alt="" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.125]">
+        </span>
+        <a href="#pilih-produk" class="flex items-center gap-2">
+            <span class="relative grid size-8 place-items-center overflow-hidden rounded-full">
+                <img src="{% static 'img/upcycling/f6dca.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.086]">
+                <span class="relative">2</span>
+            </span>
+            Produk
+        </a>
+        <span aria-hidden="true" class="relative size-2 overflow-hidden">
+            <img src="{% static 'img/upcycling/ed3a2.svg' %}" alt="" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.125]">
+        </span>
+        <a href="#detail-permintaan" class="flex items-center gap-2">
+            <span class="relative grid size-8 place-items-center overflow-hidden rounded-full">
+                <img src="{% static 'img/upcycling/f6dca.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.086]">
+                <span class="relative">3</span>
+            </span>
+            Detail
+        </a>
+    </nav>
 
     <form
         method="post"
         id="upcycling-form"
-        class="
-            mx-auto max-w-6xl rounded-3xl
-            bg-[var(--cream-light)] p-6 text-[var(--brown)] shadow-xl
-            space-y-5 sm:p-10
-            [_label]:font-semibold
-            [&_ul.errorlist]:text-sm [&_ul.errorlist]:font-semibold
-            [&_ul.errorlist]:text-[var(--button-hover)]
-        "
+        class="mx-auto max-w-6xl space-y-8 rounded-3xl border border-[var(--border)] bg-[var(--cream-light)] p-5 text-[var(--brown)] shadow-2xl sm:p-8 lg:p-10 [&_label]:font-semibold [&_ul.errorlist]:mt-1 [&_ul.errorlist]:text-sm [&_ul.errorlist]:font-semibold [&_ul.errorlist]:text-[var(--button-hover)]"
         data-product-options-url="{% url 'upcycling:product_options' 'TAS' %}"
     >
         {% csrf_token %}
         {{ form.non_field_errors }}
 
-        <section class="space-y-4">
-            <div class="flex items-center gap-3 border-b border-[var(--border)] pb-3">
-                <span class="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--brown)] font-bold text-[var(--cream-light)]">
-                    1
-                </span>
-                <h2 class="text-2xl font-bold">Pilih Kain</h2>
+        <section id="pilih-kain" class="scroll-mt-8 space-y-4">
+            <div class="flex items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
+                <div class="flex items-center gap-3">
+                    <span class="relative grid size-10 shrink-0 place-items-center overflow-hidden rounded-full font-bold text-[var(--cream-light)]">
+                        <img src="{% static 'img/upcycling/0b3ed.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.097]">
+                        <span class="relative">1</span>
+                    </span>
+                    <h2 class="text-2xl font-bold">Pilih Kain</h2>
+                </div>
+                <p class="hidden text-sm italic text-[var(--button)] sm:block">Dari donasi Anda</p>
             </div>
+
             <fieldset class="space-y-3">
-                <legend class="font-semibold">{{ form.fabric.label }}</legend>
+                <legend class="font-semibold">{{ form.fabric.label }} <span aria-hidden="true">*</span></legend>
                 <div class="grid gap-4 sm:grid-cols-2">
                     {% for radio in form.fabric %}
-                        <label
-                            class="
-                                flex cursor-pointer items-center gap-3 rounded-xl
-                                border border-[var(--border)] bg-[var(--card)] p-4
-                                transition hover:border-[var(--gold)]
-                                [&:has(input:checked)]:border-[var(--gold)]
-                                [&:has(input:checked)]:ring-2
-                                [&:has(input:checked)]:ring-[var(--gold)]
-                                [&:has(input:focus-visible)]:outline
-                                [&:has(input:focus-visible)]:outline-2
-                                [&:has(input:focus-visible)]:outline-[var(--brown)]
-                            "
-                        >
+                        <label data-summary-label="{{ radio.choice_label }}" class="group relative flex cursor-pointer flex-col overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-md transition hover:-translate-y-0.5 hover:shadow-lg [&:has(input:checked)]:border-2 [&:has(input:checked)]:border-[var(--button)] [&:has(input:focus-visible)]:outline [&:has(input:focus-visible)]:outline-2 [&:has(input:focus-visible)]:outline-offset-2 [&:has(input:focus-visible)]:outline-[var(--brown)]">
                             {{ radio.tag }}
-                            <span>{{ radio.choice_label }}</span>
+                            {% if radio.data.value == "PARANG" %}
+                                <img src="{% static 'img/upcycling/motif-parang.png' %}" alt="" class="aspect-[1.8] w-full object-cover">
+                            {% elif radio.data.value == "KAWUNG" %}
+                                <img src="{% static 'img/upcycling/motif-kawung.png' %}" alt="" class="aspect-[1.8] w-full object-cover">
+                            {% elif radio.data.value == "MEGA_MENDUNG" %}
+                                <img src="{% static 'img/upcycling/motif-mega-mendung.png' %}" alt="" class="aspect-[1.8] w-full object-cover">
+                            {% else %}
+                                <div class="grid aspect-[1.8] place-items-center bg-[#f0e2d5]">
+                                    <img src="{% static 'img/upcycling/mascot-question.png' %}" alt="" class="h-32 w-auto object-contain sm:h-40">
+                                </div>
+                            {% endif %}
+                            <span class="flex min-h-14 items-center justify-between gap-3 px-4 py-3 text-sm font-bold sm:text-base">
+                                <span class="min-w-0">
+                                    <span>{{ radio.choice_label }}</span>
+                                    {% if radio.data.value == "NEW_DONATION" %}
+                                        <span class="block text-xs font-normal text-[var(--brown-dark)]">Belum ada di daftar? Donasikan dulu.</span>
+                                    {% endif %}
+                                </span>
+                                <span class="shrink-0 rounded-md bg-[var(--brown)] px-3 py-1 text-xs font-medium text-[var(--cream-light)] group-has-[:checked]:bg-[var(--gold)] group-has-[:checked]:text-[var(--brown)]">
+                                    <span class="hidden group-has-[:checked]:inline">Dipilih ✓</span>
+                                    <span class="group-has-[:checked]:hidden">
+                                        {% if radio.data.value == "NEW_DONATION" %}Donasi →{% else %}Pilih →{% endif %}
+                                    </span>
+                                </span>
+                            </span>
                         </label>
                     {% endfor %}
                 </div>
@@ -76,87 +130,72 @@
             </fieldset>
         </section>
 
-        <section class="space-y-4">
-            <div class="flex items-center gap-3 border-b border-[var(--border)] pb-3">
-                <span class="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--brown)] font-bold text-[var(--cream-light)]">
-                    2
-                </span>
-                <h2 class="text-2xl font-bold">Pilih Produk</h2>
-            </div>
-            <div class="grid gap-5 sm:grid-cols-2">
-                <fieldset class="space-y-3 sm:col-span-2">
-                    <legend class="font-semibold">{{ form.category.label }}</legend>
-
-                    <div class="flex flex-wrap gap-3">
-                        {% for radio in form.category %}
-                            <label
-                                class="
-                                    inline-flex cursor-pointer items-center gap-2 rounded-full
-                                    border border-[var(--border)] bg-[var(--card)]
-                                    px-5 py-3 text-[var(--brown)] transition
-                                    hover:border-[var(--gold)]
-                                    [&:has(input:checked)]:border-[var(--brown)]
-                                    [&:has(input:checked)]:bg-[var(--brown)]
-                                    [&:has(input:checked)]:text-[var(--cream-light)]
-                                    [&:has(input:focus-visible)]:outline
-                                    [&:has(input:focus-visible)]:outline-2
-                                    [&:has(input:focus-visible)]:outline-[var(--gold)]
-                                "
-                            >
-                                {{ radio.tag }}
-                                <span>{{ radio.choice_label }}</span>
-                            </label>
-                        {% endfor %}
-                    </div>
-
-                    {{ form.category.errors }}
-                </fieldset>
-
-                <div class="space-y-3 sm:col-span-2">
-                    {{ form.product.label_tag }}
-                    {{ form.product }}
-                    {{ form.product.errors }}
+        <section id="pilih-produk" class="scroll-mt-8 space-y-4 border-t border-[var(--border)] pt-7">
+            <div class="flex items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
+                <div class="flex items-center gap-3">
+                    <span class="relative grid size-10 shrink-0 place-items-center overflow-hidden rounded-full font-bold text-[var(--cream-light)]">
+                        <img src="{% static 'img/upcycling/0b3ed.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.097]">
+                        <span class="relative">2</span>
+                    </span>
+                    <h2 class="text-2xl font-bold">Pilih Produk</h2>
                 </div>
+                <p class="hidden text-sm italic text-[var(--button)] sm:block">Satu kategori, satu model</p>
             </div>
+            <p class="text-sm text-[var(--brown-dark)]">Pilih kategori, lalu model yang paling Anda inginkan. Model lain bisa ditulis di catatan.</p>
+
+            <fieldset class="space-y-3">
+                <legend class="font-semibold">{{ form.category.label }} <span aria-hidden="true">*</span></legend>
+                <div class="flex flex-wrap gap-2 rounded-full border border-[var(--border)] bg-[var(--card)] p-2 shadow-sm sm:gap-3">
+                    {% for radio in form.category %}
+                        <label data-summary-label="{{ radio.choice_label }}" class="cursor-pointer rounded-full px-4 py-2 text-sm transition hover:bg-[#f0e2d5] sm:px-6 sm:text-base [&:has(input:checked)]:bg-[var(--brown)] [&:has(input:checked)]:font-bold [&:has(input:checked)]:text-[var(--cream-light)] [&:has(input:focus-visible)]:outline [&:has(input:focus-visible)]:outline-2 [&:has(input:focus-visible)]:outline-[var(--gold)]">
+                            {{ radio.tag }}
+                            <span>{{ radio.choice_label }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+                {{ form.category.errors }}
+            </fieldset>
+
+            <fieldset class="space-y-3">
+                <legend class="font-semibold">{{ form.product.label }} <span aria-hidden="true">*</span></legend>
+                <label for="id_product" class="sr-only">{{ form.product.label }}</label>
+                {{ form.product }}
+                <div id="product-options" class="flex flex-wrap gap-2" role="group" aria-label="Pilihan model produk" aria-live="polite">
+                    <span class="text-sm text-[var(--brown-dark)]">Pilih kategori untuk melihat model.</span>
+                </div>
+                {{ form.product.errors }}
+            </fieldset>
         </section>
 
-        <section class="space-y-4">
-            <div class="flex items-center gap-3 border-b border-[var(--border)] pb-3">
-                <span class="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--brown)] font-bold text-[var(--cream-light)]">
-                    3
-                </span>
-                <h2 class="text-2xl font-bold">Detail Permintaan</h2>
+        <section id="detail-permintaan" class="scroll-mt-8 space-y-4 border-t border-[var(--border)] pt-7">
+            <div class="flex items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
+                <div class="flex items-center gap-3">
+                    <span class="relative grid size-10 shrink-0 place-items-center overflow-hidden rounded-full font-bold text-[var(--cream-light)]">
+                        <img src="{% static 'img/upcycling/0b3ed.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.097]">
+                        <span class="relative">3</span>
+                    </span>
+                    <h2 class="text-2xl font-bold">Detail Permintaan</h2>
+                </div>
+                <p class="hidden text-sm italic text-[var(--button)] sm:block">Hampir selesai</p>
             </div>
+            <p class="text-sm text-[var(--brown-dark)]">Lengkapi detail agar tim kami bisa memproses permintaan Anda.</p>
+
             <div class="grid gap-5 sm:grid-cols-2">
                 <div class="space-y-2">
-                    {{ form.quantity.label_tag }}
+                    {{ form.quantity.label_tag }} <span aria-hidden="true">*</span>
                     {{ form.quantity }}
                     {{ form.quantity.errors }}
                 </div>
                 <fieldset class="space-y-2">
-                    <legend class="font-semibold">{{ form.delivery_method.label }}</legend>
-                    <div class="grid grid-cols-2 gap-3">
+                    <legend class="font-semibold">{{ form.delivery_method.label }} <span aria-hidden="true">*</span></legend>
+                    <div class="grid grid-cols-2 gap-2 sm:gap-3">
                         {% for radio in form.delivery_method %}
-                            <label
-                                class="
-                                    flex min-h-12 cursor-pointer items-center justify-center gap-2
-                                    rounded-xl border border-[var(--border)] bg-[var(--card)]
-                                    px-4 py-3 text-[var(--brown)] transition
-                                    hover:border-[var(--gold)]
-                                    [&:has(input:checked)]:border-[var(--brown)]
-                                    [&:has(input:checked)]:bg-[var(--brown)]
-                                    [&:has(input:checked)]:text-[var(--cream-light)]
-                                    [&:has(input:focus-visible)]:outline
-                                    [&:has(input:focus-visible)]:outline-2
-                                    [&:has(input:focus-visible)]:outline-[var(--gold)]
-                                "
-                            >
+                            <label class="upcycling-delivery-option flex min-h-12 cursor-pointer items-center justify-center rounded-xl px-3 py-3 text-[var(--brown)] [&:has(input:checked)]:text-[var(--cream-light)] [&:has(input:focus-visible)]:outline [&:has(input:focus-visible)]:outline-2 [&:has(input:focus-visible)]:outline-[var(--gold)]">
                                 {{ radio.tag }}
                                 <span>{{ radio.choice_label }}</span>
                             </label>
                         {% endfor %}
                     </div>
-
                     {{ form.delivery_method.errors }}
                 </fieldset>
                 <div class="space-y-2 sm:col-span-2">
@@ -165,63 +204,46 @@
                     {{ form.notes.errors }}
                 </div>
                 <div class="space-y-2 sm:col-span-2">
-                    {{ form.address.label_tag }}
+                    {{ form.address.label_tag }} <span aria-hidden="true">*</span>
                     {{ form.address }}
                     {{ form.address.errors }}
                 </div>
                 <div class="space-y-2 sm:col-span-2">
-                    {{ form.whatsapp.label_tag }}
+                    {{ form.whatsapp.label_tag }} <span aria-hidden="true">*</span>
                     {{ form.whatsapp }}
                     {{ form.whatsapp.errors }}
                 </div>
             </div>
         </section>
-        <aside class="rounded-2xl border border-[var(--border)] bg-[var(--cream)] p-5">
-            <p class="text-xs font-bold uppercase tracking-widest text-[var(--button)]">
-                Ringkasan Permintaan
-            </p>
 
-            <p
-                class="mt-3 flex flex-wrap items-center gap-2 text-lg font-semibold"
-                aria-live="polite"
-            >
-                <span id="summary-fabric">Pilih kain</span>
-                <span aria-hidden="true">→</span>
-                <span id="summary-category">Pilih kategori</span>
-                <span aria-hidden="true">·</span>
-                <span id="summary-product">Pilih model</span>
-            </p>
+        <div class="flex items-end gap-3 sm:gap-6">
+            <aside class="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[#ecddce] p-4 sm:p-6">
+                <p class="text-xs font-bold uppercase tracking-[0.18em] text-[var(--button)]">Ringkasan Permintaan</p>
+                <p class="mt-2 flex flex-wrap items-center gap-x-2 text-base font-bold sm:text-lg" aria-live="polite">
+                    <span id="summary-fabric">Pilih kain</span>
+                    <span aria-hidden="true">→</span>
+                    <span id="summary-category">Pilih kategori</span>
+                    <span aria-hidden="true">·</span>
+                    <span id="summary-product">Pilih model</span>
+                </p>
+                <p class="mt-2 text-sm text-[var(--brown-dark)]">Poin Reward dan dampak Anda bertambah setelah kain kami terima.</p>
+            </aside>
+            <img src="{% static 'img/upcycling/mascot-shirt.png' %}" alt="Maskot ReBatik membawa kain" class="hidden h-28 w-24 shrink-0 object-contain sm:block lg:h-36 lg:w-32">
+        </div>
 
-            <p class="mt-2 text-sm">
-                Permintaan ini akan ditinjau oleh tim ReBatik.
-            </p>
-        </aside>
         <button
             type="submit"
-            class="
-                mt-2 w-full rounded-xl bg-[var(--button)] py-3
-                font-bold text-[var(--cream-light)] shadow transition
-                hover:bg-[var(--button-hover)]
-                focus-visible:outline focus-visible:outline-2
-                focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]
-            "
+            class="upcycling-submit-button w-full rounded-xl py-3 text-lg font-bold text-[var(--brown)] transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]"
         >
-            {% if is_update %}
-                Simpan Perubahan
-            {% else %}
-                Ajukan Permintaan
-            {% endif %}
+            {% if is_update %}Simpan Perubahan{% else %}Ajukan Upcycling →{% endif %}
         </button>
-    </form>
+        <p class="text-center text-sm text-[var(--brown-dark)]">
+            Tim ReBatik akan meninjau permintaan Anda dan menghubungi Anda lewat kontak di atas.
+        </p>
 
-    <p class="mx-auto mt-5 max-w-6xl text-center text-[var(--brown)]">
-        <a
-            class="font-semibold underline decoration-[var(--gold)] underline-offset-4 hover:text-[var(--button-hover)]"
-            href="{% url 'upcycling:request_list' %}"
-        >
-            Kembali ke daftar
-        </a>
-    </p>
+        <img src="{% static 'img/upcycling/cloud-right.png' %}" alt="" aria-hidden="true" class="pointer-events-none absolute bottom-4 left-4 w-20 sm:w-28">
+        <img src="{% static 'img/upcycling/floral-step3.png' %}" alt="" aria-hidden="true" class="pointer-events-none absolute bottom-0 right-0 w-24 sm:w-36">
+    </form>
 </section>
 
 <script>
@@ -230,28 +252,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const categoryFields = form.querySelectorAll('[name="category"]');
     const fabricFields = form.querySelectorAll('[name="fabric"]');
     const productField = document.getElementById("id_product");
+    const productOptions = document.getElementById("product-options");
     const urlTemplate = form.dataset.productOptionsUrl;
     const fabricSummary = document.getElementById("summary-fabric");
     const categorySummary = document.getElementById("summary-category");
     const productSummary = document.getElementById("summary-product");
-
     function getRadioLabel(name, fallback) {
-        const selectedRadio = form.querySelector(
-            `input[name="${name}"]:checked`
-        );
+        const selectedRadio = form.querySelector(`input[name="${name}"]:checked`);
         const label = selectedRadio?.closest("label");
-        const labelText = label?.querySelector("span")?.textContent.trim();
-
-        return labelText || fallback;
+        return label?.dataset.summaryLabel || label?.querySelector("span")?.textContent.trim() || fallback;
     }
 
     function updateSummary() {
         fabricSummary.textContent = getRadioLabel("fabric", "Pilih kain");
-        categorySummary.textContent = getRadioLabel(
-            "category",
-            "Pilih kategori"
-        );
-
+        categorySummary.textContent = getRadioLabel("category", "Pilih kategori");
         const selectedProduct = productField.selectedOptions[0];
         productSummary.textContent = productField.value && selectedProduct
             ? selectedProduct.textContent
@@ -259,63 +273,78 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function getSelectedCategory() {
-        const checkedRadio = form.querySelector(
-            'input[name="category"]:checked'
-        );
-
-        if (checkedRadio) {
-            return checkedRadio.value;
-        }
-
-        const select = form.querySelector('select[name="category"]');
-        return select ? select.value : "";
+        return form.querySelector('input[name="category"]:checked')?.value || "";
     }
 
-    async function loadProducts(keepSelection) {
+    function renderProductOptions(products) {
+        productOptions.replaceChildren();
+        products.forEach((item) => {
+            const option = new Option(
+                item.value === "LAINNYA" ? "Tulis sendiri" : item.label,
+                item.value
+            );
+            productField.add(option);
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "upcycling-product-option";
+            button.textContent = option.textContent;
+            button.dataset.productValue = item.value;
+            button.setAttribute("aria-pressed", String(item.value === productField.value));
+            button.addEventListener("click", () => {
+                productField.value = item.value;
+                productOptions.querySelectorAll("button").forEach((itemButton) => {
+                    itemButton.setAttribute(
+                        "aria-pressed",
+                        String(itemButton.dataset.productValue === item.value)
+                    );
+                });
+                updateSummary();
+            });
+            productOptions.append(button);
+        });
+    }
+
+    async function loadProducts(keepSelection = false) {
         const previousProduct = productField.value;
         const category = getSelectedCategory();
-
         productField.replaceChildren(new Option("Pilih model produk", ""));
+        productOptions.replaceChildren();
         updateSummary();
 
         if (!category) {
+            productOptions.textContent = "Pilih kategori untuk melihat model.";
             return;
         }
 
         const url = urlTemplate.replace("TAS", encodeURIComponent(category));
-        const response = await fetch(url);
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error("Gagal mengambil pilihan produk.");
+            const products = await response.json();
+            renderProductOptions(products);
 
-        if (!response.ok) {
-            console.error("Gagal mengambil pilihan produk.");
-            updateSummary();
-            return;
+            if (keepSelection && products.some((item) => item.value === previousProduct)) {
+                productField.value = previousProduct;
+                productOptions.querySelectorAll("button").forEach((button) => {
+                    button.setAttribute("aria-pressed", String(button.dataset.productValue === previousProduct));
+                });
+            }
+        } catch (error) {
+            productOptions.textContent = "Pilihan model belum dapat dimuat. Coba muat ulang halaman.";
+            console.error(error);
         }
-
-        const products = await response.json();
-
-        products.forEach((item) => {
-            productField.add(new Option(item.label, item.value));
-        });
-
-        if (
-            keepSelection &&
-            products.some((item) => item.value === previousProduct)
-        ) {
-            productField.value = previousProduct;
-        }
-
         updateSummary();
     }
 
-    fabricFields.forEach((field) => {
-        field.addEventListener("change", updateSummary);
+    fabricFields.forEach((field) => field.addEventListener("change", updateSummary));
+    categoryFields.forEach((field) => field.addEventListener("change", () => loadProducts()));
+    productField.addEventListener("change", () => {
+        productOptions.querySelectorAll("button").forEach((button) => {
+            button.setAttribute("aria-pressed", String(button.dataset.productValue === productField.value));
+        });
+        updateSummary();
     });
-
-    categoryFields.forEach((field) => {
-        field.addEventListener("change", () => loadProducts(false));
-    });
-
-    productField.addEventListener("change", updateSummary);
     loadProducts(true);
 });
 </script>

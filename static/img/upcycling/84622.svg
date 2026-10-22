@@ -1,0 +1,15 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="5167" height="1241" viewBox="0 0 5167 1241" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="Rectangle 75">
+<use xlink:href="#stroke0_0_9" fill="#FCF9F5"/>
+<use xlink:href="#stroke1_0_9" fill="#FCF9F5"/>
+<mask id="stroke2_0_9" fill="white">
+<use xlink:href="#stroke0_0_9"/>
+<use xlink:href="#stroke1_0_9"/>
+</mask>
+<path d="M89.9999 1241H5077C5126.71 1241 5167 1134.38 5167 1002.86V238.145C5167 106.621 5126.71 0 5077 0H90C40.2944 0 0 106.621 0 238.145V1002.86C0 1134.38 40.2942 1241 89.9999 1241ZM89.9999 1241H5077C5126.71 1241 5167 1200.71 5167 1151V90C5167 40.2944 5126.71 0 5077 0H90C40.2944 0 0 40.2944 0 90V1151C0 1200.71 40.2942 1241 89.9999 1241Z" stroke-width="24" stroke="#C9965F" stroke-opacity="0.7" mask="url(#stroke2_0_9)"/>
+</g>
+<defs>
+<path id="stroke0_0_9" d="M0 90C0 40.2944 40.2944 0 90 0H5077C5126.71 0 5167 40.2944 5167 90V1151C5167 1200.71 5126.71 1241 5077 1241H89.9999C40.2942 1241 0 1200.71 0 1151V90Z"/>
+<path id="stroke1_0_9" d="M0 238.145C0 106.621 40.2944 0 90 0H5077C5126.71 0 5167 106.621 5167 238.145V1002.86C5167 1134.38 5126.71 1241 5077 1241H89.9999C40.2942 1241 0 1134.38 0 1002.86V238.145Z"/>
+</defs>
+</svg>
