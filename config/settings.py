@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'main',
     'marketplace',
     'upcycling',
+    'batik_story',
 ]
 
 MIDDLEWARE = [
