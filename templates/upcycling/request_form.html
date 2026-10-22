@@ -1,19 +1,211 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section>
-    <h1>
-        {% if is_update %}
-            Edit Permintaan Upcycling
-        {% else %}
-            Ajukan Upcycling
-        {% endif %}
-    </h1>
+<section class="px-4 py-10 sm:py-14">
+    <header class="mx-auto mb-8 max-w-4xl text-center text-[var(--cream-light)]">
+        <p class="text-xs uppercase tracking-[0.3em]">
+            Upcycle · Culture · Value
+        </p>
 
-    <form method="post" id="upcycling-form" data-product-options-url="{% url 'upcycling:product_options' 'TAS' %}">
+        <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">
+            {% if is_update %}
+                Edit Upcycling Request
+            {% else %}
+                Upcycling Request
+            {% endif %}
+        </h1>
+
+        <p class="mt-3 text-base sm:text-lg">
+            Ubah kain tak terpakai menjadi karya baru dalam tiga langkah sederhana.
+        </p>
+
+        <a
+            href="#upcycling-form"
+            class="mt-8 inline-block rounded-full bg-[var(--brown)] px-6 py-2 text-[var(--cream-light)] shadow"
+        >
+            ↓ Explore
+        </a>
+    </header>
+
+    <form
+        method="post"
+        id="upcycling-form"
+        class="
+            mx-auto max-w-6xl rounded-3xl
+            bg-[var(--cream-light)] p-6 text-[var(--brown)] shadow-xl
+            space-y-5 sm:p-10
+            [_label]:font-semibold
+            [&_ul.errorlist]:text-sm [&_ul.errorlist]:font-semibold
+            [&_ul.errorlist]:text-[var(--button-hover)]
+        "
+        data-product-options-url="{% url 'upcycling:product_options' 'TAS' %}"
+    >
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">
+        {{ form.non_field_errors }}
+
+        <section class="space-y-4">
+            <div class="flex items-center gap-3 border-b border-[var(--border)] pb-3">
+                <span class="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--brown)] font-bold text-[var(--cream-light)]">
+                    1
+                </span>
+                <h2 class="text-2xl font-bold">Pilih Kain</h2>
+            </div>
+            <fieldset class="space-y-3">
+                <legend class="font-semibold">{{ form.fabric.label }}</legend>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    {% for radio in form.fabric %}
+                        <label
+                            class="
+                                flex cursor-pointer items-center gap-3 rounded-xl
+                                border border-[var(--border)] bg-[var(--card)] p-4
+                                transition hover:border-[var(--gold)]
+                                [&:has(input:checked)]:border-[var(--gold)]
+                                [&:has(input:checked)]:ring-2
+                                [&:has(input:checked)]:ring-[var(--gold)]
+                                [&:has(input:focus-visible)]:outline
+                                [&:has(input:focus-visible)]:outline-2
+                                [&:has(input:focus-visible)]:outline-[var(--brown)]
+                            "
+                        >
+                            {{ radio.tag }}
+                            <span>{{ radio.choice_label }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+                {{ form.fabric.errors }}
+            </fieldset>
+        </section>
+
+        <section class="space-y-4">
+            <div class="flex items-center gap-3 border-b border-[var(--border)] pb-3">
+                <span class="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--brown)] font-bold text-[var(--cream-light)]">
+                    2
+                </span>
+                <h2 class="text-2xl font-bold">Pilih Produk</h2>
+            </div>
+            <div class="grid gap-5 sm:grid-cols-2">
+                <fieldset class="space-y-3 sm:col-span-2">
+                    <legend class="font-semibold">{{ form.category.label }}</legend>
+
+                    <div class="flex flex-wrap gap-3">
+                        {% for radio in form.category %}
+                            <label
+                                class="
+                                    inline-flex cursor-pointer items-center gap-2 rounded-full
+                                    border border-[var(--border)] bg-[var(--card)]
+                                    px-5 py-3 text-[var(--brown)] transition
+                                    hover:border-[var(--gold)]
+                                    [&:has(input:checked)]:border-[var(--brown)]
+                                    [&:has(input:checked)]:bg-[var(--brown)]
+                                    [&:has(input:checked)]:text-[var(--cream-light)]
+                                    [&:has(input:focus-visible)]:outline
+                                    [&:has(input:focus-visible)]:outline-2
+                                    [&:has(input:focus-visible)]:outline-[var(--gold)]
+                                "
+                            >
+                                {{ radio.tag }}
+                                <span>{{ radio.choice_label }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+
+                    {{ form.category.errors }}
+                </fieldset>
+
+                <div class="space-y-3 sm:col-span-2">
+                    {{ form.product.label_tag }}
+                    {{ form.product }}
+                    {{ form.product.errors }}
+                </div>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="flex items-center gap-3 border-b border-[var(--border)] pb-3">
+                <span class="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--brown)] font-bold text-[var(--cream-light)]">
+                    3
+                </span>
+                <h2 class="text-2xl font-bold">Detail Permintaan</h2>
+            </div>
+            <div class="grid gap-5 sm:grid-cols-2">
+                <div class="space-y-2">
+                    {{ form.quantity.label_tag }}
+                    {{ form.quantity }}
+                    {{ form.quantity.errors }}
+                </div>
+                <fieldset class="space-y-2">
+                    <legend class="font-semibold">{{ form.delivery_method.label }}</legend>
+                    <div class="grid grid-cols-2 gap-3">
+                        {% for radio in form.delivery_method %}
+                            <label
+                                class="
+                                    flex min-h-12 cursor-pointer items-center justify-center gap-2
+                                    rounded-xl border border-[var(--border)] bg-[var(--card)]
+                                    px-4 py-3 text-[var(--brown)] transition
+                                    hover:border-[var(--gold)]
+                                    [&:has(input:checked)]:border-[var(--brown)]
+                                    [&:has(input:checked)]:bg-[var(--brown)]
+                                    [&:has(input:checked)]:text-[var(--cream-light)]
+                                    [&:has(input:focus-visible)]:outline
+                                    [&:has(input:focus-visible)]:outline-2
+                                    [&:has(input:focus-visible)]:outline-[var(--gold)]
+                                "
+                            >
+                                {{ radio.tag }}
+                                <span>{{ radio.choice_label }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+
+                    {{ form.delivery_method.errors }}
+                </fieldset>
+                <div class="space-y-2 sm:col-span-2">
+                    {{ form.notes.label_tag }}
+                    {{ form.notes }}
+                    {{ form.notes.errors }}
+                </div>
+                <div class="space-y-2 sm:col-span-2">
+                    {{ form.address.label_tag }}
+                    {{ form.address }}
+                    {{ form.address.errors }}
+                </div>
+                <div class="space-y-2 sm:col-span-2">
+                    {{ form.whatsapp.label_tag }}
+                    {{ form.whatsapp }}
+                    {{ form.whatsapp.errors }}
+                </div>
+            </div>
+        </section>
+        <aside class="rounded-2xl border border-[var(--border)] bg-[var(--cream)] p-5">
+            <p class="text-xs font-bold uppercase tracking-widest text-[var(--button)]">
+                Ringkasan Permintaan
+            </p>
+
+            <p
+                class="mt-3 flex flex-wrap items-center gap-2 text-lg font-semibold"
+                aria-live="polite"
+            >
+                <span id="summary-fabric">Pilih kain</span>
+                <span aria-hidden="true">→</span>
+                <span id="summary-category">Pilih kategori</span>
+                <span aria-hidden="true">·</span>
+                <span id="summary-product">Pilih model</span>
+            </p>
+
+            <p class="mt-2 text-sm">
+                Permintaan ini akan ditinjau oleh tim ReBatik.
+            </p>
+        </aside>
+        <button
+            type="submit"
+            class="
+                mt-2 w-full rounded-xl bg-[var(--button)] py-3
+                font-bold text-[var(--cream-light)] shadow transition
+                hover:bg-[var(--button-hover)]
+                focus-visible:outline focus-visible:outline-2
+                focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]
+            "
+        >
             {% if is_update %}
                 Simpan Perubahan
             {% else %}
@@ -22,8 +214,11 @@
         </button>
     </form>
 
-    <p>
-        <a href="{% url 'upcycling:request_list' %}">
+    <p class="mx-auto mt-5 max-w-6xl text-center text-[var(--brown)]">
+        <a
+            class="font-semibold underline decoration-[var(--gold)] underline-offset-4 hover:text-[var(--button-hover)]"
+            href="{% url 'upcycling:request_list' %}"
+        >
             Kembali ke daftar
         </a>
     </p>
@@ -32,15 +227,56 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("upcycling-form");
-    const categoryField = document.getElementById("id_category");
+    const categoryFields = form.querySelectorAll('[name="category"]');
+    const fabricFields = form.querySelectorAll('[name="fabric"]');
     const productField = document.getElementById("id_product");
     const urlTemplate = form.dataset.productOptionsUrl;
+    const fabricSummary = document.getElementById("summary-fabric");
+    const categorySummary = document.getElementById("summary-category");
+    const productSummary = document.getElementById("summary-product");
+
+    function getRadioLabel(name, fallback) {
+        const selectedRadio = form.querySelector(
+            `input[name="${name}"]:checked`
+        );
+        const label = selectedRadio?.closest("label");
+        const labelText = label?.querySelector("span")?.textContent.trim();
+
+        return labelText || fallback;
+    }
+
+    function updateSummary() {
+        fabricSummary.textContent = getRadioLabel("fabric", "Pilih kain");
+        categorySummary.textContent = getRadioLabel(
+            "category",
+            "Pilih kategori"
+        );
+
+        const selectedProduct = productField.selectedOptions[0];
+        productSummary.textContent = productField.value && selectedProduct
+            ? selectedProduct.textContent
+            : "Pilih model";
+    }
+
+    function getSelectedCategory() {
+        const checkedRadio = form.querySelector(
+            'input[name="category"]:checked'
+        );
+
+        if (checkedRadio) {
+            return checkedRadio.value;
+        }
+
+        const select = form.querySelector('select[name="category"]');
+        return select ? select.value : "";
+    }
 
     async function loadProducts(keepSelection) {
         const previousProduct = productField.value;
-        const category = categoryField.value;
+        const category = getSelectedCategory();
 
-        productField.replaceChildren(new Option("---------", ""));
+        productField.replaceChildren(new Option("Pilih model produk", ""));
+        updateSummary();
 
         if (!category) {
             return;
@@ -51,6 +287,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!response.ok) {
             console.error("Gagal mengambil pilihan produk.");
+            updateSummary();
             return;
         }
 
@@ -66,9 +303,19 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
             productField.value = previousProduct;
         }
+
+        updateSummary();
     }
 
-    categoryField.addEventListener("change", () => loadProducts(false));
+    fabricFields.forEach((field) => {
+        field.addEventListener("change", updateSummary);
+    });
+
+    categoryFields.forEach((field) => {
+        field.addEventListener("change", () => loadProducts(false));
+    });
+
+    productField.addEventListener("change", updateSummary);
     loadProducts(true);
 });
 </script>

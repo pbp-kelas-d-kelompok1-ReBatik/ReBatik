@@ -5,6 +5,7 @@
     font-style: normal;
 }
 
+@layer base {
 :root {
     --bar: #624A38;
     --cream: #E9D7B9;
@@ -713,4 +714,5 @@ footer h3 {
     50% {
         opacity: 1;
     }
+}
 }

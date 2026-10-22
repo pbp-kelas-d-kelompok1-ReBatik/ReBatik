@@ -1,8 +1,26 @@
 from django import forms
 from .models import UpcyclingRequest
 
+INPUT_CLASSES = (
+    "block w-full rounded-xl border border-[var(--border)] "
+    "bg-[var(--card)] px-4 py-3 text-[var(--brown)] "
+    "focus:border-[var(--gold)] focus:outline-none "
+    "focus:ring-2 focus:ring-[var(--gold)]"
+)
+
 
 class UpcyclingRequestForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        choices_by_field = {
+            "fabric": UpcyclingRequest.FABRIC_CHOICES,
+            "category": UpcyclingRequest.CATEGORY_CHOICES,
+            "delivery_method": UpcyclingRequest.DELIVERY_CHOICES,
+        }
+        for field_name, choices in choices_by_field.items():
+            self.fields[field_name].choices = choices
+
     class Meta:
         model = UpcyclingRequest
         fields = [
@@ -15,10 +33,44 @@ class UpcyclingRequestForm(forms.ModelForm):
             "address",
             "whatsapp",
         ]
+        labels = {
+            "fabric": "Kain",
+            "category": "Kategori Produk",
+            "product": "Model Produk",
+            "quantity": "Jumlah Produk",
+            "notes": "Deskripsi dan Catatan Khusus",
+            "delivery_method": "Metode Pengiriman Kain",
+            "address": "Alamat / Lokasi",
+            "whatsapp": "No. WhatsApp",
+        }
         widgets = {
-            "quantity": forms.NumberInput(attrs={"min": 1, "max": 20}),
-            "notes": forms.Textarea(attrs={"rows": 4}),
-            "whatsapp": forms.TextInput(attrs={"type": "tel"}),
+            "fabric": forms.RadioSelect(attrs={"class": "sr-only"}),
+            "category": forms.RadioSelect(attrs={"class": "sr-only"}),
+            "product": forms.Select(attrs={"class": INPUT_CLASSES}),
+            "quantity": forms.NumberInput(
+                attrs={"min": 1, "max": 20, "class": INPUT_CLASSES}
+            ),
+            "delivery_method": forms.RadioSelect(attrs={"class": "sr-only"}),
+            "notes": forms.Textarea(
+                attrs={
+                    "rows": 4,
+                    "class": INPUT_CLASSES,
+                    "placeholder": "Ceritakan model, warna, ukuran, atau catatan khusus...",
+                }
+            ),
+            "address": forms.TextInput(
+                attrs={
+                    "class": INPUT_CLASSES,
+                    "placeholder": "Alamat penjemputan (kurir) atau lokasi drop-off",
+                }
+            ),
+            "whatsapp": forms.TextInput(
+                attrs={
+                    "type": "tel",
+                    "class": INPUT_CLASSES,
+                    "placeholder": "Contoh: 0812xxxxxxx",
+                }
+            ),
         }
 
     def clean_quantity(self):
