@@ -128,7 +128,7 @@ def request_success(request, pk):
         "upcycling/request_success.html",
         {
             "upcycling_request": upcycling_request,
-            "reference_code": f"RB-{str(upcycling_request.pk).split('-')[0].upper()}",
+            "reference_code": upcycling_request.reference_code,
         },
     )
 
@@ -182,7 +182,7 @@ def request_detail(request, pk):
         "upcycling/request_detail.html",
         {
             "upcycling_request": upcycling_request,
-            "reference_code": f"RB-{str(upcycling_request.pk).split('-')[0].upper()}",
+            "reference_code": upcycling_request.reference_code,
             "timeline_steps": timeline_steps,
         },
     )

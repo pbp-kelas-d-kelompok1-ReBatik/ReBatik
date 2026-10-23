@@ -80,3 +80,8 @@ class UpcyclingRequest(models.Model):
         if self.product == "LAINNYA" and self.custom_product:
             return self.custom_product
         return self.get_product_display()
+
+    @property
+    def reference_code(self):
+        short_id = self.pk.hex[:8].upper()
+        return f"RB-{short_id}"

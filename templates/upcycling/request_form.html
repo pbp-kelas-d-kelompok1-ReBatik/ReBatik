@@ -2,7 +2,11 @@
 {% load static %}
 
 {% block meta %}
-<link rel="preload" as="image" href="{% static 'img/upcycling/delivery-option-selected.svg' %}">
+<link
+    rel="preload"
+    as="image"
+    href="{% static 'img/upcycling/delivery-option-selected.svg' %}"
+>
 {% endblock meta %}
 
 {% block content %}
@@ -39,7 +43,8 @@
     <div class="relative mx-auto mb-6 flex max-w-6xl justify-center">
         <a
             href="{% url 'upcycling:request_list' %}"
-            class="upcycling-button-dark px-6 py-2 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[var(--cream-light)]"
+            class="upcycling-button-dark px-6 py-2 focus-visible:outline
+                   focus-visible:outline-offset-2 focus-visible:outline-[var(--cream-light)]"
         >
             ← Permintaan Saya
         </a>
@@ -52,7 +57,10 @@
                text-[var(--brown)] shadow-md sm:gap-6 sm:px-8 sm:text-base"
     >
         <a href="#pilih-kain" class="flex items-center gap-2 font-semibold">
-            <span class="relative grid size-8 place-items-center overflow-hidden rounded-full text-[var(--cream-light)]">
+            <span
+                class="relative grid size-8 place-items-center overflow-hidden rounded-full
+                       text-[var(--cream-light)]"
+            >
                 <img
                     src="{% static 'img/upcycling/step-active.svg' %}"
                     alt=""
@@ -129,8 +137,9 @@
                     {% for error in field.errors %}
                         <li>
                             <a
+                                data-error-field="{{ field.name }}"
                                 class="underline underline-offset-2 hover:font-bold"
-                                href="{% if field.name == 'fabric' %}#pilih-kain{% elif field.name == 'category' %}#pilih-produk{% elif field.name == 'product' %}#product-options{% elif field.name == 'custom_product' %}#id_custom_product{% elif field.name == 'delivery_method' %}#metode-pengiriman{% elif field.name == 'quantity' %}#id_quantity{% elif field.name == 'address' %}#id_address{% elif field.name == 'whatsapp' %}#id_whatsapp{% else %}#detail-permintaan{% endif %}"
+                                href="#detail-permintaan"
                             >{{ field.label }}: {{ error }}</a>
                         </li>
                     {% endfor %}
@@ -144,7 +153,10 @@
         <section id="pilih-kain" class="scroll-mt-8 space-y-4">
             <div class="flex items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
                 <div class="flex items-center gap-3">
-                    <span class="relative grid size-10 shrink-0 place-items-center overflow-hidden rounded-full font-bold text-[var(--cream-light)]">
+                    <span
+                        class="relative grid size-10 shrink-0 place-items-center overflow-hidden
+                               rounded-full font-bold text-[var(--cream-light)]"
+                    >
                         <img
                             src="{% static 'img/upcycling/step-number.svg' %}"
                             alt=""
@@ -159,7 +171,9 @@
             </div>
 
             <fieldset class="space-y-3">
-                <legend class="font-semibold">{{ form.fabric.label }} <span aria-hidden="true">*</span></legend>
+                <legend class="font-semibold">
+                    {{ form.fabric.label }} <span aria-hidden="true">*</span>
+                </legend>
                 <div class="grid gap-4 sm:grid-cols-2">
                     {% for radio in form.fabric %}
                         <label
@@ -176,27 +190,65 @@
                         >
                             {{ radio.tag }}
                             {% if radio.data.value == "PARANG" %}
-                                <img src="{% static 'img/upcycling/motif-parang.webp' %}" alt="" loading="lazy" decoding="async" class="aspect-[1.8] w-full object-cover">
+                                <img
+                                    src="{% static 'img/upcycling/motif-parang.webp' %}"
+                                    alt=""
+                                    loading="lazy"
+                                    decoding="async"
+                                    class="aspect-[1.8] w-full object-cover"
+                                >
                             {% elif radio.data.value == "KAWUNG" %}
-                                <img src="{% static 'img/upcycling/motif-kawung.webp' %}" alt="" loading="lazy" decoding="async" class="aspect-[1.8] w-full object-cover">
+                                <img
+                                    src="{% static 'img/upcycling/motif-kawung.webp' %}"
+                                    alt=""
+                                    loading="lazy"
+                                    decoding="async"
+                                    class="aspect-[1.8] w-full object-cover"
+                                >
                             {% elif radio.data.value == "MEGA_MENDUNG" %}
-                                <img src="{% static 'img/upcycling/motif-mega-mendung.webp' %}" alt="" loading="lazy" decoding="async" class="aspect-[1.8] w-full object-cover">
+                                <img
+                                    src="{% static 'img/upcycling/motif-mega-mendung.webp' %}"
+                                    alt=""
+                                    loading="lazy"
+                                    decoding="async"
+                                    class="aspect-[1.8] w-full object-cover"
+                                >
                             {% else %}
                                 <div class="grid aspect-[1.8] place-items-center bg-[var(--upcycling-soft)]">
-                                    <img src="{% static 'img/upcycling/mascot-question.webp' %}" alt="" loading="lazy" decoding="async" class="h-40 w-auto object-contain sm:h-52">
+                                    <img
+                                        src="{% static 'img/upcycling/mascot-question.webp' %}"
+                                        alt=""
+                                        loading="lazy"
+                                        decoding="async"
+                                        class="h-40 w-auto object-contain sm:h-52"
+                                    >
                                 </div>
                             {% endif %}
-                            <span class="flex min-h-14 items-center justify-between gap-3 px-4 py-3 text-base font-bold sm:text-lg">
+                            <span
+                                class="flex min-h-14 items-center justify-between gap-3 px-4 py-3
+                                       text-base font-bold sm:text-lg"
+                            >
                                 <span class="min-w-0">
                                     <span>{{ radio.choice_label }}</span>
                                     {% if radio.data.value == "NEW_DONATION" %}
-                                        <span class="block text-sm font-normal text-[var(--brown-muted)]">Belum ada di daftar? Donasikan dulu.</span>
+                                        <span class="block text-sm font-normal text-[var(--brown-muted)]">
+                                            Belum ada di daftar? Donasikan dulu.
+                                        </span>
                                     {% endif %}
                                 </span>
-                                <span class="shrink-0 rounded-md bg-[var(--brown)] px-3 py-1 text-sm font-medium text-[var(--cream-light)] group-has-[:checked]:bg-[var(--gold)] group-has-[:checked]:text-[var(--brown)]">
+                                <span
+                                    class="shrink-0 rounded-md bg-[var(--brown)] px-3 py-1 text-sm
+                                           font-medium text-[var(--cream-light)]
+                                           group-has-[:checked]:bg-[var(--gold)]
+                                           group-has-[:checked]:text-[var(--brown)]"
+                                >
                                     <span class="hidden group-has-[:checked]:inline">Dipilih ✓</span>
                                     <span class="group-has-[:checked]:hidden">
-                                        {% if radio.data.value == "NEW_DONATION" %}Donasi →{% else %}Pilih →{% endif %}
+                                        {% if radio.data.value == "NEW_DONATION" %}
+                                            Donasi →
+                                        {% else %}
+                                            Pilih →
+                                        {% endif %}
                                     </span>
                                 </span>
                             </span>
@@ -210,19 +262,34 @@
         <section id="pilih-produk" class="scroll-mt-8 space-y-4 border-t border-[var(--border)] pt-7">
             <div class="flex items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
                 <div class="flex items-center gap-3">
-                    <span class="relative grid size-10 shrink-0 place-items-center overflow-hidden rounded-full font-bold text-[var(--cream-light)]">
-                        <img src="{% static 'img/upcycling/step-number.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.097]">
+                    <span
+                        class="relative grid size-10 shrink-0 place-items-center overflow-hidden
+                               rounded-full font-bold text-[var(--cream-light)]"
+                    >
+                        <img
+                            src="{% static 'img/upcycling/step-number.svg' %}"
+                            alt=""
+                            aria-hidden="true"
+                            class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.097]"
+                        >
                         <span class="relative">2</span>
                     </span>
                     <h2 class="text-2xl font-bold">Pilih Produk</h2>
                 </div>
                 <p class="hidden text-sm italic text-[var(--brown-muted)] sm:block">Satu kategori, satu model</p>
             </div>
-            <p class="text-base text-[var(--brown-muted)]">Pilih kategori dan model produk. Jika memilih Lainnya, tuliskan produk yang Anda inginkan.</p>
+            <p class="text-base text-[var(--brown-muted)]">
+                Pilih kategori dan model produk. Jika memilih Lainnya, tuliskan produk yang Anda inginkan.
+            </p>
 
             <fieldset class="space-y-3">
-                <legend class="font-semibold">{{ form.category.label }} <span aria-hidden="true">*</span></legend>
-                <div class="flex flex-wrap gap-2 rounded-full border border-[var(--border)] bg-[var(--card)] p-2 shadow-sm sm:gap-3">
+                <legend class="font-semibold">
+                    {{ form.category.label }} <span aria-hidden="true">*</span>
+                </legend>
+                <div
+                    class="flex flex-wrap gap-2 rounded-full border border-[var(--border)]
+                           bg-[var(--card)] p-2 shadow-sm sm:gap-3"
+                >
                     {% for radio in form.category %}
                         <label
                             data-summary-label="{{ radio.choice_label }}"
@@ -244,11 +311,20 @@
             </fieldset>
 
             <fieldset class="space-y-3">
-                <legend id="product-options-label" class="font-semibold">{{ form.product.label }} <span aria-hidden="true">*</span></legend>
+                <legend id="product-options-label" class="font-semibold">
+                    {{ form.product.label }} <span aria-hidden="true">*</span>
+                </legend>
                 <label for="id_product" class="sr-only">{{ form.product.label }}</label>
                 {{ form.product }}
                 <div id="standard-product-options" class="space-y-3">
-                    <div id="product-options" class="flex flex-wrap gap-2" role="group" aria-label="Pilihan model produk" aria-live="polite" tabindex="-1">
+                    <div
+                        id="product-options"
+                        class="flex flex-wrap gap-2"
+                        role="group"
+                        aria-label="Pilihan model produk"
+                        aria-live="polite"
+                        tabindex="-1"
+                    >
                         <span class="text-base text-[var(--brown-muted)]">Pilih kategori untuk melihat model.</span>
                     </div>
                     {{ form.product.errors }}
@@ -264,15 +340,25 @@
         <section id="detail-permintaan" class="scroll-mt-8 space-y-4 border-t border-[var(--border)] pt-7">
             <div class="flex items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
                 <div class="flex items-center gap-3">
-                    <span class="relative grid size-10 shrink-0 place-items-center overflow-hidden rounded-full font-bold text-[var(--cream-light)]">
-                        <img src="{% static 'img/upcycling/step-number.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.097]">
+                    <span
+                        class="relative grid size-10 shrink-0 place-items-center overflow-hidden
+                               rounded-full font-bold text-[var(--cream-light)]"
+                    >
+                        <img
+                            src="{% static 'img/upcycling/step-number.svg' %}"
+                            alt=""
+                            aria-hidden="true"
+                            class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.097]"
+                        >
                         <span class="relative">3</span>
                     </span>
                     <h2 class="text-2xl font-bold">Detail Permintaan</h2>
                 </div>
                 <p class="hidden text-sm italic text-[var(--brown-muted)] sm:block">Hampir selesai</p>
             </div>
-            <p class="text-base text-[var(--brown-muted)]">Lengkapi detail agar tim kami bisa memproses permintaan Anda.</p>
+            <p class="text-base text-[var(--brown-muted)]">
+                Lengkapi detail agar tim kami bisa memproses permintaan Anda.
+            </p>
 
             <div class="grid gap-5 sm:grid-cols-2">
                 <div class="space-y-2">
@@ -281,7 +367,9 @@
                     {{ form.quantity.errors }}
                 </div>
                 <fieldset id="metode-pengiriman" class="space-y-2">
-                    <legend class="font-semibold">{{ form.delivery_method.label }} <span aria-hidden="true">*</span></legend>
+                    <legend class="font-semibold">
+                        {{ form.delivery_method.label }} <span aria-hidden="true">*</span>
+                    </legend>
                     <div class="grid grid-cols-2 gap-2 sm:gap-3">
                         {% for radio in form.delivery_method %}
                             <label
@@ -312,15 +400,22 @@
                 <div class="space-y-2 sm:col-span-2">
                     {{ form.whatsapp.label_tag }} <span aria-hidden="true">*</span>
                     {{ form.whatsapp }}
-                    <p class="text-sm text-[var(--brown-muted)]">Gunakan format nomor HP Indonesia, misalnya +6281234567890.</p>
+                    <p class="text-sm text-[var(--brown-muted)]">
+                        Gunakan format nomor HP Indonesia, misalnya +6281234567890.
+                    </p>
                     {{ form.whatsapp.errors }}
                 </div>
             </div>
         </section>
 
         <div class="flex items-end gap-3 sm:gap-6">
-            <aside class="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--upcycling-summary)] p-4 sm:p-6">
-                <p class="text-sm font-bold uppercase tracking-[0.18em] text-[var(--button)]">Ringkasan Permintaan</p>
+            <aside
+                class="min-w-0 flex-1 rounded-xl border border-[var(--border)]
+                       bg-[var(--upcycling-summary)] p-4 sm:p-6"
+            >
+                <p class="text-sm font-bold uppercase tracking-[0.18em] text-[var(--button)]">
+                    Ringkasan Permintaan
+                </p>
                 <p class="mt-2 flex flex-wrap items-center gap-x-2 text-base font-bold sm:text-lg" aria-live="polite">
                     <span id="summary-fabric">Pilih kain</span>
                     <span aria-hidden="true">→</span>
@@ -328,14 +423,24 @@
                     <span aria-hidden="true">·</span>
                     <span id="summary-product">Pilih model</span>
                 </p>
-                <p class="mt-2 text-base text-[var(--brown-muted)]">Poin Reward dan dampak Anda bertambah setelah kain kami terima.</p>
+                <p class="mt-2 text-base text-[var(--brown-muted)]">
+                    Poin Reward dan dampak Anda bertambah setelah kain kami terima.
+                </p>
             </aside>
-            <img src="{% static 'img/upcycling/mascot-shirt.webp' %}" alt="Maskot ReBatik membawa kain" loading="lazy" decoding="async" class="h-20 w-16 shrink-0 object-contain sm:h-28 sm:w-24 lg:h-36 lg:w-32">
+            <img
+                src="{% static 'img/upcycling/mascot-shirt.webp' %}"
+                alt="Maskot ReBatik membawa kain"
+                loading="lazy"
+                decoding="async"
+                class="h-20 w-16 shrink-0 object-contain sm:h-28 sm:w-24 lg:h-36 lg:w-32"
+            >
         </div>
 
         <button
             type="submit"
-            class="upcycling-button-dark w-full py-6 text-lg leading-none font-extrabold focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]"
+            class="upcycling-button-dark w-full py-6 text-lg leading-none font-extrabold
+                   focus-visible:outline focus-visible:outline-offset-2
+                   focus-visible:outline-[var(--brown)]"
         >
             {% if is_update %}Simpan Perubahan{% else %}Ajukan Upcycling →{% endif %}
         </button>
@@ -343,8 +448,18 @@
             Tim ReBatik akan meninjau permintaan Anda dan menghubungi Anda lewat kontak di atas.
         </p>
 
-        <img src="{% static 'img/upcycling/cloud-right.webp' %}" alt="" aria-hidden="true" class="pointer-events-none absolute bottom-4 left-4 w-20 sm:w-28">
-        <img src="{% static 'img/upcycling/floral-step3.webp' %}" alt="" aria-hidden="true" class="pointer-events-none absolute bottom-0 right-0 w-24 sm:w-36">
+        <img
+            src="{% static 'img/upcycling/cloud-right.webp' %}"
+            alt=""
+            aria-hidden="true"
+            class="pointer-events-none absolute bottom-4 left-4 w-20 sm:w-28"
+        >
+        <img
+            src="{% static 'img/upcycling/floral-step3.webp' %}"
+            alt=""
+            aria-hidden="true"
+            class="pointer-events-none absolute bottom-0 right-0 w-24 sm:w-36"
+        >
     </form>
 </section>
 

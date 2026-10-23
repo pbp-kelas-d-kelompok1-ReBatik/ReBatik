@@ -28,6 +28,11 @@ document.addEventListener("DOMContentLoaded", () => {
         whatsapp: "#id_whatsapp",
     };
 
+    document.querySelectorAll("[data-error-field]").forEach((link) => {
+        const target = validationTargets[link.dataset.errorField];
+        if (target) link.href = target;
+    });
+
     function showClientValidationErrors() {
         const invalidNames = [...new Set(
             Array.from(form.elements)
@@ -98,6 +103,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function getSelectedCategory() {
+        return form.querySelector('input[name="category"]:checked')?.value || "";
+    }
+
     function updateCustomProductField() {
         const isOtherCategory = getSelectedCategory() === "LAINNYA";
         const isCustomProduct = isOtherCategory || productField.value === "LAINNYA";
@@ -107,10 +116,6 @@ document.addEventListener("DOMContentLoaded", () => {
         customProductField.required = isCustomProduct;
         customProductField.setAttribute("aria-required", String(isCustomProduct));
         updateSummary();
-    }
-
-    function getSelectedCategory() {
-        return form.querySelector('input[name="category"]:checked')?.value || "";
     }
 
     function renderProductOptions(products) {
