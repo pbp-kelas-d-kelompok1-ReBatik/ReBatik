@@ -1,7 +1,7 @@
 import re
 
 from django import forms
-from .models import UpcyclingRequest
+from .models import NOTES_MAX_LENGTH, UpcyclingRequest
 
 FIELD_CLASSES = (
     "block w-full px-4 py-3 text-[var(--brown)] "
@@ -64,6 +64,11 @@ class UpcyclingRequestForm(forms.ModelForm):
             "address": "Alamat / Lokasi",
             "whatsapp": "No. WhatsApp",
         }
+        error_messages = {
+            "notes": {
+                "max_length": f"Catatan maksimal {NOTES_MAX_LENGTH} karakter."
+            }
+        }
         widgets = {
             "fabric": forms.RadioSelect(attrs={"class": "sr-only"}),
             "category": forms.RadioSelect(attrs={"class": "sr-only"}),
@@ -88,7 +93,7 @@ class UpcyclingRequestForm(forms.ModelForm):
             "notes": forms.Textarea(
                 attrs={
                     "rows": 4,
-                    "maxlength": 2000,
+                    "maxlength": NOTES_MAX_LENGTH,
                     "class": f"{FIELD_CLASSES} upcycling-field upcycling-textarea",
                     "placeholder": "Ceritakan model, warna, ukuran, atau catatan khusus...",
                 }

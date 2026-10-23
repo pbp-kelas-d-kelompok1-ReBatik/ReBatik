@@ -3,6 +3,8 @@ from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
+NOTES_MAX_LENGTH = 2000
+
 
 class UpcyclingRequest(models.Model):
     FABRIC_CHOICES = [
@@ -55,7 +57,7 @@ class UpcyclingRequest(models.Model):
         default=1,
         validators=[MinValueValidator(1), MaxValueValidator(20)],
     )
-    notes = models.TextField(max_length=2000, blank=True)
+    notes = models.TextField(max_length=NOTES_MAX_LENGTH, blank=True)
     delivery_method = models.CharField(max_length=10, choices=DELIVERY_CHOICES)
     address = models.CharField(max_length=255)
     whatsapp = models.CharField(max_length=20)

@@ -3,12 +3,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
 
 from .forms import UpcyclingRequestForm, get_product_options_by_category
 from .models import UpcyclingRequest
 
 PENDING_REQUEST_LIMIT = 10
+PENDING_LIMIT_MESSAGE = (
+    "Anda sudah memiliki {limit} permintaan yang menunggu tinjauan. "
+    "Tunggu sampai permintaan diproses sebelum mengajukan lagi."
+)
 
 
 @login_required
@@ -64,8 +67,9 @@ def request_create(request):
                 if pending_count >= PENDING_REQUEST_LIMIT:
                     form.add_error(
                         None,
-                        "Anda sudah memiliki 10 permintaan yang menunggu tinjauan. "
-                        "Tunggu sampai permintaan diproses sebelum mengajukan lagi.",
+                        PENDING_LIMIT_MESSAGE.format(
+                            limit=PENDING_REQUEST_LIMIT
+                        ),
                     )
                 else:
                     upcycling_request = form.save(commit=False)
@@ -76,6 +80,17 @@ def request_create(request):
                         pk=upcycling_request.pk,
                     )
     else:
+        pending_count = UpcyclingRequest.objects.filter(
+            user=request.user,
+            status="PENDING",
+        ).count()
+        if pending_count >= PENDING_REQUEST_LIMIT:
+            messages.info(
+                request,
+                PENDING_LIMIT_MESSAGE.format(limit=PENDING_REQUEST_LIMIT),
+            )
+            return redirect("upcycling:request_list")
+
         form = UpcyclingRequestForm()
 
     return render(
@@ -115,11 +130,12 @@ def request_detail(request, pk):
     )
 
     status = upcycling_request.status
-    submitted_date = timezone.localtime(
-        upcycling_request.created_at
-    ).strftime("%d/%m/%Y")
     timeline_steps = [
-        {"label": f"Diajukan · {submitted_date}", "state": "done"},
+        {
+            "label": "Diajukan",
+            "created_at": upcycling_request.created_at,
+            "state": "done",
+        },
     ]
 
     if status == "PENDING":
@@ -245,12 +261,11 @@ def request_delete(request, pk):
         return redirect("upcycling:request_detail", pk=upcycling_request.pk)
 
     if request.method == "POST":
-        with transaction.atomic():
-            deleted_count, _ = UpcyclingRequest.objects.filter(
-                pk=pk,
-                user=request.user,
-                status="PENDING",
-            ).delete()
+        deleted_count, _ = UpcyclingRequest.objects.filter(
+            pk=pk,
+            user=request.user,
+            status="PENDING",
+        ).delete()
 
         if not deleted_count:
             messages.info(

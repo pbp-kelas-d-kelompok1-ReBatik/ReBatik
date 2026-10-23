@@ -41,7 +41,7 @@
                         <li class="flex items-center gap-4">
                             {% if step.state == 'done' %}
                                 <span class="grid size-10 shrink-0 place-items-center rounded-full border-2 border-[var(--upcycling-accent)] bg-[var(--brown)] font-bold text-[var(--cream-light)]" aria-label="Selesai">✓</span>
-                                <span class="text-base text-[var(--brown)] sm:text-lg">{{ step.label }}</span>
+                                <span class="text-base text-[var(--brown)] sm:text-lg">{{ step.label }}{% if step.created_at %} · {{ step.created_at|date:"d/m/Y" }}{% endif %}</span>
                             {% elif step.state == 'current' %}
                                 <span class="size-10 shrink-0 rounded-full border-2 border-[var(--upcycling-accent)] bg-[var(--upcycling-accent)]" aria-hidden="true"></span>
                                 <span class="text-base font-bold text-[var(--brown)] sm:text-lg">{{ step.label }}</span>

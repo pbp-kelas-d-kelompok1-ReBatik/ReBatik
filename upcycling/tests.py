@@ -1,3 +1,5 @@
+from datetime import datetime, timezone as datetime_timezone
+
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.test import SimpleTestCase, TestCase
@@ -114,6 +116,10 @@ class UpcyclingRequestFormTests(SimpleTestCase):
 
         self.assertFalse(form.is_valid())
         self.assertIn("notes", form.errors)
+        self.assertEqual(
+            form.errors["notes"],
+            ["Catatan maksimal 2000 karakter."],
+        )
 
 
 class UpcyclingRequestAdminTests(SimpleTestCase):
@@ -205,6 +211,19 @@ class UpcyclingRequestViewTests(TestCase):
             ).count(),
             10,
         )
+        self.assertContains(response, "sudah memiliki 10 permintaan")
+
+    def test_create_page_redirects_when_user_has_ten_pending_requests(self):
+        for _ in range(10):
+            self.make_request(self.user)
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_create"),
+            follow=True,
+        )
+
+        self.assertRedirects(response, reverse("upcycling:request_list"))
         self.assertContains(response, "sudah memiliki 10 permintaan")
 
     def test_incomplete_form_renders_error_summary(self):
@@ -341,6 +360,26 @@ class UpcyclingRequestViewTests(TestCase):
 
                 self.assertEqual(response.status_code, 200)
                 self.assertEqual(states, expected)
+
+    def test_detail_formats_submission_date_in_jakarta_timezone(self):
+        upcycling_request = self.make_request(self.user)
+        UpcyclingRequest.objects.filter(pk=upcycling_request.pk).update(
+            created_at=datetime(
+                2026,
+                10,
+                22,
+                18,
+                30,
+                tzinfo=datetime_timezone.utc,
+            )
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_detail", args=[upcycling_request.pk])
+        )
+
+        self.assertContains(response, "23/10/2026")
 
     def test_user_can_update_own_pending_request_and_sees_toast(self):
         upcycling_request = self.make_request(self.user)
