@@ -30,12 +30,12 @@
             Apakah Anda yakin ingin menghapus permintaan ini? Tindakan ini tidak dapat dibatalkan.
         </p>
 
-        <form method="post" class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-center">
+        <form method="post" class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
             {% csrf_token %}
-            <a href="{% url 'upcycling:request_detail' upcycling_request.pk %}" class="inline-flex min-h-12 items-center justify-center rounded-xl border-2 border-[var(--brown)] px-6 py-3 font-bold text-[var(--brown)] transition hover:bg-[#ecddce] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]">
+            <a href="{% url 'upcycling:request_detail' upcycling_request.pk %}" class="inline-flex min-h-12 items-center justify-center rounded-xl border-2 border-[var(--brown)] px-6 py-3 font-bold text-[var(--brown)] transition hover:bg-[var(--upcycling-summary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]">
                 Kembali
             </a>
-            <button type="submit" class="inline-flex min-h-12 items-center justify-center rounded-xl border-2 border-[#8b3329] bg-[#8b3329] px-6 py-3 font-bold text-white transition hover:bg-[#70261f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]">
+            <button type="submit" class="inline-flex min-h-12 items-center justify-center rounded-xl border-2 border-[var(--danger)] bg-[var(--danger)] px-6 py-3 font-bold text-white transition hover:bg-[var(--danger-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]">
                 Ya, hapus permintaan
             </button>
         </form>

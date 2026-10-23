@@ -26,6 +26,10 @@
     --upcycling-accent: #C9965F;
     --upcycling-status-processing: #F3DCC0;
     --upcycling-status-processing-text: #6A3B12;
+    --upcycling-soft: #F0E2D5;
+    --upcycling-summary: #ECDDCE;
+    --danger: #8B3329;
+    --danger-hover: #70261F;
 }
 
 * {
@@ -726,43 +730,42 @@ footer h3 {
 @layer components {
     .upcycling-field.upcycling-input {
         min-height: 2.9rem;
-        border: 0;
-        border-radius: 0;
-        background-color: transparent;
-        background-image: url("/static/img/upcycling/5eee2.svg");
-        background-repeat: no-repeat;
-        background-size: 100% 100%;
+        border: 1px solid var(--border);
+        border-radius: 0.75rem;
+        background-color: var(--upcycling-surface);
     }
 
     .upcycling-field::placeholder {
-        color: #a98266;
-        opacity: 0.75;
+        color: var(--brown-muted);
+        opacity: 1;
+    }
+
+    .upcycling-field:focus-visible {
+        outline: 2px solid var(--brown);
+        outline-offset: 2px;
     }
 
     .upcycling-field.upcycling-textarea {
         min-height: 7rem;
-        border: 0;
-        border-radius: 0;
-        background-color: transparent;
-        background-image: url("/static/img/upcycling/84622.svg");
-        background-repeat: no-repeat;
-        background-size: 100% 100%;
+        border: 1px solid var(--border);
+        border-radius: 0.75rem;
+        background-color: var(--upcycling-surface);
     }
 
     .upcycling-delivery-option {
-        background-image: url("/static/img/upcycling/0a903.svg");
+        background-image: url("../img/upcycling/delivery-option.svg");
         background-repeat: no-repeat;
         background-size: 100% 100%;
     }
 
     .upcycling-delivery-option:has(input:checked) {
-        background-image: url("/static/img/upcycling/98a39.svg");
+        background-image: url("../img/upcycling/delivery-option-selected.svg");
     }
 
     .upcycling-submit-button {
         border: 0;
         background-color: transparent;
-        background-image: url("/static/img/upcycling/8786e.svg");
+        background-image: url("../img/upcycling/submit-button.svg");
         background-repeat: no-repeat;
         background-size: 100% 100%;
     }

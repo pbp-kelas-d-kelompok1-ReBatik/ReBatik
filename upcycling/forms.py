@@ -6,6 +6,25 @@ FIELD_CLASSES = (
     "focus:outline-none focus:ring-2 focus:ring-[var(--gold)]"
 )
 
+PRODUCTS_BY_CATEGORY = {
+    "TAS": ("TOTE_BAG", "SLING_BAG", "LAINNYA"),
+    "POUCH": ("POUCH", "LAINNYA"),
+    "PAKAIAN": ("KEMEJA", "LAINNYA"),
+    "AKSESORIS": ("AKSESORIS", "LAINNYA"),
+    "LAINNYA": ("LAINNYA",),
+}
+
+
+def get_product_options_by_category():
+    product_labels = dict(UpcyclingRequest.PRODUCT_CHOICES)
+    return {
+        category: [
+            {"value": value, "label": product_labels[value]}
+            for value in values
+        ]
+        for category, values in PRODUCTS_BY_CATEGORY.items()
+    }
+
 
 class UpcyclingRequestForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -90,16 +109,8 @@ class UpcyclingRequestForm(forms.ModelForm):
         category = cleaned_data.get("category")
         product = cleaned_data.get("product")
 
-        allowed_products = {
-            "TAS": {"TOTE_BAG", "SLING_BAG", "LAINNYA"},
-            "POUCH": {"POUCH", "LAINNYA"},
-            "PAKAIAN": {"KEMEJA", "LAINNYA"},
-            "AKSESORIS": {"AKSESORIS", "LAINNYA"},
-            "LAINNYA": {"LAINNYA"},
-        }
-
         if category and product:
-            if product not in allowed_products.get(category, set()):
+            if product not in PRODUCTS_BY_CATEGORY.get(category, ()):
                 self.add_error(
                     "product",
                     "Model produk tidak sesuai dengan kategori yang dipilih.",

@@ -1,18 +1,56 @@
+<div data-upcycling-toast-region class="pointer-events-none fixed right-4 top-20 z-[110] flex w-[calc(100%-2rem)] max-w-sm flex-col gap-3" aria-live="polite" aria-relevant="additions" aria-atomic="false"></div>
+
 {% if messages %}
-    <div class="fixed right-4 top-20 z-[110] flex w-[calc(100%-2rem)] max-w-sm flex-col gap-3" aria-live="polite" aria-relevant="additions text" aria-atomic="false">
+    <template data-upcycling-toast-template>
         {% for message in messages %}
-            <div data-upcycling-toast class="flex items-start gap-3 rounded-xl border-2 border-[var(--upcycling-accent)] bg-[var(--upcycling-surface)] p-4 text-[var(--brown)] shadow-xl transition-[opacity,transform] duration-200 ease-out" role="status">
-                <span class="grid size-7 shrink-0 place-items-center rounded-full bg-[var(--upcycling-accent)] font-bold" aria-hidden="true">✓</span>
+            <div data-upcycling-toast data-message-tags="{{ message.tags }}" class="pointer-events-auto flex items-start gap-3 rounded-xl border-2 border-[var(--upcycling-accent)] bg-[var(--upcycling-surface)] p-4 text-[var(--brown)] shadow-xl transition-[opacity,transform] duration-200 ease-out" {% if 'error' in message.tags %}role="alert"{% else %}role="status"{% endif %} tabindex="0">
+                <span class="grid size-7 shrink-0 place-items-center rounded-full font-bold {% if 'success' in message.tags %}bg-green-100 text-green-800{% elif 'error' in message.tags %}bg-red-100 text-red-800{% elif 'warning' in message.tags %}bg-amber-100 text-amber-900{% else %}bg-[var(--upcycling-accent)] text-[var(--brown)]{% endif %}" aria-hidden="true">
+                    {% if 'success' in message.tags %}✓{% elif 'error' in message.tags or 'warning' in message.tags %}!{% else %}i{% endif %}
+                </span>
                 <p class="flex-1 pt-1 font-semibold">{{ message }}</p>
             </div>
         {% endfor %}
-    </div>
+    </template>
     <script>
-        document.querySelectorAll("[data-upcycling-toast]").forEach((toast) => {
-            window.setTimeout(() => {
-                toast.classList.add("translate-y-2", "opacity-0");
-                window.setTimeout(() => toast.remove(), 200);
-            }, 5000);
-        });
+        const toastRegion = document.querySelector("[data-upcycling-toast-region]");
+        const toastTemplate = document.querySelector("[data-upcycling-toast-template]");
+
+        if (toastRegion && toastTemplate) {
+            toastRegion.append(toastTemplate.content.cloneNode(true));
+
+            toastRegion.querySelectorAll("[data-upcycling-toast]").forEach((toast) => {
+                const dismiss = () => {
+                    toast.dataset.dismissed = "true";
+                    toast.classList.add("translate-y-2", "opacity-0");
+                    window.setTimeout(() => toast.remove(), 200);
+                };
+
+                const pause = () => {
+                    window.clearTimeout(toast.dismissTimer);
+                    toast.dismissTimer = null;
+                };
+
+                const resume = () => {
+                    if (!toast.dismissTimer && toast.dataset.dismissed !== "true") {
+                        toast.dismissTimer = window.setTimeout(() => {
+                            toast.dismissTimer = null;
+                            if (!toast.matches(":hover") && !toast.contains(document.activeElement)) {
+                                dismiss();
+                            }
+                        }, 5000);
+                    }
+                };
+
+                toast.addEventListener("pointerenter", pause);
+                toast.addEventListener("pointerleave", () => {
+                    if (!toast.contains(document.activeElement)) resume();
+                });
+                toast.addEventListener("focusin", pause);
+                toast.addEventListener("focusout", (event) => {
+                    if (!toast.contains(event.relatedTarget) && !toast.matches(":hover")) resume();
+                });
+                resume();
+            });
+        }
     </script>
 {% endif %}

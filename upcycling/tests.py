@@ -341,29 +341,20 @@ class UpcyclingRequestViewTests(TestCase):
 
         self.assertEqual(response.status_code, 404)
 
-    def test_product_options_returns_products_for_category(self):
+    def test_request_form_embeds_product_options_for_each_category(self):
         self.client.force_login(self.user)
 
         response = self.client.get(
-            reverse("upcycling:product_options", args=["TAS"])
+            reverse("upcycling:request_create")
         )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            response.json(),
+            response.context["product_options_by_category"]["TAS"],
             [
                 {"value": "TOTE_BAG", "label": "Tote Bag"},
                 {"value": "SLING_BAG", "label": "Sling Bag"},
                 {"value": "LAINNYA", "label": "Model lain"},
             ],
         )
-
-    def test_product_options_returns_empty_list_for_unknown_category(self):
-        self.client.force_login(self.user)
-
-        response = self.client.get(
-            reverse("upcycling:product_options", args=["UNKNOWN"])
-        )
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), [])
+        self.assertContains(response, 'id="product-options-data"')

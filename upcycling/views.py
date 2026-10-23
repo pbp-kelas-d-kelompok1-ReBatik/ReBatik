@@ -1,10 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
-from django.http import JsonResponse
 from django.utils import timezone
 
-from .forms import UpcyclingRequestForm
+from .forms import UpcyclingRequestForm, get_product_options_by_category
 from .models import UpcyclingRequest
 
 
@@ -60,7 +59,10 @@ def request_create(request):
     return render(
         request,
         "upcycling/request_form.html",
-        {"form": form},
+        {
+            "form": form,
+            "product_options_by_category": get_product_options_by_category(),
+        },
     )
 
 
@@ -169,7 +171,11 @@ def request_update(request, pk):
     return render(
         request,
         "upcycling/request_form.html",
-        {"form": form, "is_update": True},
+        {
+            "form": form,
+            "is_update": True,
+            "product_options_by_category": get_product_options_by_category(),
+        },
     )
 
 
@@ -198,23 +204,3 @@ def request_delete(request, pk):
         "upcycling/request_confirm_delete.html",
         {"upcycling_request": upcycling_request},
     )
-
-@login_required
-def product_options(request, category):
-    products_by_category = {
-        "TAS": ["TOTE_BAG", "SLING_BAG", "LAINNYA"],
-        "POUCH": ["POUCH", "LAINNYA"],
-        "PAKAIAN": ["KEMEJA", "LAINNYA"],
-        "AKSESORIS": ["AKSESORIS", "LAINNYA"],
-        "LAINNYA": ["LAINNYA"],
-    }
-
-    allowed_values = products_by_category.get(category, [])
-    product_labels = dict(UpcyclingRequest.PRODUCT_CHOICES)
-
-    data = [
-        {"value": value, "label": product_labels[value]}
-        for value in allowed_values
-    ]
-
-    return JsonResponse(data, safe=False)

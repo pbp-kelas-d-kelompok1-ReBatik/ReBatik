@@ -53,12 +53,12 @@
             <a href="{% url 'upcycling:request_list' %}" class="inline-flex min-h-12 items-center justify-center rounded-xl bg-[var(--brown)] px-6 py-3 font-bold text-[var(--cream-light)] transition hover:bg-[var(--button-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--gold)]">
                 Lihat Permintaan Saya
             </a>
-            <a href="{% url 'upcycling:request_create' %}" class="inline-flex min-h-12 items-center justify-center rounded-xl border-2 border-[var(--brown)] px-6 py-3 font-bold text-[var(--brown)] transition hover:bg-[#ecddce] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]">
+            <a href="{% url 'upcycling:request_create' %}" class="inline-flex min-h-12 items-center justify-center rounded-xl border-2 border-[var(--brown)] px-6 py-3 font-bold text-[var(--brown)] transition hover:bg-[var(--upcycling-summary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]">
                 Buat Permintaan Lain
             </a>
         </div>
 
-        <img src="{% static 'img/upcycling/mascot-shirt.png' %}" alt="Maskot ReBatik membawa kain" class="mx-auto mt-6 h-24 w-24 object-contain sm:h-32 sm:w-32">
+        <img src="{% static 'img/upcycling/mascot-shirt.webp' %}" alt="Maskot ReBatik membawa kain" loading="lazy" decoding="async" class="mx-auto mt-6 h-24 w-24 object-contain sm:h-32 sm:w-32">
     </div>
 </section>
 {% endblock %}

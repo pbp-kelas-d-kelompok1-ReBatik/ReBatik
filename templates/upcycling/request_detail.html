@@ -55,19 +55,19 @@
                         </li>
                     {% endfor %}
                 </ol>
-                <img src="{% static 'img/upcycling/mascot-shirt.png' %}" alt="" aria-hidden="true" class="absolute bottom-4 right-4 h-20 w-20 object-contain sm:h-28 sm:w-28">
+                <img src="{% static 'img/upcycling/mascot-shirt.webp' %}" alt="" aria-hidden="true" loading="lazy" decoding="async" class="absolute bottom-4 right-4 h-20 w-20 object-contain sm:h-28 sm:w-28">
             </section>
 
             <section aria-labelledby="summary-heading" class="rounded-2xl border-2 border-[var(--upcycling-accent)] bg-[var(--upcycling-surface)] p-5 shadow-lg sm:p-7">
                 <h3 id="summary-heading" class="text-2xl font-bold">Ringkasan</h3>
                 {% if upcycling_request.fabric == 'PARANG' %}
-                    <img src="{% static 'img/upcycling/motif-parang.png' %}" alt="Motif Parang" class="mt-5 aspect-[2.3] w-full rounded-xl object-cover">
+                    <img src="{% static 'img/upcycling/motif-parang.webp' %}" alt="Motif Parang" loading="lazy" decoding="async" class="mt-5 aspect-[2.3] w-full rounded-xl object-cover">
                 {% elif upcycling_request.fabric == 'KAWUNG' %}
-                    <img src="{% static 'img/upcycling/motif-kawung.png' %}" alt="Motif Kawung" class="mt-5 aspect-[2.3] w-full rounded-xl object-cover">
+                    <img src="{% static 'img/upcycling/motif-kawung.webp' %}" alt="Motif Kawung" loading="lazy" decoding="async" class="mt-5 aspect-[2.3] w-full rounded-xl object-cover">
                 {% elif upcycling_request.fabric == 'MEGA_MENDUNG' %}
-                    <img src="{% static 'img/upcycling/motif-mega-mendung.png' %}" alt="Motif Mega Mendung" class="mt-5 aspect-[2.3] w-full rounded-xl object-cover">
+                    <img src="{% static 'img/upcycling/motif-mega-mendung.webp' %}" alt="Motif Mega Mendung" loading="lazy" decoding="async" class="mt-5 aspect-[2.3] w-full rounded-xl object-cover">
                 {% else %}
-                    <img src="{% static 'img/upcycling/mascot-question.png' %}" alt="Kain donasi baru" class="mt-5 aspect-[2.3] w-full rounded-xl bg-[#f0e2d5] object-contain">
+                    <img src="{% static 'img/upcycling/mascot-question.webp' %}" alt="Kain donasi baru" loading="lazy" decoding="async" class="mt-5 aspect-[2.3] w-full rounded-xl bg-[var(--upcycling-soft)] object-contain">
                 {% endif %}
 
                 <dl class="mt-5 space-y-3 text-base sm:text-lg">

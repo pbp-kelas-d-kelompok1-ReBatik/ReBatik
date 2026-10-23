@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block meta %}
+<link rel="preload" as="image" href="{% static 'img/upcycling/delivery-option-selected.svg' %}">
+{% endblock meta %}
+
 {% block content %}
 <section class="relative overflow-hidden px-4 pb-10 pt-8 sm:px-6 sm:pt-10">
     <img
@@ -44,27 +48,27 @@
     <nav aria-label="Tahapan permintaan" class="mx-auto mb-8 flex max-w-3xl items-center justify-center gap-3 rounded-full border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm text-[var(--brown)] shadow-md sm:gap-6 sm:px-8 sm:text-base">
         <a href="#pilih-kain" class="flex items-center gap-2 font-semibold">
             <span class="relative grid size-8 place-items-center overflow-hidden rounded-full text-[var(--cream-light)]">
-                <img src="{% static 'img/upcycling/b770b.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.086]">
+                <img src="{% static 'img/upcycling/step-active.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.086]">
                 <span class="relative">1</span>
             </span>
             Kain
         </a>
         <span aria-hidden="true" class="relative size-2 overflow-hidden">
-            <img src="{% static 'img/upcycling/ed3a2.svg' %}" alt="" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.125]">
+            <img src="{% static 'img/upcycling/step-separator.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.125]">
         </span>
         <a href="#pilih-produk" class="flex items-center gap-2">
             <span class="relative grid size-8 place-items-center overflow-hidden rounded-full">
-                <img src="{% static 'img/upcycling/f6dca.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.086]">
+                <img src="{% static 'img/upcycling/step-inactive.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.086]">
                 <span class="relative">2</span>
             </span>
             Produk
         </a>
         <span aria-hidden="true" class="relative size-2 overflow-hidden">
-            <img src="{% static 'img/upcycling/ed3a2.svg' %}" alt="" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.125]">
+            <img src="{% static 'img/upcycling/step-separator.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.125]">
         </span>
         <a href="#detail-permintaan" class="flex items-center gap-2">
             <span class="relative grid size-8 place-items-center overflow-hidden rounded-full">
-                <img src="{% static 'img/upcycling/f6dca.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.086]">
+                <img src="{% static 'img/upcycling/step-inactive.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.086]">
                 <span class="relative">3</span>
             </span>
             Detail
@@ -75,7 +79,6 @@
         method="post"
         id="upcycling-form"
         class="mx-auto max-w-6xl space-y-8 rounded-3xl border border-[var(--border)] bg-[var(--cream-light)] p-5 text-[var(--brown)] shadow-2xl sm:p-8 lg:p-10 [&_label]:font-semibold [&_ul.errorlist]:mt-1 [&_ul.errorlist]:text-sm [&_ul.errorlist]:font-semibold [&_ul.errorlist]:text-[var(--button-hover)]"
-        data-product-options-url="{% url 'upcycling:product_options' 'TAS' %}"
     >
         {% csrf_token %}
         {{ form.non_field_errors }}
@@ -84,7 +87,7 @@
             <div class="flex items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
                 <div class="flex items-center gap-3">
                     <span class="relative grid size-10 shrink-0 place-items-center overflow-hidden rounded-full font-bold text-[var(--cream-light)]">
-                        <img src="{% static 'img/upcycling/0b3ed.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.097]">
+                        <img src="{% static 'img/upcycling/step-number.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.097]">
                         <span class="relative">1</span>
                     </span>
                     <h2 class="text-2xl font-bold">Pilih Kain</h2>
@@ -99,14 +102,14 @@
                         <label data-summary-label="{{ radio.choice_label }}" class="group relative flex cursor-pointer flex-col overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-md transition hover:-translate-y-0.5 hover:shadow-lg [&:has(input:checked)]:border-2 [&:has(input:checked)]:border-[var(--button)] [&:has(input:focus-visible)]:outline [&:has(input:focus-visible)]:outline-2 [&:has(input:focus-visible)]:outline-offset-2 [&:has(input:focus-visible)]:outline-[var(--brown)]">
                             {{ radio.tag }}
                             {% if radio.data.value == "PARANG" %}
-                                <img src="{% static 'img/upcycling/motif-parang.png' %}" alt="" class="aspect-[1.8] w-full object-cover">
+                                <img src="{% static 'img/upcycling/motif-parang.webp' %}" alt="" loading="lazy" decoding="async" class="aspect-[1.8] w-full object-cover">
                             {% elif radio.data.value == "KAWUNG" %}
-                                <img src="{% static 'img/upcycling/motif-kawung.png' %}" alt="" class="aspect-[1.8] w-full object-cover">
+                                <img src="{% static 'img/upcycling/motif-kawung.webp' %}" alt="" loading="lazy" decoding="async" class="aspect-[1.8] w-full object-cover">
                             {% elif radio.data.value == "MEGA_MENDUNG" %}
-                                <img src="{% static 'img/upcycling/motif-mega-mendung.png' %}" alt="" class="aspect-[1.8] w-full object-cover">
+                                <img src="{% static 'img/upcycling/motif-mega-mendung.webp' %}" alt="" loading="lazy" decoding="async" class="aspect-[1.8] w-full object-cover">
                             {% else %}
-                                <div class="grid aspect-[1.8] place-items-center bg-[#f0e2d5]">
-                                    <img src="{% static 'img/upcycling/mascot-question.png' %}" alt="" class="h-40 w-auto object-contain sm:h-52">
+                                <div class="grid aspect-[1.8] place-items-center bg-[var(--upcycling-soft)]">
+                                    <img src="{% static 'img/upcycling/mascot-question.webp' %}" alt="" loading="lazy" decoding="async" class="h-40 w-auto object-contain sm:h-52">
                                 </div>
                             {% endif %}
                             <span class="flex min-h-14 items-center justify-between gap-3 px-4 py-3 text-base font-bold sm:text-lg">
@@ -134,7 +137,7 @@
             <div class="flex items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
                 <div class="flex items-center gap-3">
                     <span class="relative grid size-10 shrink-0 place-items-center overflow-hidden rounded-full font-bold text-[var(--cream-light)]">
-                        <img src="{% static 'img/upcycling/0b3ed.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.097]">
+                        <img src="{% static 'img/upcycling/step-number.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.097]">
                         <span class="relative">2</span>
                     </span>
                     <h2 class="text-2xl font-bold">Pilih Produk</h2>
@@ -147,7 +150,7 @@
                 <legend class="font-semibold">{{ form.category.label }} <span aria-hidden="true">*</span></legend>
                 <div class="flex flex-wrap gap-2 rounded-full border border-[var(--border)] bg-[var(--card)] p-2 shadow-sm sm:gap-3">
                     {% for radio in form.category %}
-                        <label data-summary-label="{{ radio.choice_label }}" class="cursor-pointer rounded-full px-4 py-2 text-base transition hover:bg-[#f0e2d5] sm:px-6 sm:text-lg [&:has(input:checked)]:bg-[var(--brown)] [&:has(input:checked)]:font-bold [&:has(input:checked)]:text-[var(--cream-light)] [&:has(input:focus-visible)]:outline [&:has(input:focus-visible)]:outline-2 [&:has(input:focus-visible)]:outline-[var(--gold)]">
+                        <label data-summary-label="{{ radio.choice_label }}" class="cursor-pointer rounded-full px-4 py-2 text-base transition hover:bg-[var(--upcycling-soft)] sm:px-6 sm:text-lg [&:has(input:checked)]:bg-[var(--brown)] [&:has(input:checked)]:font-bold [&:has(input:checked)]:text-[var(--cream-light)] [&:has(input:focus-visible)]:outline [&:has(input:focus-visible)]:outline-2 [&:has(input:focus-visible)]:outline-[var(--gold)]">
                             {{ radio.tag }}
                             <span>{{ radio.choice_label }}</span>
                         </label>
@@ -171,7 +174,7 @@
             <div class="flex items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
                 <div class="flex items-center gap-3">
                     <span class="relative grid size-10 shrink-0 place-items-center overflow-hidden rounded-full font-bold text-[var(--cream-light)]">
-                        <img src="{% static 'img/upcycling/0b3ed.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.097]">
+                        <img src="{% static 'img/upcycling/step-number.svg' %}" alt="" aria-hidden="true" class="max-w-none absolute left-0 top-0 origin-top-left scale-[0.097]">
                         <span class="relative">3</span>
                     </span>
                     <h2 class="text-2xl font-bold">Detail Permintaan</h2>
@@ -217,7 +220,7 @@
         </section>
 
         <div class="flex items-end gap-3 sm:gap-6">
-            <aside class="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[#ecddce] p-4 sm:p-6">
+            <aside class="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--upcycling-summary)] p-4 sm:p-6">
                 <p class="text-sm font-bold uppercase tracking-[0.18em] text-[var(--button)]">Ringkasan Permintaan</p>
                 <p class="mt-2 flex flex-wrap items-center gap-x-2 text-base font-bold sm:text-lg" aria-live="polite">
                     <span id="summary-fabric">Pilih kain</span>
@@ -228,7 +231,7 @@
                 </p>
                 <p class="mt-2 text-base text-[var(--brown-muted)]">Poin Reward dan dampak Anda bertambah setelah kain kami terima.</p>
             </aside>
-            <img src="{% static 'img/upcycling/mascot-shirt.png' %}" alt="Maskot ReBatik membawa kain" class="h-20 w-16 shrink-0 object-contain sm:h-28 sm:w-24 lg:h-36 lg:w-32">
+            <img src="{% static 'img/upcycling/mascot-shirt.webp' %}" alt="Maskot ReBatik membawa kain" loading="lazy" decoding="async" class="h-20 w-16 shrink-0 object-contain sm:h-28 sm:w-24 lg:h-36 lg:w-32">
         </div>
 
         <button
@@ -246,6 +249,8 @@
     </form>
 </section>
 
+{{ product_options_by_category|json_script:"product-options-data" }}
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("upcycling-form");
@@ -253,7 +258,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const fabricFields = form.querySelectorAll('[name="fabric"]');
     const productField = document.getElementById("id_product");
     const productOptions = document.getElementById("product-options");
-    const urlTemplate = form.dataset.productOptionsUrl;
+    const productsByCategory = JSON.parse(
+        document.getElementById("product-options-data").textContent
+    );
     const fabricSummary = document.getElementById("summary-fabric");
     const categorySummary = document.getElementById("summary-category");
     const productSummary = document.getElementById("summary-product");
@@ -305,7 +312,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    async function loadProducts(keepSelection = false) {
+    function loadProducts(keepSelection = false) {
         const previousProduct = productField.value;
         const category = getSelectedCategory();
         productField.replaceChildren(new Option("Pilih model produk", ""));
@@ -317,22 +324,14 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const url = urlTemplate.replace("TAS", encodeURIComponent(category));
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error("Gagal mengambil pilihan produk.");
-            const products = await response.json();
-            renderProductOptions(products);
+        const products = productsByCategory[category] || [];
+        renderProductOptions(products);
 
-            if (keepSelection && products.some((item) => item.value === previousProduct)) {
-                productField.value = previousProduct;
-                productOptions.querySelectorAll("button").forEach((button) => {
-                    button.setAttribute("aria-pressed", String(button.dataset.productValue === previousProduct));
-                });
-            }
-        } catch (error) {
-            productOptions.textContent = "Pilihan model belum dapat dimuat. Coba muat ulang halaman.";
-            console.error(error);
+        if (keepSelection && products.some((item) => item.value === previousProduct)) {
+            productField.value = previousProduct;
+            productOptions.querySelectorAll("button").forEach((button) => {
+                button.setAttribute("aria-pressed", String(button.dataset.productValue === previousProduct));
+            });
         }
         updateSummary();
     }

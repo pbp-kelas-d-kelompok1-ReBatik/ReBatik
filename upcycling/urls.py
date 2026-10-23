@@ -9,6 +9,5 @@ urlpatterns = [
     path("<uuid:pk>/submitted/", views.request_success, name="request_success"),
     path("<uuid:pk>/", views.request_detail, name="request_detail"),
     path("<uuid:pk>/edit/", views.request_update, name="request_update"),
-    path("<uuid:pk>/delete/", views.request_delete, name="request_delete"), 
-    path("products/<str:category>/", views.product_options, name="product_options"),
+    path("<uuid:pk>/delete/", views.request_delete, name="request_delete"),
 ]
