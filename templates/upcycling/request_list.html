@@ -43,32 +43,66 @@
             </div>
 
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <nav aria-label="Filter status permintaan" class="inline-flex w-fit max-w-full items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--card)] p-1.5 shadow-sm">
+                <nav
+                    aria-label="Filter status permintaan"
+                    class="inline-flex w-fit max-w-full items-center gap-1 rounded-full
+                           border border-[var(--border)] bg-[var(--card)] p-1.5 shadow-sm"
+                >
                     <a
                         href="?{% if selected_category %}category={{ selected_category }}{% endif %}"
                         aria-current="{% if selected_status != 'ONGOING' and selected_status != 'COMPLETED' %}page{% else %}false{% endif %}"
-                        class="rounded-full px-5 py-2 text-sm transition sm:px-7 sm:text-base {% if selected_status != 'ONGOING' and selected_status != 'COMPLETED' %}bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]{% else %}text-[var(--brown)] hover:bg-[var(--upcycling-soft)]{% endif %}"
+                        class="rounded-full px-5 py-2 text-sm transition sm:px-7 sm:text-base
+                               {% if selected_status != 'ONGOING' and selected_status != 'COMPLETED' %}
+                                   bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]
+                               {% else %}
+                                   text-[var(--brown)] hover:bg-[var(--upcycling-soft)]
+                               {% endif %}"
                     >Semua</a>
                     <a
                         href="?status=ONGOING{% if selected_category %}&category={{ selected_category }}{% endif %}"
                         aria-current="{% if selected_status == 'ONGOING' %}page{% else %}false{% endif %}"
-                        class="rounded-full px-5 py-2 text-sm transition sm:px-7 sm:text-base {% if selected_status == 'ONGOING' %}bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]{% else %}text-[var(--brown)] hover:bg-[var(--upcycling-soft)]{% endif %}"
+                        class="rounded-full px-5 py-2 text-sm transition sm:px-7 sm:text-base
+                               {% if selected_status == 'ONGOING' %}
+                                   bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]
+                               {% else %}
+                                   text-[var(--brown)] hover:bg-[var(--upcycling-soft)]
+                               {% endif %}"
                     >Berjalan</a>
                     <a
                         href="?status=COMPLETED{% if selected_category %}&category={{ selected_category }}{% endif %}"
                         aria-current="{% if selected_status == 'COMPLETED' %}page{% else %}false{% endif %}"
-                        class="rounded-full px-5 py-2 text-sm transition sm:px-7 sm:text-base {% if selected_status == 'COMPLETED' %}bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]{% else %}text-[var(--brown)] hover:bg-[var(--upcycling-soft)]{% endif %}"
+                        class="rounded-full px-5 py-2 text-sm transition sm:px-7 sm:text-base
+                               {% if selected_status == 'COMPLETED' %}
+                                   bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]
+                               {% else %}
+                                   text-[var(--brown)] hover:bg-[var(--upcycling-soft)]
+                               {% endif %}"
                     >Selesai</a>
                 </nav>
 
                 <details class="group text-sm">
-                    <summary class="cursor-pointer list-none font-semibold text-[var(--button-hover)] underline decoration-[var(--gold)] underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--brown)]">
+                    <summary
+                        class="cursor-pointer list-none font-semibold text-[var(--button-hover)]
+                               underline decoration-[var(--gold)] underline-offset-4
+                               focus-visible:outline focus-visible:outline-2
+                               focus-visible:outline-[var(--brown)]"
+                    >
                         Filter lainnya
                     </summary>
-                    <form method="get" class="mt-3 grid gap-3 rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+                    <form
+                        method="get"
+                        class="mt-3 grid gap-3 rounded-xl border border-[var(--border)]
+                               bg-[var(--card)] p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
+                    >
                         <div class="space-y-1">
                             <label for="filter-status" class="font-semibold">Status</label>
-                            <select id="filter-status" name="status" class="block w-full rounded-lg border border-[var(--border)] bg-white px-3 py-2 text-[var(--brown)] focus:border-[var(--gold)] focus:outline-none focus:ring-2 focus:ring-[var(--gold)]">
+                            <select
+                                id="filter-status"
+                                name="status"
+                                class="block w-full rounded-lg border border-[var(--border)] bg-white
+                                       px-3 py-2 text-[var(--brown)] focus:border-[var(--gold)]
+                                       focus:outline-none focus:ring-2 focus:ring-[var(--gold)]"
+                            >
                                 <option value="">Semua status</option>
                                 <option value="ONGOING" {% if selected_status == "ONGOING" %}selected{% endif %}>Berjalan</option>
                                 {% for value, label in status_options %}
@@ -78,14 +112,26 @@
                         </div>
                         <div class="space-y-1">
                             <label for="filter-category" class="font-semibold">Kategori</label>
-                            <select id="filter-category" name="category" class="block w-full rounded-lg border border-[var(--border)] bg-white px-3 py-2 text-[var(--brown)] focus:border-[var(--gold)] focus:outline-none focus:ring-2 focus:ring-[var(--gold)]">
+                            <select
+                                id="filter-category"
+                                name="category"
+                                class="block w-full rounded-lg border border-[var(--border)] bg-white
+                                       px-3 py-2 text-[var(--brown)] focus:border-[var(--gold)]
+                                       focus:outline-none focus:ring-2 focus:ring-[var(--gold)]"
+                            >
                                 <option value="">Semua kategori</option>
                                 {% for value, label in category_options %}
                                     <option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>{{ label }}</option>
                                 {% endfor %}
                             </select>
                         </div>
-                        <button type="submit" class="rounded-lg bg-[var(--brown)] px-5 py-2 font-semibold text-[var(--cream-light)] hover:bg-[var(--button-hover)]">Terapkan</button>
+                        <button
+                            type="submit"
+                            class="rounded-lg bg-[var(--brown)] px-5 py-2 font-semibold
+                                   text-[var(--cream-light)] hover:bg-[var(--button-hover)]"
+                        >
+                            Terapkan
+                        </button>
                     </form>
                 </details>
             </div>

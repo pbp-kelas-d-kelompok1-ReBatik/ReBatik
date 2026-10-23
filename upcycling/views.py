@@ -26,7 +26,12 @@ def request_list(request):
     valid_categories = dict(UpcyclingRequest.CATEGORY_CHOICES)
 
     if selected_status == "ONGOING":
-        requests = requests.filter(status__in=["PENDING", "PROCESSING"])
+        requests = requests.filter(
+            status__in=[
+                UpcyclingRequest.Status.PENDING,
+                UpcyclingRequest.Status.PROCESSING,
+            ]
+        )
     elif selected_status in valid_statuses:
         requests = requests.filter(status=selected_status)
     else:
@@ -61,7 +66,7 @@ def request_create(request):
                 )
                 pending_count = UpcyclingRequest.objects.filter(
                     user=user,
-                    status="PENDING",
+                    status=UpcyclingRequest.Status.PENDING,
                 ).count()
 
                 if pending_count >= PENDING_REQUEST_LIMIT:
@@ -82,7 +87,7 @@ def request_create(request):
     else:
         pending_count = UpcyclingRequest.objects.filter(
             user=request.user,
-            status="PENDING",
+            status=UpcyclingRequest.Status.PENDING,
         ).count()
         if pending_count >= PENDING_REQUEST_LIMIT:
             messages.info(
@@ -138,7 +143,7 @@ def request_detail(request, pk):
         },
     ]
 
-    if status == "PENDING":
+    if status == UpcyclingRequest.Status.PENDING:
         timeline_steps.extend(
             [
                 {"label": "Menunggu tinjauan", "state": "current"},
@@ -146,7 +151,7 @@ def request_detail(request, pk):
                 {"label": "Selesai · estimasi 2 minggu", "state": "upcoming"},
             ]
         )
-    elif status == "PROCESSING":
+    elif status == UpcyclingRequest.Status.PROCESSING:
         timeline_steps.extend(
             [
                 {"label": "Ditinjau", "state": "done"},
@@ -154,7 +159,7 @@ def request_detail(request, pk):
                 {"label": "Selesai · estimasi 2 minggu", "state": "upcoming"},
             ]
         )
-    elif status == "COMPLETED":
+    elif status == UpcyclingRequest.Status.COMPLETED:
         timeline_steps.extend(
             [
                 {"label": "Ditinjau", "state": "done"},
@@ -184,7 +189,7 @@ def request_update(request, pk):
         user=request.user,
     )
 
-    if upcycling_request.status != "PENDING":
+    if upcycling_request.status != UpcyclingRequest.Status.PENDING:
         messages.info(
             request,
             "Permintaan hanya bisa diedit saat masih menunggu tinjauan.",
@@ -204,7 +209,7 @@ def request_update(request, pk):
                     pk=pk,
                     user=request.user,
                 )
-                if current_request.status != "PENDING":
+                if current_request.status != UpcyclingRequest.Status.PENDING:
                     messages.info(
                         request,
                         "Permintaan hanya bisa diedit saat masih menunggu tinjauan.",
@@ -253,7 +258,7 @@ def request_delete(request, pk):
         user=request.user,
     )
 
-    if upcycling_request.status != "PENDING":
+    if upcycling_request.status != UpcyclingRequest.Status.PENDING:
         messages.info(
             request,
             "Permintaan hanya bisa dihapus saat masih menunggu tinjauan.",
@@ -264,7 +269,7 @@ def request_delete(request, pk):
         deleted_count, _ = UpcyclingRequest.objects.filter(
             pk=pk,
             user=request.user,
-            status="PENDING",
+            status=UpcyclingRequest.Status.PENDING,
         ).delete()
 
         if not deleted_count:

@@ -7,6 +7,12 @@ NOTES_MAX_LENGTH = 2000
 
 
 class UpcyclingRequest(models.Model):
+    class Status(models.TextChoices):
+        PENDING = "PENDING", "Menunggu tinjauan"
+        PROCESSING = "PROCESSING", "Sedang dikerjakan"
+        COMPLETED = "COMPLETED", "Selesai"
+        CANCELLED = "CANCELLED", "Dibatalkan"
+
     FABRIC_CHOICES = [
         ("PARANG", "Kain Motif Parang"),
         ("KAWUNG", "Kain Motif Kawung"),
@@ -36,12 +42,7 @@ class UpcyclingRequest(models.Model):
         ("KURIR", "Kurir"),
     ]
 
-    STATUS_CHOICES = [
-        ("PENDING", "Menunggu tinjauan"),
-        ("PROCESSING", "Sedang dikerjakan"),
-        ("COMPLETED", "Selesai"),
-        ("CANCELLED", "Dibatalkan"),
-    ]
+    STATUS_CHOICES = Status.choices
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -64,7 +65,7 @@ class UpcyclingRequest(models.Model):
     status = models.CharField(
         max_length=12,
         choices=STATUS_CHOICES,
-        default="PENDING",
+        default=Status.PENDING,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
