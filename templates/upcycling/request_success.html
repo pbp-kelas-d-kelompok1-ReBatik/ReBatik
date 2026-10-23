@@ -24,7 +24,7 @@
 
         <div class="mt-7 rounded-2xl border border-[var(--upcycling-accent)] bg-[var(--upcycling-surface)] p-5 text-left sm:p-7">
             <p class="text-sm font-bold uppercase tracking-[0.18em] text-[var(--button)]">Ringkasan Permintaan</p>
-            <h3 class="mt-2 text-xl font-bold sm:text-2xl">{{ upcycling_request.get_product_display }}</h3>
+            <h3 class="mt-2 text-xl font-bold sm:text-2xl">{{ upcycling_request.get_product_name }}</h3>
             <dl class="mt-4 grid gap-4 border-t border-[var(--border)] pt-4 text-sm sm:grid-cols-2 sm:text-base">
                 <div>
                     <dt class="font-semibold">Kain</dt>
@@ -32,7 +32,7 @@
                 </div>
                 <div>
                     <dt class="font-semibold">Kategori dan produk</dt>
-                    <dd class="text-[var(--brown-muted)]">{{ upcycling_request.get_category_display }} · {{ upcycling_request.get_product_display }}</dd>
+                    <dd class="text-[var(--brown-muted)]">{{ upcycling_request.get_category_display }} · {{ upcycling_request.get_product_name }}</dd>
                 </div>
                 <div>
                     <dt class="font-semibold">Jumlah</dt>
@@ -50,15 +50,21 @@
         </div>
 
         <div class="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-            <a href="{% url 'upcycling:request_list' %}" class="inline-flex min-h-12 items-center justify-center rounded-xl bg-[var(--brown)] px-6 py-3 font-bold text-[var(--cream-light)] transition hover:bg-[var(--button-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--gold)]">
+            <a href="{% url 'upcycling:request_list' %}" class="upcycling-button-dark min-h-12 px-6 py-3 font-bold focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[var(--gold)]">
                 Lihat Permintaan Saya
             </a>
-            <a href="{% url 'upcycling:request_create' %}" class="inline-flex min-h-12 items-center justify-center rounded-xl border-2 border-[var(--brown)] px-6 py-3 font-bold text-[var(--brown)] transition hover:bg-[var(--upcycling-summary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]">
+            <a href="{% url 'upcycling:request_create' %}" class="upcycling-button-brown min-h-12 px-6 py-3 font-bold focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]">
                 Buat Permintaan Lain
             </a>
         </div>
 
-        <img src="{% static 'img/upcycling/mascot-shirt.webp' %}" alt="Maskot ReBatik membawa kain" loading="lazy" decoding="async" class="mx-auto mt-6 h-24 w-24 object-contain sm:h-32 sm:w-32">
+        <img
+            src="{% static 'img/upcycling/mascot-happy.webp' %}"
+            alt="Maskot ReBatik tersenyum"
+            loading="lazy"
+            decoding="async"
+            class="mx-auto mt-6 h-24 w-24 object-contain sm:h-32 sm:w-32"
+        >
     </div>
 </section>
 {% endblock %}

@@ -153,6 +153,43 @@ main {
     color: #FFF3D8;
 }
 
+.nav-user-label {
+    color: var(--cream);
+    font-family: "Garamond", Georgia, serif;
+    font-size: 20px;
+    white-space: nowrap;
+}
+
+.nav-logout-form,
+.nav-menu-logout-form {
+    margin: 0;
+}
+
+.nav-logout-button,
+.nav-menu-logout-button {
+    padding: 0;
+    color: var(--cream);
+    font-family: "Garamond", Georgia, serif;
+    font-size: 18px;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+}
+
+.nav-logout-button {
+    font-size: 20px;
+    font-weight: normal;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+}
+
+.nav-logout-button:hover,
+.nav-menu-logout-button:hover {
+    color: #FFF3D8;
+    background-color: transparent;
+    border-color: transparent;
+}
+
 .menu-btn {
     width: 30px;
     height: 30px;
@@ -215,6 +252,24 @@ main {
     font-size: 20px;
 
     text-decoration: none;
+}
+
+.nav-menu-user,
+.nav-menu-logout-button {
+    display: block;
+    padding: 10px 18px;
+    color: var(--cream);
+    font-family: "Garamond", Georgia, serif;
+    font-size: 20px;
+}
+
+.nav-menu-logout-button {
+    width: 100%;
+    text-align: left;
+}
+
+.nav-menu-logout-button:hover {
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .nav-menu a:hover {
@@ -728,6 +783,37 @@ footer h3 {
 }
 
 @layer components {
+    .upcycling-button-dark,
+    .upcycling-button-brown {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--upcycling-accent);
+        border-radius: 9999px;
+        color: var(--cream-light);
+        box-shadow: 0 4px 8px rgb(74 46 40 / 30%);
+        transition: filter 0.2s ease;
+    }
+
+    .upcycling-button-dark {
+        background: linear-gradient(180deg, #7f5237 0%, #432e2b 100%);
+    }
+
+    .upcycling-button-brown {
+        background: linear-gradient(180deg, #673a1f 0%, #98706b 100%);
+    }
+
+    .upcycling-button-dark:hover,
+    .upcycling-button-brown:hover {
+        filter: brightness(1.08);
+    }
+
+    .upcycling-button-dark:focus-visible,
+    .upcycling-button-brown:focus-visible {
+        outline: 2px solid var(--brown);
+        outline-offset: 3px;
+    }
+
     .upcycling-field.upcycling-input {
         min-height: 2.9rem;
         border: 1px solid var(--border);
@@ -760,19 +846,6 @@ footer h3 {
 
     .upcycling-delivery-option:has(input:checked) {
         background-image: url("../img/upcycling/delivery-option-selected.svg");
-    }
-
-    .upcycling-submit-button {
-        border: 0;
-        background-color: transparent;
-        background-image: url("../img/upcycling/submit-button.svg");
-        background-repeat: no-repeat;
-        background-size: 100% 100%;
-    }
-
-    .upcycling-submit-button:hover {
-        background-color: transparent;
-        filter: brightness(1.05);
     }
 
     .upcycling-product-option {

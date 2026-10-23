@@ -21,7 +21,7 @@
 
         <div class="mt-6 flex flex-col gap-4 border-b border-[var(--border)] pb-5 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex flex-wrap items-center gap-3 sm:gap-5">
-                <h2 class="text-3xl font-bold sm:text-4xl">{{ upcycling_request.get_product_display }}</h2>
+                <h2 class="text-3xl font-bold sm:text-4xl">{{ upcycling_request.get_product_name }}</h2>
                 <span class="rounded-full px-5 py-2 text-sm font-bold
                     {% if upcycling_request.status == 'PENDING' %}bg-[#e9e1d4] text-[var(--brown)]
                     {% elif upcycling_request.status == 'PROCESSING' %}bg-[var(--upcycling-status-processing)] text-[var(--upcycling-status-processing-text)]
@@ -72,7 +72,7 @@
 
                 <dl class="mt-5 space-y-3 text-base sm:text-lg">
                     <div><dt class="sr-only">Kain</dt><dd>Kain: {{ upcycling_request.get_fabric_display }}</dd></div>
-                    <div><dt class="sr-only">Produk</dt><dd>Produk: {{ upcycling_request.get_category_display }} · {{ upcycling_request.get_product_display }}</dd></div>
+                    <div><dt class="sr-only">Produk</dt><dd>Produk: {{ upcycling_request.get_category_display }} · {{ upcycling_request.get_product_name }}</dd></div>
                     <div><dt class="sr-only">Jumlah</dt><dd>Jumlah: {{ upcycling_request.quantity }} pcs</dd></div>
                     <div><dt class="sr-only">Pengiriman kain</dt><dd>Pengiriman kain: {{ upcycling_request.get_delivery_method_display }}</dd></div>
                     {% if upcycling_request.notes %}
@@ -96,9 +96,28 @@
         </div>
 
         {% if upcycling_request.status == 'PENDING' %}
-            <div class="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-[var(--brown-muted)]">
-                <a href="{% url 'upcycling:request_update' upcycling_request.pk %}" class="underline underline-offset-4 hover:text-[var(--brown)]">Edit permintaan</a>
-                <a href="{% url 'upcycling:request_delete' upcycling_request.pk %}" class="underline underline-offset-4 hover:text-[var(--brown)]">Hapus permintaan</a>
+            <div class="mt-5 flex flex-col gap-3 sm:flex-row">
+                <a
+                    href="{% url 'upcycling:request_update' upcycling_request.pk %}"
+                    class="inline-flex min-h-12 items-center justify-center rounded-xl border-2
+                           border-[var(--brown)] bg-[var(--upcycling-surface)] px-6 py-3
+                           font-bold text-[var(--brown)] transition hover:bg-[var(--brown)]
+                           hover:text-[var(--cream-light)] focus-visible:outline
+                           focus-visible:outline-2 focus-visible:outline-offset-2
+                           focus-visible:outline-[var(--button-hover)]"
+                >
+                    Edit permintaan
+                </a>
+                <a
+                    href="{% url 'upcycling:request_delete' upcycling_request.pk %}"
+                    class="inline-flex min-h-12 items-center justify-center rounded-xl border-2
+                           border-[var(--danger)] bg-[var(--upcycling-surface)] px-6 py-3
+                           font-bold text-[var(--danger)] transition hover:bg-[var(--danger)]
+                           hover:text-white focus-visible:outline focus-visible:outline-2
+                           focus-visible:outline-offset-2 focus-visible:outline-[var(--danger-hover)]"
+                >
+                    Hapus permintaan
+                </a>
             </div>
         {% endif %}
     </div>

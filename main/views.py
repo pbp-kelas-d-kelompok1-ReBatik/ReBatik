@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect,get_list_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect
 from .forms import LoginForm, SignUpForm
 # Create your views here.
@@ -73,6 +74,7 @@ def register(request):
     return render(request, "signup.html", {"form": form})
 
 
+@require_POST
 def logout_user(request):
     logout(request)
     return redirect("main:show_home")

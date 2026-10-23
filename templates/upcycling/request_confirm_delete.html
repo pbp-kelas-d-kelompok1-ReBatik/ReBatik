@@ -11,7 +11,7 @@
     <div class="mx-auto max-w-2xl rounded-3xl border-2 border-[var(--upcycling-accent)] bg-[var(--upcycling-panel)] p-5 text-[var(--brown)] shadow-2xl sm:p-8">
         <div class="rounded-2xl border border-[var(--upcycling-accent)] bg-[var(--upcycling-surface)] p-5 sm:p-7">
             <p class="text-sm font-bold uppercase tracking-[0.18em] text-[var(--brown-muted)]">Konfirmasi penghapusan</p>
-            <h2 class="mt-3 text-2xl font-bold sm:text-3xl">{{ upcycling_request.get_product_display }}</h2>
+            <h2 class="mt-3 text-2xl font-bold sm:text-3xl">{{ upcycling_request.get_product_name }}</h2>
             <p class="mt-2 text-[var(--brown-muted)]">{{ upcycling_request.get_fabric_display }} <span aria-hidden="true">·</span> {{ upcycling_request.get_category_display }}</p>
 
             <dl class="mt-5 grid gap-3 border-t border-[var(--border)] pt-4 text-sm sm:grid-cols-2 sm:text-base">

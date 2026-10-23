@@ -35,15 +35,6 @@
                     Home
                 </a>
 
-                <a href="{% url 'main:login' %}">
-                    Sign-in
-                </a>
-
-                <a href="{% url 'main:signup' %}">
-                    Sign-up
-                </a>
-
-
                 <a href="{% url 'batik_story:show_batik_story' %}">
                     Batik Story
                 </a>
@@ -60,6 +51,14 @@
                     Drop-off Point
                 </a>
 
+                {% if user.is_authenticated %}
+                    <span class="nav-user-label">{{ user.username }}</span>
+                    <form method="post" action="{% url 'main:logout' %}" class="nav-logout-form">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-logout-button">Logout</button>
+                    </form>
+                {% endif %}
+
             </nav>
 
             <button type="button" class="menu-btn" onclick="toggleMenu()" aria-label="Open menu">
@@ -70,9 +69,13 @@
 
             <div class="nav-menu" id="navMenu">
 
-                <a href="#">
-                    Profile
-                </a>
+                {% if user.is_authenticated %}
+                    <span class="nav-menu-user">Masuk sebagai {{ user.username }}</span>
+                    <form method="post" action="{% url 'main:logout' %}" class="nav-menu-logout-form">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-menu-logout-button">Logout</button>
+                    </form>
+                {% endif %}
 
                 <a href="#">
                     Landing page
