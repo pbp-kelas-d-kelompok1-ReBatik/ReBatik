@@ -2,9 +2,11 @@ from datetime import datetime, timezone as datetime_timezone
 
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.forms.models import model_to_dict
 from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 
+from .admin import UpcyclingRequestAdminForm
 from .forms import UpcyclingRequestForm
 from .models import UpcyclingRequest
 
@@ -121,9 +123,71 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         )
 
 
-class UpcyclingRequestAdminTests(SimpleTestCase):
+class UpcyclingRequestAdminTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(username="admin-form-user")
+
     def test_request_model_is_registered_in_admin(self):
         self.assertIn(UpcyclingRequest, admin.site._registry)
+
+    def make_form(self, current_status, new_status):
+        upcycling_request = UpcyclingRequest.objects.create(
+            user=self.user,
+            fabric="PARANG",
+            category="TAS",
+            product="TOTE_BAG",
+            quantity=1,
+            delivery_method="DROP_OFF",
+            address="Depok",
+            whatsapp="+6281234567890",
+            status=current_status,
+        )
+        form_data = model_to_dict(upcycling_request)
+        form_data["status"] = new_status
+        return UpcyclingRequestAdminForm(
+            data=form_data,
+            instance=upcycling_request,
+        )
+
+    def test_admin_form_accepts_pending_to_processing(self):
+        form = self.make_form(
+            UpcyclingRequest.Status.PENDING,
+            UpcyclingRequest.Status.PROCESSING,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_admin_form_accepts_processing_to_completed(self):
+        form = self.make_form(
+            UpcyclingRequest.Status.PROCESSING,
+            UpcyclingRequest.Status.COMPLETED,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_admin_form_rejects_pending_to_completed(self):
+        form = self.make_form(
+            UpcyclingRequest.Status.PENDING,
+            UpcyclingRequest.Status.COMPLETED,
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("status", form.errors)
+
+    def test_admin_form_rejects_changes_from_terminal_statuses(self):
+        for terminal_status in (
+            UpcyclingRequest.Status.COMPLETED,
+            UpcyclingRequest.Status.CANCELLED,
+        ):
+            with self.subTest(status=terminal_status):
+                form = self.make_form(
+                    terminal_status,
+                    UpcyclingRequest.Status.PENDING,
+                )
+
+                self.assertFalse(form.is_valid())
+                self.assertIn("status", form.errors)
 
 
 class UpcyclingRequestViewTests(TestCase):
@@ -162,6 +226,47 @@ class UpcyclingRequestViewTests(TestCase):
         }
         data.update(overrides)
         return UpcyclingRequest.objects.create(user=user, **data)
+
+    def test_request_list_paginates_25_requests_and_preserves_status_filter(self):
+        for _ in range(25):
+            self.make_request(self.user, status=UpcyclingRequest.Status.COMPLETED)
+        self.client.force_login(self.user)
+
+        first_page = self.client.get(
+            reverse("upcycling:request_list"),
+            {"status": "COMPLETED"},
+        )
+        self.assertEqual(len(first_page.context["requests"]), 10)
+        self.assertEqual(first_page.content.count(b"<article"), 10)
+        self.assertContains(first_page, "?status=COMPLETED&amp;page=2")
+
+        second_page = self.client.get(
+            reverse("upcycling:request_list"),
+            {"status": "COMPLETED", "page": 2},
+        )
+        self.assertEqual(len(second_page.context["requests"]), 10)
+        self.assertEqual(second_page.content.count(b"<article"), 10)
+
+        third_page = self.client.get(
+            reverse("upcycling:request_list"),
+            {"status": "COMPLETED", "page": 3},
+        )
+        self.assertEqual(len(third_page.context["requests"]), 5)
+        self.assertEqual(third_page.content.count(b"<article"), 5)
+
+    def test_request_list_invalid_and_out_of_range_pages_are_normalized(self):
+        for _ in range(25):
+            self.make_request(self.user)
+        self.client.force_login(self.user)
+        url = reverse("upcycling:request_list")
+
+        out_of_range = self.client.get(url, {"page": 999})
+        self.assertEqual(out_of_range.context["page_obj"].number, 3)
+        self.assertEqual(len(out_of_range.context["requests"]), 5)
+
+        invalid_page = self.client.get(url, {"page": "abc"})
+        self.assertEqual(invalid_page.context["page_obj"].number, 1)
+        self.assertEqual(len(invalid_page.context["requests"]), 10)
 
     def test_user_can_create_request_and_is_redirected_to_success_page(self):
         self.client.force_login(self.user)
