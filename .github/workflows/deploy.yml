@@ -53,10 +53,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check PWS main branch is readable
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      - name: Install Tailwind dependencies
+        run: npm ci
+
+      - name: Build Tailwind CSS
+        run: npm run tailwind:build
+
+      - name: Dry-run deployment push to PWS
         env:
           PWS_URL: ${{ secrets.PWS_URL }}
-        run: git ls-remote --exit-code "$PWS_URL" refs/heads/main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git fetch "$PWS_URL" main
+          pws_parent="$(git rev-parse FETCH_HEAD)"
+
+          git add --force static/css/tailwind.css
+          deployment_tree="$(git write-tree)"
+          deployment_commit="$(git commit-tree "$deployment_tree" -p "$pws_parent" \
+            -m "chore(deploy): include generated Tailwind CSS" \
+            -m "GitHub source commit: $GITHUB_SHA")"
+
+          git push --dry-run "$PWS_URL" "$deployment_commit:main"
 
   deploy:
     needs: test

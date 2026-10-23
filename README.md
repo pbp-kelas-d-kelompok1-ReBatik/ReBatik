@@ -134,6 +134,6 @@ Gunakan class Tailwind langsung pada elemen HTML di template Django, misalnya `c
 
 Push ke `main` menjalankan tes dan membangun Tailwind. Setelah tes lulus, workflow membuat commit deployment yang menyertakan `static/css/tailwind.css`, lalu mengirimnya ke PWS. File CSS tersebut hanya ada di riwayat PWS, bukan di GitHub. Karena itu, deploy ke PWS dilakukan melalui GitHub Actions; jangan melakukan push manual ke remote PWS.
 
-Sebelum merge, workflow dapat dijalankan manual dari tab **Actions**. Pemicu manual hanya menjalankan tes dan memeriksa apakah secret `PWS_URL` dapat membaca branch `main` di PWS; pemicu ini tidak melakukan deployment.
+Sebelum merge, workflow dapat dijalankan manual dari tab **Actions**. Pemicu manual menjalankan tes, membangun CSS, lalu melakukan dry run push ke PWS. Ini memeriksa alur push tanpa memperbarui branch PWS atau melakukan deployment.
 
 Jika PowerShell menampilkan pesan bahwa `npm` tidak bisa dijalankan karena execution policy, gunakan `npm.cmd` sebagai pengganti `npm` pada perintah di atas, misalnya `npm.cmd ci` atau `npm.cmd run tailwind:build`.
