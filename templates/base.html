@@ -39,25 +39,18 @@
                     Batik Story
                 </a>
 
-                <a href="{% url 'batik_story:show_batik_custom' %}">
-                    Custom
-                </a> 
-
-                <a href="{% url 'marketplace:home' %}">
-                    Marketplace
-                </a>
-
-                <a href="{% url 'marketplace:dropoff' %}">
-                    Drop-off Point
-                </a>
-
                 {% if user.is_authenticated %}
                     <span class="nav-user-label">{{ user.username }}</span>
                     <form method="post" action="{% url 'main:logout' %}" class="nav-logout-form">
                         {% csrf_token %}
                         <button type="submit" class="nav-logout-button">Logout</button>
                     </form>
+                {% else %}
+                    <a href="{% url 'main:login' %}">Sign in</a>
+                    <a href="{% url 'main:signup' %}">Sign up</a>
                 {% endif %}
+
+                <a href="#">Reward</a>
 
             </nav>
 
@@ -68,46 +61,18 @@
             </button>
 
             <div class="nav-menu" id="navMenu">
-
                 {% if user.is_authenticated %}
-                    <span class="nav-menu-user">Masuk sebagai {{ user.username }}</span>
-                    <form method="post" action="{% url 'main:logout' %}" class="nav-menu-logout-form">
-                        {% csrf_token %}
-                        <button type="submit" class="nav-menu-logout-button">Logout</button>
-                    </form>
+                    <a href="#">Profile</a>
+                {% else %}
+                    <a href="{% url 'main:login' %}">Profile</a>
                 {% endif %}
-
-                <a href="#">
-                    Landing page
-                </a>
-
-                <a href="{% url 'marketplace:home' %}">
-                    MarketPlace
-                </a>
-
-                <a href="#">
-                    Donasi Kain
-                </a>
-
-                <a href="{% url 'marketplace:dropoff' %}">
-                    Drop-off Point
-                </a>
-
-                <a href="{% url 'upcycling:request_list' %}">
-                    Upcycling Request
-                </a>
-
-                <a href="#">
-                    Custom Batik
-                </a>
-
-                <a href="#">
-                    Impact Tracker
-                </a>
-
-
-
-
+                <a href="{% url 'marketplace:home' %}">MarketPlace</a>
+                <a href="#">Donasi Kain</a>
+                <a href="{% url 'marketplace:dropoff' %}">Drop-off Point</a>
+                <a href="{% url 'upcycling:request_list' %}">Upcycling Request</a>
+                <a href="{% url 'batik_story:show_batik_custom' %}">Custom Batik</a>
+                <a href="#">Impact Tracker</a>
+                <a href="{% url 'main:show_home' %}">Landing page</a>
             </div>
 
         </header>
