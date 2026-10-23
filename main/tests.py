@@ -37,7 +37,7 @@ class LoginRedirectTests(TestCase):
         self.assertNotContains(response, ">Sign in</a>")
         self.assertNotContains(response, ">Sign up</a>")
 
-    def test_dropdown_navigation_is_same_for_guests_and_members(self):
+    def test_dropdown_navigation_links_keep_order_for_guests_and_members(self):
         guest_response = self.client.get(reverse("main:show_home"))
         self.client.force_login(self.user)
         member_response = self.client.get(reverse("main:show_home"))
@@ -66,8 +66,33 @@ class LoginRedirectTests(TestCase):
             positions = [menu.index(label) for label in labels_in_order]
             self.assertEqual(positions, sorted(positions))
 
-        self.assertIn('href="/login/">Profile</a>', guest_menu)
-        self.assertIn('href="#">Profile</a>', member_menu)
+        self.assertIn('href="#">Profile</a>', guest_menu)
+        self.assertIn('href="#">Profile (rezky)</a>', member_menu)
+
+    def test_hamburger_shows_auth_actions_for_guest_and_member(self):
+        guest_response = self.client.get(reverse("main:show_home"))
+        guest_menu = guest_response.content.decode().split(
+            '<div class="nav-menu" id="navMenu">',
+            1,
+        )[1].split("</div>", 1)[0]
+
+        self.assertIn('href="/login/">Sign in</a>', guest_menu)
+        self.assertIn('href="/signup/">Sign up</a>', guest_menu)
+        self.assertNotIn("Logout", guest_menu)
+
+        self.client.force_login(self.user)
+        member_response = self.client.get(reverse("main:show_home"))
+        member_menu = member_response.content.decode().split(
+            '<div class="nav-menu" id="navMenu">',
+            1,
+        )[1].split("</div>", 1)[0]
+
+        self.assertIn('href="#">Profile (rezky)</a>', member_menu)
+        self.assertNotIn("Masuk sebagai", member_menu)
+        self.assertIn('action="/logout/" class="nav-menu-logout-form"', member_menu)
+        self.assertIn('class="nav-menu-logout-button">Logout</button>', member_menu)
+        self.assertNotIn('>Sign in</a>', member_menu)
+        self.assertNotIn('>Sign up</a>', member_menu)
 
     def test_login_returns_user_to_safe_next_url(self):
         response = self.client.post(
