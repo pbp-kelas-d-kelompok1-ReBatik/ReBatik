@@ -13,17 +13,16 @@ User = get_user_model()
 
 
 class UpcyclingRequestFormTests(SimpleTestCase):
-    def setUp(self):
-        self.valid_data = {
-            "fabric": "PARANG",
-            "category": "TAS",
-            "product": "TOTE_BAG",
-            "quantity": 1,
-            "notes": "",
-            "delivery_method": "DROP_OFF",
-            "address": "Depok",
-            "whatsapp": "081234567890",
-        }
+    valid_data = {
+        "fabric": "PARANG",
+        "category": "TAS",
+        "product": "TOTE_BAG",
+        "quantity": 1,
+        "notes": "",
+        "delivery_method": "DROP_OFF",
+        "address": "Depok",
+        "whatsapp": "081234567890",
+    }
 
     def test_valid_request_form(self):
         form = UpcyclingRequestForm(data=self.valid_data)
@@ -128,25 +127,27 @@ class UpcyclingRequestAdminTests(SimpleTestCase):
 
 
 class UpcyclingRequestViewTests(TestCase):
-    def setUp(self):
-        self.user = User.objects.create_user(
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(
             username="rezky",
             password="password123",
         )
-        self.other_user = User.objects.create_user(
+        cls.other_user = User.objects.create_user(
             username="other",
             password="password123",
         )
-        self.form_data = {
-            "fabric": "PARANG",
-            "category": "TAS",
-            "product": "TOTE_BAG",
-            "quantity": 1,
-            "notes": "",
-            "delivery_method": "DROP_OFF",
-            "address": "Depok",
-            "whatsapp": "081234567890",
-        }
+
+    form_data = {
+        "fabric": "PARANG",
+        "category": "TAS",
+        "product": "TOTE_BAG",
+        "quantity": 1,
+        "notes": "",
+        "delivery_method": "DROP_OFF",
+        "address": "Depok",
+        "whatsapp": "081234567890",
+    }
 
     def make_request(self, user, **overrides):
         data = {

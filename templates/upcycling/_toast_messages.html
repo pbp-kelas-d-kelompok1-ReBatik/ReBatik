@@ -12,45 +12,47 @@
         {% endfor %}
     </template>
     <script>
-        const toastRegion = document.querySelector("[data-upcycling-toast-region]");
-        const toastTemplate = document.querySelector("[data-upcycling-toast-template]");
+        (() => {
+            const toastRegion = document.querySelector("[data-upcycling-toast-region]");
+            const toastTemplate = document.querySelector("[data-upcycling-toast-template]");
 
-        if (toastRegion && toastTemplate) {
-            toastRegion.append(toastTemplate.content.cloneNode(true));
+            if (toastRegion && toastTemplate) {
+                toastRegion.append(toastTemplate.content.cloneNode(true));
 
-            toastRegion.querySelectorAll("[data-upcycling-toast]").forEach((toast) => {
-                const dismiss = () => {
-                    toast.dataset.dismissed = "true";
-                    toast.classList.add("translate-y-2", "opacity-0");
-                    window.setTimeout(() => toast.remove(), 200);
-                };
+                toastRegion.querySelectorAll("[data-upcycling-toast]").forEach((toast) => {
+                    const dismiss = () => {
+                        toast.dataset.dismissed = "true";
+                        toast.classList.add("translate-y-2", "opacity-0");
+                        window.setTimeout(() => toast.remove(), 200);
+                    };
 
-                const pause = () => {
-                    window.clearTimeout(toast.dismissTimer);
-                    toast.dismissTimer = null;
-                };
+                    const pause = () => {
+                        window.clearTimeout(toast.dismissTimer);
+                        toast.dismissTimer = null;
+                    };
 
-                const resume = () => {
-                    if (!toast.dismissTimer && toast.dataset.dismissed !== "true") {
-                        toast.dismissTimer = window.setTimeout(() => {
-                            toast.dismissTimer = null;
-                            if (!toast.matches(":hover") && !toast.contains(document.activeElement)) {
-                                dismiss();
-                            }
-                        }, 5000);
-                    }
-                };
+                    const resume = () => {
+                        if (!toast.dismissTimer && toast.dataset.dismissed !== "true") {
+                            toast.dismissTimer = window.setTimeout(() => {
+                                toast.dismissTimer = null;
+                                if (!toast.matches(":hover") && !toast.contains(document.activeElement)) {
+                                    dismiss();
+                                }
+                            }, 5000);
+                        }
+                    };
 
-                toast.addEventListener("pointerenter", pause);
-                toast.addEventListener("pointerleave", () => {
-                    if (!toast.contains(document.activeElement)) resume();
+                    toast.addEventListener("pointerenter", pause);
+                    toast.addEventListener("pointerleave", () => {
+                        if (!toast.contains(document.activeElement)) resume();
+                    });
+                    toast.addEventListener("focusin", pause);
+                    toast.addEventListener("focusout", (event) => {
+                        if (!toast.contains(event.relatedTarget) && !toast.matches(":hover")) resume();
+                    });
+                    resume();
                 });
-                toast.addEventListener("focusin", pause);
-                toast.addEventListener("focusout", (event) => {
-                    if (!toast.contains(event.relatedTarget) && !toast.matches(":hover")) resume();
-                });
-                resume();
-            });
-        }
+            }
+        })();
     </script>
 {% endif %}

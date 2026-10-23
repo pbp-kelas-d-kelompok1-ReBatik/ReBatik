@@ -1,6 +1,7 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -8,6 +9,7 @@ from .forms import UpcyclingRequestForm, get_product_options_by_category
 from .models import UpcyclingRequest
 
 PENDING_REQUEST_LIMIT = 10
+REQUESTS_PER_PAGE = 10
 PENDING_LIMIT_MESSAGE = (
     "Anda sudah memiliki {limit} permintaan yang menunggu tinjauan. "
     "Tunggu sampai permintaan diproses sebelum mengajukan lagi."
@@ -42,8 +44,13 @@ def request_list(request):
     else:
         selected_category = ""
 
+    page_obj = Paginator(requests, REQUESTS_PER_PAGE).get_page(
+        request.GET.get("page")
+    )
+
     context = {
-        "requests": requests,
+        "requests": page_obj.object_list,
+        "page_obj": page_obj,
         "status_options": UpcyclingRequest.STATUS_CHOICES,
         "category_options": UpcyclingRequest.CATEGORY_CHOICES,
         "selected_status": selected_status,

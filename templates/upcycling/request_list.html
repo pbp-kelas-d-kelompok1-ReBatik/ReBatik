@@ -4,13 +4,13 @@
 {% block content %}
 <section class="relative isolate overflow-hidden px-4 pb-12 pt-10 sm:px-6 sm:pt-12">
     <img
-        src="{% static 'img/upcycling/cloud-left.png' %}"
+        src="{% static 'img/upcycling/cloud-left.webp' %}"
         alt=""
         aria-hidden="true"
         class="pointer-events-none absolute left-0 top-20 -z-10 w-24 -translate-x-1/3 sm:w-36"
     >
     <img
-        src="{% static 'img/upcycling/cloud-right.png' %}"
+        src="{% static 'img/upcycling/cloud-right.webp' %}"
         alt=""
         aria-hidden="true"
         class="pointer-events-none absolute right-0 top-16 -z-10 w-24 translate-x-1/4 sm:w-36"
@@ -181,6 +181,26 @@
                     </article>
                 {% endfor %}
             </div>
+
+            {% if page_obj.paginator.num_pages > 1 %}
+                <nav aria-label="Navigasi halaman permintaan" class="mt-8 flex items-center justify-center gap-4">
+                    {% if page_obj.has_previous %}
+                        <a
+                            href="?{% if selected_status %}status={{ selected_status }}&amp;{% endif %}{% if selected_category %}category={{ selected_category }}&amp;{% endif %}page={{ page_obj.previous_page_number }}"
+                            class="rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-2 font-semibold hover:bg-[var(--upcycling-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--brown)]"
+                        >Sebelumnya</a>
+                    {% endif %}
+                    <span aria-current="page" class="text-sm font-semibold">
+                        Halaman {{ page_obj.number }} dari {{ page_obj.paginator.num_pages }}
+                    </span>
+                    {% if page_obj.has_next %}
+                        <a
+                            href="?{% if selected_status %}status={{ selected_status }}&amp;{% endif %}{% if selected_category %}category={{ selected_category }}&amp;{% endif %}page={{ page_obj.next_page_number }}"
+                            class="rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-2 font-semibold hover:bg-[var(--upcycling-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--brown)]"
+                        >Berikutnya</a>
+                    {% endif %}
+                </nav>
+            {% endif %}
         {% elif has_any_requests %}
             <div class="mb-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
