@@ -24,6 +24,7 @@ urlpatterns = [
     path('', include('main.urls')),
     path('batik_story/', include('batik_story.urls')),
     path('marketplace/', include('marketplace.urls')),
+    path("upcycling/", include("upcycling.urls")),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

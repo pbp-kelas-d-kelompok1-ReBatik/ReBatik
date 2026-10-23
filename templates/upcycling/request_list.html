@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="relative isolate overflow-hidden px-4 pb-12 pt-10 sm:px-6 sm:pt-12">
+    <img
+        src="{% static 'img/upcycling/cloud-left.webp' %}"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute left-0 top-20 -z-10 w-24 -translate-x-1/3 sm:w-36"
+    >
+    <img
+        src="{% static 'img/upcycling/cloud-right.webp' %}"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute right-0 top-16 -z-10 w-24 translate-x-1/4 sm:w-36"
+    >
+
+    <header class="relative mx-auto mb-10 max-w-4xl text-center text-[var(--cream-light)]">
+        <p class="text-xs uppercase tracking-[0.3em]">Upcycle · Culture · Value</p>
+        <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">My Upcycling Requests</h1>
+        <p class="mt-3 text-base sm:text-lg">Pantau semua permintaan upcycling Anda di sini.</p>
+    </header>
+
+    <main
+        class="mx-auto max-w-6xl rounded-2xl border border-[var(--border)] bg-[#f3ebe1]
+               p-5 text-[var(--brown)] shadow-2xl sm:rounded-3xl sm:p-8 lg:p-10"
+    >
+        {% include "upcycling/_toast_messages.html" %}
+
+        {% if requests %}
+            <div class="mb-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold sm:text-3xl">Daftar Permintaan</h2>
+                    <p class="mt-1 text-[var(--brown-dark)]">
+                        Semua kain yang sudah Anda ajukan untuk diubah menjadi produk baru.
+                    </p>
+                </div>
+                <a
+                    href="{% url 'upcycling:request_create' %}"
+                    class="upcycling-button-dark min-h-12 px-6 py-3 font-semibold
+                           focus-visible:outline focus-visible:outline-offset-2
+                           focus-visible:outline-[var(--brown)]"
+                >
+                    + Buat Permintaan
+                </a>
+            </div>
+
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <nav
+                    aria-label="Filter status permintaan"
+                    class="inline-flex w-fit max-w-full items-center gap-1 rounded-full
+                           border border-[var(--border)] bg-[var(--card)] p-1.5 shadow-sm"
+                >
+                    <a
+                        href="?{% if selected_category %}category={{ selected_category }}{% endif %}"
+                        {% if selected_status != 'ONGOING' and selected_status != 'COMPLETED' %}
+                            aria-current="page"
+                        {% else %}
+                            aria-current="false"
+                        {% endif %}
+                        class="rounded-full px-5 py-2 text-sm transition sm:px-7 sm:text-base
+                               {% if selected_status != 'ONGOING' and selected_status != 'COMPLETED' %}
+                                   bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]
+                               {% else %}
+                                   text-[var(--brown)] hover:bg-[var(--upcycling-soft)]
+                               {% endif %}"
+                    >Semua</a>
+                    <a
+                        href="?status=ONGOING{% if selected_category %}&category={{ selected_category }}{% endif %}"
+                        aria-current="{% if selected_status == 'ONGOING' %}page{% else %}false{% endif %}"
+                        class="rounded-full px-5 py-2 text-sm transition sm:px-7 sm:text-base
+                               {% if selected_status == 'ONGOING' %}
+                                   bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]
+                               {% else %}
+                                   text-[var(--brown)] hover:bg-[var(--upcycling-soft)]
+                               {% endif %}"
+                    >Berjalan</a>
+                    <a
+                        href="?status=COMPLETED{% if selected_category %}&category={{ selected_category }}{% endif %}"
+                        aria-current="{% if selected_status == 'COMPLETED' %}page{% else %}false{% endif %}"
+                        class="rounded-full px-5 py-2 text-sm transition sm:px-7 sm:text-base
+                               {% if selected_status == 'COMPLETED' %}
+                                   bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]
+                               {% else %}
+                                   text-[var(--brown)] hover:bg-[var(--upcycling-soft)]
+                               {% endif %}"
+                    >Selesai</a>
+                </nav>
+
+                <details class="group text-sm">
+                    <summary
+                        class="cursor-pointer list-none font-semibold text-[var(--button-hover)]
+                               underline decoration-[var(--gold)] underline-offset-4
+                               focus-visible:outline focus-visible:outline-2
+                               focus-visible:outline-[var(--brown)]"
+                    >
+                        Filter lainnya
+                    </summary>
+                    <form
+                        method="get"
+                        class="mt-3 grid gap-3 rounded-xl border border-[var(--border)]
+                               bg-[var(--card)] p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
+                    >
+                        <div class="space-y-1">
+                            <label for="filter-status" class="font-semibold">Status</label>
+                            <select
+                                id="filter-status"
+                                name="status"
+                                class="block w-full rounded-lg border border-[var(--border)] bg-white
+                                       px-3 py-2 text-[var(--brown)] focus:border-[var(--gold)]
+                                       focus:outline-none focus:ring-2 focus:ring-[var(--gold)]"
+                            >
+                                <option value="">Semua status</option>
+                                <option
+                                    value="ONGOING"
+                                    {% if selected_status == "ONGOING" %}selected{% endif %}
+                                >Berjalan</option>
+                                {% for value, label in status_options %}
+                                    <option
+                                        value="{{ value }}"
+                                        {% if selected_status == value %}selected{% endif %}
+                                    >{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label for="filter-category" class="font-semibold">Kategori</label>
+                            <select
+                                id="filter-category"
+                                name="category"
+                                class="block w-full rounded-lg border border-[var(--border)] bg-white
+                                       px-3 py-2 text-[var(--brown)] focus:border-[var(--gold)]
+                                       focus:outline-none focus:ring-2 focus:ring-[var(--gold)]"
+                            >
+                                <option value="">Semua kategori</option>
+                                {% for value, label in category_options %}
+                                    <option
+                                        value="{{ value }}"
+                                        {% if selected_category == value %}selected{% endif %}
+                                    >{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button
+                            type="submit"
+                            class="rounded-lg bg-[var(--brown)] px-5 py-2 font-semibold
+                                   text-[var(--cream-light)] hover:bg-[var(--button-hover)]"
+                        >
+                            Terapkan
+                        </button>
+                    </form>
+                </details>
+            </div>
+
+            <div class="mt-6 space-y-4">
+                {% for item in requests %}
+                    <article
+                        class="grid grid-cols-[4rem_minmax(0,1fr)] items-center gap-x-3 gap-y-3
+                               rounded-xl border-2 border-[var(--gold)] bg-[var(--card)] p-4
+                               text-[var(--brown)] shadow-md transition hover:shadow-lg
+                               sm:grid-cols-[5rem_minmax(0,1fr)] sm:gap-x-4 sm:p-5
+                               lg:grid-cols-[6rem_minmax(0,1fr)_auto_auto] lg:gap-6"
+                    >
+                        <div class="size-16 overflow-hidden rounded-lg sm:size-20 lg:size-24">
+                            {% if item.fabric == "PARANG" %}
+                                <img
+                                    src="{% static 'img/upcycling/motif-parang.webp' %}"
+                                    alt="Motif Parang"
+                                    loading="lazy"
+                                    decoding="async"
+                                    class="h-full w-full object-cover"
+                                >
+                            {% elif item.fabric == "KAWUNG" %}
+                                <img
+                                    src="{% static 'img/upcycling/motif-kawung.webp' %}"
+                                    alt="Motif Kawung"
+                                    loading="lazy"
+                                    decoding="async"
+                                    class="h-full w-full object-cover"
+                                >
+                            {% elif item.fabric == "MEGA_MENDUNG" %}
+                                <img
+                                    src="{% static 'img/upcycling/motif-mega-mendung.webp' %}"
+                                    alt="Motif Mega Mendung"
+                                    loading="lazy"
+                                    decoding="async"
+                                    class="h-full w-full object-cover"
+                                >
+                            {% else %}
+                                <img
+                                    src="{% static 'img/upcycling/mascot-question.webp' %}"
+                                    alt="Kain donasi baru"
+                                    loading="lazy"
+                                    decoding="async"
+                                    class="h-full w-full bg-[var(--upcycling-soft)] object-contain p-1"
+                                >
+                            {% endif %}
+                        </div>
+
+                        <div class="min-w-0">
+                            <h3 class="break-words text-lg font-bold leading-tight sm:text-2xl">
+                                {{ item.get_product_name }}
+                            </h3>
+                            <p class="mt-1 break-words text-sm leading-snug text-[var(--brown-dark)] sm:text-base">
+                                {{ item.get_fabric_display }}
+                                <span aria-hidden="true"> · </span>
+                                #RB-{{ item.pk|stringformat:"s"|slice:":8"|upper }}
+                                <span aria-hidden="true"> · </span>
+                                {{ item.created_at|date:"d M Y" }}
+                            </p>
+                        </div>
+
+                        <span
+                            class="col-start-2 w-fit rounded-full px-4 py-2 text-sm font-bold lg:col-start-auto
+                                   {% if item.status == 'PENDING' %}bg-[#dbe6f1] text-[#1f3a56]
+                                   {% elif item.status == 'PROCESSING' %}bg-[#f3dcc0] text-[#6a3b12]
+                                   {% elif item.status == 'COMPLETED' %}bg-[#d6e6d2] text-[#1f4a22]
+                                   {% else %}bg-[#f4d6d2] text-[#7a3027]{% endif %}"
+                        >
+                            {% if item.status == "PENDING" %}
+                                Ditinjau
+                            {% elif item.status == "PROCESSING" %}
+                                Diproses
+                            {% elif item.status == "COMPLETED" %}
+                                Selesai
+                            {% else %}
+                                Dibatalkan
+                            {% endif %}
+                        </span>
+
+                        <a
+                            href="{% url 'upcycling:request_detail' item.pk %}"
+                            class="upcycling-button-dark col-span-2 min-h-11 px-5 py-2 text-sm
+                                   focus-visible:outline focus-visible:outline-offset-2
+                                   focus-visible:outline-[var(--gold)] sm:col-start-2
+                                   lg:col-span-1 lg:col-start-auto"
+                        >
+                            Lihat Detail →
+                        </a>
+                    </article>
+                {% endfor %}
+            </div>
+
+            {% if page_obj.paginator.num_pages > 1 %}
+                <nav aria-label="Navigasi halaman permintaan" class="mt-8 flex items-center justify-center gap-4">
+                    {% if page_obj.has_previous %}
+                        <a
+                            href="{% querystring page=page_obj.previous_page_number %}"
+                            class="rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-2
+                                   font-semibold hover:bg-[var(--upcycling-soft)]
+                                   focus-visible:outline focus-visible:outline-2
+                                   focus-visible:outline-[var(--brown)]"
+                        >Sebelumnya</a>
+                    {% endif %}
+                    <span aria-current="page" class="text-sm font-semibold">
+                        Halaman {{ page_obj.number }} dari {{ page_obj.paginator.num_pages }}
+                    </span>
+                    {% if page_obj.has_next %}
+                        <a
+                            href="{% querystring page=page_obj.next_page_number %}"
+                            class="rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-2
+                                   font-semibold hover:bg-[var(--upcycling-soft)]
+                                   focus-visible:outline focus-visible:outline-2
+                                   focus-visible:outline-[var(--brown)]"
+                        >Berikutnya</a>
+                    {% endif %}
+                </nav>
+            {% endif %}
+        {% elif has_any_requests %}
+            <div class="mb-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold sm:text-3xl">Daftar Permintaan</h2>
+                    <p class="mt-1 text-[var(--brown-dark)]">
+                        Semua kain yang sudah Anda ajukan untuk diubah menjadi produk baru.
+                    </p>
+                </div>
+                <a
+                    href="{% url 'upcycling:request_create' %}"
+                    class="upcycling-button-dark min-h-12 px-6 py-3 font-semibold"
+                >+ Buat Permintaan</a>
+            </div>
+            <div class="rounded-xl border border-[var(--border)] bg-[var(--card)] px-5 py-10 text-center">
+                <h3 class="text-xl font-bold">Tidak ada permintaan yang cocok</h3>
+                <p class="mt-2 text-[var(--brown-dark)]">Coba ubah atau reset filter yang dipilih.</p>
+                <a
+                    href="{% url 'upcycling:request_list' %}"
+                    class="mt-4 inline-block font-semibold text-[var(--button-hover)]
+                           underline decoration-[var(--gold)] underline-offset-4"
+                >Reset filter</a>
+            </div>
+        {% else %}
+            <div
+                class="flex flex-col items-center gap-5 rounded-2xl border border-[var(--border)]
+                       bg-[#f3ebe1] px-5 py-10 text-center sm:gap-6 sm:px-10 sm:py-16"
+            >
+                <img
+                    src="{% static 'img/upcycling/mascot-crying.webp' %}"
+                    alt="Maskot ReBatik menangis karena belum ada permintaan"
+                    loading="lazy"
+                    decoding="async"
+                    class="h-40 w-40 object-contain sm:h-72 sm:w-72 lg:h-[26rem] lg:w-[26rem]"
+                >
+                <h2 class="text-2xl font-bold sm:text-3xl">Belum ada permintaan</h2>
+                <p class="mx-auto max-w-xl text-[var(--brown-muted)]">
+                    Ubah kain tak terpakai menjadi karya baru dalam tiga langkah sederhana.
+                </p>
+                <a
+                    href="{% url 'upcycling:request_create' %}"
+                    class="upcycling-button-dark px-6 py-3 font-semibold
+                           focus-visible:outline focus-visible:outline-offset-2
+                           focus-visible:outline-[var(--brown)]"
+                >Mulai Upcycling →</a>
+            </div>
+        {% endif %}
+    </main>
+</section>
+{% endblock %}

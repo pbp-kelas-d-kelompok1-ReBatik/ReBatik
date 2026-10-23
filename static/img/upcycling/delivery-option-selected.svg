@@ -1,0 +1,15 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="2542" height="467" viewBox="0 0 2542 467" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="Rectangle 74">
+<use xlink:href="#stroke0_0_11" fill="#4A2E28"/>
+<use xlink:href="#stroke1_0_11" fill="#4A2E28"/>
+<mask id="stroke2_0_11" fill="white">
+<use xlink:href="#stroke0_0_11"/>
+<use xlink:href="#stroke1_0_11"/>
+</mask>
+<path d="M44.2771 467H2497.72C2522.18 467 2542 426.877 2542 377.384V89.6162C2542 40.1225 2522.18 0 2497.72 0H44.2771C19.8236 0 0 40.1225 0 89.6162V377.384C0 426.877 19.8235 467 44.2771 467ZM90.0001 467H2452C2501.71 467 2542 426.706 2542 377V90C2542 40.2944 2501.71 0 2452 0H90C40.2944 0 0 40.2944 0 90V377C0 426.706 40.2944 467 90.0001 467Z" stroke-width="24" stroke="#C9965F" mask="url(#stroke2_0_11)"/>
+</g>
+<defs>
+<path id="stroke0_0_11" d="M0 90C0 40.2944 40.2944 0 90 0H2452C2501.71 0 2542 40.2944 2542 90V377C2542 426.706 2501.71 467 2452 467H90.0001C40.2944 467 0 426.706 0 377V90Z"/>
+<path id="stroke1_0_11" d="M0 89.6162C0 40.1225 19.8236 0 44.2771 0H2497.72C2522.18 0 2542 40.1225 2542 89.6162V377.384C2542 426.877 2522.18 467 2497.72 467H44.2771C19.8235 467 0 426.877 0 377.384V89.6162Z"/>
+</defs>
+</svg>

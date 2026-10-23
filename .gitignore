@@ -3,6 +3,10 @@ __pycache__/
 *.pyc
 db.sqlite3
 .vscode/
-# File ini sengaja dilacak Git untuk deployment: static/css/tailwind.css
 .idea/
+.env
+.env.*
+!.env.example
+
+# File ini sengaja dilacak Git untuk deployment: static/css/tailwind.css
 node_modules/
