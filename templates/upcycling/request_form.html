@@ -39,7 +39,7 @@
     <div class="relative mx-auto mb-6 flex max-w-6xl justify-center">
         <a
             href="{% url 'upcycling:request_list' %}"
-            class="inline-flex items-center rounded-full border-2 border-[var(--gold)] bg-[var(--brown)] px-6 py-2 text-[var(--cream-light)] shadow-lg transition hover:bg-[var(--button-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cream-light)]"
+            class="upcycling-button-dark px-6 py-2 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[var(--cream-light)]"
         >
             ← Permintaan Saya
         </a>
@@ -78,10 +78,37 @@
     <form
         method="post"
         id="upcycling-form"
-        class="mx-auto max-w-6xl space-y-8 rounded-3xl border border-[var(--border)] bg-[var(--cream-light)] p-5 text-[var(--brown)] shadow-2xl sm:p-8 lg:p-10 [&_label]:font-semibold [&_ul.errorlist]:mt-1 [&_ul.errorlist]:text-sm [&_ul.errorlist]:font-semibold [&_ul.errorlist]:text-[var(--button-hover)]"
+        class="mx-auto max-w-6xl space-y-8 rounded-3xl border border-[var(--border)]
+               bg-[var(--cream-light)] p-5 text-[var(--brown)] shadow-2xl sm:p-8 lg:p-10
+               [&_label]:font-semibold [&_ul.errorlist]:mt-1 [&_ul.errorlist]:text-sm
+               [&_ul.errorlist]:font-semibold [&_ul.errorlist]:text-[var(--button-hover)]"
     >
         {% csrf_token %}
-        {{ form.non_field_errors }}
+        <div
+            id="form-error-summary"
+            class="{% if not form.errors %}hidden {% endif %}rounded-xl border-2 border-[#a34235] bg-[#f4d6d2] p-4 text-[#7a3027] sm:p-5"
+            role="alert"
+            aria-labelledby="form-error-title"
+            tabindex="-1"
+        >
+            <h2 id="form-error-title" class="font-bold">Ada bagian yang perlu diperbaiki</h2>
+            <p class="mt-1">Periksa kembali isian berikut sebelum mengajukan permintaan:</p>
+            <ul id="form-error-list" class="mt-2 list-inside list-disc space-y-1">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>
+                            <a
+                                class="underline underline-offset-2 hover:font-bold"
+                                href="{% if field.name == 'fabric' %}#pilih-kain{% elif field.name == 'category' %}#pilih-produk{% elif field.name == 'product' %}#product-options{% elif field.name == 'custom_product' %}#id_custom_product{% elif field.name == 'delivery_method' %}#metode-pengiriman{% elif field.name == 'quantity' %}#id_quantity{% elif field.name == 'address' %}#id_address{% elif field.name == 'whatsapp' %}#id_whatsapp{% else %}#detail-permintaan{% endif %}"
+                            >{{ field.label }}: {{ error }}</a>
+                        </li>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
 
         <section id="pilih-kain" class="scroll-mt-8 space-y-4">
             <div class="flex items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
@@ -144,7 +171,7 @@
                 </div>
                 <p class="hidden text-sm italic text-[var(--brown-muted)] sm:block">Satu kategori, satu model</p>
             </div>
-            <p class="text-base text-[var(--brown-muted)]">Pilih kategori, lalu model yang paling Anda inginkan. Model lain bisa ditulis di catatan.</p>
+            <p class="text-base text-[var(--brown-muted)]">Pilih kategori dan model produk. Jika memilih Lainnya, tuliskan produk yang Anda inginkan.</p>
 
             <fieldset class="space-y-3">
                 <legend class="font-semibold">{{ form.category.label }} <span aria-hidden="true">*</span></legend>
@@ -160,13 +187,20 @@
             </fieldset>
 
             <fieldset class="space-y-3">
-                <legend class="font-semibold">{{ form.product.label }} <span aria-hidden="true">*</span></legend>
+                <legend id="product-options-label" class="font-semibold">{{ form.product.label }} <span aria-hidden="true">*</span></legend>
                 <label for="id_product" class="sr-only">{{ form.product.label }}</label>
                 {{ form.product }}
-                <div id="product-options" class="flex flex-wrap gap-2" role="group" aria-label="Pilihan model produk" aria-live="polite">
-                    <span class="text-base text-[var(--brown-muted)]">Pilih kategori untuk melihat model.</span>
+                <div id="standard-product-options" class="space-y-3">
+                    <div id="product-options" class="flex flex-wrap gap-2" role="group" aria-label="Pilihan model produk" aria-live="polite" tabindex="-1">
+                        <span class="text-base text-[var(--brown-muted)]">Pilih kategori untuk melihat model.</span>
+                    </div>
+                    {{ form.product.errors }}
                 </div>
-                {{ form.product.errors }}
+                <div id="custom-product-field" class="hidden space-y-2">
+                    {{ form.custom_product.label_tag }} <span aria-hidden="true">*</span>
+                    {{ form.custom_product }}
+                    {{ form.custom_product.errors }}
+                </div>
             </fieldset>
         </section>
 
@@ -189,7 +223,7 @@
                     {{ form.quantity }}
                     {{ form.quantity.errors }}
                 </div>
-                <fieldset class="space-y-2">
+                <fieldset id="metode-pengiriman" class="space-y-2">
                     <legend class="font-semibold">{{ form.delivery_method.label }} <span aria-hidden="true">*</span></legend>
                     <div class="grid grid-cols-2 gap-2 sm:gap-3">
                         {% for radio in form.delivery_method %}
@@ -214,6 +248,7 @@
                 <div class="space-y-2 sm:col-span-2">
                     {{ form.whatsapp.label_tag }} <span aria-hidden="true">*</span>
                     {{ form.whatsapp }}
+                    <p class="text-sm text-[var(--brown-muted)]">Gunakan format nomor HP Indonesia, misalnya +6281234567890.</p>
                     {{ form.whatsapp.errors }}
                 </div>
             </div>
@@ -236,7 +271,7 @@
 
         <button
             type="submit"
-            class="upcycling-submit-button inline-flex w-full items-center justify-center rounded-xl py-6 text-lg leading-none font-extrabold text-[var(--brown)] transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]"
+            class="upcycling-button-dark w-full py-6 text-lg leading-none font-extrabold focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]"
         >
             {% if is_update %}Simpan Perubahan{% else %}Ajukan Upcycling →{% endif %}
         </button>
@@ -254,10 +289,79 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("upcycling-form");
+    const errorSummary = document.getElementById("form-error-summary");
+    if (errorSummary) {
+        errorSummary.focus({ preventScroll: true });
+        errorSummary.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    const errorList = document.getElementById("form-error-list");
+    const validationMessages = {
+        fabric: ["Kain", "Pilih kain yang ingin digunakan."],
+        category: ["Kategori produk", "Pilih kategori produk."],
+        product: ["Model produk", "Pilih model produk."],
+        custom_product: ["Produk yang diinginkan", "Tuliskan produk yang Anda inginkan."],
+        quantity: ["Jumlah produk", "Masukkan jumlah antara 1 dan 20."],
+        delivery_method: ["Metode pengiriman", "Pilih metode pengiriman kain."],
+        address: ["Alamat / Lokasi", "Isi alamat atau lokasi penyerahan kain."],
+        whatsapp: ["No. WhatsApp", "Masukkan nomor HP Indonesia yang valid, misalnya +6281234567890."],
+    };
+    const validationTargets = {
+        fabric: "#pilih-kain",
+        category: "#pilih-produk",
+        product: "#product-options",
+        custom_product: "#id_custom_product",
+        quantity: "#id_quantity",
+        delivery_method: "#metode-pengiriman",
+        address: "#id_address",
+        whatsapp: "#id_whatsapp",
+    };
+
+    function showClientValidationErrors() {
+        const invalidNames = [...new Set(
+            Array.from(form.elements)
+                .filter((element) => element.willValidate && !element.validity.valid)
+                .map((element) => element.name)
+                .filter(Boolean)
+        )];
+
+        if (invalidNames.includes("category")) {
+            const productIndex = invalidNames.indexOf("product");
+            if (productIndex >= 0) {
+                invalidNames.splice(productIndex, 1);
+            }
+        }
+
+        errorList.replaceChildren();
+        invalidNames.forEach((name) => {
+            const [label, message] = validationMessages[name] || [name, "Periksa kembali isian ini."];
+            const item = document.createElement("li");
+            const link = document.createElement("a");
+            link.className = "underline underline-offset-2 hover:font-bold";
+            link.href = validationTargets[name] || "#upcycling-form";
+            link.textContent = `${label}: ${message}`;
+            item.append(link);
+            errorList.append(item);
+        });
+
+        errorSummary.classList.remove("hidden");
+        errorSummary.focus({ preventScroll: true });
+        errorSummary.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    form.addEventListener("invalid", (event) => {
+        event.preventDefault();
+        window.requestAnimationFrame(showClientValidationErrors);
+    }, true);
+
     const categoryFields = form.querySelectorAll('[name="category"]');
     const fabricFields = form.querySelectorAll('[name="fabric"]');
     const productField = document.getElementById("id_product");
     const productOptions = document.getElementById("product-options");
+    const standardProductOptions = document.getElementById("standard-product-options");
+    const productOptionsLabel = document.getElementById("product-options-label");
+    const customProductField = document.getElementById("id_custom_product");
+    const customProductContainer = document.getElementById("custom-product-field");
     const productsByCategory = JSON.parse(
         document.getElementById("product-options-data").textContent
     );
@@ -274,9 +378,24 @@ document.addEventListener("DOMContentLoaded", () => {
         fabricSummary.textContent = getRadioLabel("fabric", "Pilih kain");
         categorySummary.textContent = getRadioLabel("category", "Pilih kategori");
         const selectedProduct = productField.selectedOptions[0];
-        productSummary.textContent = productField.value && selectedProduct
-            ? selectedProduct.textContent
-            : "Pilih model";
+        if (productField.value === "LAINNYA") {
+            productSummary.textContent = customProductField.value.trim() || "Isi nama produk";
+        } else {
+            productSummary.textContent = productField.value && selectedProduct
+                ? selectedProduct.textContent
+                : "Pilih model";
+        }
+    }
+
+    function updateCustomProductField() {
+        const isOtherCategory = getSelectedCategory() === "LAINNYA";
+        const isCustomProduct = isOtherCategory || productField.value === "LAINNYA";
+        standardProductOptions.classList.toggle("hidden", isOtherCategory);
+        productOptionsLabel.classList.toggle("hidden", isOtherCategory);
+        customProductContainer.classList.toggle("hidden", !isCustomProduct);
+        customProductField.required = isCustomProduct;
+        customProductField.setAttribute("aria-required", String(isCustomProduct));
+        updateSummary();
     }
 
     function getSelectedCategory() {
@@ -287,7 +406,7 @@ document.addEventListener("DOMContentLoaded", () => {
         productOptions.replaceChildren();
         products.forEach((item) => {
             const option = new Option(
-                item.value === "LAINNYA" ? "Tulis sendiri" : item.label,
+                item.label,
                 item.value
             );
             productField.add(option);
@@ -306,7 +425,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         String(itemButton.dataset.productValue === item.value)
                     );
                 });
-                updateSummary();
+                updateCustomProductField();
             });
             productOptions.append(button);
         });
@@ -317,15 +436,25 @@ document.addEventListener("DOMContentLoaded", () => {
         const category = getSelectedCategory();
         productField.replaceChildren(new Option("Pilih model produk", ""));
         productOptions.replaceChildren();
-        updateSummary();
+        updateCustomProductField();
 
         if (!category) {
             productOptions.textContent = "Pilih kategori untuk melihat model.";
+            updateCustomProductField();
             return;
         }
 
         const products = productsByCategory[category] || [];
         renderProductOptions(products);
+
+        if (category === "LAINNYA") {
+            productField.value = "LAINNYA";
+            productOptions.querySelectorAll("button").forEach((button) => {
+                button.setAttribute("aria-pressed", String(button.dataset.productValue === "LAINNYA"));
+            });
+            updateCustomProductField();
+            return;
+        }
 
         if (keepSelection && products.some((item) => item.value === previousProduct)) {
             productField.value = previousProduct;
@@ -333,17 +462,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 button.setAttribute("aria-pressed", String(button.dataset.productValue === previousProduct));
             });
         }
-        updateSummary();
+        updateCustomProductField();
     }
 
     fabricFields.forEach((field) => field.addEventListener("change", updateSummary));
-    categoryFields.forEach((field) => field.addEventListener("change", () => loadProducts()));
+    categoryFields.forEach((field) => field.addEventListener("change", () => {
+        customProductField.value = "";
+        loadProducts();
+    }));
     productField.addEventListener("change", () => {
         productOptions.querySelectorAll("button").forEach((button) => {
             button.setAttribute("aria-pressed", String(button.dataset.productValue === productField.value));
         });
-        updateSummary();
+        updateCustomProductField();
     });
+    customProductField.addEventListener("input", updateSummary);
     loadProducts(true);
 });
 </script>

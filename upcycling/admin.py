@@ -6,6 +6,7 @@ from .models import UpcyclingRequest
 class UpcyclingRequestAdmin(admin.ModelAdmin):
     list_display = (
         "product",
+        "custom_product",
         "fabric",
         "category",
         "quantity",
@@ -14,6 +15,12 @@ class UpcyclingRequestAdmin(admin.ModelAdmin):
         "created_at",
     )
     list_filter = ("status", "fabric", "category", "delivery_method")
-    search_fields = ("user__username", "user__email", "whatsapp", "address")
+    search_fields = (
+        "user__username",
+        "user__email",
+        "custom_product",
+        "whatsapp",
+        "address",
+    )
     readonly_fields = ("created_at", "updated_at")
     date_hierarchy = "created_at"

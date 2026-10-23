@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from .models import UpcyclingRequest
 
@@ -44,6 +46,7 @@ class UpcyclingRequestForm(forms.ModelForm):
             "fabric",
             "category",
             "product",
+            "custom_product",
             "quantity",
             "notes",
             "delivery_method",
@@ -54,6 +57,7 @@ class UpcyclingRequestForm(forms.ModelForm):
             "fabric": "Kain",
             "category": "Kategori Produk",
             "product": "Model Produk",
+            "custom_product": "Produk yang diinginkan",
             "quantity": "Jumlah Produk",
             "notes": "Deskripsi dan Catatan Khusus (opsional)",
             "delivery_method": "Metode Pengiriman Kain",
@@ -66,6 +70,13 @@ class UpcyclingRequestForm(forms.ModelForm):
             # The product chips are rendered in the template; retain this
             # select as the submitted form value.
             "product": forms.Select(attrs={"class": "sr-only"}),
+            "custom_product": forms.TextInput(
+                attrs={
+                    "maxlength": 100,
+                    "class": f"{FIELD_CLASSES} upcycling-field upcycling-input",
+                    "placeholder": "Contoh: sarung bantal",
+                }
+            ),
             "quantity": forms.NumberInput(
                 attrs={
                     "min": 1,
@@ -91,7 +102,7 @@ class UpcyclingRequestForm(forms.ModelForm):
                 attrs={
                     "type": "tel",
                     "class": f"{FIELD_CLASSES} upcycling-field upcycling-input",
-                    "placeholder": "Contoh: 0812xxxxxxx",
+                    "placeholder": "Contoh: +6281234567890",
                 }
             ),
         }
@@ -104,10 +115,36 @@ class UpcyclingRequestForm(forms.ModelForm):
             )
         return quantity
 
+    def clean_whatsapp(self):
+        whatsapp = self.cleaned_data["whatsapp"]
+        normalized = re.sub(r"[\s().-]", "", whatsapp)
+
+        if not re.fullmatch(r"(?:0|\+?62)8[1-9][0-9]{7,10}", normalized):
+            raise forms.ValidationError(
+                "Masukkan nomor HP Indonesia yang valid, misalnya +6281234567890."
+            )
+
+        if normalized.startswith("0"):
+            return f"+62{normalized[1:]}"
+        if normalized.startswith("62"):
+            return f"+{normalized}"
+        return normalized
+
     def clean(self):
         cleaned_data = super().clean()
         category = cleaned_data.get("category")
         product = cleaned_data.get("product")
+        custom_product = cleaned_data.get("custom_product", "").strip()
+
+        if product == "LAINNYA" and not custom_product:
+            self.add_error(
+                "custom_product",
+                "Tuliskan produk yang Anda inginkan.",
+            )
+        elif product != "LAINNYA":
+            cleaned_data["custom_product"] = ""
+        else:
+            cleaned_data["custom_product"] = custom_product
 
         if category and product:
             if product not in PRODUCTS_BY_CATEGORY.get(category, ()):

@@ -25,7 +25,7 @@ class UpcyclingRequest(models.Model):
         ("POUCH", "Pouch"),
         ("KEMEJA", "Kemeja"),
         ("AKSESORIS", "Aksesoris"),
-        ("LAINNYA", "Model lain"),
+        ("LAINNYA", "Lainnya"),
     ]
 
     DELIVERY_CHOICES = [
@@ -49,6 +49,7 @@ class UpcyclingRequest(models.Model):
     fabric = models.CharField(max_length=20, choices=FABRIC_CHOICES)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
     product = models.CharField(max_length=20, choices=PRODUCT_CHOICES)
+    custom_product = models.CharField(max_length=100, blank=True)
     quantity = models.PositiveSmallIntegerField(default=1)
     notes = models.TextField(blank=True)
     delivery_method = models.CharField(max_length=10, choices=DELIVERY_CHOICES)
@@ -66,4 +67,9 @@ class UpcyclingRequest(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"{self.get_product_display()} — {self.user}"
+        return f"{self.get_product_name()} — {self.user}"
+
+    def get_product_name(self):
+        if self.product == "LAINNYA" and self.custom_product:
+            return self.custom_product
+        return self.get_product_display()

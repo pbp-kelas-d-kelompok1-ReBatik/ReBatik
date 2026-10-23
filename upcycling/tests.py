@@ -27,6 +27,58 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         form = UpcyclingRequestForm(data=self.valid_data)
         self.assertTrue(form.is_valid(), form.errors)
 
+    def test_normalizes_supported_indonesian_whatsapp_formats(self):
+        for phone_number in (
+            "081234567890",
+            "6281234567890",
+            "+6281234567890",
+            "+62 812-3456-7890",
+        ):
+            with self.subTest(phone_number=phone_number):
+                data = self.valid_data.copy()
+                data["whatsapp"] = phone_number
+                form = UpcyclingRequestForm(data=data)
+
+                self.assertTrue(form.is_valid(), form.errors)
+                self.assertEqual(
+                    form.cleaned_data["whatsapp"],
+                    "+6281234567890",
+                )
+
+    def test_rejects_invalid_indonesian_whatsapp_number(self):
+        data = self.valid_data.copy()
+        data["whatsapp"] = "+621234567890"
+        form = UpcyclingRequestForm(data=data)
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("whatsapp", form.errors)
+
+    def test_requires_custom_product_name_for_other_product(self):
+        data = self.valid_data.copy()
+        data["product"] = "LAINNYA"
+
+        form = UpcyclingRequestForm(data=data)
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("custom_product", form.errors)
+
+    def test_accepts_and_displays_custom_product_name(self):
+        data = self.valid_data.copy()
+        data.update(product="LAINNYA", custom_product="Sarung bantal")
+        form = UpcyclingRequestForm(data=data)
+
+        self.assertTrue(form.is_valid(), form.errors)
+        request = form.save(commit=False)
+        self.assertEqual(request.get_product_name(), "Sarung bantal")
+
+    def test_clears_custom_product_for_standard_product(self):
+        data = self.valid_data.copy()
+        data["custom_product"] = "Nama lama"
+        form = UpcyclingRequestForm(data=data)
+
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["custom_product"], "")
+
     def test_rejects_product_outside_category(self):
         data = self.valid_data.copy()
         data["product"] = "KEMEJA"
@@ -109,6 +161,20 @@ class UpcyclingRequestViewTests(TestCase):
             reverse("upcycling:request_success", args=[upcycling_request.pk]),
         )
         self.assertEqual(upcycling_request.status, "PENDING")
+
+    def test_incomplete_form_renders_error_summary(self):
+        self.client.force_login(self.user)
+        incomplete_data = self.form_data.copy()
+        incomplete_data.pop("fabric")
+
+        response = self.client.post(
+            reverse("upcycling:request_create"),
+            incomplete_data,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="form-error-summary"')
+        self.assertContains(response, 'href="#pilih-kain"')
 
     def test_user_can_view_success_page_for_own_request(self):
         upcycling_request = self.make_request(self.user)
@@ -354,7 +420,7 @@ class UpcyclingRequestViewTests(TestCase):
             [
                 {"value": "TOTE_BAG", "label": "Tote Bag"},
                 {"value": "SLING_BAG", "label": "Sling Bag"},
-                {"value": "LAINNYA", "label": "Model lain"},
+                {"value": "LAINNYA", "label": "Lainnya"},
             ],
         )
         self.assertContains(response, 'id="product-options-data"')
