@@ -106,6 +106,15 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         self.assertFalse(form.is_valid())
         self.assertIn("quantity", form.errors)
 
+    def test_rejects_notes_longer_than_model_limit(self):
+        data = self.valid_data.copy()
+        data["notes"] = "x" * 2001
+
+        form = UpcyclingRequestForm(data=data)
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("notes", form.errors)
+
 
 class UpcyclingRequestAdminTests(SimpleTestCase):
     def test_request_model_is_registered_in_admin(self):
@@ -161,6 +170,42 @@ class UpcyclingRequestViewTests(TestCase):
             reverse("upcycling:request_success", args=[upcycling_request.pk]),
         )
         self.assertEqual(upcycling_request.status, "PENDING")
+
+    def test_create_ignores_posted_user_and_status(self):
+        self.client.force_login(self.user)
+        data = self.form_data | {
+            "user": self.other_user.pk,
+            "status": "PROCESSING",
+        }
+
+        response = self.client.post(reverse("upcycling:request_create"), data)
+
+        self.assertEqual(response.status_code, 302)
+        created_request = UpcyclingRequest.objects.get(user=self.user)
+        self.assertEqual(created_request.status, "PENDING")
+        self.assertFalse(
+            UpcyclingRequest.objects.filter(user=self.other_user).exists()
+        )
+
+    def test_user_cannot_create_more_than_ten_pending_requests(self):
+        for _ in range(10):
+            self.make_request(self.user)
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("upcycling:request_create"),
+            self.form_data,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            UpcyclingRequest.objects.filter(
+                user=self.user,
+                status="PENDING",
+            ).count(),
+            10,
+        )
+        self.assertContains(response, "sudah memiliki 10 permintaan")
 
     def test_incomplete_form_renders_error_summary(self):
         self.client.force_login(self.user)
@@ -312,6 +357,24 @@ class UpcyclingRequestViewTests(TestCase):
         upcycling_request.refresh_from_db()
         self.assertEqual(upcycling_request.quantity, 2)
         self.assertContains(response, "Permintaan berhasil diperbarui.")
+
+    def test_update_does_not_accept_posted_user_or_status(self):
+        upcycling_request = self.make_request(self.user)
+        self.client.force_login(self.user)
+        data = self.form_data | {
+            "user": self.other_user.pk,
+            "status": "PROCESSING",
+        }
+
+        response = self.client.post(
+            reverse("upcycling:request_update", args=[upcycling_request.pk]),
+            data,
+        )
+
+        self.assertEqual(response.status_code, 302)
+        upcycling_request.refresh_from_db()
+        self.assertEqual(upcycling_request.user, self.user)
+        self.assertEqual(upcycling_request.status, "PENDING")
 
     def test_user_can_open_edit_form_for_own_pending_request(self):
         upcycling_request = self.make_request(self.user)

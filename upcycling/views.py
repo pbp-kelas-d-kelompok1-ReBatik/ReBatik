@@ -1,10 +1,14 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
+from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from .forms import UpcyclingRequestForm, get_product_options_by_category
 from .models import UpcyclingRequest
+
+PENDING_REQUEST_LIMIT = 10
 
 
 @login_required
@@ -46,13 +50,31 @@ def request_create(request):
     if request.method == "POST":
         form = UpcyclingRequestForm(request.POST)
         if form.is_valid():
-            upcycling_request = form.save(commit=False)
-            upcycling_request.user = request.user
-            upcycling_request.save()
-            return redirect(
-                "upcycling:request_success",
-                pk=upcycling_request.pk,
-            )
+            with transaction.atomic():
+                # Lock the user row so concurrent submissions cannot pass the
+                # pending-request limit at the same time.
+                user = get_user_model().objects.select_for_update().get(
+                    pk=request.user.pk
+                )
+                pending_count = UpcyclingRequest.objects.filter(
+                    user=user,
+                    status="PENDING",
+                ).count()
+
+                if pending_count >= PENDING_REQUEST_LIMIT:
+                    form.add_error(
+                        None,
+                        "Anda sudah memiliki 10 permintaan yang menunggu tinjauan. "
+                        "Tunggu sampai permintaan diproses sebelum mengajukan lagi.",
+                    )
+                else:
+                    upcycling_request = form.save(commit=False)
+                    upcycling_request.user = user
+                    upcycling_request.save()
+                    return redirect(
+                        "upcycling:request_success",
+                        pk=upcycling_request.pk,
+                    )
     else:
         form = UpcyclingRequestForm()
 
@@ -159,7 +181,35 @@ def request_update(request, pk):
             instance=upcycling_request,
         )
         if form.is_valid():
-            form.save()
+            validated_request = form.save(commit=False)
+            with transaction.atomic():
+                current_request = get_object_or_404(
+                    UpcyclingRequest.objects.select_for_update(),
+                    pk=pk,
+                    user=request.user,
+                )
+                if current_request.status != "PENDING":
+                    messages.info(
+                        request,
+                        "Permintaan hanya bisa diedit saat masih menunggu tinjauan.",
+                    )
+                    return redirect(
+                        "upcycling:request_detail",
+                        pk=current_request.pk,
+                    )
+
+                # Copy only fields exposed by the form. This keeps status and
+                # owner values from the freshly locked database row.
+                for field_name in form.Meta.fields:
+                    setattr(
+                        current_request,
+                        field_name,
+                        getattr(validated_request, field_name),
+                    )
+                current_request.save(
+                    update_fields=[*form.Meta.fields, "updated_at"]
+                )
+
             messages.success(request, "Permintaan berhasil diperbarui.")
             return redirect(
                 "upcycling:request_detail",
@@ -195,7 +245,20 @@ def request_delete(request, pk):
         return redirect("upcycling:request_detail", pk=upcycling_request.pk)
 
     if request.method == "POST":
-        upcycling_request.delete()
+        with transaction.atomic():
+            deleted_count, _ = UpcyclingRequest.objects.filter(
+                pk=pk,
+                user=request.user,
+                status="PENDING",
+            ).delete()
+
+        if not deleted_count:
+            messages.info(
+                request,
+                "Permintaan tidak dapat dihapus karena statusnya sudah berubah.",
+            )
+            return redirect("upcycling:request_list")
+
         messages.success(request, "Permintaan berhasil dihapus.")
         return redirect("upcycling:request_list")
 

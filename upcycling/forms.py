@@ -88,6 +88,7 @@ class UpcyclingRequestForm(forms.ModelForm):
             "notes": forms.Textarea(
                 attrs={
                     "rows": 4,
+                    "maxlength": 2000,
                     "class": f"{FIELD_CLASSES} upcycling-field upcycling-textarea",
                     "placeholder": "Ceritakan model, warna, ukuran, atau catatan khusus...",
                 }
