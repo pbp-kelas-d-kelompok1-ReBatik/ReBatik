@@ -79,22 +79,77 @@ Jangan menyimpan `SECRET_KEY` asli atau mengaktifkan `DEBUG` di production. Untu
 
 1. Salin `.env.example` menjadi `.env`:
 
+   **Windows PowerShell**
+
    ```powershell
    Copy-Item .env.example .env
    ```
 
-2. Buat kunci acak dengan perintah berikut:
+   **macOS/Linux**
 
    ```bash
-   python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+   cp .env.example .env
+   ```
+
+2. Buat kunci acak dengan perintah berikut:
+
+   **Windows PowerShell**
+
+   ```powershell
+   python -c "import secrets; print(secrets.token_urlsafe(50))"
+   ```
+
+   **macOS/Linux**
+
+   ```bash
+   python3 -c "import secrets; print(secrets.token_urlsafe(50))"
    ```
 
 3. Buka `.env`, lalu ganti nilai pada baris `SECRET_KEY=` dengan hasil perintah tadi. Setelah itu, simpan file.
-4. Biarkan `DEBUG=True` di `.env` untuk menjalankan proyek di komputer lokal. Jangan gunakan `DEBUG=True` di production.
+4. Gunakan `DEBUG=True` dan `PRODUCTION=False` di `.env` untuk menjalankan proyek secara lokal. Dengan `PRODUCTION=False`, database yang digunakan adalah SQLite.
 
 File `.env` tidak dilacak Git. Jangan bagikan atau commit isi file tersebut.
 
-Sebelum perubahan keamanan ini di-merge, atur `SECRET_KEY` baru dan `DEBUG=False` pada Environment proyek PWS. Jangan membagikan nilai rahasia melalui chat atau memasukkannya ke repository. CI menggunakan kunci sementara khusus testing.
+### Menyiapkan Django secara lokal
+
+Jika belum memiliki virtual environment, buat terlebih dahulu. Setelah itu aktifkan dan pasang dependency proyek:
+
+**Windows PowerShell**
+
+```powershell
+python -m venv env
+.\env\Scripts\Activate.ps1
+```
+
+**macOS/Linux**
+
+```bash
+python3 -m venv env
+source env/bin/activate
+```
+
+Setelah virtual environment aktif, jalankan:
+
+```bash
+python -m pip install -r requirements.txt
+python manage.py migrate
+```
+
+Jalankan `migrate` sebelum menjalankan server lokal, dan ulangi jika ada migration baru.
+
+### Konfigurasi production di PWS
+
+Di proyek ReBatik yang sudah ada, buka tab **Environs**, lalu atur variabel berikut. Buat `SECRET_KEY` production baru dengan perintah pembuat kunci di atas; gunakan nilai yang berbeda dari kunci lokal.
+
+- `DEBUG=False` dan `PRODUCTION=True`.
+- `DB_NAME`, `DB_HOST`, `DB_PORT`, `DB_USER`, dan `DB_PASSWORD`: gunakan kredensial database dari ITF.
+- `SCHEMA=tugas_kelompok`.
+
+Saat `PRODUCTION=True`, semua variabel database di atas, termasuk `SCHEMA`, wajib diisi. Nilai boolean `DEBUG` dan `PRODUCTION` yang diterima adalah `true`/`false`, `1`/`0`, atau `yes`/`no` (huruf besar-kecil tidak berpengaruh).
+
+Pertahankan variabel PWS lain yang sudah ada, lalu simpan perubahan dengan **Update All Variables**.
+
+Jangan membagikan nilai rahasia melalui chat atau memasukkannya ke repository. Database SQLite lokal terpisah dari PostgreSQL PWS; datanya tidak otomatis disalin saat database production disiapkan. GitHub Actions menggunakan kunci sementara khusus untuk testing dan `PRODUCTION=False`.
 
 ## Menjalankan Tailwind CSS
 
@@ -154,6 +209,8 @@ Jika tampilan lokal belum memiliki styling setelah clone atau pull, jalankan `np
 Gunakan class Tailwind langsung pada elemen HTML di template Django, misalnya `class="p-4 text-lg"`. Jalankan `npm run tailwind:build` sebelum menjalankan Django jika mode watch tidak sedang berjalan. CI juga membangun CSS saat memeriksa PR.
 
 ### Deployment ke PWS
+
+Pastikan repository GitHub memiliki secret `PWS_URL` di **Settings → Secrets and variables → Actions**. Jangan menaruh URL berkredensial di workflow atau README.
 
 Push ke `main` menjalankan tes dan membangun Tailwind. Setelah tes lulus, workflow membuat commit deployment yang menyertakan `static/css/tailwind.css`, lalu mengirimnya ke PWS. File CSS tersebut hanya ada di riwayat PWS, bukan di GitHub. Karena itu, deploy ke PWS dilakukan melalui GitHub Actions; jangan melakukan push manual ke remote PWS.
 
