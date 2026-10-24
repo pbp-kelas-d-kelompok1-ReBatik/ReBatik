@@ -121,17 +121,17 @@ ReBatik menggunakan Tailwind CSS v4 untuk membantu membuat tampilan halaman. Dja
 
 ### Mengompilasi CSS
 
-File sumber Tailwind ada di `static/css/tailwind.input.css`. Tailwind menghasilkan file `static/css/tailwind.css`, yang sudah dipanggil oleh `templates/base.html`. File hasil build ini sengaja disimpan di Git agar tersedia saat aplikasi dijalankan dan di-deploy.
+File sumber Tailwind ada di `static/css/tailwind.input.css`. Tailwind menghasilkan file `static/css/tailwind.css`, yang dipanggil oleh `templates/base.html`. File hasil build ini diabaikan Git. Setiap anggota tim perlu membangunnya di komputer lokal, sedangkan GitHub Actions membangunnya kembali sebelum deployment ke PWS.
 
-Untuk mengompilasi CSS satu kali, misalnya sebelum commit:
+Untuk mengompilasi CSS satu kali setelah memasang dependency:
 
 ```bash
 npm run tailwind:build
 ```
 
-Simpan perubahan pada `static/css/tailwind.css` bersama perubahan tampilan yang menggunakannya. Jangan masukkan `node_modules/` ke commit.
+Jangan commit `static/css/tailwind.css` atau folder `node_modules/`. Commit perubahan pada template atau file sumber Tailwind saja.
 
-Jika terjadi konflik Git pada `static/css/tailwind.css`, selesaikan konflik terlebih dahulu pada template Django atau file sumber CSS. Setelah sumbernya beres, jalankan ulang `npm run tailwind:build`, lalu stage dan commit hasil `static/css/tailwind.css` yang baru. Jangan menyelesaikan konflik dengan mengedit file hasil build secara manual.
+Jika tampilan lokal belum memiliki styling setelah clone atau pull, jalankan `npm ci` lalu `npm run tailwind:build`. Karena file hasil build tidak dilacak Git, konflik pada file tersebut tidak perlu diselesaikan.
 
 ### Mengembangkan tampilan
 
@@ -141,7 +141,7 @@ Jika terjadi konflik Git pada `static/css/tailwind.css`, selesaikan konflik terl
    npm run tailwind:watch
    ```
 
-   Biarkan perintah ini tetap berjalan. Tailwind akan membuat ulang `static/css/tailwind.css` ketika file sumber berubah.
+   Biarkan perintah ini tetap berjalan. Tailwind akan membuat ulang `static/css/tailwind.css` ketika template atau file sumber berubah.
 
 2. Buka terminal kedua di folder utama proyek, aktifkan virtual environment Python, lalu jalankan Django:
 
@@ -151,6 +151,12 @@ Jika terjadi konflik Git pada `static/css/tailwind.css`, selesaikan konflik terl
 
 3. Buka alamat lokal yang ditampilkan Django di browser. Setelah mengubah class Tailwind di template, muat ulang halaman untuk melihat hasilnya.
 
-Gunakan class Tailwind langsung pada elemen HTML di template Django, misalnya `class="p-4 text-lg"`. Jika mengubah `tailwind.input.css` atau class pada template, jalankan `npm run tailwind:build` sebelum commit bila mode watch tidak sedang berjalan.
+Gunakan class Tailwind langsung pada elemen HTML di template Django, misalnya `class="p-4 text-lg"`. Jalankan `npm run tailwind:build` sebelum menjalankan Django jika mode watch tidak sedang berjalan. CI juga membangun CSS saat memeriksa PR.
+
+### Deployment ke PWS
+
+Push ke `main` menjalankan tes dan membangun Tailwind. Setelah tes lulus, workflow membuat commit deployment yang menyertakan `static/css/tailwind.css`, lalu mengirimnya ke PWS. File CSS tersebut hanya ada di riwayat PWS, bukan di GitHub. Karena itu, deploy ke PWS dilakukan melalui GitHub Actions; jangan melakukan push manual ke remote PWS.
+
+Sebelum merge, workflow dapat dijalankan manual dari tab **Actions**. Pemicu manual menjalankan tes, membangun CSS, lalu melakukan dry run push ke PWS. Ini memeriksa alur push tanpa memperbarui branch PWS atau melakukan deployment.
 
 Jika PowerShell menampilkan pesan bahwa `npm` tidak bisa dijalankan karena execution policy, gunakan `npm.cmd` sebagai pengganti `npm` pada perintah di atas, misalnya `npm.cmd ci` atau `npm.cmd run tailwind:build`.
