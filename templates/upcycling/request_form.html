@@ -170,7 +170,7 @@
             </div>
 
             <p class="max-w-3xl text-base leading-relaxed text-[var(--brown-muted)] sm:text-lg">
-                Pilih kain yang ingin Anda gunakan untuk dibuat menjadi produk baru.
+                Pilih kain yang akan diolah menjadi produk baru.
             </p>
 
             <fieldset class="space-y-3">
@@ -279,10 +279,10 @@
                     </span>
                     <h2 class="text-2xl font-bold">Pilih Produk</h2>
                 </div>
-                <p class="hidden text-sm italic text-[var(--brown-muted)] sm:block">Satu kategori, satu model</p>
+                <p class="hidden text-sm italic text-[var(--brown-muted)] sm:block">Satu kategori, satu model produk</p>
             </div>
             <p class="text-base leading-relaxed text-[var(--brown-muted)] sm:text-lg">
-                Pilih kategori, lalu pilih model produk yang Anda inginkan. Jika modelnya belum tersedia,
+                Pilih kategori produk, lalu pilih model yang Anda inginkan. Jika modelnya belum tersedia,
                 pilih <strong>Tulis sendiri</strong> dan jelaskan produk yang diinginkan.
             </p>
 
@@ -330,7 +330,9 @@
                         aria-live="polite"
                         tabindex="-1"
                     >
-                        <span class="text-base text-[var(--brown-muted)]">Pilih kategori untuk melihat model.</span>
+                        <span class="text-base text-[var(--brown-muted)]">
+                            Pilih kategori produk untuk melihat model produk.
+                        </span>
                     </div>
                     {{ form.product.errors }}
                 </div>
@@ -362,8 +364,7 @@
                 <p class="hidden text-sm italic text-[var(--brown-muted)] sm:block">Hampir selesai</p>
             </div>
             <p class="max-w-4xl text-base leading-relaxed text-[var(--brown-muted)] sm:text-lg">
-                Tentukan jumlah produk dan cara menyerahkan kain. Lalu isi alamat atau lokasi penyerahan,
-                nomor WhatsApp yang bisa dihubungi, dan catatan khusus jika ada.
+                Pilih jumlah produk dan cara menerimanya. Isi alamat atau lokasi pengambilan serta nomor&nbsp;WhatsApp.
             </p>
 
             <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2 sm:gap-y-6">
@@ -403,22 +404,22 @@
                     {{ form.delivery_method.errors }}
                 </fieldset>
 
-                <div class="space-y-2 sm:col-span-2">
+                <div class="space-y-2 sm:col-span-2 lg:col-span-1">
                     <label
                         for="{{ form.address.id_for_label }}"
                         class="text-base font-semibold leading-snug sm:text-lg"
                     >
-                        Alamat / Lokasi Penyerahan <span aria-hidden="true">*</span>
+                        Alamat / Lokasi Penerimaan Produk <span aria-hidden="true">*</span>
                     </label>
                     {{ form.address }}
                     <p class="text-sm leading-relaxed text-[var(--brown-muted)] sm:text-base">
-                        Jika memilih Kurir, masukkan alamat penjemputan. Jika memilih Drop-off,
-                        masukkan lokasi tempat Anda menyerahkan kain.
+                        Jika memilih Dikirim Kurir, masukkan alamat pengiriman. Jika memilih
+                        Ambil di Drop-off, masukkan lokasi pengambilan produk.
                     </p>
                     {{ form.address.errors }}
                 </div>
 
-                <div class="space-y-2 sm:col-span-2">
+                <div class="space-y-2 sm:col-span-2 lg:col-span-1">
                     <label
                         for="{{ form.whatsapp.id_for_label }}"
                         class="text-base font-semibold leading-snug sm:text-lg"
@@ -456,9 +457,9 @@
                 <p class="mt-2 flex flex-wrap items-center gap-x-2 text-base font-bold sm:text-lg" aria-live="polite">
                     <span id="summary-fabric">Pilih kain</span>
                     <span aria-hidden="true">→</span>
-                    <span id="summary-category">Pilih kategori</span>
+                    <span id="summary-category">Pilih kategori produk</span>
                     <span aria-hidden="true">·</span>
-                    <span id="summary-product">Pilih model</span>
+                    <span id="summary-product">Pilih model produk</span>
                 </p>
                 <p class="mt-2 text-base text-[var(--brown-muted)]">
                     Kontribusi Anda membantu mengurangi limbah tekstil dan mendukung pengrajin batik.

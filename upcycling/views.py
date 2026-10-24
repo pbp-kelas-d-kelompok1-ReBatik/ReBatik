@@ -153,25 +153,25 @@ def request_detail(request, pk):
     if status == UpcyclingRequest.Status.PENDING:
         timeline_steps.extend(
             [
-                {"label": "Ditinjau", "state": "current"},
+                {"label": "Menunggu Tinjauan", "state": "current"},
                 {"label": "Diproses", "state": "upcoming"},
-                {"label": "Selesai · estimasi 2 minggu", "state": "upcoming"},
+                {"label": "Selesai", "state": "upcoming"},
             ]
         )
     elif status == UpcyclingRequest.Status.PROCESSING:
         timeline_steps.extend(
             [
-                {"label": "Ditinjau", "state": "done"},
+                {"label": "Menunggu Tinjauan", "state": "done"},
                 {"label": "Diproses · sedang berjalan", "state": "current"},
-                {"label": "Selesai · estimasi 2 minggu", "state": "upcoming"},
+                {"label": "Selesai", "state": "upcoming"},
             ]
         )
     elif status == UpcyclingRequest.Status.COMPLETED:
         timeline_steps.extend(
             [
-                {"label": "Ditinjau", "state": "done"},
+                {"label": "Menunggu Tinjauan", "state": "done"},
                 {"label": "Diproses", "state": "done"},
-                {"label": "Selesai", "state": "done"},
+                {"label": "Selesai · produk diterima", "state": "done"},
             ]
         )
     else:

@@ -13,9 +13,15 @@ document.addEventListener("DOMContentLoaded", () => {
         product: ["Model produk", "Pilih model produk."],
         custom_product: ["Produk yang diinginkan", "Tuliskan produk yang Anda inginkan."],
         quantity: ["Jumlah produk", "Masukkan jumlah antara 1 dan 20."],
-        delivery_method: ["Metode pengiriman", "Pilih metode pengiriman kain."],
-        address: ["Alamat / Lokasi", "Isi alamat atau lokasi penyerahan kain."],
-        whatsapp: ["No. WhatsApp", "Masukkan nomor HP Indonesia yang valid, misalnya +6281234567890."],
+        delivery_method: [
+            "Metode penerimaan produk",
+            "Pilih cara menerima produk jadi.",
+        ],
+        address: [
+            "Alamat / Lokasi Penerimaan Produk",
+            "Isi alamat pengiriman atau lokasi pengambilan produk.",
+        ],
+        whatsapp: ["Nomor WhatsApp", "Masukkan nomor HP Indonesia yang valid, misalnya +6281234567890."],
     };
     const validationTargets = {
         fabric: "#pilih-kain",
@@ -92,14 +98,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateSummary() {
         fabricSummary.textContent = getRadioLabel("fabric", "Pilih kain");
-        categorySummary.textContent = getRadioLabel("category", "Pilih kategori");
+        categorySummary.textContent = getRadioLabel("category", "Pilih kategori produk");
         const selectedProduct = productField.selectedOptions[0];
         if (productField.value === "LAINNYA") {
             productSummary.textContent = customProductField.value.trim() || "Isi nama produk";
         } else {
             productSummary.textContent = productField.value && selectedProduct
                 ? selectedProduct.textContent
-                : "Pilih model";
+                : "Pilih model produk";
         }
     }
 
@@ -157,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
         updateCustomProductField();
 
         if (!category) {
-            productOptions.textContent = "Pilih kategori untuk melihat model.";
+            productOptions.textContent = "Pilih kategori produk untuk melihat model produk.";
             updateCustomProductField();
             return;
         }

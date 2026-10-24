@@ -60,9 +60,9 @@ class UpcyclingRequestForm(forms.ModelForm):
             "custom_product": "Produk yang diinginkan",
             "quantity": "Jumlah Produk",
             "notes": "Deskripsi dan Catatan Khusus (opsional)",
-            "delivery_method": "Metode Pengiriman Kain",
-            "address": "Alamat / Lokasi",
-            "whatsapp": "No. WhatsApp",
+            "delivery_method": "Metode Penerimaan Produk",
+            "address": "Alamat / Lokasi Penerimaan Produk",
+            "whatsapp": "Nomor WhatsApp",
         }
         error_messages = {
             "notes": {
@@ -86,10 +86,7 @@ class UpcyclingRequestForm(forms.ModelForm):
                 attrs={
                     "min": 1,
                     "max": 20,
-                    "class": (
-                        f"{FIELD_CLASSES} upcycling-field upcycling-input "
-                        "upcycling-quantity-input"
-                    ),
+                    "class": f"{FIELD_CLASSES} upcycling-field upcycling-input",
                 }
             ),
             "delivery_method": forms.RadioSelect(attrs={"class": "sr-only"}),
@@ -104,7 +101,7 @@ class UpcyclingRequestForm(forms.ModelForm):
             "address": forms.TextInput(
                 attrs={
                     "class": f"{FIELD_CLASSES} upcycling-field upcycling-input",
-                    "placeholder": "Alamat penjemputan (kurir) atau lokasi drop-off",
+                    "placeholder": "Alamat pengiriman atau lokasi pengambilan produk",
                 }
             ),
             "whatsapp": forms.TextInput(

@@ -51,7 +51,7 @@
                     {% elif upcycling_request.status == 'PROCESSING' %}bg-[var(--upcycling-status-processing)] text-[var(--upcycling-status-processing-text)]
                     {% elif upcycling_request.status == 'COMPLETED' %}bg-[var(--upcycling-status-completed)] text-[var(--upcycling-status-completed-text)]
                     {% else %}bg-[var(--upcycling-status-cancelled)] text-[var(--upcycling-status-cancelled-text)]{% endif %}">
-                    {% if upcycling_request.status == 'PENDING' %}Ditinjau{% else %}{{ upcycling_request.get_status_display }}{% endif %}
+                    {{ upcycling_request.get_status_display }}
                 </span>
             </div>
             <p class="text-sm text-[var(--brown-muted)] sm:text-base">
@@ -165,18 +165,19 @@
                         <dd>{{ upcycling_request.get_fabric_display }}</dd>
                     </div>
                     <div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
-                        <dt class="font-semibold">Produk</dt>
-                        <dd>
-                            {{ upcycling_request.get_category_display }}
-                            · {{ upcycling_request.get_product_name }}
-                        </dd>
+                        <dt class="font-semibold">Kategori produk</dt>
+                        <dd>{{ upcycling_request.get_category_display }}</dd>
                     </div>
                     <div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
-                        <dt class="font-semibold">Jumlah</dt>
-                        <dd>{{ upcycling_request.quantity }} pcs</dd>
+                        <dt class="font-semibold">Model produk</dt>
+                        <dd>{{ upcycling_request.get_product_name }}</dd>
                     </div>
                     <div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
-                        <dt class="font-semibold">Pengiriman kain</dt>
+                        <dt class="font-semibold">Jumlah produk</dt>
+                        <dd>{{ upcycling_request.quantity }} produk</dd>
+                    </div>
+                    <div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
+                        <dt class="font-semibold">Penerimaan produk</dt>
                         <dd>{{ upcycling_request.get_delivery_method_display }}</dd>
                     </div>
                     {% if upcycling_request.notes %}

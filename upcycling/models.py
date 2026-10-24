@@ -8,8 +8,8 @@ NOTES_MAX_LENGTH = 2000
 
 class UpcyclingRequest(models.Model):
     class Status(models.TextChoices):
-        PENDING = "PENDING", "Menunggu tinjauan"
-        PROCESSING = "PROCESSING", "Sedang dikerjakan"
+        PENDING = "PENDING", "Menunggu Tinjauan"
+        PROCESSING = "PROCESSING", "Diproses"
         COMPLETED = "COMPLETED", "Selesai"
         CANCELLED = "CANCELLED", "Dibatalkan"
 
@@ -38,8 +38,8 @@ class UpcyclingRequest(models.Model):
     ]
 
     DELIVERY_CHOICES = [
-        ("DROP_OFF", "Drop-off"),
-        ("KURIR", "Kurir"),
+        ("DROP_OFF", "Ambil di Drop-off"),
+        ("KURIR", "Dikirim Kurir"),
     ]
 
     STATUS_CHOICES = Status.choices

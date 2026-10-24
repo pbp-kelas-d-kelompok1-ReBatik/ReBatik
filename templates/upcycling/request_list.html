@@ -126,7 +126,7 @@
                             </select>
                         </div>
                         <div class="space-y-1">
-                            <label for="filter-category" class="font-semibold">Kategori</label>
+                            <label for="filter-category" class="font-semibold">Kategori Produk</label>
                             <select
                                 id="filter-category"
                                 name="category"
@@ -134,7 +134,7 @@
                                        px-3 py-2 text-[var(--brown)] focus:border-[var(--gold)]
                                        focus:outline-none focus:ring-2 focus:ring-[var(--gold)]"
                             >
-                                <option value="">Semua kategori</option>
+                                <option value="">Semua kategori produk</option>
                                 {% for value, label in category_options %}
                                     <option
                                         value="{{ value }}"
@@ -211,15 +211,7 @@
                                            {% elif item.status == 'COMPLETED' %}bg-[var(--upcycling-status-completed)] text-[var(--upcycling-status-completed-text)]
                                            {% else %}bg-[var(--upcycling-status-cancelled)] text-[var(--upcycling-status-cancelled-text)]{% endif %}"
                                 >
-                                    {% if item.status == "PENDING" %}
-                                        Ditinjau
-                                    {% elif item.status == "PROCESSING" %}
-                                        Diproses
-                                    {% elif item.status == "COMPLETED" %}
-                                        Selesai
-                                    {% else %}
-                                        Dibatalkan
-                                    {% endif %}
+                                    {{ item.get_status_display }}
                                 </span>
                             </div>
                             <p class="mt-1 break-words text-base leading-snug text-[var(--brown-muted)] sm:text-lg">
@@ -238,15 +230,7 @@
                                    {% elif item.status == 'COMPLETED' %}bg-[var(--upcycling-status-completed)] text-[var(--upcycling-status-completed-text)]
                                    {% else %}bg-[var(--upcycling-status-cancelled)] text-[var(--upcycling-status-cancelled-text)]{% endif %}"
                         >
-                            {% if item.status == "PENDING" %}
-                                Ditinjau
-                            {% elif item.status == "PROCESSING" %}
-                                Diproses
-                            {% elif item.status == "COMPLETED" %}
-                                Selesai
-                            {% else %}
-                                Dibatalkan
-                            {% endif %}
+                            {{ item.get_status_display }}
                         </span>
 
                         <a
