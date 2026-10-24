@@ -145,6 +145,8 @@ Di proyek ReBatik yang sudah ada, buka tab **Environs**, lalu atur variabel beri
 - `DB_NAME`, `DB_HOST`, `DB_PORT`, `DB_USER`, dan `DB_PASSWORD`: gunakan kredensial database dari ITF.
 - `SCHEMA=tugas_kelompok`.
 
+Saat `PRODUCTION=True`, semua variabel database di atas, termasuk `SCHEMA`, wajib diisi. Nilai boolean `DEBUG` dan `PRODUCTION` yang diterima adalah `true`/`false`, `1`/`0`, atau `yes`/`no` (huruf besar-kecil tidak berpengaruh).
+
 Pertahankan variabel PWS lain yang sudah ada, lalu simpan perubahan dengan **Update All Variables**.
 
 Jangan membagikan nilai rahasia melalui chat atau memasukkannya ke repository. Database SQLite lokal terpisah dari PostgreSQL PWS; datanya tidak otomatis disalin saat database production disiapkan. GitHub Actions menggunakan kunci sementara khusus untuk testing dan `PRODUCTION=False`.
