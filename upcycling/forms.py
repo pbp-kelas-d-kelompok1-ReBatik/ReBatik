@@ -86,7 +86,10 @@ class UpcyclingRequestForm(forms.ModelForm):
                 attrs={
                     "min": 1,
                     "max": 20,
-                    "class": f"{FIELD_CLASSES} upcycling-field upcycling-input",
+                    "class": (
+                        f"{FIELD_CLASSES} upcycling-field upcycling-input "
+                        "upcycling-quantity-input"
+                    ),
                 }
             ),
             "delivery_method": forms.RadioSelect(attrs={"class": "sr-only"}),

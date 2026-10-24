@@ -130,7 +130,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const button = document.createElement("button");
             button.type = "button";
             button.className = "upcycling-product-option";
-            button.textContent = option.textContent;
+            button.textContent = item.value === "LAINNYA"
+                ? "Tulis sendiri"
+                : option.textContent;
             button.dataset.productValue = item.value;
             button.setAttribute("aria-pressed", String(item.value === productField.value));
             button.addEventListener("click", () => {
@@ -194,4 +196,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     customProductField.addEventListener("input", updateSummary);
     loadProducts(true);
+
 });

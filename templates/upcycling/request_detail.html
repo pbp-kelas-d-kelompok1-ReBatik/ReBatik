@@ -46,13 +46,12 @@
         >
             <div class="flex flex-wrap items-center gap-3 sm:gap-5">
                 <h2 class="text-3xl font-bold sm:text-4xl">{{ upcycling_request.get_product_name }}</h2>
-                <span class="rounded-full px-5 py-2 text-sm font-bold
-                    {% if upcycling_request.status == 'PENDING' %}bg-[#e9e1d4] text-[var(--brown)]
-                    {% elif upcycling_request.status == 'PROCESSING' %}
-                        bg-[var(--upcycling-status-processing)] text-[var(--upcycling-status-processing-text)]
-                    {% elif upcycling_request.status == 'COMPLETED' %}bg-[#d6e6d2] text-[#1f4a22]
-                    {% else %}bg-[#f4d6d2] text-[#7a3027]{% endif %}">
-                    {{ upcycling_request.get_status_display }}
+                <span class="upcycling-status-badge min-h-11 rounded-full px-5 py-2 text-base font-bold sm:text-lg
+                    {% if upcycling_request.status == 'PENDING' %}bg-[var(--upcycling-status-pending)] text-[var(--upcycling-status-pending-text)]
+                    {% elif upcycling_request.status == 'PROCESSING' %}bg-[var(--upcycling-status-processing)] text-[var(--upcycling-status-processing-text)]
+                    {% elif upcycling_request.status == 'COMPLETED' %}bg-[var(--upcycling-status-completed)] text-[var(--upcycling-status-completed-text)]
+                    {% else %}bg-[var(--upcycling-status-cancelled)] text-[var(--upcycling-status-cancelled-text)]{% endif %}">
+                    {% if upcycling_request.status == 'PENDING' %}Ditinjau{% else %}{{ upcycling_request.get_status_display }}{% endif %}
                 </span>
             </div>
             <p class="text-sm text-[var(--brown-muted)] sm:text-base">
@@ -69,7 +68,7 @@
                        p-5 shadow-lg sm:p-7"
             >
                 <h3 id="status-heading" class="text-2xl font-bold">Status</h3>
-                <ol class="mt-6 space-y-5 pb-24 sm:space-y-6">
+                <ol class="mt-6 space-y-5 pb-36 sm:space-y-6 sm:pb-48">
                     {% for step in timeline_steps %}
                         <li class="flex items-center gap-4">
                             {% if step.state == 'done' %}
@@ -115,7 +114,7 @@
                     aria-hidden="true"
                     loading="lazy"
                     decoding="async"
-                    class="absolute bottom-4 right-4 h-20 w-20 object-contain sm:h-28 sm:w-28"
+                    class="absolute bottom-3 right-3 h-32 w-32 object-contain sm:bottom-4 sm:right-4 sm:h-44 sm:w-44"
                 >
             </section>
 
@@ -161,27 +160,24 @@
                 {% endif %}
 
                 <dl class="mt-5 space-y-3 text-base sm:text-lg">
-                    <div>
-                        <dt class="sr-only">Kain</dt>
-                        <dd>Kain: {{ upcycling_request.get_fabric_display }}</dd>
+                    <div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
+                        <dt class="font-semibold">Kain</dt>
+                        <dd>{{ upcycling_request.get_fabric_display }}</dd>
                     </div>
-                    <div>
-                        <dt class="sr-only">Produk</dt>
+                    <div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
+                        <dt class="font-semibold">Produk</dt>
                         <dd>
-                            Produk: {{ upcycling_request.get_category_display }}
+                            {{ upcycling_request.get_category_display }}
                             · {{ upcycling_request.get_product_name }}
                         </dd>
                     </div>
-                    <div>
-                        <dt class="sr-only">Jumlah</dt>
-                        <dd>Jumlah: {{ upcycling_request.quantity }} pcs</dd>
+                    <div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
+                        <dt class="font-semibold">Jumlah</dt>
+                        <dd>{{ upcycling_request.quantity }} pcs</dd>
                     </div>
-                    <div>
-                        <dt class="sr-only">Pengiriman kain</dt>
-                        <dd>
-                            Pengiriman kain:
-                            {{ upcycling_request.get_delivery_method_display }}
-                        </dd>
+                    <div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
+                        <dt class="font-semibold">Pengiriman kain</dt>
+                        <dd>{{ upcycling_request.get_delivery_method_display }}</dd>
                     </div>
                     {% if upcycling_request.notes %}
                         <div class="border-t border-[var(--border)] pt-3">
@@ -210,9 +206,9 @@
                 type="button"
                 disabled
                 title="Kontak WhatsApp tim belum tersedia"
-                class="min-h-12 w-full cursor-not-allowed rounded-xl border-2
-                       border-[var(--brown)] px-5 py-3 font-semibold text-[var(--brown)]
-                       opacity-60 sm:w-auto"
+                class="upcycling-button-dark min-h-12 w-full cursor-not-allowed px-5 py-3
+                       font-bold opacity-60
+                       sm:w-auto"
             >
                 Hubungi Tim via WhatsApp
             </button>

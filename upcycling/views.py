@@ -153,7 +153,7 @@ def request_detail(request, pk):
     if status == UpcyclingRequest.Status.PENDING:
         timeline_steps.extend(
             [
-                {"label": "Menunggu tinjauan", "state": "current"},
+                {"label": "Ditinjau", "state": "current"},
                 {"label": "Diproses", "state": "upcoming"},
                 {"label": "Selesai · estimasi 2 minggu", "state": "upcoming"},
             ]

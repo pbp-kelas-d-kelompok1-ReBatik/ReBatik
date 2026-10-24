@@ -56,13 +56,12 @@
                border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm
                text-[var(--brown)] shadow-md sm:gap-6 sm:px-8 sm:text-base"
     >
-        <a href="#pilih-kain" class="flex items-center gap-2 font-semibold">
+        <a href="#pilih-kain" class="flex items-center gap-2">
             <span
-                class="relative grid size-8 place-items-center overflow-hidden rounded-full
-                       text-[var(--cream-light)]"
+                class="relative grid size-8 place-items-center overflow-hidden rounded-full"
             >
                 <img
-                    src="{% static 'img/upcycling/step-active.svg' %}"
+                    src="{% static 'img/upcycling/step-inactive.svg' %}"
                     alt=""
                     aria-hidden="true"
                     class="absolute left-0 top-0 origin-top-left scale-[0.086] max-w-none"
@@ -116,8 +115,8 @@
     <form
         method="post"
         id="upcycling-form"
-        class="mx-auto max-w-6xl space-y-8 rounded-3xl border border-[var(--border)]
-               bg-[var(--cream-light)] p-5 text-[var(--brown)] shadow-2xl sm:p-8 lg:p-10
+        class="mx-auto max-w-6xl space-y-9 rounded-3xl border-2 border-[var(--upcycling-card-border)]
+               bg-[var(--upcycling-panel)] p-5 text-[var(--brown)] shadow-2xl sm:p-8 lg:p-10
                [&_label]:font-semibold [&_ul.errorlist]:mt-1 [&_ul.errorlist]:text-sm
                [&_ul.errorlist]:font-semibold [&_ul.errorlist]:text-[var(--button-hover)]"
     >
@@ -150,8 +149,8 @@
             </ul>
         </div>
 
-        <section id="pilih-kain" class="scroll-mt-8 space-y-4">
-            <div class="flex items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
+        <section id="pilih-kain" class="scroll-mt-8 space-y-5">
+            <div class="flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
                     <span
                         class="relative grid size-10 shrink-0 place-items-center overflow-hidden
@@ -165,24 +164,30 @@
                         >
                         <span class="relative">1</span>
                     </span>
-                    <h2 class="text-2xl font-bold">Pilih Kain</h2>
+                    <h2 class="text-2xl font-bold sm:text-3xl">Pilih Kain</h2>
                 </div>
-                <p class="hidden text-sm italic text-[var(--brown-muted)] sm:block">Dari donasi Anda</p>
+                <p class="hidden text-base italic text-[var(--brown-muted)] sm:block">Dari donasi Anda</p>
             </div>
 
+            <p class="max-w-3xl text-base leading-relaxed text-[var(--brown-muted)] sm:text-lg">
+                Pilih kain yang ingin Anda gunakan untuk dibuat menjadi produk baru.
+            </p>
+
             <fieldset class="space-y-3">
-                <legend class="font-semibold">
+                <legend class="sr-only">
                     {{ form.fabric.label }} <span aria-hidden="true">*</span>
                 </legend>
                 <div class="grid gap-4 sm:grid-cols-2">
                     {% for radio in form.fabric %}
                         <label
                             data-summary-label="{{ radio.choice_label }}"
-                            class="group relative flex cursor-pointer flex-col overflow-hidden rounded-xl
-                                   border border-[var(--border)] bg-[var(--card)] shadow-md transition
+                            class="upcycling-fabric-card group relative flex cursor-pointer flex-col
+                                   overflow-hidden rounded-xl border border-[var(--upcycling-card-border)]
+                                   bg-[var(--upcycling-surface)] shadow-md transition
                                    hover:-translate-y-0.5 hover:shadow-lg
-                                   [&:has(input:checked)]:border-2
-                                   [&:has(input:checked)]:border-[var(--button)]
+                                   {% if radio.data.value == 'NEW_DONATION' %}border-dashed{% endif %}
+                                   [&:has(input:checked)]:border-4
+                                   [&:has(input:checked)]:border-[var(--brown)]
                                    [&:has(input:focus-visible)]:outline
                                    [&:has(input:focus-visible)]:outline-2
                                    [&:has(input:focus-visible)]:outline-offset-2
@@ -195,7 +200,7 @@
                                     alt=""
                                     loading="lazy"
                                     decoding="async"
-                                    class="aspect-[1.8] w-full object-cover"
+                                    class="aspect-[2] w-full object-cover"
                                 >
                             {% elif radio.data.value == "KAWUNG" %}
                                 <img
@@ -203,7 +208,7 @@
                                     alt=""
                                     loading="lazy"
                                     decoding="async"
-                                    class="aspect-[1.8] w-full object-cover"
+                                    class="aspect-[2] w-full object-cover"
                                 >
                             {% elif radio.data.value == "MEGA_MENDUNG" %}
                                 <img
@@ -211,44 +216,42 @@
                                     alt=""
                                     loading="lazy"
                                     decoding="async"
-                                    class="aspect-[1.8] w-full object-cover"
+                                    class="aspect-[2] w-full object-cover"
                                 >
                             {% else %}
-                                <div class="grid aspect-[1.8] place-items-center bg-[var(--upcycling-soft)]">
+                                <div class="grid aspect-[2] place-items-center overflow-hidden bg-[var(--upcycling-soft)]">
                                     <img
                                         src="{% static 'img/upcycling/mascot-question.webp' %}"
                                         alt=""
                                         loading="lazy"
                                         decoding="async"
-                                        class="h-40 w-auto object-contain sm:h-52"
+                                        class="h-full w-auto max-h-36 scale-[1.35] object-contain
+                                               sm:max-h-36 md:max-h-40 md:scale-[1.25]
+                                               lg:max-h-48"
                                     >
                                 </div>
                             {% endif %}
                             <span
-                                class="flex min-h-14 items-center justify-between gap-3 px-4 py-3
+                                class="flex min-h-16 items-center justify-between gap-3 px-4 py-3
                                        text-base font-bold sm:text-lg"
                             >
                                 <span class="min-w-0">
                                     <span>{{ radio.choice_label }}</span>
                                     {% if radio.data.value == "NEW_DONATION" %}
-                                        <span class="block text-sm font-normal text-[var(--brown-muted)]">
-                                            Belum ada di daftar? Donasikan dulu.
+                                        <span
+                                            class="mt-1 block text-sm font-normal leading-snug
+                                                   text-[var(--brown-muted)] sm:text-base"
+                                        >
+                                            Belum punya kain di daftar? Donasikan dulu.
                                         </span>
                                     {% endif %}
                                 </span>
                                 <span
-                                    class="shrink-0 rounded-md bg-[var(--brown)] px-3 py-1 text-sm
-                                           font-medium text-[var(--cream-light)]
-                                           group-has-[:checked]:bg-[var(--gold)]
-                                           group-has-[:checked]:text-[var(--brown)]"
+                                    class="upcycling-fabric-action shrink-0"
                                 >
                                     <span class="hidden group-has-[:checked]:inline">Dipilih ✓</span>
                                     <span class="group-has-[:checked]:hidden">
-                                        {% if radio.data.value == "NEW_DONATION" %}
-                                            Donasi →
-                                        {% else %}
-                                            Pilih →
-                                        {% endif %}
+                                        Pilih →
                                     </span>
                                 </span>
                             </span>
@@ -259,8 +262,8 @@
             </fieldset>
         </section>
 
-        <section id="pilih-produk" class="scroll-mt-8 space-y-4 border-t border-[var(--border)] pt-7">
-            <div class="flex items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
+        <section id="pilih-produk" class="scroll-mt-8 space-y-5 border-t border-[var(--border)] pt-7">
+            <div class="flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
                     <span
                         class="relative grid size-10 shrink-0 place-items-center overflow-hidden
@@ -278,23 +281,25 @@
                 </div>
                 <p class="hidden text-sm italic text-[var(--brown-muted)] sm:block">Satu kategori, satu model</p>
             </div>
-            <p class="text-base text-[var(--brown-muted)]">
-                Pilih kategori dan model produk. Jika memilih Lainnya, tuliskan produk yang Anda inginkan.
+            <p class="text-base leading-relaxed text-[var(--brown-muted)] sm:text-lg">
+                Pilih kategori, lalu pilih model produk yang Anda inginkan. Jika modelnya belum tersedia,
+                pilih <strong>Tulis sendiri</strong> dan jelaskan produk yang diinginkan.
             </p>
 
             <fieldset class="space-y-3">
-                <legend class="font-semibold">
+                <legend class="text-lg font-semibold sm:text-xl">
                     {{ form.category.label }} <span aria-hidden="true">*</span>
                 </legend>
                 <div
-                    class="flex flex-wrap gap-2 rounded-full border border-[var(--border)]
-                           bg-[var(--card)] p-2 shadow-sm sm:gap-3"
+                    class="flex flex-wrap gap-1 rounded-full border border-[var(--border)]
+                           bg-[var(--upcycling-surface)] p-2 shadow-sm sm:flex-nowrap sm:gap-2"
                 >
                     {% for radio in form.category %}
                         <label
                             data-summary-label="{{ radio.choice_label }}"
-                            class="cursor-pointer rounded-full px-4 py-2 text-base transition
-                                   hover:bg-[var(--upcycling-soft)] sm:px-6 sm:text-lg
+                            class="flex min-h-11 flex-1 cursor-pointer items-center justify-center
+                                   rounded-full px-3 py-2 text-center text-base transition
+                                   hover:bg-[var(--upcycling-soft)] sm:px-4 sm:text-lg
                                    [&:has(input:checked)]:bg-[var(--brown)]
                                    [&:has(input:checked)]:font-bold
                                    [&:has(input:checked)]:text-[var(--cream-light)]
@@ -311,7 +316,7 @@
             </fieldset>
 
             <fieldset class="space-y-3">
-                <legend id="product-options-label" class="font-semibold">
+                <legend id="product-options-label" class="text-lg font-semibold sm:text-xl">
                     {{ form.product.label }} <span aria-hidden="true">*</span>
                 </legend>
                 <label for="id_product" class="sr-only">{{ form.product.label }}</label>
@@ -337,8 +342,8 @@
             </fieldset>
         </section>
 
-        <section id="detail-permintaan" class="scroll-mt-8 space-y-4 border-t border-[var(--border)] pt-7">
-            <div class="flex items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
+        <section id="detail-permintaan" class="scroll-mt-8 space-y-5 border-t border-[var(--border)] pt-7">
+            <div class="flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
                     <span
                         class="relative grid size-10 shrink-0 place-items-center overflow-hidden
@@ -356,25 +361,35 @@
                 </div>
                 <p class="hidden text-sm italic text-[var(--brown-muted)] sm:block">Hampir selesai</p>
             </div>
-            <p class="text-base text-[var(--brown-muted)]">
-                Lengkapi detail agar tim kami bisa memproses permintaan Anda.
+            <p class="max-w-4xl text-base leading-relaxed text-[var(--brown-muted)] sm:text-lg">
+                Tentukan jumlah produk dan cara menyerahkan kain. Lalu isi alamat atau lokasi penyerahan,
+                nomor WhatsApp yang bisa dihubungi, dan catatan khusus jika ada.
             </p>
 
-            <div class="grid gap-5 sm:grid-cols-2">
-                <div class="space-y-2">
-                    {{ form.quantity.label_tag }} <span aria-hidden="true">*</span>
-                    {{ form.quantity }}
-                    {{ form.quantity.errors }}
+            <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2 sm:gap-y-6">
+                <div>
+                    <label
+                        for="{{ form.quantity.id_for_label }}"
+                        class="mb-2 block min-h-7 text-base font-semibold leading-7 sm:text-lg"
+                    >
+                        {{ form.quantity.label }} <span aria-hidden="true">*</span>
+                    </label>
+                    <div class="w-full">
+                        {{ form.quantity }}
+                        {{ form.quantity.errors }}
+                    </div>
                 </div>
-                <fieldset id="metode-pengiriman" class="space-y-2">
-                    <legend class="font-semibold">
+
+                <fieldset id="metode-pengiriman" class="min-w-0">
+                    <legend class="mb-2 block min-h-7 text-base font-semibold leading-7 sm:text-lg">
                         {{ form.delivery_method.label }} <span aria-hidden="true">*</span>
                     </legend>
                     <div class="grid grid-cols-2 gap-2 sm:gap-3">
                         {% for radio in form.delivery_method %}
                             <label
-                                class="upcycling-delivery-option flex min-h-12 cursor-pointer
-                                       items-center justify-center rounded-xl px-3 py-3 text-[var(--brown)]
+                                class="upcycling-delivery-option flex min-h-14 cursor-pointer
+                                       items-center justify-center rounded-xl px-3 py-3 text-base
+                                       text-[var(--brown)] sm:text-lg
                                        [&:has(input:checked)]:text-[var(--cream-light)]
                                        [&:has(input:focus-visible)]:outline
                                        [&:has(input:focus-visible)]:outline-2
@@ -387,23 +402,45 @@
                     </div>
                     {{ form.delivery_method.errors }}
                 </fieldset>
+
                 <div class="space-y-2 sm:col-span-2">
-                    {{ form.notes.label_tag }}
-                    {{ form.notes }}
-                    {{ form.notes.errors }}
-                </div>
-                <div class="space-y-2 sm:col-span-2">
-                    {{ form.address.label_tag }} <span aria-hidden="true">*</span>
+                    <label
+                        for="{{ form.address.id_for_label }}"
+                        class="text-base font-semibold leading-snug sm:text-lg"
+                    >
+                        Alamat / Lokasi Penyerahan <span aria-hidden="true">*</span>
+                    </label>
                     {{ form.address }}
+                    <p class="text-sm leading-relaxed text-[var(--brown-muted)] sm:text-base">
+                        Jika memilih Kurir, masukkan alamat penjemputan. Jika memilih Drop-off,
+                        masukkan lokasi tempat Anda menyerahkan kain.
+                    </p>
                     {{ form.address.errors }}
                 </div>
+
                 <div class="space-y-2 sm:col-span-2">
-                    {{ form.whatsapp.label_tag }} <span aria-hidden="true">*</span>
+                    <label
+                        for="{{ form.whatsapp.id_for_label }}"
+                        class="text-base font-semibold leading-snug sm:text-lg"
+                    >
+                        {{ form.whatsapp.label }} <span aria-hidden="true">*</span>
+                    </label>
                     {{ form.whatsapp }}
-                    <p class="text-sm text-[var(--brown-muted)]">
+                    <p class="text-sm leading-relaxed text-[var(--brown-muted)] sm:text-base">
                         Gunakan format nomor HP Indonesia, misalnya +6281234567890.
                     </p>
                     {{ form.whatsapp.errors }}
+                </div>
+
+                <div class="space-y-2 sm:col-span-2">
+                    <label
+                        for="{{ form.notes.id_for_label }}"
+                        class="text-base font-semibold leading-snug sm:text-lg"
+                    >
+                        {{ form.notes.label }}
+                    </label>
+                    {{ form.notes }}
+                    {{ form.notes.errors }}
                 </div>
             </div>
         </section>
@@ -424,7 +461,7 @@
                     <span id="summary-product">Pilih model</span>
                 </p>
                 <p class="mt-2 text-base text-[var(--brown-muted)]">
-                    Poin Reward dan dampak Anda bertambah setelah kain kami terima.
+                    Kontribusi Anda membantu mengurangi limbah tekstil dan mendukung pengrajin batik.
                 </p>
             </aside>
             <img
@@ -438,14 +475,14 @@
 
         <button
             type="submit"
-            class="upcycling-button-dark w-full py-6 text-lg leading-none font-extrabold
+            class="upcycling-button-dark min-h-14 w-full px-5 py-4 text-lg font-extrabold leading-normal
                    focus-visible:outline focus-visible:outline-offset-2
                    focus-visible:outline-[var(--brown)]"
         >
             {% if is_update %}Simpan Perubahan{% else %}Ajukan Upcycling →{% endif %}
         </button>
         <p class="text-center text-sm text-[var(--brown-dark)]">
-            Tim ReBatik akan meninjau permintaan Anda dan menghubungi Anda lewat kontak di atas.
+            Tim ReBatik akan meninjau permintaan Anda. Pantau statusnya di Permintaan Saya.
         </p>
 
         <img
