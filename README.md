@@ -73,6 +73,29 @@ ReBatik adalah platform yang menghadirkan konsep upcycling dengan mengolah pakai
 
 [Desain Figma ReBatik](https://www.figma.com/team_invite/redeem/xncR93E4zlnRJtCDqu4D7p?t=LXe1ZVPkQu6McFi1-21)
 
+## Konfigurasi environment
+
+Jangan menyimpan `SECRET_KEY` asli atau mengaktifkan `DEBUG` di production. Untuk setup lokal:
+
+1. Salin `.env.example` menjadi `.env`:
+
+   ```powershell
+   Copy-Item .env.example .env
+   ```
+
+2. Buat kunci acak dengan perintah berikut:
+
+   ```bash
+   python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+   ```
+
+3. Buka `.env`, lalu ganti nilai pada baris `SECRET_KEY=` dengan hasil perintah tadi. Setelah itu, simpan file.
+4. Biarkan `DEBUG=True` di `.env` untuk menjalankan proyek di komputer lokal. Jangan gunakan `DEBUG=True` di production.
+
+File `.env` tidak dilacak Git. Jangan bagikan atau commit isi file tersebut.
+
+Sebelum perubahan keamanan ini di-merge, atur `SECRET_KEY` baru dan `DEBUG=False` pada Environment proyek PWS. Jangan membagikan nilai rahasia melalui chat atau memasukkannya ke repository. CI menggunakan kunci sementara khusus testing.
+
 ## Menjalankan Tailwind CSS
 
 ReBatik menggunakan Tailwind CSS v4 untuk membantu membuat tampilan halaman. Django tetap digunakan untuk menjalankan aplikasi web, sedangkan Node.js dan npm digunakan untuk mengompilasi CSS Tailwind.
