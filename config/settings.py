@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'marketplace',
     'upcycling',
     'batik_story',
+    'batik_custom',
 ]
 
 MIDDLEWARE = [
@@ -84,14 +85,20 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'alisa.selvia',
+        'USER': 'alisa.selvia',
+        'PASSWORD': 'pTpoNXyu',
+        'HOST': '10.119.106.139',
+        'PORT': '5432',
+        'OPTIONS': {
+            'connect_timeout': 5,
+        },
     }
 }
-
-
 # Password validation
 # https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
 
