@@ -1,3 +1,12 @@
+/* Plus Jakarta Sans Bold — SIL Open Font License 1.1. */
+@font-face {
+    font-family: "Plus Jakarta Sans";
+    src: url("../font/PlusJakartaSans-Bold.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+}
+
 @font-face {
     font-family: "Garamond";
     src: url("/static/font/Garamond.ttf") format("truetype");
@@ -23,9 +32,16 @@
     --border: #E2CDB9;
     --upcycling-panel: #F3EBE1;
     --upcycling-surface: #FCF9F5;
+    --upcycling-card-border: #E7C9A8;
     --upcycling-accent: #C9965F;
+    --upcycling-status-pending: #DBE6F1;
+    --upcycling-status-pending-text: #1F3A56;
     --upcycling-status-processing: #F3DCC0;
     --upcycling-status-processing-text: #6A3B12;
+    --upcycling-status-completed: #D6E6D2;
+    --upcycling-status-completed-text: #1F4A22;
+    --upcycling-status-cancelled: #F4D6D2;
+    --upcycling-status-cancelled-text: #7A3027;
     --upcycling-soft: #F0E2D5;
     --upcycling-summary: #ECDDCE;
     --danger: #8B3329;
@@ -790,6 +806,7 @@ footer h3 {
         border: 1px solid var(--upcycling-accent);
         border-radius: 9999px;
         color: var(--cream-light);
+        font-family: "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
         box-shadow: 0 4px 8px rgb(74 46 40 / 30%);
         transition: filter 0.2s ease;
     }
@@ -820,6 +837,10 @@ footer h3 {
         background-color: var(--upcycling-surface);
     }
 
+    .upcycling-field.upcycling-input.upcycling-quantity-input {
+        min-height: 3.5rem;
+    }
+
     .upcycling-field::placeholder {
         color: var(--brown-muted);
         opacity: 1;
@@ -848,12 +869,54 @@ footer h3 {
     }
 
     .upcycling-product-option {
+        min-width: 9rem;
+        min-height: 3.5rem;
         border: 1px solid var(--border);
         border-radius: 0.75rem;
-        padding: 0.5rem 1rem;
+        padding: 0.75rem 1.5rem;
         background: var(--card);
         color: var(--brown);
+        font-size: 1.125rem;
+        font-weight: 600;
+        text-align: center;
         transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .upcycling-fabric-action {
+        display: inline-flex;
+        min-height: 2.5rem;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--upcycling-accent);
+        border-radius: 9999px;
+        background: linear-gradient(180deg, #7f5237 0%, #432e2b 100%);
+        padding: 0.5rem 1rem;
+        color: var(--cream-light);
+        font-family: "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
+        font-weight: 700;
+        transition: filter 0.2s ease;
+    }
+
+    .upcycling-status-badge {
+        display: inline-flex;
+        min-width: 7rem;
+        align-items: center;
+        justify-content: center;
+    }
+
+    @media (min-width: 640px) {
+        .upcycling-status-badge {
+            min-width: 8rem;
+        }
+    }
+
+    .upcycling-fabric-card:hover .upcycling-fabric-action {
+        filter: brightness(1.08);
+    }
+
+    .upcycling-fabric-card:has(input:checked) .upcycling-fabric-action {
+        background: linear-gradient(180deg, #e5b77b 0%, #c9965f 100%);
+        color: var(--brown);
     }
 
     .upcycling-product-option:hover {
