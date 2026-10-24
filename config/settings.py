@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 import os
+import re
 from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
@@ -31,9 +32,22 @@ if not SECRET_KEY:
         "SECRET_KEY must be set in the environment or .env file."
     )
 
+
+def get_environment_bool(name, default="False"):
+    """Read a boolean environment variable and reject ambiguous values."""
+    value = os.getenv(name, default).strip().lower()
+    if value in {"true", "1", "yes"}:
+        return True
+    if value in {"false", "0", "no"}:
+        return False
+    raise ImproperlyConfigured(
+        f"{name} must be set to true/false, 1/0, or yes/no."
+    )
+
+
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False").strip().lower() in {"true", "1", "yes"}
-PRODUCTION = os.getenv("PRODUCTION", "False").strip().lower() == "true"
+DEBUG = get_environment_bool("DEBUG")
+PRODUCTION = get_environment_bool("PRODUCTION")
 
 ALLOWED_HOSTS = [
     "localhost",
@@ -95,6 +109,31 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
 if PRODUCTION:
+    required_database_variables = (
+        "DB_NAME",
+        "DB_USER",
+        "DB_PASSWORD",
+        "DB_HOST",
+        "DB_PORT",
+        "SCHEMA",
+    )
+    missing_database_variables = [
+        name for name in required_database_variables if not os.getenv(name)
+    ]
+    if missing_database_variables:
+        missing_variables = ", ".join(missing_database_variables)
+        raise ImproperlyConfigured(
+            f"Set these environment variables when PRODUCTION=True: "
+            f"{missing_variables}."
+        )
+
+    schema = os.getenv("SCHEMA")
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", schema):
+        raise ImproperlyConfigured(
+            "SCHEMA must be a valid PostgreSQL schema name "
+            "(letters, numbers, and underscores; it cannot start with a number)."
+        )
+
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -104,7 +143,7 @@ if PRODUCTION:
             "HOST": os.getenv("DB_HOST"),
             "PORT": os.getenv("DB_PORT"),
             "OPTIONS": {
-                "options": f"-c search_path={os.getenv('SCHEMA', 'public')}"
+                "options": f"-c search_path={schema}"
             },
         }
     }
