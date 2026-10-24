@@ -13,6 +13,9 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      SECRET_KEY: ci-only-not-for-production
+      DEBUG: "False"
 
     steps:
       - name: Checkout repository
