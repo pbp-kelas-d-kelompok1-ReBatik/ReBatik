@@ -66,8 +66,6 @@
                     <a
                         href="{% querystring status='' page=None %}"
                         hx-get="{% url 'upcycling:request_list' %}"
-                        hx-include="#upcycling-extra-filter-form"
-                        hx-vals='{"status": ""}'
                         hx-target="#request-results"
                         hx-select="#request-results"
                         hx-swap="outerHTML"
@@ -88,8 +86,6 @@
                     <a
                         href="{% querystring status='ONGOING' page=None %}"
                         hx-get="{% url 'upcycling:request_list' %}"
-                        hx-include="#upcycling-extra-filter-form"
-                        hx-vals='{"status": "ONGOING"}'
                         hx-target="#request-results"
                         hx-select="#request-results"
                         hx-swap="outerHTML"
@@ -106,8 +102,6 @@
                     <a
                         href="{% querystring status='COMPLETED' page=None %}"
                         hx-get="{% url 'upcycling:request_list' %}"
-                        hx-include="#upcycling-extra-filter-form"
-                        hx-vals='{"status": "COMPLETED"}'
                         hx-target="#request-results"
                         hx-select="#request-results"
                         hx-swap="outerHTML"
@@ -398,6 +392,7 @@
                             hx-target="#request-results"
                             hx-select="#request-results"
                             hx-swap="outerHTML"
+                            hx-sync="#request-results:replace"
                             class="rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-2
                                    font-semibold hover:bg-[var(--upcycling-soft)]
                                    focus-visible:outline focus-visible:outline-2
@@ -414,6 +409,7 @@
                             hx-target="#request-results"
                             hx-select="#request-results"
                             hx-swap="outerHTML"
+                            hx-sync="#request-results:replace"
                             class="rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-2
                                    font-semibold hover:bg-[var(--upcycling-soft)]
                                    focus-visible:outline focus-visible:outline-2

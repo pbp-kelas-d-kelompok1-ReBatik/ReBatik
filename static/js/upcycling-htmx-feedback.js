@@ -1,4 +1,26 @@
 (() => {
+    /** Keep each status tab URL aligned with the current filter form values. */
+    const updateStatusTabUrls = () => {
+        const form = document.getElementById("upcycling-extra-filter-form");
+        if (!form) return;
+
+        const baseUrl = new URL(form.action, window.location.href);
+        const filterParams = new URLSearchParams(new FormData(form));
+        filterParams.delete("status");
+        filterParams.delete("page");
+
+        document.querySelectorAll("[data-status-filter]").forEach((link) => {
+            const url = new URL(baseUrl);
+            const params = new URLSearchParams(filterParams);
+            params.set("status", link.dataset.statusFilter);
+            url.search = params.toString();
+            url.hash = "";
+
+            link.href = `${url.pathname}${url.search}`;
+            link.setAttribute("hx-get", `${url.pathname}${url.search}`);
+        });
+    };
+
     const updateStatusTabs = (selectedStatus) => {
         document.querySelectorAll("[data-status-filter]").forEach((link) => {
             const tabStatus = link.dataset.statusFilter;
@@ -30,6 +52,8 @@
         region.textContent = "";
         region.classList.add("hidden");
     };
+
+    updateStatusTabUrls();
 
     const getOptimisticDeleteForm = (event) => {
         const trigger = event.detail?.elt;
@@ -133,13 +157,23 @@
                 form.elements.to.value = "";
                 form.elements.order.value = "newest";
                 updateStatusTabs("");
+                updateStatusTabUrls();
             }
         }
     });
 
     document.body.addEventListener("change", (event) => {
+        if (event.target.closest("#upcycling-extra-filter-form")) {
+            updateStatusTabUrls();
+        }
         if (event.target.matches("#filter-status")) {
             updateStatusTabs(event.target.value);
+        }
+    });
+
+    document.body.addEventListener("input", (event) => {
+        if (event.target.closest("#upcycling-extra-filter-form")) {
+            updateStatusTabUrls();
         }
     });
 

@@ -816,9 +816,8 @@ class UpcyclingRequestViewTests(TestCase):
             {"q": "Parang", "category": "TAS", "from": "2026-01-01"},
         )
 
-        self.assertContains(response, 'hx-include="#upcycling-extra-filter-form"')
         self.assertContains(response, 'hx-sync="#request-results:replace"')
-        self.assertContains(response, 'hx-vals=\'{"status": "ONGOING"}\'')
+        self.assertContains(response, 'data-status-filter="ONGOING"')
 
     def test_user_cannot_open_another_users_request(self):
         """Test behavior: user cannot open another users request."""

@@ -11,6 +11,7 @@ try:
     from selenium.common.exceptions import WebDriverException
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support import expected_conditions as EC
+    from selenium.webdriver.support.ui import Select
     from selenium.webdriver.support.ui import WebDriverWait
 except ImportError:  # Selenium is an optional development dependency.
     webdriver = None
@@ -99,13 +100,30 @@ class UpcyclingBrowserTests(StaticLiveServerTestCase):
         """Test behavior: status tabs switch from completed to all."""
         self.create_request(
             status=UpcyclingRequest.Status.PENDING,
-            product="TOTE_BAG",
+            product="POUCH",
         )
         self.create_request(
             status=UpcyclingRequest.Status.COMPLETED,
             product="POUCH",
         )
+        self.create_request(
+            status=UpcyclingRequest.Status.COMPLETED,
+            product="TOTE_BAG",
+        )
         self.open_authenticated_page(reverse("upcycling:request_list"))
+
+        self.browser.find_element(
+            By.CSS_SELECTOR,
+            "#upcycling-extra-filters > summary",
+        ).click()
+        search = self.browser.find_element(By.ID, "filter-query")
+        search.send_keys("Pouch")
+        self.wait.until(lambda _browser: len(self.get_result_headings()) == 2)
+        Select(self.browser.find_element(By.ID, "filter-category")).select_by_value("POUCH")
+        self.wait.until(
+            lambda browser: "category=POUCH" in browser.current_url
+            and "q=Pouch" in browser.current_url
+        )
 
         self.browser.find_element(
             By.CSS_SELECTOR,
