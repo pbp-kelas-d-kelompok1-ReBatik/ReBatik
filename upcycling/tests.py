@@ -33,10 +33,12 @@ class UpcyclingRequestFormTests(SimpleTestCase):
     }
 
     def test_valid_request_form(self):
+        """Test behavior: valid request form."""
         form = UpcyclingRequestForm(data=self.valid_data)
         self.assertTrue(form.is_valid(), form.errors)
 
     def test_normalizes_supported_indonesian_whatsapp_formats(self):
+        """Test behavior: normalizes supported indonesian whatsapp formats."""
         for phone_number in (
             "081234567890",
             "6281234567890",
@@ -55,6 +57,7 @@ class UpcyclingRequestFormTests(SimpleTestCase):
                 )
 
     def test_rejects_invalid_indonesian_whatsapp_number(self):
+        """Test behavior: rejects invalid indonesian whatsapp number."""
         data = self.valid_data.copy()
         data["whatsapp"] = "+621234567890"
         form = UpcyclingRequestForm(data=data)
@@ -63,6 +66,7 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         self.assertIn("whatsapp", form.errors)
 
     def test_requires_custom_product_name_for_other_product(self):
+        """Test behavior: requires custom product name for other product."""
         data = self.valid_data.copy()
         data["product"] = "LAINNYA"
 
@@ -72,6 +76,7 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         self.assertIn("custom_product", form.errors)
 
     def test_accepts_and_displays_custom_product_name(self):
+        """Test behavior: accepts and displays custom product name."""
         data = self.valid_data.copy()
         data.update(product="LAINNYA", custom_product="Sarung bantal")
         form = UpcyclingRequestForm(data=data)
@@ -81,6 +86,7 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         self.assertEqual(request.get_product_name(), "Sarung bantal")
 
     def test_clears_custom_product_for_standard_product(self):
+        """Test behavior: clears custom product for standard product."""
         data = self.valid_data.copy()
         data["custom_product"] = "Nama lama"
         form = UpcyclingRequestForm(data=data)
@@ -89,6 +95,7 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         self.assertEqual(form.cleaned_data["custom_product"], "")
 
     def test_rejects_product_outside_category(self):
+        """Test behavior: rejects product outside category."""
         data = self.valid_data.copy()
         data["product"] = "KEMEJA"
 
@@ -98,6 +105,7 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         self.assertIn("product", form.errors)
 
     def test_rejects_quantity_over_20(self):
+        """Test behavior: rejects quantity over 20."""
         data = self.valid_data.copy()
         data["quantity"] = 21
 
@@ -107,6 +115,7 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         self.assertIn("quantity", form.errors)
 
     def test_rejects_quantity_below_1(self):
+        """Test behavior: rejects quantity below 1."""
         data = self.valid_data.copy()
         data["quantity"] = 0
 
@@ -116,6 +125,7 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         self.assertIn("quantity", form.errors)
 
     def test_rejects_notes_longer_than_model_limit(self):
+        """Test behavior: rejects notes longer than model limit."""
         data = self.valid_data.copy()
         data["notes"] = "x" * 2001
 
@@ -132,12 +142,15 @@ class UpcyclingRequestFormTests(SimpleTestCase):
 class UpcyclingRequestAdminTests(TestCase):
     @classmethod
     def setUpTestData(cls):
+        """Prepare shared database records for the test class."""
         cls.user = User.objects.create_user(username="admin-form-user")
 
     def test_request_model_is_registered_in_admin(self):
+        """Test behavior: request model is registered in admin."""
         self.assertIn(UpcyclingRequest, admin.site._registry)
 
     def make_form(self, current_status, new_status):
+        """Build a request form for the supplied status transition."""
         upcycling_request = UpcyclingRequest.objects.create(
             user=self.user,
             fabric="PARANG",
@@ -157,6 +170,7 @@ class UpcyclingRequestAdminTests(TestCase):
         )
 
     def test_admin_form_accepts_pending_to_processing(self):
+        """Test behavior: admin form accepts pending to processing."""
         form = self.make_form(
             UpcyclingRequest.Status.PENDING,
             UpcyclingRequest.Status.PROCESSING,
@@ -165,6 +179,7 @@ class UpcyclingRequestAdminTests(TestCase):
         self.assertTrue(form.is_valid(), form.errors)
 
     def test_admin_form_accepts_processing_to_completed(self):
+        """Test behavior: admin form accepts processing to completed."""
         form = self.make_form(
             UpcyclingRequest.Status.PROCESSING,
             UpcyclingRequest.Status.COMPLETED,
@@ -173,6 +188,7 @@ class UpcyclingRequestAdminTests(TestCase):
         self.assertTrue(form.is_valid(), form.errors)
 
     def test_admin_form_rejects_pending_to_completed(self):
+        """Test behavior: admin form rejects pending to completed."""
         form = self.make_form(
             UpcyclingRequest.Status.PENDING,
             UpcyclingRequest.Status.COMPLETED,
@@ -182,6 +198,7 @@ class UpcyclingRequestAdminTests(TestCase):
         self.assertIn("status", form.errors)
 
     def test_admin_form_rejects_changes_from_terminal_statuses(self):
+        """Test behavior: admin form rejects changes from terminal statuses."""
         for terminal_status in (
             UpcyclingRequest.Status.COMPLETED,
             UpcyclingRequest.Status.CANCELLED,
@@ -196,6 +213,7 @@ class UpcyclingRequestAdminTests(TestCase):
                 self.assertIn("status", form.errors)
 
     def test_admin_status_change_is_recorded_with_actor_and_previous_status(self):
+        """Test behavior: admin status change is recorded with actor and previous status."""
         upcycling_request = UpcyclingRequest.objects.create(
             user=self.user,
             fabric="PARANG",
@@ -229,6 +247,7 @@ class UpcyclingRequestAdminTests(TestCase):
         self.assertEqual(history.changed_by, self.user)
 
     def test_admin_save_without_status_change_does_not_add_history(self):
+        """Test behavior: admin save without status change does not add history."""
         upcycling_request = UpcyclingRequest.objects.create(
             user=self.user,
             fabric="PARANG",
@@ -263,6 +282,7 @@ class UpcyclingRequestAdminTests(TestCase):
 class UpcyclingRequestViewTests(TestCase):
     @classmethod
     def setUpTestData(cls):
+        """Prepare shared database records for the test class."""
         cls.user = User.objects.create_user(
             username="rezky",
             password="password123",
@@ -284,6 +304,7 @@ class UpcyclingRequestViewTests(TestCase):
     }
 
     def make_request(self, user, **overrides):
+        """Create a request fixture with optional field overrides."""
         data = {
             "fabric": "PARANG",
             "category": "TAS",
@@ -298,6 +319,7 @@ class UpcyclingRequestViewTests(TestCase):
         return UpcyclingRequest.objects.create(user=user, **data)
 
     def test_request_list_paginates_25_requests_and_preserves_status_filter(self):
+        """Test behavior: request list paginates 25 requests and preserves status filter."""
         for _ in range(25):
             self.make_request(self.user, status=UpcyclingRequest.Status.COMPLETED)
         self.client.force_login(self.user)
@@ -325,6 +347,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(third_page.content.count(b"<article"), 5)
 
     def test_request_list_invalid_and_out_of_range_pages_are_normalized(self):
+        """Test behavior: request list invalid and out of range pages are normalized."""
         for _ in range(25):
             self.make_request(self.user)
         self.client.force_login(self.user)
@@ -339,6 +362,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(len(invalid_page.context["requests"]), 10)
 
     def test_user_can_create_request_and_is_redirected_to_success_page(self):
+        """Test behavior: user can create request and is redirected to success page."""
         self.client.force_login(self.user)
 
         response = self.client.post(
@@ -354,6 +378,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(upcycling_request.status, "PENDING")
 
     def test_create_rate_limit_returns_429_after_five_posts(self):
+        """Test behavior: create rate limit returns 429 after five posts."""
         self.client.force_login(self.user)
         url = reverse("upcycling:request_create")
 
@@ -373,6 +398,7 @@ class UpcyclingRequestViewTests(TestCase):
         )
 
     def test_rate_limit_window_resets_after_sixty_seconds(self):
+        """Test behavior: rate limit window resets after sixty seconds."""
         now = datetime(2026, 10, 25, 12, 0, tzinfo=datetime_timezone.utc)
         action = UpcyclingRateLimitBucket.Action.CREATE
 
@@ -411,6 +437,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(retry_after, 0)
 
     def test_update_rate_limit_returns_429_after_ten_posts(self):
+        """Test behavior: update rate limit returns 429 after ten posts."""
         upcycling_request = self.make_request(self.user)
         self.client.force_login(self.user)
         url = reverse("upcycling:request_update", args=[upcycling_request.pk])
@@ -425,6 +452,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(limited_response["Retry-After"], "60")
 
     def test_delete_rate_limit_returns_429_after_ten_posts(self):
+        """Test behavior: delete rate limit returns 429 after ten posts."""
         requests = [self.make_request(self.user) for _ in range(11)]
         self.client.force_login(self.user)
 
@@ -445,6 +473,7 @@ class UpcyclingRequestViewTests(TestCase):
         )
 
     def test_create_ignores_posted_user_and_status(self):
+        """Test behavior: create ignores posted user and status."""
         self.client.force_login(self.user)
         data = self.form_data | {
             "user": self.other_user.pk,
@@ -461,6 +490,7 @@ class UpcyclingRequestViewTests(TestCase):
         )
 
     def test_user_cannot_create_more_than_ten_pending_requests(self):
+        """Test behavior: user cannot create more than ten pending requests."""
         for _ in range(10):
             self.make_request(self.user)
         self.client.force_login(self.user)
@@ -481,6 +511,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertContains(response, "sudah memiliki 10 permintaan")
 
     def test_create_page_redirects_when_user_has_ten_pending_requests(self):
+        """Test behavior: create page redirects when user has ten pending requests."""
         for _ in range(10):
             self.make_request(self.user)
         self.client.force_login(self.user)
@@ -494,6 +525,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertContains(response, "sudah memiliki 10 permintaan")
 
     def test_incomplete_form_renders_error_summary(self):
+        """Test behavior: incomplete form renders error summary."""
         self.client.force_login(self.user)
         incomplete_data = self.form_data.copy()
         incomplete_data.pop("fabric")
@@ -508,6 +540,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertContains(response, 'href="#pilih-kain"')
 
     def test_user_can_view_success_page_for_own_request(self):
+        """Test behavior: user can view success page for own request."""
         upcycling_request = self.make_request(self.user)
         self.client.force_login(self.user)
 
@@ -526,6 +559,7 @@ class UpcyclingRequestViewTests(TestCase):
         )
 
     def test_user_cannot_view_another_users_success_page(self):
+        """Test behavior: user cannot view another users success page."""
         other_request = self.make_request(self.other_user)
         self.client.force_login(self.user)
 
@@ -536,6 +570,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_user_sees_only_own_requests(self):
+        """Test behavior: user sees only own requests."""
         own_request = self.make_request(self.user)
         other_request = self.make_request(self.other_user)
         self.client.force_login(self.user)
@@ -546,6 +581,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertNotIn(other_request, response.context["requests"])
 
     def test_user_can_filter_requests_by_status_and_category(self):
+        """Test behavior: user can filter requests by status and category."""
         self.make_request(self.user, status="PENDING")
         matching_request = self.make_request(
             self.user,
@@ -566,6 +602,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(response.context["selected_category"], "POUCH")
 
     def test_request_search_matches_product_and_fabric_labels(self):
+        """Test behavior: request search matches product and fabric labels."""
         matching_request = self.make_request(
             self.user,
             product="TOTE_BAG",
@@ -582,6 +619,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(list(fabric_response.context["requests"]), [matching_request])
 
     def test_request_search_matches_notes_and_combines_with_category(self):
+        """Test behavior: request search matches notes and combines with category."""
         matching_request = self.make_request(
             self.user,
             category="POUCH",
@@ -604,6 +642,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(list(response.context["requests"]), [matching_request])
 
     def test_request_list_filters_inclusive_date_range_and_orders_by_quantity(self):
+        """Test behavior: request list filters inclusive date range and orders by quantity."""
         earlier_request = self.make_request(self.user, quantity=2)
         later_request = self.make_request(self.user, quantity=5)
         UpcyclingRequest.objects.filter(pk=earlier_request.pk).update(
@@ -630,6 +669,7 @@ class UpcyclingRequestViewTests(TestCase):
         )
 
     def test_empty_search_keeps_filter_panel_available(self):
+        """Test behavior: empty search keeps filter panel available."""
         self.make_request(self.user)
         self.client.force_login(self.user)
 
@@ -643,6 +683,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertContains(response, "Tidak ada permintaan yang cocok")
 
     def test_create_records_initial_status_history(self):
+        """Test behavior: create records initial status history."""
         self.client.force_login(self.user)
 
         response = self.client.post(
@@ -658,6 +699,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(history.changed_by, self.user)
 
     def test_htmx_create_returns_location_header_without_full_redirect(self):
+        """Test behavior: htmx create returns location header without full redirect."""
         self.client.force_login(self.user)
 
         response = self.client.post(
@@ -671,6 +713,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertIn("/submitted/", response["HX-Location"])
 
     def test_user_can_filter_ongoing_requests(self):
+        """Test behavior: user can filter ongoing requests."""
         pending_request = self.make_request(self.user, status="PENDING")
         processing_request = self.make_request(self.user, status="PROCESSING")
         self.make_request(self.user, status="COMPLETED")
@@ -687,6 +730,7 @@ class UpcyclingRequestViewTests(TestCase):
         )
 
     def test_all_status_tab_clears_completed_filter_explicitly(self):
+        """Test behavior: all status tab clears completed filter explicitly."""
         pending_request = self.make_request(self.user, status="PENDING")
         processing_request = self.make_request(self.user, status="PROCESSING")
         completed_request = self.make_request(self.user, status="COMPLETED")
@@ -708,6 +752,7 @@ class UpcyclingRequestViewTests(TestCase):
         )
 
     def test_invalid_list_filters_are_ignored(self):
+        """Test behavior: invalid list filters are ignored."""
         first_request = self.make_request(self.user)
         second_request = self.make_request(self.user, category="POUCH", product="POUCH")
         self.client.force_login(self.user)
@@ -724,7 +769,59 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(response.context["selected_status"], "")
         self.assertEqual(response.context["selected_category"], "")
 
+    def test_invalid_calendar_dates_are_ignored(self):
+        """Test behavior: invalid calendar dates are ignored."""
+        request = self.make_request(self.user)
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_list"),
+            {"from": "2026-02-30", "to": "2026-13-01"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(list(response.context["requests"]), [request])
+        self.assertEqual(response.context["selected_from"], "")
+        self.assertEqual(response.context["selected_to"], "")
+
+    def test_status_history_hides_other_actors_username(self):
+        """Test behavior: status history hides other actors username."""
+        staff_user = get_user_model().objects.create_user(
+            username="staff-secret",
+            password="staff-password",
+        )
+        upcycling_request = self.make_request(self.user)
+        UpcyclingStatusHistory.objects.create(
+            request=upcycling_request,
+            from_status=UpcyclingRequest.Status.PENDING,
+            to_status=UpcyclingRequest.Status.PROCESSING,
+            changed_by=staff_user,
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_detail", args=[upcycling_request.pk])
+        )
+
+        self.assertNotContains(response, "staff-secret")
+        self.assertContains(response, "Tim ReBatik")
+
+    def test_status_tabs_include_current_filters_and_share_sync_target(self):
+        """Test behavior: status tabs include current filters and share sync target."""
+        self.make_request(self.user)
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_list"),
+            {"q": "Parang", "category": "TAS", "from": "2026-01-01"},
+        )
+
+        self.assertContains(response, 'hx-include="#upcycling-extra-filter-form"')
+        self.assertContains(response, 'hx-sync="#request-results:replace"')
+        self.assertContains(response, 'hx-vals=\'{"status": "ONGOING"}\'')
+
     def test_user_cannot_open_another_users_request(self):
+        """Test behavior: user cannot open another users request."""
         other_request = self.make_request(self.other_user)
         self.client.force_login(self.user)
 
@@ -735,6 +832,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_detail_timeline_matches_each_request_status(self):
+        """Test behavior: detail timeline matches each request status."""
         self.client.force_login(self.user)
         expected_states = {
             "PENDING": ["done", "current", "upcoming", "upcoming"],
@@ -755,6 +853,7 @@ class UpcyclingRequestViewTests(TestCase):
                 self.assertEqual(states, expected)
 
     def test_detail_formats_submission_date_in_jakarta_timezone(self):
+        """Test behavior: detail formats submission date in jakarta timezone."""
         upcycling_request = self.make_request(self.user)
         UpcyclingRequest.objects.filter(pk=upcycling_request.pk).update(
             created_at=datetime(
@@ -775,6 +874,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertContains(response, "23/10/2026")
 
     def test_user_can_update_own_pending_request_and_sees_toast(self):
+        """Test behavior: user can update own pending request and sees toast."""
         upcycling_request = self.make_request(self.user)
         self.client.force_login(self.user)
         data = self.form_data.copy()
@@ -791,6 +891,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertContains(response, "Permintaan berhasil diperbarui.")
 
     def test_update_does_not_accept_posted_user_or_status(self):
+        """Test behavior: update does not accept posted user or status."""
         upcycling_request = self.make_request(self.user)
         self.client.force_login(self.user)
         data = self.form_data | {
@@ -809,6 +910,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(upcycling_request.status, "PENDING")
 
     def test_user_can_open_edit_form_for_own_pending_request(self):
+        """Test behavior: user can open edit form for own pending request."""
         upcycling_request = self.make_request(self.user)
         self.client.force_login(self.user)
 
@@ -821,6 +923,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(response.context["form"].instance, upcycling_request)
 
     def test_user_cannot_update_request_after_review_begins(self):
+        """Test behavior: user cannot update request after review begins."""
         upcycling_request = self.make_request(self.user, status="PROCESSING")
         self.client.force_login(self.user)
         data = self.form_data.copy()
@@ -840,6 +943,7 @@ class UpcyclingRequestViewTests(TestCase):
         )
 
     def test_user_cannot_update_another_users_request(self):
+        """Test behavior: user cannot update another users request."""
         other_request = self.make_request(self.other_user)
         self.client.force_login(self.user)
 
@@ -851,6 +955,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_user_can_delete_own_pending_request_and_sees_toast(self):
+        """Test behavior: user can delete own pending request and sees toast."""
         upcycling_request = self.make_request(self.user)
         self.client.force_login(self.user)
 
@@ -865,6 +970,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertContains(response, "Permintaan berhasil dihapus.")
 
     def test_user_can_open_delete_confirmation_for_own_pending_request(self):
+        """Test behavior: user can open delete confirmation for own pending request."""
         upcycling_request = self.make_request(self.user)
         self.client.force_login(self.user)
 
@@ -876,6 +982,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(response.context["upcycling_request"], upcycling_request)
 
     def test_user_cannot_delete_request_after_review_begins(self):
+        """Test behavior: user cannot delete request after review begins."""
         upcycling_request = self.make_request(self.user, status="PROCESSING")
         self.client.force_login(self.user)
 
@@ -893,6 +1000,7 @@ class UpcyclingRequestViewTests(TestCase):
         )
 
     def test_user_cannot_delete_another_users_request(self):
+        """Test behavior: user cannot delete another users request."""
         other_request = self.make_request(self.other_user)
         self.client.force_login(self.user)
 
@@ -903,6 +1011,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_htmx_delete_returns_to_list_and_other_request_details_still_work(self):
+        """Test behavior: htmx delete returns to list and other request details still work."""
         upcycling_request = self.make_request(self.user)
         remaining_request = self.make_request(self.user, product="SLING_BAG")
         self.client.force_login(self.user)
@@ -927,6 +1036,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(remaining_detail.status_code, 200)
 
     def test_delete_action_stays_on_detail_and_confirmation_page(self):
+        """Test behavior: delete action stays on detail and confirmation page."""
         upcycling_request = self.make_request(self.user)
         self.client.force_login(self.user)
 
@@ -948,6 +1058,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertContains(confirmation_response, 'hx-swap="outerHTML"')
 
     def test_delete_dialog_has_optimistic_pending_feedback(self):
+        """Test behavior: delete dialog has optimistic pending feedback."""
         upcycling_request = self.make_request(self.user)
         self.client.force_login(self.user)
 
@@ -960,6 +1071,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertContains(response, "Permintaan sedang dihapus")
 
     def test_request_form_embeds_product_options_for_each_category(self):
+        """Test behavior: request form embeds product options for each category."""
         self.client.force_login(self.user)
 
         response = self.client.get(

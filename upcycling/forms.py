@@ -40,6 +40,7 @@ ADDRESS_DETAILS_BY_METHOD = {
 
 
 def get_product_options_by_category():
+    """Return product choices grouped for the request form's category picker."""
     product_labels = dict(UpcyclingRequest.PRODUCT_CHOICES)
     return {
         category: [
@@ -52,6 +53,7 @@ def get_product_options_by_category():
 
 class UpcyclingRequestForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
+        """Configure model choices and delivery-specific address guidance."""
         super().__init__(*args, **kwargs)
 
         choices_by_field = {
@@ -168,6 +170,7 @@ class UpcyclingRequestForm(forms.ModelForm):
         }
 
     def clean_quantity(self):
+        """Reject quantities outside the supported product range."""
         quantity = self.cleaned_data["quantity"]
         if quantity < 1 or quantity > 20:
             raise forms.ValidationError(
@@ -176,6 +179,7 @@ class UpcyclingRequestForm(forms.ModelForm):
         return quantity
 
     def clean_whatsapp(self):
+        """Validate and normalize an Indonesian mobile number."""
         whatsapp = self.cleaned_data["whatsapp"]
         normalized = re.sub(r"[\s().-]", "", whatsapp)
 
@@ -191,6 +195,7 @@ class UpcyclingRequestForm(forms.ModelForm):
         return normalized
 
     def clean(self):
+        """Validate product/category compatibility and custom product names."""
         cleaned_data = super().clean()
         category = cleaned_data.get("category")
         product = cleaned_data.get("product")

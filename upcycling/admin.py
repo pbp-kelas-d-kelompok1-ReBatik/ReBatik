@@ -11,6 +11,7 @@ class UpcyclingRequestAdminForm(forms.ModelForm):
         fields = "__all__"
 
     def clean_status(self):
+        """Validate that the requested status follows the workflow transitions."""
         new_status = self.cleaned_data["status"]
         if self.instance._state.adding or new_status == self.instance.status:
             return new_status
@@ -40,6 +41,7 @@ class UpcyclingStatusHistoryInline(admin.TabularInline):
     can_delete = False
 
     def has_add_permission(self, request, obj=None):
+        """Keep status history entries read-only in the admin interface."""
         return False
 
 
@@ -69,6 +71,7 @@ class UpcyclingRequestAdmin(admin.ModelAdmin):
     date_hierarchy = "created_at"
 
     def save_model(self, request, obj, form, change):
+        """Record the authenticated admin when a request status changes."""
         previous_status = None
         if change:
             previous_status = UpcyclingRequest.objects.values_list(

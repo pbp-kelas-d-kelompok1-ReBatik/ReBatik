@@ -80,15 +80,18 @@ class UpcyclingRequest(models.Model):
         ]
 
     def __str__(self):
+        """Represent the request by its product and owner."""
         return f"{self.get_product_name()} — {self.user}"
 
     def get_product_name(self):
+        """Return the custom name when the selected product is 'Other'."""
         if self.product == "LAINNYA" and self.custom_product:
             return self.custom_product
         return self.get_product_display()
 
     @property
     def reference_code(self):
+        """Return a short, stable public reference derived from the UUID."""
         short_id = self.pk.hex[:8].upper()
         return f"RB-{short_id}"
 
@@ -123,6 +126,7 @@ class UpcyclingStatusHistory(models.Model):
         verbose_name_plural = "riwayat status permintaan upcycling"
 
     def __str__(self):
+        """Represent a history entry by its request and resulting status."""
         return f"{self.request.reference_code}: {self.get_to_status_display()}"
 
 
@@ -150,4 +154,5 @@ class UpcyclingRateLimitBucket(models.Model):
         ]
 
     def __str__(self):
+        """Represent a rate-limit bucket with its owner and action."""
         return f"{self.user_id}: {self.get_action_display()} ({self.request_count})"

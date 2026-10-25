@@ -34,6 +34,14 @@ PENDING_LIMIT_MESSAGE = (
 )
 
 
+def _parse_filter_date(value):
+    """Parse a date-filter value, ignoring calendar-invalid input safely."""
+    try:
+        return parse_date(value)
+    except ValueError:
+        return None
+
+
 def _htmx_location_or_redirect(request, route_name, **route_kwargs):
     """Navigate with an HTMX swap when requested; retain normal redirects otherwise."""
     destination = reverse(route_name, kwargs=route_kwargs or None)
@@ -52,6 +60,7 @@ def _htmx_location_or_redirect(request, route_name, **route_kwargs):
 
 
 def _rate_limit_response(request, action):
+    """Return a 429 response when this user has exhausted an action limit."""
     if request.method != "POST":
         return None
 
@@ -80,6 +89,7 @@ def _rate_limit_response(request, action):
 
 @login_required
 def request_list(request):
+    """Show the signed-in user's requests with validated search and filters."""
     requests = UpcyclingRequest.objects.filter(user=request.user).only(
         "id",
         "fabric",
@@ -98,8 +108,8 @@ def request_list(request):
     selected_order = request.GET.get("order", "newest")
     selected_from_raw = request.GET.get("from", "")
     selected_to_raw = request.GET.get("to", "")
-    selected_from = parse_date(selected_from_raw)
-    selected_to = parse_date(selected_to_raw)
+    selected_from = _parse_filter_date(selected_from_raw)
+    selected_to = _parse_filter_date(selected_to_raw)
 
     valid_statuses = dict(UpcyclingRequest.STATUS_CHOICES)
     valid_categories = dict(UpcyclingRequest.CATEGORY_CHOICES)
@@ -199,6 +209,7 @@ def request_list(request):
 
 @login_required
 def request_create(request):
+    """Validate and create a request within the user's pending-request limit."""
     if request.method == "POST":
         rate_limit_response = _rate_limit_response(
             request,
@@ -267,6 +278,7 @@ def request_create(request):
 
 @login_required
 def request_success(request, pk):
+    """Show the confirmation page for the signed-in user's new request."""
     upcycling_request = get_object_or_404(
         UpcyclingRequest,
         pk=pk,
@@ -285,6 +297,7 @@ def request_success(request, pk):
 
 @login_required
 def request_detail(request, pk):
+    """Show one owned request with its progress timeline and status history."""
     upcycling_request = get_object_or_404(
         UpcyclingRequest,
         pk=pk,
@@ -343,6 +356,7 @@ def request_detail(request, pk):
 
 @login_required
 def request_update(request, pk):
+    """Update an owned request while it is still awaiting review."""
     upcycling_request = get_object_or_404(
         UpcyclingRequest,
         pk=pk,
@@ -425,6 +439,7 @@ def request_update(request, pk):
 
 @login_required
 def request_delete(request, pk):
+    """Delete an owned pending request after an authenticated POST."""
     upcycling_request = get_object_or_404(
         UpcyclingRequest,
         pk=pk,

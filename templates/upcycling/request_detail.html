@@ -126,8 +126,10 @@
                                         <time datetime="{{ history.changed_at|date:'c' }}">
                                             {{ history.changed_at|date:"d M Y, H:i" }} WIB
                                         </time>
-                                        {% if history.changed_by %}
+                                        {% if history.changed_by_id == request.user.pk %}
                                             · oleh {{ history.changed_by.username }}
+                                        {% elif history.changed_by %}
+                                            · oleh Tim ReBatik
                                         {% endif %}
                                     </p>
                                 </li>
