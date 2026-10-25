@@ -16,6 +16,28 @@ PRODUCTS_BY_CATEGORY = {
     "LAINNYA": ("LAINNYA",),
 }
 
+DEFAULT_ADDRESS_DETAILS = {
+    "label": "Alamat / Lokasi Penerimaan Produk",
+    "placeholder": "Alamat pengiriman atau lokasi pengambilan produk",
+    "help_text": "Pilih metode penerimaan produk untuk melihat informasi yang perlu diisi.",
+    "required_message": "Isi alamat atau lokasi penerimaan produk.",
+}
+
+ADDRESS_DETAILS_BY_METHOD = {
+    "KURIR": {
+        "label": "Alamat pengiriman",
+        "placeholder": "Masukkan alamat lengkap penerima produk",
+        "help_text": "Masukkan alamat lengkap tujuan pengiriman produk.",
+        "required_message": "Masukkan alamat pengiriman.",
+    },
+    "DROP_OFF": {
+        "label": "Lokasi pengambilan",
+        "placeholder": "Masukkan nama atau alamat lokasi Drop-off",
+        "help_text": "Tuliskan lokasi Drop-off tempat Anda akan mengambil produk.",
+        "required_message": "Masukkan lokasi pengambilan produk.",
+    },
+}
+
 
 def get_product_options_by_category():
     product_labels = dict(UpcyclingRequest.PRODUCT_CHOICES)
@@ -39,6 +61,39 @@ class UpcyclingRequestForm(forms.ModelForm):
         }
         for field_name, choices in choices_by_field.items():
             self.fields[field_name].choices = choices
+
+        delivery_method = (
+            self.data.get("delivery_method")
+            if self.is_bound
+            else self.initial.get("delivery_method")
+            or getattr(self.instance, "delivery_method", "")
+        )
+        address_details = ADDRESS_DETAILS_BY_METHOD.get(
+            delivery_method,
+            DEFAULT_ADDRESS_DETAILS,
+        )
+        address_field = self.fields["address"]
+        address_field.label = address_details["label"]
+        address_field.help_text = address_details["help_text"]
+        address_field.error_messages["required"] = address_details[
+            "required_message"
+        ]
+        address_field.widget.attrs["placeholder"] = address_details[
+            "placeholder"
+        ]
+
+        for method, details in ADDRESS_DETAILS_BY_METHOD.items():
+            data_prefix = "kurir" if method == "KURIR" else "drop-off"
+            for detail_name, detail_value in details.items():
+                address_field.widget.attrs[
+                    f"data-{data_prefix}-{detail_name.replace('_', '-')}"
+                ] = detail_value
+
+        for detail_name, detail_value in DEFAULT_ADDRESS_DETAILS.items():
+            address_field.widget.attrs[
+                f"data-default-{detail_name.replace('_', '-')}"
+            ] = detail_value
+        address_field.widget.attrs["aria-describedby"] = "address-help"
 
     class Meta:
         model = UpcyclingRequest
@@ -101,7 +156,6 @@ class UpcyclingRequestForm(forms.ModelForm):
             "address": forms.TextInput(
                 attrs={
                     "class": f"{FIELD_CLASSES} upcycling-field upcycling-input",
-                    "placeholder": "Alamat pengiriman atau lokasi pengambilan produk",
                 }
             ),
             "whatsapp": forms.TextInput(

@@ -1,5 +1,6 @@
-document.addEventListener("DOMContentLoaded", () => {
+const initializeUpcyclingForm = () => {
     const form = document.getElementById("upcycling-form");
+    if (!form) return;
     const errorSummary = document.getElementById("form-error-summary");
     if (errorSummary) {
         errorSummary.focus({ preventScroll: true });
@@ -33,6 +34,30 @@ document.addEventListener("DOMContentLoaded", () => {
         address: "#id_address",
         whatsapp: "#id_whatsapp",
     };
+    const deliveryMethodFields = form.querySelectorAll('[name="delivery_method"]');
+    const addressField = document.getElementById("id_address");
+    const addressLabel = document.getElementById("address-label");
+    const addressHelp = document.getElementById("address-help");
+
+    function updateAddressDetails() {
+        const selectedMethod = form.querySelector(
+            'input[name="delivery_method"]:checked'
+        )?.value;
+        const dataPrefix = selectedMethod === "KURIR"
+            ? "kurir"
+            : selectedMethod === "DROP_OFF"
+                ? "dropOff"
+                : "default";
+        const label = addressField.dataset[`${dataPrefix}Label`];
+        const placeholder = addressField.dataset[`${dataPrefix}Placeholder`];
+        const helpText = addressField.dataset[`${dataPrefix}HelpText`];
+        const requiredMessage = addressField.dataset[`${dataPrefix}RequiredMessage`];
+
+        addressLabel.textContent = label;
+        addressField.placeholder = placeholder;
+        addressHelp.textContent = helpText;
+        validationMessages.address = [label, requiredMessage];
+    }
 
     document.querySelectorAll("[data-error-field]").forEach((link) => {
         const target = validationTargets[link.dataset.errorField];
@@ -190,6 +215,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     fabricFields.forEach((field) => field.addEventListener("change", updateSummary));
+    deliveryMethodFields.forEach((field) => {
+        field.addEventListener("change", updateAddressDetails);
+    });
     categoryFields.forEach((field) => field.addEventListener("change", () => {
         customProductField.value = "";
         loadProducts();
@@ -201,6 +229,10 @@ document.addEventListener("DOMContentLoaded", () => {
         updateCustomProductField();
     });
     customProductField.addEventListener("input", updateSummary);
+    updateAddressDetails();
     loadProducts(true);
 
-});
+};
+
+document.addEventListener("DOMContentLoaded", () => initializeUpcyclingForm());
+document.body.addEventListener("htmx:afterSwap", initializeUpcyclingForm);

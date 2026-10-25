@@ -3,12 +3,12 @@ from datetime import datetime, timezone as datetime_timezone
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
-from django.test import SimpleTestCase, TestCase
+from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.urls import reverse
 
 from .admin import UpcyclingRequestAdminForm
 from .forms import UpcyclingRequestForm
-from .models import UpcyclingRequest
+from .models import UpcyclingRequest, UpcyclingStatusHistory
 
 
 User = get_user_model()
@@ -188,6 +188,70 @@ class UpcyclingRequestAdminTests(TestCase):
 
                 self.assertFalse(form.is_valid())
                 self.assertIn("status", form.errors)
+
+    def test_admin_status_change_is_recorded_with_actor_and_previous_status(self):
+        upcycling_request = UpcyclingRequest.objects.create(
+            user=self.user,
+            fabric="PARANG",
+            category="TAS",
+            product="TOTE_BAG",
+            quantity=1,
+            delivery_method="DROP_OFF",
+            address="Depok",
+            whatsapp="+6281234567890",
+        )
+        form_data = model_to_dict(upcycling_request)
+        form_data["status"] = UpcyclingRequest.Status.PROCESSING
+        form = UpcyclingRequestAdminForm(
+            data=form_data,
+            instance=upcycling_request,
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+
+        request = RequestFactory().post("/admin/upcycling/upcyclingrequest/")
+        request.user = self.user
+        admin.site._registry[UpcyclingRequest].save_model(
+            request,
+            upcycling_request,
+            form,
+            change=True,
+        )
+
+        history = UpcyclingStatusHistory.objects.get(request=upcycling_request)
+        self.assertEqual(history.from_status, UpcyclingRequest.Status.PENDING)
+        self.assertEqual(history.to_status, UpcyclingRequest.Status.PROCESSING)
+        self.assertEqual(history.changed_by, self.user)
+
+    def test_admin_save_without_status_change_does_not_add_history(self):
+        upcycling_request = UpcyclingRequest.objects.create(
+            user=self.user,
+            fabric="PARANG",
+            category="TAS",
+            product="TOTE_BAG",
+            quantity=1,
+            delivery_method="DROP_OFF",
+            address="Depok",
+            whatsapp="+6281234567890",
+        )
+        form_data = model_to_dict(upcycling_request)
+        form = UpcyclingRequestAdminForm(
+            data=form_data,
+            instance=upcycling_request,
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+
+        request = RequestFactory().post("/admin/upcycling/upcyclingrequest/")
+        request.user = self.user
+        admin.site._registry[UpcyclingRequest].save_model(
+            request,
+            upcycling_request,
+            form,
+            change=True,
+        )
+
+        self.assertFalse(
+            UpcyclingStatusHistory.objects.filter(request=upcycling_request).exists()
+        )
 
 
 class UpcyclingRequestViewTests(TestCase):
@@ -404,6 +468,111 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(response.context["selected_status"], "COMPLETED")
         self.assertEqual(response.context["selected_category"], "POUCH")
 
+    def test_request_search_matches_product_and_fabric_labels(self):
+        matching_request = self.make_request(
+            self.user,
+            product="TOTE_BAG",
+            fabric="MEGA_MENDUNG",
+        )
+        self.make_request(self.user, product="POUCH", fabric="KAWUNG")
+        self.client.force_login(self.user)
+        url = reverse("upcycling:request_list")
+
+        product_response = self.client.get(url, {"q": "tote bag"})
+        fabric_response = self.client.get(url, {"q": "mega mendung"})
+
+        self.assertEqual(list(product_response.context["requests"]), [matching_request])
+        self.assertEqual(list(fabric_response.context["requests"]), [matching_request])
+
+    def test_request_search_matches_notes_and_combines_with_category(self):
+        matching_request = self.make_request(
+            self.user,
+            category="POUCH",
+            product="POUCH",
+            notes="Warna biru dan motif pilihan",
+        )
+        self.make_request(
+            self.user,
+            category="TAS",
+            product="TOTE_BAG",
+            notes="Warna biru",
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_list"),
+            {"q": "biru", "category": "POUCH"},
+        )
+
+        self.assertEqual(list(response.context["requests"]), [matching_request])
+
+    def test_request_list_filters_inclusive_date_range_and_orders_by_quantity(self):
+        earlier_request = self.make_request(self.user, quantity=2)
+        later_request = self.make_request(self.user, quantity=5)
+        UpcyclingRequest.objects.filter(pk=earlier_request.pk).update(
+            created_at=datetime(2026, 5, 10, 12, tzinfo=datetime_timezone.utc)
+        )
+        UpcyclingRequest.objects.filter(pk=later_request.pk).update(
+            created_at=datetime(2026, 5, 11, 12, tzinfo=datetime_timezone.utc)
+        )
+        self.client.force_login(self.user)
+
+        date_response = self.client.get(
+            reverse("upcycling:request_list"),
+            {"from": "2026-05-10", "to": "2026-05-10"},
+        )
+        order_response = self.client.get(
+            reverse("upcycling:request_list"),
+            {"order": "quantity"},
+        )
+
+        self.assertEqual(list(date_response.context["requests"]), [earlier_request])
+        self.assertEqual(
+            list(order_response.context["requests"]),
+            [later_request, earlier_request],
+        )
+
+    def test_empty_search_keeps_filter_panel_available(self):
+        self.make_request(self.user)
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_list"),
+            {"q": "tidak-ada-hasil"},
+        )
+
+        self.assertContains(response, 'id="upcycling-extra-filters"')
+        self.assertContains(response, 'id="filter-query"')
+        self.assertContains(response, "Tidak ada permintaan yang cocok")
+
+    def test_create_records_initial_status_history(self):
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("upcycling:request_create"),
+            self.form_data,
+        )
+
+        self.assertEqual(response.status_code, 302)
+        upcycling_request = UpcyclingRequest.objects.get(user=self.user)
+        history = UpcyclingStatusHistory.objects.get(request=upcycling_request)
+        self.assertEqual(history.from_status, "")
+        self.assertEqual(history.to_status, UpcyclingRequest.Status.PENDING)
+        self.assertEqual(history.changed_by, self.user)
+
+    def test_htmx_create_returns_location_header_without_full_redirect(self):
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("upcycling:request_create"),
+            self.form_data,
+            HTTP_HX_REQUEST="true",
+        )
+
+        self.assertEqual(response.status_code, 204)
+        self.assertIn("HX-Location", response)
+        self.assertIn("/submitted/", response["HX-Location"])
+
     def test_user_can_filter_ongoing_requests(self):
         pending_request = self.make_request(self.user, status="PENDING")
         processing_request = self.make_request(self.user, status="PROCESSING")
@@ -418,6 +587,27 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertCountEqual(
             response.context["requests"],
             [pending_request, processing_request],
+        )
+
+    def test_all_status_tab_clears_completed_filter_explicitly(self):
+        pending_request = self.make_request(self.user, status="PENDING")
+        processing_request = self.make_request(self.user, status="PROCESSING")
+        completed_request = self.make_request(self.user, status="COMPLETED")
+        self.client.force_login(self.user)
+
+        completed_page = self.client.get(
+            reverse("upcycling:request_list"),
+            {"status": "COMPLETED"},
+        )
+        self.assertContains(completed_page, "status=")
+
+        all_page = self.client.get(
+            reverse("upcycling:request_list"),
+            {"status": ""},
+        )
+        self.assertCountEqual(
+            all_page.context["requests"],
+            [pending_request, processing_request, completed_request],
         )
 
     def test_invalid_list_filters_are_ignored(self):
@@ -614,6 +804,51 @@ class UpcyclingRequestViewTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 404)
+
+    def test_htmx_delete_returns_to_list_and_other_request_details_still_work(self):
+        upcycling_request = self.make_request(self.user)
+        remaining_request = self.make_request(self.user, product="SLING_BAG")
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("upcycling:request_delete", args=[upcycling_request.pk]),
+            HTTP_HX_REQUEST="true",
+        )
+
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(
+            UpcyclingRequest.objects.filter(pk=upcycling_request.pk).exists()
+        )
+        self.assertEqual(
+            response["HX-Redirect"],
+            reverse("upcycling:request_list"),
+        )
+        self.assertNotIn("HX-Location", response)
+        remaining_detail = self.client.get(
+            reverse("upcycling:request_detail", args=[remaining_request.pk])
+        )
+        self.assertEqual(remaining_detail.status_code, 200)
+
+    def test_delete_action_stays_on_detail_and_confirmation_page(self):
+        upcycling_request = self.make_request(self.user)
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("upcycling:request_list"))
+        delete_url = reverse("upcycling:request_delete", args=[upcycling_request.pk])
+
+        self.assertNotContains(response, f'hx-post="{delete_url}"')
+
+        detail_response = self.client.get(
+            reverse("upcycling:request_detail", args=[upcycling_request.pk])
+        )
+        self.assertContains(detail_response, f'href="{delete_url}"')
+        self.assertContains(detail_response, 'id="delete-request-dialog"')
+        self.assertContains(detail_response, "data-open-delete-dialog")
+        self.assertContains(detail_response, f'hx-post="{delete_url}"')
+
+        confirmation_response = self.client.get(delete_url)
+        self.assertContains(confirmation_response, f'hx-post="{delete_url}"')
+        self.assertContains(confirmation_response, 'hx-swap="outerHTML"')
 
     def test_request_form_embeds_product_options_for_each_category(self):
         self.client.force_login(self.user)

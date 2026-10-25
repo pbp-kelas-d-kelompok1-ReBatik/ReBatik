@@ -72,6 +72,12 @@ class UpcyclingRequest(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(
+                fields=["user", "status", "-created_at"],
+                name="upreq_user_status_created_idx",
+            ),
+        ]
 
     def __str__(self):
         return f"{self.get_product_name()} — {self.user}"
@@ -85,3 +91,36 @@ class UpcyclingRequest(models.Model):
     def reference_code(self):
         short_id = self.pk.hex[:8].upper()
         return f"RB-{short_id}"
+
+
+class UpcyclingStatusHistory(models.Model):
+    request = models.ForeignKey(
+        UpcyclingRequest,
+        on_delete=models.CASCADE,
+        related_name="status_history",
+    )
+    from_status = models.CharField(
+        max_length=12,
+        choices=UpcyclingRequest.STATUS_CHOICES,
+        blank=True,
+    )
+    to_status = models.CharField(
+        max_length=12,
+        choices=UpcyclingRequest.STATUS_CHOICES,
+    )
+    changed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="upcycling_status_changes",
+    )
+    changed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["changed_at", "pk"]
+        verbose_name = "riwayat status permintaan upcycling"
+        verbose_name_plural = "riwayat status permintaan upcycling"
+
+    def __str__(self):
+        return f"{self.request.reference_code}: {self.get_to_status_display()}"

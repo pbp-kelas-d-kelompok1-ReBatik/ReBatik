@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.core.exceptions import ValidationError
 
-from .models import UpcyclingRequest
+from .models import UpcyclingRequest, UpcyclingStatusHistory
 
 
 class UpcyclingRequestAdminForm(forms.ModelForm):
@@ -32,9 +32,21 @@ class UpcyclingRequestAdminForm(forms.ModelForm):
         return new_status
 
 
+class UpcyclingStatusHistoryInline(admin.TabularInline):
+    model = UpcyclingStatusHistory
+    fields = ("from_status", "to_status", "changed_by", "changed_at")
+    readonly_fields = fields
+    extra = 0
+    can_delete = False
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
 @admin.register(UpcyclingRequest)
 class UpcyclingRequestAdmin(admin.ModelAdmin):
     form = UpcyclingRequestAdminForm
+    inlines = (UpcyclingStatusHistoryInline,)
     list_display = (
         "product",
         "custom_product",
@@ -55,3 +67,21 @@ class UpcyclingRequestAdmin(admin.ModelAdmin):
     )
     readonly_fields = ("created_at", "updated_at")
     date_hierarchy = "created_at"
+
+    def save_model(self, request, obj, form, change):
+        previous_status = None
+        if change:
+            previous_status = UpcyclingRequest.objects.values_list(
+                "status",
+                flat=True,
+            ).get(pk=obj.pk)
+
+        super().save_model(request, obj, form, change)
+
+        if previous_status != obj.status:
+            UpcyclingStatusHistory.objects.create(
+                request=obj,
+                from_status=previous_status or "",
+                to_status=obj.status,
+                changed_by=request.user,
+            )

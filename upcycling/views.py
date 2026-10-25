@@ -1,12 +1,20 @@
+import json
+from datetime import datetime, time
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import transaction
+from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.dateparse import parse_date
 
 from .forms import UpcyclingRequestForm, get_product_options_by_category
-from .models import UpcyclingRequest
+from .models import UpcyclingRequest, UpcyclingStatusHistory
 
 PENDING_REQUEST_LIMIT = 10
 REQUESTS_PER_PAGE = 10
@@ -16,13 +24,45 @@ PENDING_LIMIT_MESSAGE = (
 )
 
 
+def _htmx_location_or_redirect(request, route_name, **route_kwargs):
+    """Navigate with an HTMX swap when requested; retain normal redirects otherwise."""
+    destination = reverse(route_name, kwargs=route_kwargs or None)
+    if request.headers.get("HX-Request") == "true":
+        response = HttpResponse(status=204)
+        response["HX-Location"] = json.dumps(
+            {
+                "path": destination,
+                "target": "#upcycling-page-content",
+                "select": "#upcycling-page-content",
+                "swap": "outerHTML",
+            }
+        )
+        return response
+    return redirect(destination)
+
+
 @login_required
 def request_list(request):
-    requests = UpcyclingRequest.objects.filter(user=request.user)
+    requests = UpcyclingRequest.objects.filter(user=request.user).only(
+        "id",
+        "fabric",
+        "category",
+        "product",
+        "custom_product",
+        "status",
+        "created_at",
+        "quantity",
+    )
     has_any_requests = requests.exists()
 
     selected_status = request.GET.get("status", "")
     selected_category = request.GET.get("category", "")
+    selected_query = request.GET.get("q", "").strip()[:100]
+    selected_order = request.GET.get("order", "newest")
+    selected_from_raw = request.GET.get("from", "")
+    selected_to_raw = request.GET.get("to", "")
+    selected_from = parse_date(selected_from_raw)
+    selected_to = parse_date(selected_to_raw)
 
     valid_statuses = dict(UpcyclingRequest.STATUS_CHOICES)
     valid_categories = dict(UpcyclingRequest.CATEGORY_CHOICES)
@@ -44,6 +84,57 @@ def request_list(request):
     else:
         selected_category = ""
 
+    if selected_query:
+        normalized_query = " ".join(
+            selected_query.casefold().replace("_", " ").split()
+        )
+        matching_products = [
+            value
+            for value, label in UpcyclingRequest.PRODUCT_CHOICES
+            if normalized_query
+            in " ".join(value.casefold().replace("_", " ").split())
+            or normalized_query in label.casefold()
+        ]
+        matching_fabrics = [
+            value
+            for value, label in UpcyclingRequest.FABRIC_CHOICES
+            if normalized_query
+            in " ".join(value.casefold().replace("_", " ").split())
+            or normalized_query in label.casefold()
+        ]
+        search_filter = (
+            Q(custom_product__icontains=selected_query)
+            | Q(notes__icontains=selected_query)
+        )
+        if matching_products:
+            search_filter |= Q(product__in=matching_products)
+        if matching_fabrics:
+            search_filter |= Q(fabric__in=matching_fabrics)
+        requests = requests.filter(search_filter)
+    if selected_from:
+        start_at = timezone.make_aware(
+            datetime.combine(selected_from, time.min)
+        )
+        requests = requests.filter(created_at__gte=start_at)
+    else:
+        selected_from_raw = ""
+    if selected_to:
+        end_at = timezone.make_aware(
+            datetime.combine(selected_to, time.max)
+        )
+        requests = requests.filter(created_at__lte=end_at)
+    else:
+        selected_to_raw = ""
+
+    order_options = {
+        "newest": ("-created_at", "pk"),
+        "oldest": ("created_at", "pk"),
+        "quantity": ("-quantity", "-created_at", "pk"),
+    }
+    if selected_order not in order_options:
+        selected_order = "newest"
+    requests = requests.order_by(*order_options[selected_order])
+
     page_obj = Paginator(requests, REQUESTS_PER_PAGE).get_page(
         request.GET.get("page")
     )
@@ -55,6 +146,15 @@ def request_list(request):
         "category_options": UpcyclingRequest.CATEGORY_CHOICES,
         "selected_status": selected_status,
         "selected_category": selected_category,
+        "selected_query": selected_query,
+        "selected_order": selected_order,
+        "selected_from": selected_from_raw,
+        "selected_to": selected_to_raw,
+        "order_options": (
+            ("newest", "Terbaru"),
+            ("oldest", "Terlama"),
+            ("quantity", "Jumlah terbanyak"),
+        ),
         "has_any_requests": has_any_requests,
     }
     return render(request, "upcycling/request_list.html", context)
@@ -87,7 +187,13 @@ def request_create(request):
                     upcycling_request = form.save(commit=False)
                     upcycling_request.user = user
                     upcycling_request.save()
-                    return redirect(
+                    UpcyclingStatusHistory.objects.create(
+                        request=upcycling_request,
+                        to_status=upcycling_request.status,
+                        changed_by=user,
+                    )
+                    return _htmx_location_or_redirect(
+                        request,
                         "upcycling:request_success",
                         pk=upcycling_request.pk,
                     )
@@ -184,6 +290,9 @@ def request_detail(request, pk):
             "upcycling_request": upcycling_request,
             "reference_code": upcycling_request.reference_code,
             "timeline_steps": timeline_steps,
+            "status_history": upcycling_request.status_history.select_related(
+                "changed_by"
+            ),
         },
     )
 
@@ -201,7 +310,11 @@ def request_update(request, pk):
             request,
             "Permintaan hanya bisa diedit saat masih menunggu tinjauan.",
         )
-        return redirect("upcycling:request_detail", pk=upcycling_request.pk)
+        return _htmx_location_or_redirect(
+            request,
+            "upcycling:request_detail",
+            pk=upcycling_request.pk,
+        )
 
     if request.method == "POST":
         form = UpcyclingRequestForm(
@@ -221,7 +334,8 @@ def request_update(request, pk):
                         request,
                         "Permintaan hanya bisa diedit saat masih menunggu tinjauan.",
                     )
-                    return redirect(
+                    return _htmx_location_or_redirect(
+                        request,
                         "upcycling:request_detail",
                         pk=current_request.pk,
                     )
@@ -239,7 +353,8 @@ def request_update(request, pk):
                 )
 
             messages.success(request, "Permintaan berhasil diperbarui.")
-            return redirect(
+            return _htmx_location_or_redirect(
+                request,
                 "upcycling:request_detail",
                 pk=upcycling_request.pk,
             )
@@ -270,7 +385,11 @@ def request_delete(request, pk):
             request,
             "Permintaan hanya bisa dihapus saat masih menunggu tinjauan.",
         )
-        return redirect("upcycling:request_detail", pk=upcycling_request.pk)
+        return _htmx_location_or_redirect(
+            request,
+            "upcycling:request_detail",
+            pk=upcycling_request.pk,
+        )
 
     if request.method == "POST":
         deleted_count, _ = UpcyclingRequest.objects.filter(
@@ -284,10 +403,14 @@ def request_delete(request, pk):
                 request,
                 "Permintaan tidak dapat dihapus karena statusnya sudah berubah.",
             )
-            return redirect("upcycling:request_list")
+            return _htmx_location_or_redirect(request, "upcycling:request_list")
 
         messages.success(request, "Permintaan berhasil dihapus.")
-        return redirect("upcycling:request_list")
+        if request.headers.get("HX-Request") == "true":
+            response = HttpResponse(status=204)
+            response["HX-Redirect"] = reverse("upcycling:request_list")
+            return response
+        return _htmx_location_or_redirect(request, "upcycling:request_list")
 
     return render(
         request,

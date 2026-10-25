@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<section class="relative overflow-hidden px-4 pb-12 pt-8 sm:px-6 sm:pt-10">
+<section id="upcycling-page-content" class="relative overflow-hidden px-4 pb-12 pt-8 sm:px-6 sm:pt-10">
     <img
         src="{% static 'img/upcycling/cloud-left.webp' %}"
         alt=""
@@ -108,6 +108,37 @@
                         </li>
                     {% endfor %}
                 </ol>
+                <section aria-labelledby="history-heading" class="mt-5 border-t border-[var(--border)] pt-5">
+                    <h4 id="history-heading" class="text-lg font-bold sm:text-xl">Riwayat Status</h4>
+                    {% if status_history %}
+                        <ol class="mt-3 space-y-3">
+                            {% for history in status_history %}
+                                <li class="border-l-2 border-[var(--upcycling-accent)] pl-3">
+                                    <p class="font-semibold">
+                                        {% if history.from_status %}
+                                            {{ history.get_from_status_display }} →
+                                        {% else %}
+                                            Status dicatat →
+                                        {% endif %}
+                                        {{ history.get_to_status_display }}
+                                    </p>
+                                    <p class="text-sm text-[var(--brown-muted)]">
+                                        <time datetime="{{ history.changed_at|date:'c' }}">
+                                            {{ history.changed_at|date:"d M Y, H:i" }} WIB
+                                        </time>
+                                        {% if history.changed_by %}
+                                            · oleh {{ history.changed_by.username }}
+                                        {% endif %}
+                                    </p>
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    {% else %}
+                        <p class="mt-2 text-sm text-[var(--brown-muted)]">
+                            Riwayat perubahan status akan muncul di sini.
+                        </p>
+                    {% endif %}
+                </section>
                 <img
                     src="{% static 'img/upcycling/mascot-shirt.webp' %}"
                     alt=""
@@ -230,6 +261,8 @@
                 </a>
                 <a
                     href="{% url 'upcycling:request_delete' upcycling_request.pk %}"
+                    data-open-delete-dialog
+                    aria-haspopup="dialog"
                     class="inline-flex min-h-12 items-center justify-center rounded-xl border-2
                            border-[var(--danger)] bg-[var(--upcycling-surface)] px-6 py-3
                            font-bold text-[var(--danger)] transition hover:bg-[var(--danger)]
@@ -239,7 +272,61 @@
                     Hapus permintaan
                 </a>
             </div>
+
+            <dialog
+                id="delete-request-dialog"
+                aria-labelledby="delete-request-dialog-title"
+                aria-describedby="delete-request-dialog-description"
+                class="m-auto w-[min(32rem,calc(100%-2rem))] rounded-2xl border-2
+                       border-[var(--danger)] bg-[var(--upcycling-panel)] p-0 text-[var(--brown)]
+                       shadow-2xl backdrop:bg-black/60"
+            >
+                <div class="p-6 sm:p-8">
+                    <h3 id="delete-request-dialog-title" class="text-2xl font-bold">Hapus permintaan?</h3>
+                    <p id="delete-request-dialog-description" class="mt-3 text-[var(--brown-muted)]">
+                        Permintaan {{ upcycling_request.get_product_name }} akan dihapus permanen.
+                        Tindakan ini tidak dapat dibatalkan.
+                    </p>
+                    <div
+                        data-htmx-feedback
+                        role="alert"
+                        aria-live="assertive"
+                        class="hidden mt-4 rounded-lg border border-[var(--danger)] bg-[var(--upcycling-surface)] p-3 text-sm font-semibold text-[var(--danger)]"
+                    ></div>
+                    <form
+                        method="post"
+                        action="{% url 'upcycling:request_delete' upcycling_request.pk %}"
+                        hx-post="{% url 'upcycling:request_delete' upcycling_request.pk %}"
+                        hx-target="#upcycling-page-content"
+                        hx-swap="none"
+                        hx-disabled-elt="button[type='submit']"
+                        class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end"
+                    >
+                        {% csrf_token %}
+                        <button
+                            type="button"
+                            data-close-delete-dialog
+                            class="min-h-11 rounded-xl border-2 border-[var(--brown)] px-5 py-2 font-bold
+                                   hover:bg-[var(--upcycling-summary)] focus-visible:outline
+                                   focus-visible:outline-2 focus-visible:outline-offset-2
+                                   focus-visible:outline-[var(--brown)]"
+                        >Batal</button>
+                        <button
+                            type="submit"
+                            class="min-h-11 rounded-xl bg-[var(--danger)] px-5 py-2 font-bold text-white
+                                   hover:bg-[var(--danger-hover)] focus-visible:outline
+                                   focus-visible:outline-2 focus-visible:outline-offset-2
+                                   focus-visible:outline-[var(--danger-hover)]"
+                        >Ya, hapus</button>
+                    </form>
+                </div>
+            </dialog>
         {% endif %}
     </div>
 </section>
 {% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/htmx.min.js' %}" defer></script>
+<script src="{% static 'js/upcycling-htmx-feedback.js' %}" defer></script>
+{% endblock scripts %}
