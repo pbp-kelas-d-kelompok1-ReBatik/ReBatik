@@ -14,6 +14,24 @@ from .services import (
     get_lifetime_points,
     redeem_points,
 )
+from .views import _level_progress
+
+
+class LevelProgressTests(SimpleTestCase):
+    def test_level_names_are_consistent_at_each_tier_boundary(self):
+        cases = (
+            (0, "Penenun Pemula", "Penenun Mahir"),
+            (1999, "Penenun Pemula", "Penenun Mahir"),
+            (2000, "Penenun Mahir", "Penenun Ahli"),
+            (4999, "Penenun Mahir", "Penenun Ahli"),
+            (5000, "Penenun Ahli", None),
+        )
+
+        for lifetime_points, expected_current, expected_next in cases:
+            with self.subTest(lifetime_points=lifetime_points):
+                progress = _level_progress(lifetime_points)
+                self.assertEqual(progress["current_level"], expected_current)
+                self.assertEqual(progress["next_level"], expected_next)
 
 
 class DonationPointCalculationTests(SimpleTestCase):
@@ -72,6 +90,8 @@ class PointLedgerTests(TestCase):
         )
         self.assertEqual(bonus.points, 25)
         self.assertEqual(second_donation.points, 200)
+        self.assertEqual(donation.weight_kg, Decimal("1.200"))
+        self.assertEqual(second_donation.weight_kg, Decimal("3.100"))
         self.assertIsNone(second_bonus)
         self.assertEqual(
             PointTransaction.objects.filter(
@@ -232,7 +252,15 @@ class RewardsPageTests(TestCase):
             password="safe-test-password",
         )
 
-    def make_transaction(self, user, kind, points, reference, description):
+    def make_transaction(
+        self,
+        user,
+        kind,
+        points,
+        reference,
+        description,
+        weight_kg=None,
+    ):
         """Create a ledger row for page presentation tests."""
         return PointTransaction.objects.create(
             user=user,
@@ -240,6 +268,7 @@ class RewardsPageTests(TestCase):
             points=points,
             source_reference=reference,
             description=description,
+            weight_kg=weight_kg,
         )
 
     def test_points_overview_requires_login(self):
@@ -281,6 +310,95 @@ class RewardsPageTests(TestCase):
         self.assertContains(response, "Donasi kain terverifikasi (1 kg)")
         self.assertContains(response, "Tukar voucher")
         self.assertNotContains(response, "Transaksi milik pengguna lain")
+
+    def test_points_overview_shows_donation_upcycling_and_saved_weight_stats(self):
+        """Summarize verified donations, completed upcycling, and saved fabric weight."""
+        self.make_transaction(
+            self.user,
+            PointTransaction.Kind.DONATION,
+            100,
+            "stats-donation-1",
+            "Donasi terverifikasi (1.2 kg)",
+            weight_kg=Decimal("1.2"),
+        )
+        self.make_transaction(
+            self.user,
+            PointTransaction.Kind.DONATION,
+            50,
+            "stats-donation-2",
+            "Donasi terverifikasi (0.4 kg)",
+            weight_kg=Decimal("0.4"),
+        )
+        self.make_transaction(
+            self.user,
+            PointTransaction.Kind.UPCYCLING_COMPLETED,
+            150,
+            "stats-upcycling",
+            "Upcycling selesai",
+        )
+        self.make_transaction(
+            self.other_user,
+            PointTransaction.Kind.DONATION,
+            300,
+            "other-stats-donation",
+            "Donasi pengguna lain",
+            weight_kg=Decimal("20"),
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get("/rewards/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["donated_count"], 2)
+        self.assertEqual(response.context["upcycling_count"], 1)
+        self.assertEqual(response.context["saved_weight_kg"], Decimal("1.600"))
+        self.assertContains(response, "Kain didonasikan")
+        self.assertContains(response, "Upcycling selesai")
+        self.assertContains(response, "Kain terselamatkan")
+        self.assertContains(response, "1,6 kg")
+
+    def test_points_overview_links_to_dropoff_locations_to_donate_more_fabric(self):
+        """Give users a direct path to the existing fabric drop-off directory."""
+        self.client.force_login(self.user)
+
+        response = self.client.get("/rewards/")
+
+        self.assertContains(response, 'href="/marketplace/drop-off/"')
+        self.assertContains(response, "Donasikan Kain Baru →")
+
+    def test_level_progress_bar_contains_three_named_tiers_without_step_circles(self):
+        """Show level names beneath one segmented bar instead of numbered nodes."""
+        self.client.force_login(self.user)
+
+        response = self.client.get("/rewards/")
+
+        self.assertEqual(
+            response.content.count(b'class="level-progress-segment'),
+            3,
+        )
+        self.assertContains(response, 'class="level-progress-segment is-current"')
+        self.assertContains(response, "Penenun Pemula")
+        self.assertContains(response, "Penenun Mahir")
+        self.assertContains(response, "Penenun Ahli")
+        self.assertNotContains(response, "level-tier-step")
+
+    def test_expert_level_keeps_progress_full_and_shows_total_past_threshold(self):
+        """Keep the highest-tier bar full and show lifetime points above its cap."""
+        self.make_transaction(
+            self.user,
+            PointTransaction.Kind.DONATION,
+            5034,
+            "expert-level-donation",
+            "Donasi terverifikasi",
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get("/rewards/")
+
+        self.assertContains(response, "Level tertinggi tercapai")
+        self.assertContains(response, "5.034 / 5.000 poin")
+        self.assertContains(response, 'aria-valuenow="5000"')
+        self.assertNotContains(response, "Jenjang level")
 
     def test_points_overview_has_an_empty_state_without_transactions(self):
         """Explain the empty state when a user has not earned or spent points."""
@@ -347,3 +465,53 @@ class RewardsPageTests(TestCase):
         self.assertEqual(second_page.context["transaction_page"].number, 2)
         self.assertEqual(len(second_page.context["transaction_page"].object_list), 1)
         self.assertContains(second_page, "Upcycling selesai 0")
+
+    def test_transaction_history_htmx_filter_returns_only_refreshable_content(self):
+        """Return refreshed filter, rows, and pagination without the page shell."""
+        self.make_transaction(
+            self.user,
+            PointTransaction.Kind.UPCYCLING_COMPLETED,
+            150,
+            "htmx-history-credit",
+            "Upcycling selesai untuk HTMX",
+        )
+        self.make_transaction(
+            self.user,
+            PointTransaction.Kind.REDEMPTION,
+            -50,
+            "htmx-history-debit",
+            "Penukaran untuk HTMX",
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            "/rewards/history/?type=in",
+            HTTP_HX_REQUEST="true",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "rewards/_history_content.html")
+        self.assertContains(response, 'id="history-content"')
+        self.assertContains(response, "Upcycling selesai untuk HTMX")
+        self.assertNotContains(response, "Penukaran untuk HTMX")
+        self.assertNotContains(response, "Points and Rewards")
+
+    def test_transaction_history_controls_use_htmx_with_native_link_fallback(self):
+        """Keep filter and pagination actions async while preserving normal links."""
+        for index in range(7):
+            self.make_transaction(
+                self.user,
+                PointTransaction.Kind.UPCYCLING_COMPLETED,
+                150,
+                f"htmx-history-control-{index}",
+                f"Aktivitas HTMX {index}",
+            )
+        self.client.force_login(self.user)
+
+        response = self.client.get("/rewards/history/")
+
+        self.assertContains(response, 'hx-target="#history-content"')
+        self.assertContains(response, 'hx-select="#history-content"')
+        self.assertContains(response, 'hx-sync="#history-content:replace"')
+        self.assertContains(response, 'href="?type=in"')
+        self.assertContains(response, 'href="?type=all&amp;page=2"')
