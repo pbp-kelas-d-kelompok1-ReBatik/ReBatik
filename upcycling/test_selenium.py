@@ -141,6 +141,42 @@ class UpcyclingBrowserTests(StaticLiveServerTestCase):
             lambda _browser: set(self.get_result_headings()) == {"Tote Bag", "Pouch"}
         )
 
+    def test_pagination_url_tracks_live_filter_values(self):
+        """Test behavior: pagination links track filters before results swap."""
+        for _ in range(11):
+            self.create_request(
+                status=UpcyclingRequest.Status.PENDING,
+                product="POUCH",
+            )
+        self.open_authenticated_page(reverse("upcycling:request_list"))
+        self.browser.find_element(
+            By.CSS_SELECTOR,
+            "#upcycling-extra-filters > summary",
+        ).click()
+
+        pagination_link = self.browser.find_element(
+            By.CSS_SELECTOR,
+            '#request-results nav[aria-label="Navigasi halaman"] a',
+        )
+        self.browser.execute_script(
+            """
+            const input = document.getElementById('filter-query');
+            input.value = 'Pouch';
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            """
+        )
+
+        parsed_url = self.browser.execute_script(
+            "return new URL(arguments[0].href, window.location.href).searchParams.toString();",
+            pagination_link,
+        )
+        self.assertIn("q=Pouch", parsed_url)
+        self.assertIn("page=2", parsed_url)
+        self.assertEqual(
+            pagination_link.get_attribute("href"),
+            pagination_link.get_attribute("hx-get"),
+        )
+
     def test_delete_dialog_can_cancel_then_confirm_and_return_to_list(self):
         """Test behavior: delete dialog can cancel then confirm and return to list."""
         upcycling_request = self.create_request(

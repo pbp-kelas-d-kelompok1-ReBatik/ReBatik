@@ -21,6 +21,32 @@
         });
     };
 
+    /** Keep pagination URLs aligned with live filters without losing page numbers. */
+    const updatePaginationUrls = () => {
+        const form = document.getElementById("upcycling-extra-filter-form");
+        if (!form) return;
+
+        const baseUrl = new URL(form.action, window.location.href);
+        const filterParams = new URLSearchParams(new FormData(form));
+        filterParams.delete("page");
+
+        document.querySelectorAll(
+            '#request-results nav[aria-label="Navigasi halaman"] a'
+        ).forEach((link) => {
+            const page = new URL(link.href, window.location.href).searchParams.get("page");
+            if (!page) return;
+
+            const params = new URLSearchParams(filterParams);
+            params.set("page", page);
+            const url = new URL(baseUrl);
+            url.search = params.toString();
+            url.hash = "";
+
+            link.href = `${url.pathname}${url.search}`;
+            link.setAttribute("hx-get", `${url.pathname}${url.search}`);
+        });
+    };
+
     const updateStatusTabs = (selectedStatus) => {
         document.querySelectorAll("[data-status-filter]").forEach((link) => {
             const tabStatus = link.dataset.statusFilter;
@@ -54,6 +80,7 @@
     };
 
     updateStatusTabUrls();
+    updatePaginationUrls();
 
     const getOptimisticDeleteForm = (event) => {
         const trigger = event.detail?.elt;
@@ -144,6 +171,8 @@
         if (statusLink && statusField) {
             statusField.value = statusLink.dataset.statusFilter;
             updateStatusTabs(statusField.value);
+            updateStatusTabUrls();
+            updatePaginationUrls();
         }
 
         const resetLink = event.target.closest("[data-reset-filters]");
@@ -158,6 +187,7 @@
                 form.elements.order.value = "newest";
                 updateStatusTabs("");
                 updateStatusTabUrls();
+                updatePaginationUrls();
             }
         }
     });
@@ -165,6 +195,7 @@
     document.body.addEventListener("change", (event) => {
         if (event.target.closest("#upcycling-extra-filter-form")) {
             updateStatusTabUrls();
+            updatePaginationUrls();
         }
         if (event.target.matches("#filter-status")) {
             updateStatusTabs(event.target.value);
@@ -174,6 +205,13 @@
     document.body.addEventListener("input", (event) => {
         if (event.target.closest("#upcycling-extra-filter-form")) {
             updateStatusTabUrls();
+            updatePaginationUrls();
+        }
+    });
+
+    document.body.addEventListener("htmx:afterSwap", (event) => {
+        if (event.detail?.target?.id === "request-results") {
+            updatePaginationUrls();
         }
     });
 
