@@ -403,6 +403,8 @@
     width: fit-content;
     max-width: 100%;
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 4px;
     margin: 0 auto 22px;
     padding: 5px;
