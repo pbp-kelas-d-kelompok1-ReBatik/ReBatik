@@ -947,6 +947,18 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertContains(confirmation_response, f'hx-post="{delete_url}"')
         self.assertContains(confirmation_response, 'hx-swap="outerHTML"')
 
+    def test_delete_dialog_has_optimistic_pending_feedback(self):
+        upcycling_request = self.make_request(self.user)
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_detail", args=[upcycling_request.pk])
+        )
+
+        self.assertContains(response, "data-optimistic-delete-form")
+        self.assertContains(response, "data-delete-pending")
+        self.assertContains(response, "Permintaan sedang dihapus")
+
     def test_request_form_embeds_product_options_for_each_category(self):
         self.client.force_login(self.user)
 

@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
+from django.utils import timezone
 
 try:
     from selenium import webdriver
@@ -14,7 +15,7 @@ try:
 except ImportError:  # Selenium is an optional development dependency.
     webdriver = None
 
-from .models import UpcyclingRequest
+from .models import UpcyclingRateLimitBucket, UpcyclingRequest
 
 
 @skipIf(webdriver is None, "Install requirements-dev.txt to run Selenium tests.")
@@ -137,10 +138,39 @@ class UpcyclingBrowserTests(StaticLiveServerTestCase):
         self.activate_by_dom_click(
             self.browser.find_element(By.CSS_SELECTOR, "[data-open-delete-dialog]")
         )
-        self.browser.find_element(
+        self.browser.execute_script(
+            """
+            window.__realXhrSend = XMLHttpRequest.prototype.send;
+            XMLHttpRequest.prototype.send = function (body) {
+                window.__heldDeleteXhr = this;
+                window.__heldDeleteBody = body;
+            };
+            """
+        )
+        submit_button = self.browser.find_element(
             By.CSS_SELECTOR,
             "#delete-request-dialog button[type='submit']",
-        ).click()
+        )
+        submit_button.click()
+        pending_message = self.browser.find_element(
+            By.CSS_SELECTOR,
+            "[data-delete-pending]",
+        )
+        self.wait.until(lambda _browser: pending_message.is_displayed())
+        self.assertEqual(submit_button.text, "Menghapus…")
+        self.assertTrue(submit_button.get_attribute("disabled"))
+        self.assertTrue(
+            self.browser.find_element(
+                By.CSS_SELECTOR,
+                "[data-close-delete-dialog]",
+            ).get_attribute("disabled")
+        )
+        self.browser.execute_script(
+            """
+            XMLHttpRequest.prototype.send = window.__realXhrSend;
+            window.__realXhrSend.call(window.__heldDeleteXhr, window.__heldDeleteBody);
+            """
+        )
         self.wait.until(
             lambda browser: browser.current_url
             == f"{self.live_server_url}{reverse('upcycling:request_list')}"
@@ -149,5 +179,52 @@ class UpcyclingBrowserTests(StaticLiveServerTestCase):
             EC.visibility_of_element_located((By.CSS_SELECTOR, "[data-upcycling-toast]"))
         )
         self.assertFalse(
+            UpcyclingRequest.objects.filter(pk=upcycling_request.pk).exists()
+        )
+
+    def test_delete_dialog_restores_after_server_rate_limit(self):
+        upcycling_request = self.create_request(
+            status=UpcyclingRequest.Status.PENDING,
+            product="TOTE_BAG",
+        )
+        UpcyclingRateLimitBucket.objects.create(
+            user=self.user,
+            action=UpcyclingRateLimitBucket.Action.DELETE,
+            window_started_at=timezone.now(),
+            request_count=10,
+        )
+        self.open_authenticated_page(
+            reverse("upcycling:request_detail", args=[upcycling_request.pk])
+        )
+
+        self.activate_by_dom_click(
+            self.browser.find_element(By.CSS_SELECTOR, "[data-open-delete-dialog]")
+        )
+        self.browser.find_element(
+            By.CSS_SELECTOR,
+            "#delete-request-dialog button[type='submit']",
+        ).click()
+
+        feedback = self.browser.find_element(
+            By.CSS_SELECTOR,
+            "#delete-request-dialog [data-htmx-feedback]",
+        )
+        self.wait.until(lambda _browser: "Batas percobaan tercapai" in feedback.text)
+        pending_message = self.browser.find_element(
+            By.CSS_SELECTOR,
+            "[data-delete-pending]",
+        )
+        submit_button = self.browser.find_element(
+            By.CSS_SELECTOR,
+            "#delete-request-dialog button[type='submit']",
+        )
+
+        self.assertTrue(
+            self.browser.find_element(By.ID, "delete-request-dialog").is_displayed()
+        )
+        self.assertFalse(pending_message.is_displayed())
+        self.assertEqual(submit_button.text, "Ya, hapus")
+        self.assertTrue(submit_button.is_enabled())
+        self.assertTrue(
             UpcyclingRequest.objects.filter(pk=upcycling_request.pk).exists()
         )

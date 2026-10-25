@@ -300,9 +300,16 @@
                         hx-target="#upcycling-page-content"
                         hx-swap="none"
                         hx-disabled-elt="button[type='submit']"
+                        data-optimistic-delete-form
                         class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end"
                     >
                         {% csrf_token %}
+                        <p
+                            data-delete-pending
+                            role="status"
+                            aria-live="polite"
+                            class="hidden sm:mr-auto sm:self-center text-sm font-semibold text-[var(--brown-muted)]"
+                        >Permintaan sedang dihapus…</p>
                         <button
                             type="button"
                             data-close-delete-dialog
@@ -313,6 +320,7 @@
                         >Batal</button>
                         <button
                             type="submit"
+                            data-delete-submit
                             class="min-h-11 rounded-xl bg-[var(--danger)] px-5 py-2 font-bold text-white
                                    hover:bg-[var(--danger-hover)] focus-visible:outline
                                    focus-visible:outline-2 focus-visible:outline-offset-2
