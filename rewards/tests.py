@@ -217,3 +217,133 @@ class PointLedgerTests(TestCase):
         self.assertEqual(first.pk, retry.pk)
         self.assertEqual(get_available_points(self.user), 50)
         self.assertEqual(get_lifetime_points(self.user), 150)
+
+
+class RewardsPageTests(TestCase):
+    """Exercise authenticated points overview and transaction history pages."""
+
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="rewards-page-user",
+            password="safe-test-password",
+        )
+        self.other_user = get_user_model().objects.create_user(
+            username="other-rewards-user",
+            password="safe-test-password",
+        )
+
+    def make_transaction(self, user, kind, points, reference, description):
+        """Create a ledger row for page presentation tests."""
+        return PointTransaction.objects.create(
+            user=user,
+            kind=kind,
+            points=points,
+            source_reference=reference,
+            description=description,
+        )
+
+    def test_points_overview_requires_login(self):
+        """Keep a user's point balance private from anonymous visitors."""
+        response = self.client.get("/rewards/")
+
+        self.assertRedirects(response, "/login/?next=/rewards/")
+
+    def test_points_overview_shows_balance_and_only_owners_recent_activity(self):
+        """Show the signed-in user's balance and recent transactions only."""
+        self.make_transaction(
+            self.user,
+            PointTransaction.Kind.DONATION,
+            100,
+            "overview-donation",
+            "Donasi kain terverifikasi (1 kg)",
+        )
+        self.make_transaction(
+            self.user,
+            PointTransaction.Kind.REDEMPTION,
+            -25,
+            "overview-redemption",
+            "Tukar voucher",
+        )
+        self.make_transaction(
+            self.other_user,
+            PointTransaction.Kind.DONATION,
+            300,
+            "private-donation",
+            "Transaksi milik pengguna lain",
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get("/rewards/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["available_points"], 75)
+        self.assertEqual(response.context["lifetime_points"], 100)
+        self.assertContains(response, "Donasi kain terverifikasi (1 kg)")
+        self.assertContains(response, "Tukar voucher")
+        self.assertNotContains(response, "Transaksi milik pengguna lain")
+
+    def test_points_overview_has_an_empty_state_without_transactions(self):
+        """Explain the empty state when a user has not earned or spent points."""
+        self.client.force_login(self.user)
+
+        response = self.client.get("/rewards/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["available_points"], 0)
+        self.assertContains(response, "Belum ada aktivitas poin")
+
+    def test_transaction_history_filters_income_and_expense(self):
+        """Filter the ledger without including transactions from other users."""
+        self.make_transaction(
+            self.user,
+            PointTransaction.Kind.MONTHLY_DONATION_BONUS,
+            25,
+            "history-bonus",
+            "Bonus donasi bulanan",
+        )
+        self.make_transaction(
+            self.user,
+            PointTransaction.Kind.REDEMPTION,
+            -50,
+            "history-redemption",
+            "Tukar hadiah",
+        )
+        self.make_transaction(
+            self.other_user,
+            PointTransaction.Kind.DONATION,
+            100,
+            "other-history-donation",
+            "Riwayat pribadi lain",
+        )
+        self.client.force_login(self.user)
+
+        income_response = self.client.get("/rewards/history/?type=in")
+        expense_response = self.client.get("/rewards/history/?type=out")
+
+        self.assertEqual(income_response.status_code, 200)
+        self.assertContains(income_response, "Bonus donasi bulanan")
+        self.assertNotContains(income_response, "Tukar hadiah")
+        self.assertNotContains(income_response, "Riwayat pribadi lain")
+        self.assertContains(expense_response, "Tukar hadiah")
+        self.assertNotContains(expense_response, "Bonus donasi bulanan")
+
+    def test_transaction_history_paginates_six_rows_at_a_time(self):
+        """Keep the history list compact and expose subsequent transactions."""
+        for index in range(7):
+            self.make_transaction(
+                self.user,
+                PointTransaction.Kind.UPCYCLING_COMPLETED,
+                150,
+                f"history-request-{index}",
+                f"Upcycling selesai {index}",
+            )
+        self.client.force_login(self.user)
+
+        first_page = self.client.get("/rewards/history/")
+        second_page = self.client.get("/rewards/history/?page=2")
+
+        self.assertEqual(first_page.context["transaction_page"].paginator.per_page, 6)
+        self.assertEqual(first_page.context["transaction_page"].number, 1)
+        self.assertEqual(second_page.context["transaction_page"].number, 2)
+        self.assertEqual(len(second_page.context["transaction_page"].object_list), 1)
+        self.assertContains(second_page, "Upcycling selesai 0")
