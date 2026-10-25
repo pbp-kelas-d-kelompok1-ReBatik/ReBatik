@@ -158,24 +158,24 @@ class UpcyclingBrowserTests(StaticLiveServerTestCase):
             By.CSS_SELECTOR,
             '#request-results nav[aria-label="Navigasi halaman"] a',
         )
-        self.browser.execute_script(
+        parsed_url, href, hx_get = self.browser.execute_script(
             """
             const input = document.getElementById('filter-query');
             input.value = 'Pouch';
             input.dispatchEvent(new Event('input', { bubbles: true }));
-            """
-        )
 
-        parsed_url = self.browser.execute_script(
-            "return new URL(arguments[0].href, window.location.href).searchParams.toString();",
+            const link = arguments[0];
+            return [
+                new URL(link.href, window.location.href).searchParams.toString(),
+                link.getAttribute("href"),
+                link.getAttribute("hx-get"),
+            ];
+            """,
             pagination_link,
         )
         self.assertIn("q=Pouch", parsed_url)
         self.assertIn("page=2", parsed_url)
-        self.assertEqual(
-            pagination_link.get_attribute("href"),
-            pagination_link.get_attribute("hx-get"),
-        )
+        self.assertEqual(href, hx_get)
 
     def test_delete_dialog_can_cancel_then_confirm_and_return_to_list(self):
         """Test behavior: delete dialog can cancel then confirm and return to list."""

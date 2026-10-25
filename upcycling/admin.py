@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib import admin
 from django.core.exceptions import ValidationError
+from django.db import router, transaction
 
 from .models import UpcyclingRequest, UpcyclingStatusHistory
 
@@ -69,6 +70,41 @@ class UpcyclingRequestAdmin(admin.ModelAdmin):
     )
     readonly_fields = ("created_at", "updated_at")
     date_hierarchy = "created_at"
+
+    def changeform_view(
+        self,
+        request,
+        object_id=None,
+        form_url="",
+        extra_context=None,
+    ):
+        """Lock an edited request while its status and history are saved."""
+        if request.method != "POST" or object_id is None:
+            return super().changeform_view(
+                request,
+                object_id,
+                form_url,
+                extra_context,
+            )
+
+        using = router.db_for_write(self.model)
+        with transaction.atomic(using=using):
+            existing_request = self.get_object(request, object_id)
+            if existing_request is not None:
+                try:
+                    self.get_queryset(request).using(using).select_for_update().get(
+                        pk=existing_request.pk
+                    )
+                except self.model.DoesNotExist:
+                    # The regular admin flow will return 404 if a concurrent
+                    # delete removed the request before the lock was acquired.
+                    pass
+            return super().changeform_view(
+                request,
+                object_id,
+                form_url,
+                extra_context,
+            )
 
     def save_model(self, request, obj, form, change):
         """Record the authenticated admin when a request status changes."""

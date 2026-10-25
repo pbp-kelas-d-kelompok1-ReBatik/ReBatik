@@ -998,6 +998,45 @@ class UpcyclingRequestViewTests(TestCase):
             "Permintaan hanya bisa dihapus saat masih menunggu tinjauan.",
         )
 
+    def test_delete_rechecks_status_after_rate_limit_processing(self):
+        """Test behavior: delete rechecks status after rate limit processing."""
+        upcycling_request = self.make_request(self.user)
+        history = UpcyclingStatusHistory.objects.create(
+            request=upcycling_request,
+            from_status=UpcyclingRequest.Status.PENDING,
+            to_status=UpcyclingRequest.Status.PROCESSING,
+            changed_by=self.other_user,
+        )
+        self.client.force_login(self.user)
+
+        def promote_request(*_args, **_kwargs):
+            UpcyclingRequest.objects.filter(pk=upcycling_request.pk).update(
+                status=UpcyclingRequest.Status.PROCESSING
+            )
+            return None
+
+        with patch(
+            "upcycling.views._rate_limit_response",
+            side_effect=promote_request,
+        ):
+            response = self.client.post(
+                reverse("upcycling:request_delete", args=[upcycling_request.pk]),
+                follow=True,
+            )
+
+        upcycling_request.refresh_from_db()
+        self.assertEqual(
+            upcycling_request.status,
+            UpcyclingRequest.Status.PROCESSING,
+        )
+        self.assertTrue(
+            UpcyclingStatusHistory.objects.filter(pk=history.pk).exists()
+        )
+        self.assertContains(
+            response,
+            "Permintaan hanya bisa dihapus saat masih menunggu tinjauan.",
+        )
+
     def test_user_cannot_delete_another_users_request(self):
         """Test behavior: user cannot delete another users request."""
         other_request = self.make_request(self.other_user)

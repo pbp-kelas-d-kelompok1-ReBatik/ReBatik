@@ -18,6 +18,7 @@
 
             link.href = `${url.pathname}${url.search}`;
             link.setAttribute("hx-get", `${url.pathname}${url.search}`);
+            window.htmx.process(link);
         });
     };
 
@@ -44,6 +45,7 @@
 
             link.href = `${url.pathname}${url.search}`;
             link.setAttribute("hx-get", `${url.pathname}${url.search}`);
+            window.htmx.process(link);
         });
     };
 
