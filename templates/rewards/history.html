@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static rewards_format %}
+
+{% block meta %}
+    <meta name="description" content="Periksa semua poin yang masuk dan keluar dari akun ReBatik Anda.">
+{% endblock meta %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/rewards.css' %}">
+{% endblock css %}
+
+{% block content %}
+<div class="rewards-page history-page">
+    <img class="rewards-cloud rewards-cloud-left" src="{% static 'img/upcycling/cloud-left.webp' %}" alt="" aria-hidden="true">
+    <img class="rewards-cloud rewards-cloud-right" src="{% static 'img/upcycling/cloud-right.webp' %}" alt="" aria-hidden="true">
+    <section class="rewards-hero history-hero" aria-labelledby="history-title">
+        <p class="rewards-eyebrow">Upcycle · Culture · Value</p>
+        <h1 id="history-title">Riwayat Poin</h1>
+        <p>Semua poin yang masuk dan keluar tercatat di sini.</p>
+    </section>
+
+    <section class="rewards-panel history-panel" aria-label="Semua transaksi poin">
+        <a class="history-back-link" href="{% url 'rewards:overview' %}">← Points and Rewards</a>
+        <p id="history-loading" class="htmx-indicator history-loading" role="status" aria-live="polite">Memuat riwayat poin…</p>
+        {% include "rewards/_history_content.html" %}
+        <p class="rewards-footnote">Poin belum masuk setelah 3 hari kerja? Hubungi tim ReBatik lewat WhatsApp.</p>
+    </section>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+    <script src="{% static 'js/htmx.min.js' %}" defer></script>
+{% endblock scripts %}

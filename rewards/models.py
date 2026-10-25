@@ -19,6 +19,12 @@ class PointTransaction(models.Model):
     )
     kind = models.CharField(max_length=32, choices=Kind.choices)
     points = models.IntegerField()
+    weight_kg = models.DecimalField(
+        max_digits=12,
+        decimal_places=6,
+        null=True,
+        blank=True,
+    )
     source_reference = models.CharField(max_length=100)
     description = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -43,6 +49,10 @@ class PointTransaction(models.Model):
                     | Q(kind="redemption", points__lt=0)
                 ),
                 name="rewards_points_sign_matches_kind",
+            ),
+            models.CheckConstraint(
+                condition=Q(weight_kg__isnull=True) | Q(weight_kg__gt=0),
+                name="rewards_donation_weight_positive",
             ),
         ]
 

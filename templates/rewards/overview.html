@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load static rewards_format %}
+
+{% block meta %}
+    <meta name="description" content="Lihat saldo, progres level, dan riwayat poin ReBatik Anda.">
+{% endblock meta %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/rewards.css' %}">
+{% endblock css %}
+
+{% block content %}
+<div class="rewards-page">
+    <img class="rewards-cloud rewards-cloud-left" src="{% static 'img/upcycling/cloud-left.webp' %}" alt="" aria-hidden="true">
+    <img class="rewards-cloud rewards-cloud-right" src="{% static 'img/upcycling/cloud-right.webp' %}" alt="" aria-hidden="true">
+    <section class="rewards-hero" aria-labelledby="rewards-title">
+        <p class="rewards-eyebrow">Upcycle · Culture · Value</p>
+        <h1 id="rewards-title">Points and Rewards</h1>
+        <p>Setiap kain yang Anda donasikan menjadi poin untuk hadiah.</p>
+    </section>
+
+    <section class="rewards-panel" id="points-overview" aria-label="Ringkasan poin dan riwayat terbaru">
+        <section aria-labelledby="points-heading">
+            <div class="rewards-section-heading">
+                <h2 id="points-heading">Poin Saya</h2>
+            </div>
+            <p class="rewards-helper">Poin bertambah setiap donasi kain Anda diverifikasi tim ReBatik.</p>
+
+            <div class="points-card">
+                <div class="points-card-content">
+                    <p class="points-label">POIN TERSEDIA</p>
+                    <p class="points-value">{{ available_points|intcomma_id }}</p>
+                    <span class="points-unit">poin</span>
+                    <span class="points-level">{{ current_level }}</span>
+                    <div class="level-ladder-section" aria-label="Progres dan jenjang level">
+                        {% if next_level %}
+                            <div class="level-progress-copy">
+                                <span>Menuju level {{ next_level }}</span>
+                                <span>{{ level_progress|intcomma_id }} / {{ level_target|intcomma_id }} poin</span>
+                            </div>
+                        {% else %}
+                            <div class="level-progress-copy">
+                                <span>Level tertinggi tercapai</span>
+                                <span>{{ lifetime_points|intcomma_id }} / 5.000 poin</span>
+                            </div>
+                        {% endif %}
+                        <div class="level-progress-track" role="group" aria-label="Progres dan jenjang level">
+                            {% if current_level == 'Penenun Pemula' %}
+                                <span class="level-progress-segment is-current" role="progressbar" aria-label="Progres menuju {{ next_level }}" aria-valuemin="0" aria-valuemax="{{ level_target }}" aria-valuenow="{{ level_progress }}"><span style="width: {{ level_progress_percent }}%"></span></span>
+                                <span class="level-progress-segment" aria-hidden="true"><span style="width: 0%"></span></span>
+                                <span class="level-progress-segment" aria-hidden="true"><span style="width: 0%"></span></span>
+                            {% elif current_level == 'Penenun Mahir' %}
+                                <span class="level-progress-segment is-completed" aria-hidden="true"><span style="width: 100%"></span></span>
+                                <span class="level-progress-segment is-current" role="progressbar" aria-label="Progres menuju {{ next_level }}" aria-valuemin="0" aria-valuemax="{{ level_target }}" aria-valuenow="{{ level_progress }}"><span style="width: {{ level_progress_percent }}%"></span></span>
+                                <span class="level-progress-segment" aria-hidden="true"><span style="width: 0%"></span></span>
+                            {% else %}
+                                <span class="level-progress-segment is-completed" aria-hidden="true"><span style="width: 100%"></span></span>
+                                <span class="level-progress-segment is-completed" aria-hidden="true"><span style="width: 100%"></span></span>
+                                <span class="level-progress-segment is-completed" role="progressbar" aria-label="Level tertinggi tercapai" aria-valuemin="0" aria-valuemax="5000" aria-valuenow="5000"><span style="width: 100%"></span></span>
+                            {% endif %}
+                        </div>
+                        <ul class="level-ladder">
+                            <li class="level-tier {% if current_level == 'Penenun Pemula' %}is-current{% elif current_level == 'Penenun Mahir' or current_level == 'Penenun Ahli' %}is-completed{% endif %}" {% if current_level == 'Penenun Pemula' %}aria-current="step"{% endif %}>
+                                <span class="level-tier-name">Penenun Pemula</span>
+                                <span class="level-tier-range">0–1.999</span>
+                            </li>
+                            <li class="level-tier {% if current_level == 'Penenun Mahir' %}is-current{% elif current_level == 'Penenun Ahli' %}is-completed{% endif %}" {% if current_level == 'Penenun Mahir' %}aria-current="step"{% endif %}>
+                                <span class="level-tier-name">Penenun Mahir</span>
+                                <span class="level-tier-range">2.000–4.999</span>
+                            </li>
+                            <li class="level-tier {% if current_level == 'Penenun Ahli' %}is-current{% endif %}" {% if current_level == 'Penenun Ahli' %}aria-current="step"{% endif %}>
+                                <span class="level-tier-name">Penenun Ahli</span>
+                                <span class="level-tier-range">5.000+</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <img class="points-mascot" src="{% static 'img/kapy nunjuk.png' %}" alt="Maskot ReBatik menunjuk saldo poin">
+            </div>
+
+            <div class="rewards-stats" aria-label="Ringkasan aktivitas poin">
+                <article class="rewards-stat-card">
+                    <p>{{ donated_count|intcomma_id }}</p>
+                    <h3>Kain didonasikan</h3>
+                </article>
+                <article class="rewards-stat-card">
+                    <p>{{ upcycling_count|intcomma_id }}</p>
+                    <h3>Upcycling selesai</h3>
+                </article>
+                <article class="rewards-stat-card">
+                    <p>
+                        {% if donated_count and saved_weight_unknown_count %}
+                            {% if saved_weight_kg %}≥ {{ saved_weight_kg|decimal_comma_id }} kg{% else %}Belum tercatat{% endif %}
+                        {% else %}
+                            {{ saved_weight_kg|decimal_comma_id }} kg
+                        {% endif %}
+                    </p>
+                    <h3>Kain terselamatkan</h3>
+                </article>
+            </div>
+
+            <div class="donate-fabric-action">
+                <a
+                    href="{% url 'marketplace:dropoff' %}"
+                    class="upcycling-button-dark min-h-12 px-6 py-3 font-semibold
+                           focus-visible:outline focus-visible:outline-offset-2
+                           focus-visible:outline-[var(--brown)]"
+                >Donasikan Kain Baru →</a>
+            </div>
+        </section>
+
+        <section class="recent-history" aria-labelledby="recent-history-heading">
+            <div class="rewards-section-heading">
+                <h2 id="recent-history-heading">Riwayat Poin</h2>
+                <a class="history-all-link" href="{% url 'rewards:history' %}">Lihat semua →</a>
+            </div>
+            <p class="rewards-helper">Semua poin yang masuk dan keluar tercatat di sini.</p>
+            <div class="history-list">
+                {% for transaction in recent_transactions %}
+                    <article class="history-row">
+                        <div class="history-row-info">
+                            <time class="history-date" datetime="{{ transaction.created_at|date:'Y-m-d' }}">{{ transaction.created_at|id_short_date }}</time>
+                            <h3>{{ transaction.description }}</h3>
+                        </div>
+                        <p class="history-amount {% if transaction.points < 0 %}is-out{% else %}is-in{% endif %}" aria-label="{{ transaction.points|signed_intcomma_id }} poin">{{ transaction.points|signed_intcomma_id }}</p>
+                    </article>
+                {% empty %}
+                    <p class="history-empty">Belum ada aktivitas poin. Poin dari donasi dan upcycling akan tercatat di sini.</p>
+                {% endfor %}
+            </div>
+            <p class="rewards-footnote">Poin belum masuk setelah 3 hari kerja? Hubungi tim ReBatik lewat WhatsApp.</p>
+        </section>
+    </section>
+</div>
+{% endblock content %}
