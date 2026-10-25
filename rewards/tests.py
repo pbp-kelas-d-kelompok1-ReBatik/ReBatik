@@ -514,6 +514,22 @@ class RewardsPageTests(TestCase):
         self.assertContains(response, 'href="/marketplace/drop-off/"')
         self.assertContains(response, "Donasikan Kain Baru →")
 
+    def test_points_overview_explains_all_current_earning_rules(self):
+        """Disclose verified donation tiers, monthly bonus, and upcycling points."""
+        self.client.force_login(self.user)
+
+        response = self.client.get("/rewards/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<details class="earning-guide-details">')
+        self.assertContains(response, "Cara Mendapatkan Poin")
+        self.assertContains(response, "Di bawah 0,5 kg: 50 poin")
+        self.assertContains(response, "0,5–2 kg: 100 poin")
+        self.assertContains(response, "Lebih dari 2 sampai 5 kg: 200 poin")
+        self.assertContains(response, "Lebih dari 5 kg: 300 poin")
+        self.assertContains(response, "Bonus donasi pertama yang diverifikasi setiap bulan: 25 poin")
+        self.assertContains(response, "Setiap permintaan upcycling yang selesai: 150 poin")
+
     def test_level_progress_bar_contains_three_named_tiers_without_step_circles(self):
         """Show level names beneath one segmented bar instead of numbered nodes."""
         self.client.force_login(self.user)
