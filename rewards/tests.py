@@ -515,7 +515,7 @@ class RewardsPageTests(TestCase):
         self.assertContains(response, "Donasikan Kain Baru →")
 
     def test_points_overview_explains_all_current_earning_rules(self):
-        """Disclose verified donation tiers, monthly bonus, and upcycling points."""
+        """Explain the donation flow and all current point awards."""
         self.client.force_login(self.user)
 
         response = self.client.get("/rewards/")
@@ -523,12 +523,23 @@ class RewardsPageTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '<details class="earning-guide-details">')
         self.assertContains(response, "Cara Mendapatkan Poin")
-        self.assertContains(response, "Di bawah 0,5 kg: 50 poin")
-        self.assertContains(response, "0,5–2 kg: 100 poin")
-        self.assertContains(response, "Lebih dari 2 sampai 5 kg: 200 poin")
-        self.assertContains(response, "Lebih dari 5 kg: 300 poin")
-        self.assertContains(response, "Bonus donasi pertama yang diverifikasi setiap bulan: 25 poin")
-        self.assertContains(response, "Setiap permintaan upcycling yang selesai: 150 poin")
+        self.assertContains(response, "Tiga langkah sederhana")
+        self.assertContains(response, "Donasikan kain")
+        self.assertContains(response, "Verifikasi tim")
+        self.assertContains(response, "Poin masuk")
+        self.assertContains(response, "AKTIVITAS DAN POIN")
+        self.assertNotContains(response, "Donasi kain terverifikasi (sesuai berat)")
+        self.assertNotContains(response, "+50 – 300")
+        self.assertContains(response, "Bonus donasi pertama bulan ini")
+        self.assertContains(response, "+25")
+        self.assertContains(response, "Upcycling selesai")
+        self.assertContains(response, "+150")
+        self.assertContains(response, "POIN DONASI SESUAI BERAT")
+        self.assertContains(response, "Kurang dari 0,5 kg")
+        self.assertContains(response, "0,5–2 kg")
+        self.assertContains(response, "Lebih dari 2 hingga 5 kg")
+        self.assertContains(response, "Lebih dari 5 kg")
+        self.assertContains(response, "Bonus 25 poin berlaku untuk donasi pertama yang diverifikasi setiap bulan")
 
     def test_level_progress_bar_contains_three_named_tiers_without_step_circles(self):
         """Show level names beneath one segmented bar instead of numbered nodes."""
