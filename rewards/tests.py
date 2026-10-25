@@ -527,6 +527,10 @@ class RewardsPageTests(TestCase):
         self.assertContains(response, "Donasikan kain")
         self.assertContains(response, "Verifikasi tim")
         self.assertContains(response, "Poin masuk")
+        self.assertEqual(
+            response.content.count(b"/static/img/upcycling/step-number.svg"),
+            3,
+        )
         self.assertContains(response, "AKTIVITAS DAN POIN")
         self.assertNotContains(response, "Donasi kain terverifikasi (sesuai berat)")
         self.assertNotContains(response, "+50 – 300")
