@@ -14,10 +14,20 @@ from django.utils import timezone
 from django.utils.dateparse import parse_date
 
 from .forms import UpcyclingRequestForm, get_product_options_by_category
-from .models import UpcyclingRequest, UpcyclingStatusHistory
+from .models import (
+    UpcyclingRateLimitBucket,
+    UpcyclingRequest,
+    UpcyclingStatusHistory,
+)
+from .security import consume_upcycling_rate_limit
 
 PENDING_REQUEST_LIMIT = 10
 REQUESTS_PER_PAGE = 10
+ACTION_RATE_LIMITS = {
+    UpcyclingRateLimitBucket.Action.CREATE: (5, 60),
+    UpcyclingRateLimitBucket.Action.UPDATE: (10, 60),
+    UpcyclingRateLimitBucket.Action.DELETE: (10, 60),
+}
 PENDING_LIMIT_MESSAGE = (
     "Anda sudah memiliki {limit} permintaan yang menunggu tinjauan. "
     "Tunggu sampai permintaan diproses sebelum mengajukan lagi."
@@ -39,6 +49,33 @@ def _htmx_location_or_redirect(request, route_name, **route_kwargs):
         )
         return response
     return redirect(destination)
+
+
+def _rate_limit_response(request, action):
+    if request.method != "POST":
+        return None
+
+    limit, window_seconds = ACTION_RATE_LIMITS[action]
+    allowed, retry_after = consume_upcycling_rate_limit(
+        request.user,
+        action,
+        limit=limit,
+        window_seconds=window_seconds,
+    )
+    if allowed:
+        return None
+
+    response = render(
+        request,
+        "upcycling/rate_limited.html",
+        {
+            "retry_after": retry_after,
+            "action_label": UpcyclingRateLimitBucket.Action(action).label,
+        },
+        status=429,
+    )
+    response["Retry-After"] = str(retry_after)
+    return response
 
 
 @login_required
@@ -163,6 +200,13 @@ def request_list(request):
 @login_required
 def request_create(request):
     if request.method == "POST":
+        rate_limit_response = _rate_limit_response(
+            request,
+            UpcyclingRateLimitBucket.Action.CREATE,
+        )
+        if rate_limit_response:
+            return rate_limit_response
+
         form = UpcyclingRequestForm(request.POST)
         if form.is_valid():
             with transaction.atomic():
@@ -317,6 +361,13 @@ def request_update(request, pk):
         )
 
     if request.method == "POST":
+        rate_limit_response = _rate_limit_response(
+            request,
+            UpcyclingRateLimitBucket.Action.UPDATE,
+        )
+        if rate_limit_response:
+            return rate_limit_response
+
         form = UpcyclingRequestForm(
             request.POST,
             instance=upcycling_request,
@@ -392,6 +443,13 @@ def request_delete(request, pk):
         )
 
     if request.method == "POST":
+        rate_limit_response = _rate_limit_response(
+            request,
+            UpcyclingRateLimitBucket.Action.DELETE,
+        )
+        if rate_limit_response:
+            return rate_limit_response
+
         deleted_count, _ = UpcyclingRequest.objects.filter(
             pk=pk,
             user=request.user,

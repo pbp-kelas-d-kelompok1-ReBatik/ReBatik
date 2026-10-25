@@ -124,3 +124,30 @@ class UpcyclingStatusHistory(models.Model):
 
     def __str__(self):
         return f"{self.request.reference_code}: {self.get_to_status_display()}"
+
+
+class UpcyclingRateLimitBucket(models.Model):
+    class Action(models.TextChoices):
+        CREATE = "CREATE", "Buat permintaan"
+        UPDATE = "UPDATE", "Edit permintaan"
+        DELETE = "DELETE", "Hapus permintaan"
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="upcycling_rate_limit_buckets",
+    )
+    action = models.CharField(max_length=10, choices=Action.choices)
+    window_started_at = models.DateTimeField()
+    request_count = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "action"],
+                name="upcycling_rate_limit_user_action_uniq",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.user_id}: {self.get_action_display()} ({self.request_count})"

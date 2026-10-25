@@ -1,4 +1,5 @@
-from datetime import datetime, timezone as datetime_timezone
+from datetime import datetime, timedelta, timezone as datetime_timezone
+from unittest.mock import patch
 
 from django.contrib import admin
 from django.contrib.auth import get_user_model
@@ -8,7 +9,12 @@ from django.urls import reverse
 
 from .admin import UpcyclingRequestAdminForm
 from .forms import UpcyclingRequestForm
-from .models import UpcyclingRequest, UpcyclingStatusHistory
+from .models import (
+    UpcyclingRateLimitBucket,
+    UpcyclingRequest,
+    UpcyclingStatusHistory,
+)
+from .security import consume_upcycling_rate_limit
 
 
 User = get_user_model()
@@ -346,6 +352,97 @@ class UpcyclingRequestViewTests(TestCase):
             reverse("upcycling:request_success", args=[upcycling_request.pk]),
         )
         self.assertEqual(upcycling_request.status, "PENDING")
+
+    def test_create_rate_limit_returns_429_after_five_posts(self):
+        self.client.force_login(self.user)
+        url = reverse("upcycling:request_create")
+
+        for _ in range(5):
+            response = self.client.post(url, self.form_data)
+            self.assertEqual(response.status_code, 302)
+
+        limited_response = self.client.post(url, self.form_data)
+
+        self.assertEqual(limited_response.status_code, 429)
+        self.assertEqual(limited_response["Retry-After"], "60")
+        self.assertEqual(UpcyclingRequest.objects.filter(user=self.user).count(), 5)
+        self.assertContains(
+            limited_response,
+            "Batas sementara untuk aksi",
+            status_code=429,
+        )
+
+    def test_rate_limit_window_resets_after_sixty_seconds(self):
+        now = datetime(2026, 10, 25, 12, 0, tzinfo=datetime_timezone.utc)
+        action = UpcyclingRateLimitBucket.Action.CREATE
+
+        with patch("upcycling.security.timezone.now", return_value=now):
+            for _ in range(5):
+                allowed, retry_after = consume_upcycling_rate_limit(
+                    self.user,
+                    action,
+                    limit=5,
+                    window_seconds=60,
+                )
+                self.assertTrue(allowed)
+                self.assertEqual(retry_after, 0)
+
+            allowed, retry_after = consume_upcycling_rate_limit(
+                self.user,
+                action,
+                limit=5,
+                window_seconds=60,
+            )
+            self.assertFalse(allowed)
+            self.assertEqual(retry_after, 60)
+
+        with patch(
+            "upcycling.security.timezone.now",
+            return_value=now + timedelta(seconds=61),
+        ):
+            allowed, retry_after = consume_upcycling_rate_limit(
+                self.user,
+                action,
+                limit=5,
+                window_seconds=60,
+            )
+
+        self.assertTrue(allowed)
+        self.assertEqual(retry_after, 0)
+
+    def test_update_rate_limit_returns_429_after_ten_posts(self):
+        upcycling_request = self.make_request(self.user)
+        self.client.force_login(self.user)
+        url = reverse("upcycling:request_update", args=[upcycling_request.pk])
+
+        for _ in range(10):
+            response = self.client.post(url, self.form_data)
+            self.assertEqual(response.status_code, 302)
+
+        limited_response = self.client.post(url, self.form_data)
+
+        self.assertEqual(limited_response.status_code, 429)
+        self.assertEqual(limited_response["Retry-After"], "60")
+
+    def test_delete_rate_limit_returns_429_after_ten_posts(self):
+        requests = [self.make_request(self.user) for _ in range(11)]
+        self.client.force_login(self.user)
+
+        for upcycling_request in requests[:10]:
+            response = self.client.post(
+                reverse("upcycling:request_delete", args=[upcycling_request.pk])
+            )
+            self.assertEqual(response.status_code, 302)
+
+        limited_response = self.client.post(
+            reverse("upcycling:request_delete", args=[requests[10].pk])
+        )
+
+        self.assertEqual(limited_response.status_code, 429)
+        self.assertEqual(limited_response["Retry-After"], "60")
+        self.assertTrue(
+            UpcyclingRequest.objects.filter(pk=requests[10].pk).exists()
+        )
 
     def test_create_ignores_posted_user_and_status(self):
         self.client.force_login(self.user)

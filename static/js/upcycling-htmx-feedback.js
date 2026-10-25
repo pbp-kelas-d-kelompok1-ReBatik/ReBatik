@@ -34,7 +34,15 @@
     const showFeedback = (event) => {
         const region = getFeedbackRegion(event);
         if (!region) return;
-        region.textContent = "Permintaan gagal diproses. Periksa koneksi lalu coba lagi.";
+        const response = event.detail?.xhr;
+        if (response?.status === 429) {
+            const retryAfter = response.getResponseHeader("Retry-After");
+            region.textContent = retryAfter
+                ? `Batas percobaan tercapai. Coba lagi dalam ${retryAfter} detik.`
+                : "Batas percobaan tercapai. Coba lagi sebentar.";
+        } else {
+            region.textContent = "Permintaan gagal diproses. Periksa koneksi lalu coba lagi.";
+        }
         region.classList.remove("hidden");
     };
 
