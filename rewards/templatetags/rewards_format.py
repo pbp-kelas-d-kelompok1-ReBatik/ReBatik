@@ -39,9 +39,10 @@ def signed_intcomma_id(value):
 @register.filter
 def decimal_comma_id(value):
     """Format a decimal weight with Indonesian separators and no empty decimals."""
-    formatted = f"{Decimal(str(value)):,.1f}"
-    if formatted.endswith(".0"):
-        formatted = formatted[:-2]
+    formatted = f"{Decimal(str(value)):,.6f}"
+    integer, fraction = formatted.split(".")
+    fraction = fraction.rstrip("0")
+    formatted = f"{integer}.{fraction}" if fraction else integer
     return formatted.replace(",", "\0").replace(".", ",").replace("\0", ".")
 
 

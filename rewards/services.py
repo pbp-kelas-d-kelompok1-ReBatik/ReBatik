@@ -70,7 +70,9 @@ def award_verified_donation(user, *, donation_reference, weight_kg, verified_at=
     if not donation_reference:
         raise ValueError("A donation reference is required.")
     points = calculate_donation_points(weight_kg)
-    weight = Decimal(str(weight_kg))
+    weight = Decimal(str(weight_kg)).quantize(Decimal("0.000001"))
+    if weight <= 0:
+        raise ValueError("Donation weight must be at least 0.000001 kg.")
     verified_at = verified_at or timezone.now()
     local_month = timezone.localtime(verified_at).strftime("%Y-%m")
 

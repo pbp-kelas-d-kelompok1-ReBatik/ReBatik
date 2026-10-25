@@ -62,6 +62,7 @@ def points_overview(request):
         "upcycling_count": upcycling_count,
         "donated_count": donated_count,
         "saved_weight_kg": saved_weight_kg,
+        "saved_weight_unknown_count": donations.filter(weight_kg__isnull=True).count(),
         "recent_transactions": recent_transactions,
         **_level_progress(lifetime_points),
     }

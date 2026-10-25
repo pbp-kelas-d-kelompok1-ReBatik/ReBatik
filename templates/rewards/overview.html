@@ -88,7 +88,13 @@
                     <h3>Upcycling selesai</h3>
                 </article>
                 <article class="rewards-stat-card">
-                    <p>{{ saved_weight_kg|decimal_comma_id }} kg</p>
+                    <p>
+                        {% if donated_count and saved_weight_unknown_count %}
+                            {% if saved_weight_kg %}≥ {{ saved_weight_kg|decimal_comma_id }} kg{% else %}Belum tercatat{% endif %}
+                        {% else %}
+                            {{ saved_weight_kg|decimal_comma_id }} kg
+                        {% endif %}
+                    </p>
                     <h3>Kain terselamatkan</h3>
                 </article>
             </div>
