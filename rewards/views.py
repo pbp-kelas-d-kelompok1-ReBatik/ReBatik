@@ -1,7 +1,10 @@
 """Authenticated views for the user's points overview and activity history."""
 
+from decimal import Decimal
+
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db.models import Sum
 from django.shortcuts import render
 
 from .models import PointTransaction
@@ -16,10 +19,10 @@ def _level_progress(lifetime_points):
         lower_bound, upper_bound = 0, 2000
     elif lifetime_points < 5000:
         current_level = "Penenun Mahir"
-        next_level = "Pengrajin"
+        next_level = "Penenun Ahli"
         lower_bound, upper_bound = 2000, 5000
     else:
-        current_level = "Pengrajin"
+        current_level = "Penenun Ahli"
         next_level = None
         lower_bound = upper_bound = 5000
 
@@ -47,11 +50,18 @@ def points_overview(request):
     upcycling_count = user_transactions.filter(
         kind=PointTransaction.Kind.UPCYCLING_COMPLETED
     ).count()
+    donations = user_transactions.filter(kind=PointTransaction.Kind.DONATION)
+    donated_count = donations.count()
+    saved_weight_kg = donations.aggregate(total=Sum("weight_kg"))["total"]
+    if saved_weight_kg is None:
+        saved_weight_kg = Decimal("0")
     recent_transactions = user_transactions[:5]
     context = {
         "available_points": get_available_points(request.user),
         "lifetime_points": lifetime_points,
         "upcycling_count": upcycling_count,
+        "donated_count": donated_count,
+        "saved_weight_kg": saved_weight_kg,
         "recent_transactions": recent_transactions,
         **_level_progress(lifetime_points),
     }
@@ -76,4 +86,9 @@ def transaction_history(request):
         "transaction_page": transaction_page,
         "active_filter": active_filter,
     }
-    return render(request, "rewards/history.html", context)
+    template_name = (
+        "rewards/_history_content.html"
+        if request.headers.get("HX-Request") == "true"
+        else "rewards/history.html"
+    )
+    return render(request, template_name, context)

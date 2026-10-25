@@ -11,51 +11,23 @@
 
 {% block content %}
 <div class="rewards-page history-page">
+    <img class="rewards-cloud rewards-cloud-left" src="{% static 'img/upcycling/cloud-left.webp' %}" alt="" aria-hidden="true">
+    <img class="rewards-cloud rewards-cloud-right" src="{% static 'img/upcycling/cloud-right.webp' %}" alt="" aria-hidden="true">
     <section class="rewards-hero history-hero" aria-labelledby="history-title">
-        <img class="rewards-cloud rewards-cloud-left" src="{% static 'img/rewards/deco-cloud-left.png' %}" alt="" aria-hidden="true">
-        <img class="rewards-cloud rewards-cloud-right" src="{% static 'img/rewards/deco-cloud-right.png' %}" alt="" aria-hidden="true">
-        <p class="rewards-eyebrow">UPCYCLE <span aria-hidden="true">•</span> CULTURE <span aria-hidden="true">•</span> VALUE</p>
+        <p class="rewards-eyebrow">Upcycle · Culture · Value</p>
         <h1 id="history-title">Riwayat Poin</h1>
         <p>Semua poin yang masuk dan keluar tercatat di sini.</p>
     </section>
 
     <section class="rewards-panel history-panel" aria-label="Semua transaksi poin">
         <a class="history-back-link" href="{% url 'rewards:overview' %}">← Points and Rewards</a>
-        <nav class="history-filters" aria-label="Filter riwayat poin">
-            <a href="?type=all" {% if active_filter == "all" %}aria-current="page"{% endif %}>Semua</a>
-            <a href="?type=in" {% if active_filter == "in" %}aria-current="page"{% endif %}>Poin masuk</a>
-            <a href="?type=out" {% if active_filter == "out" %}aria-current="page"{% endif %}>Poin keluar</a>
-        </nav>
-
-        <div class="history-list full-history-list">
-            {% for transaction in transaction_page %}
-                <article class="history-row">
-                    <div class="history-row-info">
-                        <time class="history-date" datetime="{{ transaction.created_at|date:'Y-m-d' }}">{{ transaction.created_at|id_short_date }}</time>
-                        <h2>{{ transaction.description }}</h2>
-                    </div>
-                    <p class="history-amount {% if transaction.points < 0 %}is-out{% else %}is-in{% endif %}" aria-label="{{ transaction.points|signed_intcomma_id }} poin">{{ transaction.points|signed_intcomma_id }}</p>
-                </article>
-            {% empty %}
-                <p class="history-empty">Belum ada aktivitas poin untuk filter ini.</p>
-            {% endfor %}
-        </div>
-
-        {% if transaction_page.paginator.count %}
-            <p class="history-count">Menampilkan {{ transaction_page.start_index }}–{{ transaction_page.end_index }} dari {{ transaction_page.paginator.count }} aktivitas</p>
-        {% endif %}
-        {% if transaction_page.has_other_pages %}
-            <nav class="history-pagination" aria-label="Navigasi riwayat poin">
-                {% if transaction_page.has_previous %}
-                    <a href="?type={{ active_filter }}&amp;page={{ transaction_page.previous_page_number }}">← Sebelumnya</a>
-                {% endif %}
-                <span>Halaman {{ transaction_page.number }} dari {{ transaction_page.paginator.num_pages }}</span>
-                {% if transaction_page.has_next %}
-                    <a href="?type={{ active_filter }}&amp;page={{ transaction_page.next_page_number }}">Muat lebih banyak →</a>
-                {% endif %}
-            </nav>
-        {% endif %}
+        <p id="history-loading" class="htmx-indicator history-loading" role="status" aria-live="polite">Memuat riwayat poin…</p>
+        {% include "rewards/_history_content.html" %}
         <p class="rewards-footnote">Poin belum masuk setelah 3 hari kerja? Hubungi tim ReBatik lewat WhatsApp.</p>
     </section>
 </div>
 {% endblock content %}
+
+{% block scripts %}
+    <script src="{% static 'js/htmx.min.js' %}" defer></script>
+{% endblock scripts %}

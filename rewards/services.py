@@ -31,19 +31,36 @@ def calculate_donation_points(weight_kg):
     return 300
 
 
-def _existing_or_create(user, *, kind, reference, points, description):
+def _existing_or_create(
+    user,
+    *,
+    kind,
+    reference,
+    points,
+    description,
+    weight_kg=None,
+):
     """Create one transaction per source event and reject conflicting retries."""
+    defaults = {"points": points, "description": description}
+    if weight_kg is not None:
+        defaults["weight_kg"] = weight_kg
     transaction_record, created = PointTransaction.objects.get_or_create(
         user=user,
         kind=kind,
         source_reference=reference,
-        defaults={"points": points, "description": description},
+        defaults=defaults,
     )
     if not created and (
         transaction_record.points != points
         or transaction_record.description != description
     ):
         raise ValueError("This source reference was already used for different data.")
+    if weight_kg is not None:
+        if transaction_record.weight_kg is None:
+            transaction_record.weight_kg = weight_kg
+            transaction_record.save(update_fields=("weight_kg",))
+        elif transaction_record.weight_kg != weight_kg:
+            raise ValueError("This source reference was already used for different data.")
     return transaction_record, created
 
 
@@ -53,6 +70,7 @@ def award_verified_donation(user, *, donation_reference, weight_kg, verified_at=
     if not donation_reference:
         raise ValueError("A donation reference is required.")
     points = calculate_donation_points(weight_kg)
+    weight = Decimal(str(weight_kg))
     verified_at = verified_at or timezone.now()
     local_month = timezone.localtime(verified_at).strftime("%Y-%m")
 
@@ -62,6 +80,7 @@ def award_verified_donation(user, *, donation_reference, weight_kg, verified_at=
         reference=str(donation_reference),
         points=points,
         description=f"Donasi terverifikasi ({Decimal(str(weight_kg)):g} kg)",
+        weight_kg=weight,
     )
     if not created:
         return donation, None

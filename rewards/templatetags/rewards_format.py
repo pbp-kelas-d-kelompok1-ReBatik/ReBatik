@@ -2,6 +2,7 @@
 
 from django import template
 from django.utils import timezone
+from decimal import Decimal
 
 register = template.Library()
 
@@ -33,6 +34,15 @@ def signed_intcomma_id(value):
     points = int(value)
     sign = "+" if points >= 0 else "−"
     return f"{sign}{intcomma_id(abs(points))}"
+
+
+@register.filter
+def decimal_comma_id(value):
+    """Format a decimal weight with Indonesian separators and no empty decimals."""
+    formatted = f"{Decimal(str(value)):,.1f}"
+    if formatted.endswith(".0"):
+        formatted = formatted[:-2]
+    return formatted.replace(",", "\0").replace(".", ",").replace("\0", ".")
 
 
 @register.filter
