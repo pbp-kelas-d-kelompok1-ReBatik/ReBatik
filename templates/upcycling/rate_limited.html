@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="px-4 py-12 sm:px-6">
+    <div class="mx-auto max-w-xl rounded-2xl border border-[var(--danger)]
+                bg-[var(--upcycling-panel)] p-6 text-center text-[var(--brown)] shadow-xl sm:p-8">
+        <h1 class="text-2xl font-bold">Terlalu banyak percobaan</h1>
+        <p class="mt-3" role="alert">
+            Batas sementara untuk aksi “{{ action_label }}” sudah tercapai.
+            Silakan coba lagi dalam {{ retry_after }} detik.
+        </p>
+        <a
+            href="{% url 'upcycling:request_list' %}"
+            class="upcycling-button-dark mt-6 inline-flex min-h-11 items-center px-5 py-2 font-semibold"
+        >Kembali ke daftar permintaan</a>
+    </div>
+</section>
+{% endblock %}

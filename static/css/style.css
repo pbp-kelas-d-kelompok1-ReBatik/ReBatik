@@ -831,14 +831,10 @@ footer h3 {
     }
 
     .upcycling-field.upcycling-input {
-        min-height: 2.9rem;
+        min-height: 3.5rem;
         border: 1px solid var(--border);
         border-radius: 0.75rem;
         background-color: var(--upcycling-surface);
-    }
-
-    .upcycling-field.upcycling-input.upcycling-quantity-input {
-        min-height: 3.5rem;
     }
 
     .upcycling-field::placeholder {
