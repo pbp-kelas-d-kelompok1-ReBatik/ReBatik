@@ -11,17 +11,17 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='batikmotif',
+            model_name='BatikMotif',
             name='favorit',
             field=models.PositiveIntegerField(default=0),
         ),
         migrations.AlterField(
-            model_name='batikmotif',
+            model_name='BatikMotif',
             name='asal',
             field=models.CharField(choices=[('ACEH', 'Aceh'), ('BALI', 'Bali'), ('BANDUNG', 'Bandung'), ('BANGKA_BELITUNG', 'Bangka Belitung'), ('BANTEN', 'Banten'), ('BANYUMAS', 'Banyumas'), ('BANYUWANGI', 'Banyuwangi'), ('BATANG', 'Batang'), ('BENGKULU', 'Bengkulu'), ('BLITAR', 'Blitar'), ('BOJONEGORO', 'Bojonegoro'), ('BREBES', 'Brebes'), ('CIAMIS', 'Ciamis'), ('CIREBON', 'Cirebon'), ('DEMAK', 'Demak'), ('FLORES', 'Flores'), ('GARUT', 'Garut'), ('INDRAMAYU', 'Indramayu'), ('JAKARTA', 'Jakarta'), ('JAMBI', 'Jambi'), ('JEMBER', 'Jember'), ('JEPARA', 'Jepara'), ('KALIMANTAN_BARAT', 'Kalimantan Barat'), ('KALIMANTAN_SELATAN', 'Kalimantan Selatan'), ('KALIMANTAN_TIMUR', 'Kalimantan Timur'), ('KEDIRI', 'Kediri'), ('KLATEN', 'Klaten'), ('KUDUS', 'Kudus'), ('LAMONGAN', 'Lamongan'), ('LAMPUNG', 'Lampung'), ('LASEM', 'Lasem'), ('LEBAK', 'Lebak'), ('LOMBOK', 'Lombok'), ('MADURA', 'Madura'), ('MAGELANG', 'Magelang'), ('MALANG', 'Malang'), ('MALUKU', 'Maluku'), ('MOJOKERTO', 'Mojokerto'), ('PALEMBANG', 'Palembang'), ('PASURUAN', 'Pasuruan'), ('PATI', 'Pati'), ('PEKALONGAN', 'Pekalongan'), ('PONOROGO', 'Ponorogo'), ('PROBOLINGGO', 'Probolinggo'), ('REMBANG', 'Rembang'), ('RIAU', 'Riau'), ('SEMARANG', 'Semarang'), ('SIDOARJO', 'Sidoarjo'), ('SOLO', 'Solo'), ('SRAGEN', 'Sragen'), ('SUBANG', 'Subang'), ('SULAWESI_SELATAN', 'Sulawesi Selatan'), ('SULAWESI_TENGAH', 'Sulawesi Tengah'), ('SULAWESI_TENGGARA', 'Sulawesi Tenggara'), ('SULAWESI_UTARA', 'Sulawesi Utara'), ('SUMBA', 'Sumba'), ('SUMEDANG', 'Sumedang'), ('TANGERANG', 'Tangerang'), ('TASIKMALAYA', 'Tasikmalaya'), ('TEGAL', 'Tegal'), ('TUBAN', 'Tuban'), ('TULUNGAGUNG', 'Tulungagung'), ('WONOSOBO', 'Wonosobo'), ('YOGYAKARTA', 'Yogyakarta')], max_length=300),
         ),
         migrations.AlterField(
-            model_name='batikmotif',
+            model_name='BatikMotif',
             name='gambar',
             field=models.ImageField(blank=True, null=True, upload_to='batik/'),
         ),

@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 
 # Create your models here.
@@ -5,6 +7,7 @@ from django.db import models
 
 # Model Batik Motif
 class BatikMotif(models.Model):
+    id_story = models.UUIDField(default=uuid.uuid4, editable=False,null=True,blank=True)
     nama=models.CharField(max_length=255, null=False, blank=False)
     ASAL_CHOICES = [
         #Jakarta

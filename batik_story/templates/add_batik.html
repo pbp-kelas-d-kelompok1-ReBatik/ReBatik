@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<title>Tambah Motif Batik - ReBatik</title>
+<meta name="description" content="Tambahkan motif batik Nusantara beserta deskripsi dan filosofinya.">
+{% endblock meta %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/batik_story.css' %}">
+<link rel="stylesheet" href="{% static 'css/add_batik.css' %}">
+{% endblock css %}
+
+{% block content %}
+<main class="add-batik-page">
+
+    <section class="min-h-80 bg-[#f3ebe1] px-4 py-10 sm:py-16">
+        <div class="mx-auto max-w-2xl rounded-3xl bg-white p-5 shadow-lg sm:p-8">
+
+            <!-- HEADER -->
+            <p class="text-sm font-semibold tracking-[0.18em] text-[#6a3b12]">
+                REBATIK · BATIK STORY
+            </p>
+
+            <h1 class="mt-4 text-3xl font-bold text-[#6a3b12] sm:text-4xl">
+                Tambah Motif Batik
+            </h1>
+
+            <p class="mt-3 text-base text-[#6a3b12]">
+                Abadikan keindahan, sejarah, dan filosofi motif batik Nusantara.
+            </p>
+
+            <!-- PESAN BERHASIL -->
+            {% if messages %}
+            {% for message in messages %}
+            <div class="mt-5 rounded-xl bg-green-100 p-4 text-sm text-green-800">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <!-- FORM TAMBAH BATIK -->
+            <form method="POST" enctype="multipart/form-data" class="batik-form mt-8 space-y-5">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="rounded-xl bg-red-100 p-4 text-sm text-red-800">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <!-- NAMA MOTIF -->
+                <div class="space-y-2">
+                    <label for="{{ form.nama.id_for_label }}" class="block font-semibold text-[#6a3b12]">
+                        {{ form.nama.label }}
+                    </label>
+
+                    {{ form.nama }}
+
+                    {% if form.nama.errors %}
+                    <div class="text-sm text-red-800">
+                        {{ form.nama.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- ASAL DAERAH -->
+                <div class="space-y-2">
+                    <label for="{{ form.asal.id_for_label }}" class="block font-semibold text-[#6a3b12]">
+                        {{ form.asal.label }}
+                    </label>
+
+                    {{ form.asal }}
+
+                    {% if form.asal.errors %}
+                    <div class="text-sm text-red-800">
+                        {{ form.asal.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- GAMBAR BATIK -->
+                <div class="space-y-2">
+                    <label for="{{ form.gambar.id_for_label }}" class="block font-semibold text-[#6a3b12]">
+                        {{ form.gambar.label }}
+                    </label>
+
+                    {{ form.gambar }}
+
+                    {% if form.gambar.errors %}
+                    <div class="text-sm text-red-800">
+                        {{ form.gambar.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- DESKRIPSI -->
+                <div class="space-y-2">
+                    <label for="{{ form.deskripsi.id_for_label }}" class="block font-semibold text-[#6a3b12]">
+                        {{ form.deskripsi.label }}
+                    </label>
+
+                    {{ form.deskripsi }}
+
+                    {% if form.deskripsi.errors %}
+                    <div class="text-sm text-red-800">
+                        {{ form.deskripsi.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- FILOSOFI -->
+                <div class="space-y-2">
+                    <label for="{{ form.filosofi.id_for_label }}" class="block font-semibold text-[#6a3b12]">
+                        {{ form.filosofi.label }}
+                    </label>
+
+                    {{ form.filosofi }}
+
+                    {% if form.filosofi.errors %}
+                    <div class="text-sm text-red-800">
+                        {{ form.filosofi.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- TOMBOL FORM -->
+                <div class="flex flex-col gap-3 border-t border-[#e9e1d4] pt-5 sm:flex-row sm:justify-between">
+
+                    <button type="button" id="cancel-batik-btn"
+                        class="rounded-xl border border-[#654a39] px-5 py-3 text-center font-semibold text-[#6a3b12] transition hover:bg-[#f3ebe1]"
+                        data-cancel-url="{% url 'batik_story:show_batik_story' %}">
+                        Batal
+                    </button>
+
+                    <button type="submit"
+                        class="rounded-xl bg-[#a34235] px-6 py-3 font-semibold text-white shadow-md transition hover:shadow-lg">
+                        Simpan Motif Batik →
+                    </button>
+
+                </div>
+            </form>
+
+        </div>
+    </section>
+
+
+    <!-- MODAL KONFIRMASI PEMBATALAN -->
+    <div id="cancel-modal" class="cancel-modal" aria-hidden="true">
+        <div class="cancel-modal-backdrop" data-close-modal></div>
+
+        <div class="cancel-modal-content" role="dialog" aria-modal="true" aria-labelledby="cancel-title"
+            aria-describedby="cancel-description" tabindex="-1">
+
+            <!-- MASCOT MENANGIS -->
+            <div class="cancel-mascot-wrap">
+                <div class="mascot-glow"></div>
+
+                <img src="{% static 'img/story/nangis.png' %}" alt="Maskot ReBatik sedang menangis"
+                    class="cancel-mascot">
+
+                <span class="mascot-accent accent-one">〃</span>
+                <span class="mascot-accent accent-two">!</span>
+            </div>
+
+            <p class="cancel-eyebrow">
+                REBATIK · BATIK STORY
+            </p>
+
+            <h2 id="cancel-title">
+                Yakin Ingin Membatalkan?
+            </h2>
+
+            <div class="cancel-decoration">
+                <span></span>
+                <i>✥</i>
+                <span></span>
+            </div>
+
+            <p id="cancel-description" class="cancel-description">
+                Data motif batik yang sedang Anda isi belum disimpan.
+                Jika Anda membatalkan, seluruh isian yang sudah dimasukkan
+                akan hilang dan tidak dapat dikembalikan.
+            </p>
+
+            <!-- PILIHAN KONFIRMASI -->
+            <div class="cancel-modal-actions">
+
+                <button type="button" id="continue-editing-btn" class="continue-editing-btn">
+                    Lanjut Mengisi
+                </button>
+
+                <button type="button" id="confirm-cancel-btn" class="confirm-cancel-btn">
+                    Ya, Batalkan
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+
+</main>
+{% endblock content %}
+
+
+{% block extra_js %}
+<script src="{% static 'js/add_batik.js' %}" defer></script>
+{% endblock extra_js %}

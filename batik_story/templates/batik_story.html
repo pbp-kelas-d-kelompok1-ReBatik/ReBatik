@@ -2,99 +2,273 @@
 {% load static %}
 
 {% block meta %}
-<title>{{ judul }} - Batik Story</title>
+<title>{{ judul|default:"Batik Story" }} - ReBatik</title>
+
+<meta name="description" content="Jelajahi sejarah, filosofi, dan makna motif batik Nusantara bersama ReBatik.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/batik_story.css' %}">
+<script src="{% static 'js/batik_story.js' %}" defer></script>
 {% endblock meta %}
 
-{% block content %}
 
-<section class="batik-story">
-    <div class="judul">
-        <h1>Batik Story</h1>
-        <div class="typing-text">
-            <p id="typing-text">{{ ket1 }}</p>
+{% block content %}
+<main class="batik-page">
+
+    <!-- HERO SECTION -->
+    <section class="batik-hero">
+        <div class="hero-overlay"></div>
+
+        <div class="hero-container">
+            <div class="hero-copy">
+
+                <p class="hero-eyebrow">
+                    WARISAN <span>·</span> KREATIVITAS <span>·</span> MASA DEPAN
+                </p>
+
+                <h1 class="hero-title">
+                    BATIK <span>STORY</span>
+                </h1>
+
+                <div class="title-decoration">
+                    <span></span>
+                    <i>✥</i>
+                    <span></span>
+                </div>
+
+                <p class="hero-description">
+                    Jelajahi kisah di balik setiap motif batik Nusantara.
+                    Temukan makna, sejarah, dan nilai budaya yang terus
+                    hidup dalam setiap helai kain.
+                </p>
+
+                <p class="hero-typing">
+                    <span id="typing-text">{{ ket1|default:"Setiap motif menyimpan cerita." }}</span>
+                    <span class="typing-cursor">|</span>
+                </p>
+
+                <a href="#story-section" class="explore-btn">
+                    <span class="book-icon">♧</span>
+                    Jelajahi Cerita Batik
+                    <span class="arrow">→</span>
+                </a>
+
+                <!-- FEATURE CARDS -->
+                <div class="hero-features">
+
+                    <a href="#story-section" class="feature-card">
+                        <span class="feature-icon">♧</span>
+                        <h3>Sejarah &amp; Makna</h3>
+                        <p>Pelajari filosofi<br>setiap motif</p>
+                    </a>
+
+                    <a href="#story-section" class="feature-card">
+                        <span class="feature-icon">✥</span>
+                        <h3>Eksplorasi Motif</h3>
+                        <p>Kenali ragam batik<br>Nusantara</p>
+                    </a>
+
+                    <a href="{% url 'batik_custom:show_home' %}" class="feature-card">
+                        <span class="feature-icon">✎</span>
+                        <h3>Buat Custom</h3>
+                        <p>Rancang motif<br>versi Anda</p>
+                    </a>
+
+                    <a href="{% url 'marketplace:home' %}" class="feature-card">
+                        <span class="feature-icon">♧</span>
+                        <h3>Dukung Pengrajin</h3>
+                        <p>Beli dan lestarikan<br>batik lokal</p>
+                    </a>
+
+                </div>
+            </div>
         </div>
 
-        <script>
-            (function () {
-                const element = document.getElementById("typing-text");
-
-                if (!element) return;
-
-                const text = element.textContent.trim();
-
-                element.textContent = "";
-
-                let index = 0;
-                let deleting = false;
-
-                function typeWriter() {
-
-                    if (!deleting) {
-                        // Mengetik
-                        if (index < text.length) {
-                            element.textContent += text.charAt(index);
-                            index++;
-
-                            setTimeout(typeWriter, 45);
-                        } else {
-                            // Tunggu setelah selesai
-                            setTimeout(() => {
-                                deleting = true;
-                                typeWriter();
-                            }, 2000);
-                        }
-
-                    } else {
-                        // Menghapus
-                        if (index > 0) {
-                            index--;
-                            element.textContent = text.substring(0, index);
-
-                            setTimeout(typeWriter, 25);
-                        } else {
-                            // Mulai mengetik lagi
-                            deleting = false;
-
-                            setTimeout(typeWriter, 500);
-                        }
-                    }
-                }
-
-                typeWriter();
-            })();
-        </script>
-
-        <a href="{% url 'batik_story:show_batik_story' %}#story-section" class="explore-btn">
-            ↓ Explore
+        <a href="#story-section" class="scroll-indicator" aria-label="Jelajahi cerita batik">
+            <span class="scroll-mouse"><span></span></span>
+            <span class="scroll-arrow">⌄</span>
         </a>
-    </div>
-</section>
+    </section>
 
-<section id="story-section" class="story-section">
-    <h2>Discover Batik Stories</h2>
-    <div class="story-cards">
-        {% for batik in batiks %}
-        <div class="story-card">
-            <div class="card-image">
-                <img src="{{ batik.gambar.url }}" alt="{{ batik.nama }}">
+
+    <!-- STORY COLLECTION -->
+    <section id="story-section" class="story-section">
+
+        <!-- SECTION HEADING -->
+        <div class="section-heading">
+            <p class="section-eyebrow">JEJAK BUDAYA NUSANTARA</p>
+
+            <h2>Discover Batik <span>Stories</span></h2>
+
+            <div class="section-divider">
+                <span>✥</span>
             </div>
-            <div class="card-content">
-                <div class="card-title">
-                    <h3>{{ batik.nama }}</h3>
-                    <label class="love">
-                        <input type="checkbox">
-                        <span>♡</span>
-                    </label>
+
+            <p class="section-description">
+                Setiap goresan memiliki makna, setiap motif menyimpan warisan.
+                Kenali cerita yang menjadikan batik lebih dari sekadar kain.
+            </p>
+        </div>
+
+
+        <!-- COLLECTION TOOLBAR -->
+        <div class="story-toolbar">
+            <div>
+                <span class="toolbar-label">KOLEKSI CERITA</span>
+                <p>Temukan keindahan di setiap motif.</p>
+            </div>
+
+            <span class="story-count">{{ batiks|length }} Cerita</span>
+        </div>
+
+
+
+        <!-- BATIK CARDS GRID -->
+        <div class="story-cards">
+
+            {% for batik in batiks %}
+            <article class="story-card">
+
+                <div class="card-image">
+                    {% if batik.gambar %}
+                    <img src="{{ batik.gambar.url }}" alt="Motif batik {{ batik.nama }}" loading="lazy">
+                    {% else %}
+                    <div class="image-placeholder">
+                        <span>✥</span>
+                        <p>ReBatik Heritage</p>
+                    </div>
+                    {% endif %}
+
+                    <span class="image-number">
+                        {% if forloop.counter < 10 %}0{% endif %}{{ forloop.counter }} </span>
+
+                            <div class="image-overlay"></div>
                 </div>
-                <p class="asal">{{ batik.asal }}</p>
-                <a href="#" class="story-button">
-                    Read Story →
+
+                <div class="card-content">
+
+                    <div class="card-meta">
+                        <span class="location-icon">⌖</span>
+                        <span>{{ batik.get_asal_display|default:"Nusantara" }}</span>
+                    </div>
+
+                    <div class="card-title">
+                        <h3>{{ batik.nama }}</h3>
+
+                        <div class="card-actions">
+                            <label class="love" title="Simpan favorit">
+                                <input type="checkbox" aria-label="Sukai {{ batik.nama }}">
+                                <span>♡</span>
+                            </label>
+
+                            {% if user.is_authenticated and user.is_staff %}
+                            <button type="button" class="delete-batik-btn" popovertarget="delete-batik-{{ batik.id }}"
+                                title="Hapus motif batik" aria-label="Hapus {{ batik.nama }}">🗑</button>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <p class="card-description">
+                        {{ batik.deskripsi|default:"Mengenal keindahan motif batik Nusantara."|truncatewords:22 }}
+                    </p>
+
+                    <a href="#" class="story-button">
+                        Baca Cerita <span>→</span>
+                    </a>
+
+                </div>
+
+                {% if user.is_authenticated and user.is_staff %}
+                <div id="delete-batik-{{ batik.id }}" class="story-delete-modal" popover="auto" role="dialog"
+                    aria-labelledby="delete-title-{{ batik.id }}">
+                    <button type="button" class="story-delete-modal__backdrop"
+                        popovertarget="delete-batik-{{ batik.id }}" popovertargetaction="hide"
+                        aria-label="Tutup konfirmasi"></button>
+
+                    <div class="story-delete-modal__content">
+                        <button type="button" class="story-delete-modal__close"
+                            popovertarget="delete-batik-{{ batik.id }}" popovertargetaction="hide"
+                            aria-label="Tutup">×</button>
+
+                        <h2 id="delete-title-{{ batik.id }}">
+                            Hapus Motif Batik?
+                        </h2>
+
+                        <p>
+                            Apakah Anda yakin ingin menghapus
+                            <strong>{{ batik.nama }}</strong>?
+                        </p>
+
+                        <div class="story-delete-modal__actions">
+                            <button type="button" class="button button-secondary"
+                                popovertarget="delete-batik-{{ batik.id }}" popovertargetaction="hide">Batal</button>
+
+
+                            {% if batik.id_story %}
+                            <form method="post" action="{% url 'batik_story:delete_story' batik.id_story %}">
+                                {% csrf_token %}
+                                <button type="submit" class="button button-danger">
+                                    Ya, Hapus
+                                </button>
+                            </form>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+            </article>
+
+            {% empty %}
+            <div class="empty-state">
+                <span>✥</span>
+                <h3>Cerita Batik Segera Hadir</h3>
+                <p>Koleksi cerita batik Nusantara sedang dipersiapkan.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+
+
+        <!-- ADD BATIK CARD: ONLY ONCE -->
+        {% if user.is_authenticated and user.is_staff %}
+        <article class="add-batik-card">
+
+            <div class="add-batik-card-image">
+                <img src="{% static 'img/story/happy.png' %}" alt="Ilustrasi penambahan motif batik"
+                    class="add-batik-preview" loading="lazy">
+            </div>
+
+            <div class="add-batik-card-content">
+                <div class="add-batik-card-text">
+                    <h3>Tambahkan Motif Batik</h3>
+                    <p>
+                        Punya motif batik baru? Bagikan cerita dan
+                        filosofi batik Nusantara.
+                    </p>
+                </div>
+
+                <a href="{% url 'batik_story:add_batik' %}" class="add-batik-card-button">
+                    <span>Tambah →</span>
                 </a>
             </div>
-        </div>
-        {% endfor %}
-    </div>
-</section>
 
+        </article>
+        {% endif %}
+
+        </div>
+
+
+        <!-- FOOTER COLLECTION -->
+        <div class="story-footer">
+            <span>REBATIK</span>
+            <p>Merawat warisan, merangkai masa depan.</p>
+        </div>
+
+    </section>
+
+</main>
 {% endblock content %}

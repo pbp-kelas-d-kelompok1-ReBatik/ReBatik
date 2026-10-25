@@ -38,6 +38,18 @@
     padding: 0;
 }
 
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.bg {
+    margin: 0;
+    padding: 0;
+}
+
 html {
     scroll-behavior: smooth;
     height: 100%;
@@ -55,6 +67,7 @@ body {
             #EEAF87 0%,
             #A87D65 75%,
             #A87761 100%) fixed;
+     overflow-x: hidden;
 }
 
 a {

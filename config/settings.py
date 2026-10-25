@@ -88,15 +88,8 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'alisa.selvia',
-        'USER': 'alisa.selvia',
-        'PASSWORD': 'pTpoNXyu',
-        'HOST': '10.119.106.139',
-        'PORT': '5432',
-        'OPTIONS': {
-            'connect_timeout': 5,
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 # Password validation

@@ -5,7 +5,8 @@ app_name = "batik_story"
 
 urlpatterns = [
     path("", views.show_home, name="show_home"),
-    path("batikstory/", views.show_batik_story, name="show_batik_story"),
-    path("batikcustom/", views.show_batik_custom, name="show_batik_custom"),
-    
+    path("BatikMotif/", views.show_batik_story, name="show_batik_story"),
+    path("add_batik/", views.add_batik, name="add_batik"),
+    path("story/<uuid:id_story>/delete/", views.delete_story,name="delete_story")
+
 ]

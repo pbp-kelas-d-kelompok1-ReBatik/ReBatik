@@ -1,6 +1,6 @@
 [
   {
-    "model": "batik_story.batikmotif",
+    "model": "batik_story.BatikMotif",
     "pk": 1,
     "fields": {
       "nama": "Batik Parang",
@@ -11,7 +11,7 @@
     }
   },
   {
-    "model": "batik_story.batikmotif",
+    "model": "batik_story.BatikMotif",
     "pk": 2,
     "fields": {
       "nama": "Batik Ondel-Ondel",
@@ -22,7 +22,7 @@
     }
   },
   {
-    "model": "batik_story.batikmotif",
+    "model": "batik_story.BatikMotif",
     "pk": 3,
     "fields": {
       "nama": "Batik Mega Mendung",
