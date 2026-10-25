@@ -1,5 +1,7 @@
 from datetime import datetime, timezone as datetime_timezone
 from decimal import Decimal
+from importlib import import_module
+from types import SimpleNamespace
 
 from django.contrib.auth import get_user_model
 from django.test import SimpleTestCase, TestCase
@@ -15,6 +17,65 @@ from .services import (
     redeem_points,
 )
 from .views import _level_progress
+from .templatetags.rewards_format import decimal_comma_id
+
+
+class LegacyDonationWeightMigrationTests(SimpleTestCase):
+    def test_backfills_only_weights_in_the_known_legacy_description_format(self):
+        saved = []
+        records = [
+            SimpleNamespace(
+                kind="donation",
+                weight_kg=None,
+                description="Donasi terverifikasi (1.25 kg)",
+                save=lambda **kwargs: saved.append(("known", kwargs)),
+            ),
+            SimpleNamespace(
+                kind="donation",
+                weight_kg=None,
+                description="Donasi kain tercatat, berat tidak dicantumkan",
+                save=lambda **kwargs: saved.append(("unknown", kwargs)),
+            ),
+            SimpleNamespace(
+                kind="donation",
+                weight_kg=None,
+                description="Donasi terverifikasi (4E-7 kg)",
+                save=lambda **kwargs: saved.append(("unrepresentable", kwargs)),
+            ),
+        ]
+
+        class FakeQuerySet:
+            def __init__(self, rows):
+                self.rows = rows
+
+            def iterator(self):
+                return iter(self.rows)
+
+        class FakeManager:
+            def filter(self, **filters):
+                self.filters = filters
+                return FakeQuerySet(
+                    row
+                    for row in records
+                    if row.kind == filters["kind"] and row.weight_kg is None
+                )
+
+        fake_manager = FakeManager()
+        historical_model = SimpleNamespace(objects=fake_manager)
+        fake_apps = SimpleNamespace(
+            get_model=lambda app_label, model_name: historical_model
+        )
+        migration = import_module(
+            "rewards.migrations.0002_pointtransaction_weight_kg_and_more"
+        )
+
+        migration.backfill_donation_weights(fake_apps, schema_editor=None)
+
+        self.assertEqual(records[0].weight_kg, Decimal("1.25"))
+        self.assertIsNone(records[1].weight_kg)
+        self.assertIsNone(records[2].weight_kg)
+        self.assertEqual(len(saved), 1)
+        self.assertEqual(fake_manager.filters["kind"], "donation")
 
 
 class LevelProgressTests(SimpleTestCase):
@@ -57,6 +118,13 @@ class DonationPointCalculationTests(SimpleTestCase):
         for weight in (0, -1, "not a weight"):
             with self.subTest(weight=weight), self.assertRaises(ValueError):
                 calculate_donation_points(weight)
+
+
+class WeightFormattingTests(SimpleTestCase):
+    def test_small_positive_weights_keep_significant_decimal_places(self):
+        self.assertEqual(decimal_comma_id(Decimal("0.04")), "0,04")
+        self.assertEqual(decimal_comma_id(Decimal("1.230000")), "1,23")
+        self.assertEqual(decimal_comma_id(Decimal("0")), "0")
 
 
 class PointLedgerTests(TestCase):
@@ -122,6 +190,47 @@ class PointLedgerTests(TestCase):
         self.assertIsNone(retry_bonus)
         self.assertEqual(get_available_points(self.user), 125)
         self.assertEqual(PointTransaction.objects.filter(user=self.user).count(), 2)
+
+    def test_reprocessing_donation_rounds_weight_to_storage_precision(self):
+        weight = Decimal("1.2345678")
+        verified_at = datetime(2026, 10, 5, 8, 0, tzinfo=datetime_timezone.utc)
+        award_verified_donation(
+            self.user,
+            donation_reference="donation-rounded-retry",
+            weight_kg=weight,
+            verified_at=verified_at,
+        )
+        stored_donation = PointTransaction.objects.get(
+            user=self.user,
+            kind=PointTransaction.Kind.DONATION,
+            source_reference="donation-rounded-retry",
+        )
+
+        retry, retry_bonus = award_verified_donation(
+            self.user,
+            donation_reference="donation-rounded-retry",
+            weight_kg=weight,
+            verified_at=verified_at,
+        )
+
+        self.assertEqual(retry.pk, stored_donation.pk)
+        self.assertEqual(retry.weight_kg, Decimal("1.234568"))
+        self.assertIsNone(retry_bonus)
+
+    def test_donation_below_storage_precision_is_rejected_before_database_write(self):
+        with self.assertRaisesMessage(ValueError, "at least 0.000001 kg"):
+            award_verified_donation(
+                self.user,
+                donation_reference="donation-below-storage-precision",
+                weight_kg=Decimal("0.0000004"),
+            )
+
+        self.assertFalse(
+            PointTransaction.objects.filter(
+                user=self.user,
+                source_reference="donation-below-storage-precision",
+            ).exists()
+        )
 
     def test_first_verified_donation_bonus_restarts_in_new_jakarta_month(self):
         before_month_boundary = datetime(
@@ -356,6 +465,45 @@ class RewardsPageTests(TestCase):
         self.assertContains(response, "Upcycling selesai")
         self.assertContains(response, "Kain terselamatkan")
         self.assertContains(response, "1,6 kg")
+
+    def test_points_overview_marks_legacy_donation_weight_as_unknown(self):
+        self.make_transaction(
+            self.user,
+            PointTransaction.Kind.DONATION,
+            50,
+            "legacy-donation-weight-unknown",
+            "Donasi kain tercatat, berat tidak diketahui",
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get("/rewards/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Belum tercatat")
+        self.assertNotContains(response, "0 kg")
+
+    def test_points_overview_labels_partial_weight_total_as_a_lower_bound(self):
+        self.make_transaction(
+            self.user,
+            PointTransaction.Kind.DONATION,
+            50,
+            "known-donation-weight",
+            "Donasi terverifikasi (0.4 kg)",
+            weight_kg=Decimal("0.4"),
+        )
+        self.make_transaction(
+            self.user,
+            PointTransaction.Kind.DONATION,
+            50,
+            "unknown-donation-weight",
+            "Donasi kain lama tanpa berat",
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get("/rewards/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "≥ 0,4 kg")
 
     def test_points_overview_links_to_dropoff_locations_to_donate_more_fabric(self):
         """Give users a direct path to the existing fabric drop-off directory."""
