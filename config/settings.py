@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'main',
     'marketplace',
     'upcycling',
+    'rewards',
     'batik_story',
 ]
 

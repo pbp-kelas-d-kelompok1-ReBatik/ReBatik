@@ -3,6 +3,8 @@ from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.db import router, transaction
 
+from rewards.services import award_upcycling_completion
+
 from .models import UpcyclingRequest, UpcyclingStatusHistory
 
 
@@ -124,3 +126,8 @@ class UpcyclingRequestAdmin(admin.ModelAdmin):
                 to_status=obj.status,
                 changed_by=request.user,
             )
+            if obj.status == UpcyclingRequest.Status.COMPLETED:
+                award_upcycling_completion(
+                    obj.user,
+                    request_reference=str(obj.pk),
+                )

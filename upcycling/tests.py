@@ -7,6 +7,8 @@ from django.forms.models import model_to_dict
 from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.urls import reverse
 
+from rewards.models import PointTransaction
+
 from .admin import UpcyclingRequestAdminForm
 from .forms import UpcyclingRequestForm
 from .models import (
@@ -245,6 +247,49 @@ class UpcyclingRequestAdminTests(TestCase):
         self.assertEqual(history.from_status, UpcyclingRequest.Status.PENDING)
         self.assertEqual(history.to_status, UpcyclingRequest.Status.PROCESSING)
         self.assertEqual(history.changed_by, self.user)
+
+    def test_admin_completion_awards_points_to_request_owner_once(self):
+        """Credit the request owner when staff completes an upcycling request."""
+        upcycling_request = UpcyclingRequest.objects.create(
+            user=self.user,
+            fabric="PARANG",
+            category="TAS",
+            product="TOTE_BAG",
+            quantity=1,
+            delivery_method="DROP_OFF",
+            address="Depok",
+            whatsapp="+6281234567890",
+            status=UpcyclingRequest.Status.PROCESSING,
+        )
+        form_data = model_to_dict(upcycling_request)
+        form_data["status"] = UpcyclingRequest.Status.COMPLETED
+        form = UpcyclingRequestAdminForm(
+            data=form_data,
+            instance=upcycling_request,
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+
+        request = RequestFactory().post("/admin/upcycling/upcyclingrequest/")
+        request.user = User.objects.create_user(username="staff-reviewer")
+        request_admin = admin.site._registry[UpcyclingRequest]
+        request_admin.save_model(request, upcycling_request, form, change=True)
+
+        transaction_record = PointTransaction.objects.get(
+            user=self.user,
+            kind=PointTransaction.Kind.UPCYCLING_COMPLETED,
+            source_reference=str(upcycling_request.pk),
+        )
+        self.assertEqual(transaction_record.points, 150)
+
+        request_admin.save_model(request, upcycling_request, form, change=True)
+        self.assertEqual(
+            PointTransaction.objects.filter(
+                user=self.user,
+                kind=PointTransaction.Kind.UPCYCLING_COMPLETED,
+                source_reference=str(upcycling_request.pk),
+            ).count(),
+            1,
+        )
 
     def test_admin_save_without_status_change_does_not_add_history(self):
         """Test behavior: admin save without status change does not add history."""
