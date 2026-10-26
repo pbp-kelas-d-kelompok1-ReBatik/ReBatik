@@ -43,7 +43,7 @@ ReBatik adalah platform yang menghadirkan konsep upcycling dengan mengolah pakai
 
 | Layanan | Endpoint / Metode | Kegunaan | Dokumentasi |
 |---|---|---|---|
-| API Wilayah Indonesia (emsifa) | `GET https://www.emsifa.com/api-wilayah-indonesia/v2/provinces.json` dan endpoint turunannya (`regencies`, `districts`, `villages`) | Dropdown provinsi sampai kelurahan beserta kode pos pada form alamat (Drop-Off Point, Donasi, Upcycling Request). | [Dokumentasi emsifa](https://www.emsifa.com/api-wilayah-indonesia/) |
+| API Wilayah Indonesia (emsifa) | `GET https://www.emsifa.com/api-wilayah-indonesia/v2/provinces.json`<br>`GET https://www.emsifa.com/api-wilayah-indonesia/v2/regencies/{province_id}.json`<br>`GET https://www.emsifa.com/api-wilayah-indonesia/v2/districts/{regency_id}.json`<br>`GET https://www.emsifa.com/api-wilayah-indonesia/v2/villages/{district_id}.json` | Dropdown provinsi sampai kelurahan beserta kode pos pada form alamat (Drop-Off Point, Donasi, Upcycling Request). Ganti placeholder ID dengan ID wilayah yang dipilih. | [Dokumentasi emsifa](https://www.emsifa.com/api-wilayah-indonesia/)|
 
 ## Jenis/Peran Pengguna Aplikasi
 
