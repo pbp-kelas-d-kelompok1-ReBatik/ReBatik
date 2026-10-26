@@ -26,6 +26,7 @@ urlpatterns = [
     path('marketplace/', include('marketplace.urls')),
     path("rewards/", include("rewards.urls")),
     path("upcycling/", include("upcycling.urls")),
+    path('donasi/', include('donasi.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
