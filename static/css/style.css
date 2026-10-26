@@ -101,11 +101,10 @@ main {
 }
 
 .navbar {
-    width: calc(100% - 24px);
+    width: calc(100%-10px);
     min-height: 66px;
 
-    margin: 12px auto 0;
-
+    margin: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;

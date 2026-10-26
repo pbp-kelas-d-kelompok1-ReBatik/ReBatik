@@ -39,7 +39,6 @@ def delete_story(request,id_story):
 
 def story_detail(request, id_story):
     story = get_object_or_404(BatikMotif,id_story=id_story,)
-
     return render(request, "batik_story/story_detail.html",{"story": story} )
 
 

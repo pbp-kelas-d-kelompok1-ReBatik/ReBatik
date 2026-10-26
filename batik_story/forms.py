@@ -1,7 +1,6 @@
 from django import forms
 from .models import BatikMotif
 
-
 class BatikMotifForm(forms.ModelForm):
     class Meta:
         model = BatikMotif

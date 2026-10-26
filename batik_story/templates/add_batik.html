@@ -114,7 +114,6 @@
                     <label for="{{ form.filosofi.id_for_label }}" class="block font-semibold text-[#6a3b12]">
                         {{ form.filosofi.label }}
                     </label>
-
                     {{ form.filosofi }}
 
                     {% if form.filosofi.errors %}
@@ -137,10 +136,8 @@
                         class="rounded-xl bg-[#a34235] px-6 py-3 font-semibold text-white shadow-md transition hover:shadow-lg">
                         Simpan Motif Batik →
                     </button>
-
                 </div>
             </form>
-
         </div>
     </section>
 
@@ -148,17 +145,14 @@
     <!-- MODAL KONFIRMASI PEMBATALAN -->
     <div id="cancel-modal" class="cancel-modal" aria-hidden="true">
         <div class="cancel-modal-backdrop" data-close-modal></div>
-
         <div class="cancel-modal-content" role="dialog" aria-modal="true" aria-labelledby="cancel-title"
             aria-describedby="cancel-description" tabindex="-1">
 
             <!-- MASCOT MENANGIS -->
             <div class="cancel-mascot-wrap">
                 <div class="mascot-glow"></div>
-
                 <img src="{% static 'img/story/nangis.png' %}" alt="Maskot ReBatik sedang menangis"
                     class="cancel-mascot">
-
                 <span class="mascot-accent accent-one">〃</span>
                 <span class="mascot-accent accent-two">!</span>
             </div>
@@ -185,17 +179,13 @@
 
             <!-- PILIHAN KONFIRMASI -->
             <div class="cancel-modal-actions">
-
                 <button type="button" id="continue-editing-btn" class="continue-editing-btn">
                     Lanjut Mengisi
                 </button>
-
                 <button type="button" id="confirm-cancel-btn" class="confirm-cancel-btn">
                     Ya, Batalkan
                 </button>
-
             </div>
-
         </div>
     </div>
 

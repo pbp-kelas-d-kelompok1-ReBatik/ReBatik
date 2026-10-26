@@ -1,27 +1,12 @@
 {% if user.is_authenticated and user.is_staff %}
-<div
-    id="delete-batik-{{ batik.id }}"
-    class="story-delete-modal"
-    popover="auto"
-    role="dialog"
-    aria-labelledby="delete-batik-title-{{ batik.id }}"
->
-    <button
-        type="button"
-        class="story-delete-modal__backdrop"
-        popovertarget="delete-batik-{{ batik.id }}"
-        popovertargetaction="hide"
-        aria-label="Tutup konfirmasi"
-    ></button>
+<div id="delete-batik-{{ batik.id }}" class="story-delete-modal" popover="auto" role="dialog"
+    aria-labelledby="delete-batik-title-{{ batik.id }}">
+    <button type="button" class="story-delete-modal__backdrop" popovertarget="delete-batik-{{ batik.id }}"
+        popovertargetaction="hide" aria-label="Tutup konfirmasi"></button>
 
     <div class="story-delete-modal__content">
-        <button
-            type="button"
-            class="story-delete-modal__close"
-            popovertarget="delete-batik-{{ batik.id }}"
-            popovertargetaction="hide"
-            aria-label="Tutup"
-        >×</button>
+        <button type="button" class="story-delete-modal__close" popovertarget="delete-batik-{{ batik.id }}"
+            popovertargetaction="hide" aria-label="Tutup">×</button>
 
         <h2 id="delete-batik-title-{{ batik.id }}">
             Hapus Motif Batik?
@@ -33,19 +18,12 @@
         </p>
 
         <div class="story-delete-modal__actions">
-            <button
-                type="button"
-                class="button button-secondary"
-                popovertarget="delete-batik-{{ batik.id }}"
-                popovertargetaction="hide"
-            >
+            <button type="button" class="button button-secondary" popovertarget="delete-batik-{{ batik.id }}"
+                popovertargetaction="hide">
                 Batal
             </button>
 
-            <form
-                method="post"
-                action="{% url 'batik_story:delete_batik' batik.id %}"
-            >
+            <form method="post" action="{% url 'batik_story:delete_batik' batik.id %}">
                 {% csrf_token %}
                 <button type="submit" class="button button-danger">
                     Ya, Hapus
