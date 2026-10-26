@@ -8,8 +8,8 @@ NOTES_MAX_LENGTH = 2000
 
 class UpcyclingRequest(models.Model):
     class Status(models.TextChoices):
-        PENDING = "PENDING", "Menunggu tinjauan"
-        PROCESSING = "PROCESSING", "Sedang dikerjakan"
+        PENDING = "PENDING", "Menunggu Tinjauan"
+        PROCESSING = "PROCESSING", "Diproses"
         COMPLETED = "COMPLETED", "Selesai"
         CANCELLED = "CANCELLED", "Dibatalkan"
 
@@ -38,8 +38,8 @@ class UpcyclingRequest(models.Model):
     ]
 
     DELIVERY_CHOICES = [
-        ("DROP_OFF", "Drop-off"),
-        ("KURIR", "Kurir"),
+        ("DROP_OFF", "Ambil di Drop-off"),
+        ("KURIR", "Dikirim Kurir"),
     ]
 
     STATUS_CHOICES = Status.choices
@@ -72,16 +72,87 @@ class UpcyclingRequest(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(
+                fields=["user", "status", "-created_at"],
+                name="upreq_user_status_created_idx",
+            ),
+        ]
 
     def __str__(self):
+        """Represent the request by its product and owner."""
         return f"{self.get_product_name()} — {self.user}"
 
     def get_product_name(self):
+        """Return the custom name when the selected product is 'Other'."""
         if self.product == "LAINNYA" and self.custom_product:
             return self.custom_product
         return self.get_product_display()
 
     @property
     def reference_code(self):
+        """Return a short, stable public reference derived from the UUID."""
         short_id = self.pk.hex[:8].upper()
         return f"RB-{short_id}"
+
+
+class UpcyclingStatusHistory(models.Model):
+    request = models.ForeignKey(
+        UpcyclingRequest,
+        on_delete=models.CASCADE,
+        related_name="status_history",
+    )
+    from_status = models.CharField(
+        max_length=12,
+        choices=UpcyclingRequest.STATUS_CHOICES,
+        blank=True,
+    )
+    to_status = models.CharField(
+        max_length=12,
+        choices=UpcyclingRequest.STATUS_CHOICES,
+    )
+    changed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="upcycling_status_changes",
+    )
+    changed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["changed_at", "pk"]
+        verbose_name = "riwayat status permintaan upcycling"
+        verbose_name_plural = "riwayat status permintaan upcycling"
+
+    def __str__(self):
+        """Represent a history entry by its request and resulting status."""
+        return f"{self.request.reference_code}: {self.get_to_status_display()}"
+
+
+class UpcyclingRateLimitBucket(models.Model):
+    class Action(models.TextChoices):
+        CREATE = "CREATE", "Buat permintaan"
+        UPDATE = "UPDATE", "Edit permintaan"
+        DELETE = "DELETE", "Hapus permintaan"
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="upcycling_rate_limit_buckets",
+    )
+    action = models.CharField(max_length=10, choices=Action.choices)
+    window_started_at = models.DateTimeField()
+    request_count = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "action"],
+                name="upcycling_rate_limit_user_action_uniq",
+            ),
+        ]
+
+    def __str__(self):
+        """Represent a rate-limit bucket with its owner and action."""
+        return f"{self.user_id}: {self.get_action_display()} ({self.request_count})"

@@ -24,6 +24,7 @@ urlpatterns = [
     path('', include('main.urls')),
     path('batik_story/', include('batik_story.urls')),
     path('marketplace/', include('marketplace.urls')),
+    path("rewards/", include("rewards.urls")),
     path("upcycling/", include("upcycling.urls")),
     path("batik_custom/", include("batik_custom.urls")),
 ]

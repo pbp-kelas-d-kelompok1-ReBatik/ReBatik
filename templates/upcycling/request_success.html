@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<section class="relative overflow-hidden px-4 pb-12 pt-10 sm:px-6 sm:pt-12">
+<section id="upcycling-page-content" class="relative overflow-hidden px-4 pb-12 pt-10 sm:px-6 sm:pt-12">
     <img
         src="{% static 'img/upcycling/cloud-left.webp' %}"
         alt=""
@@ -53,17 +53,19 @@
                     <dd class="text-[var(--brown-muted)]">{{ upcycling_request.get_fabric_display }}</dd>
                 </div>
                 <div>
-                    <dt class="font-semibold">Kategori dan produk</dt>
-                    <dd class="text-[var(--brown-muted)]">
-                        {{ upcycling_request.get_category_display }} · {{ upcycling_request.get_product_name }}
-                    </dd>
+                    <dt class="font-semibold">Kategori produk</dt>
+                    <dd class="text-[var(--brown-muted)]">{{ upcycling_request.get_category_display }}</dd>
                 </div>
                 <div>
-                    <dt class="font-semibold">Jumlah</dt>
-                    <dd class="text-[var(--brown-muted)]">{{ upcycling_request.quantity }} pcs</dd>
+                    <dt class="font-semibold">Model produk</dt>
+                    <dd class="text-[var(--brown-muted)]">{{ upcycling_request.get_product_name }}</dd>
                 </div>
                 <div>
-                    <dt class="font-semibold">Metode pengiriman kain</dt>
+                    <dt class="font-semibold">Jumlah produk</dt>
+                    <dd class="text-[var(--brown-muted)]">{{ upcycling_request.quantity }} produk</dd>
+                </div>
+                <div>
+                    <dt class="font-semibold">Penerimaan produk</dt>
                     <dd class="text-[var(--brown-muted)]">{{ upcycling_request.get_delivery_method_display }}</dd>
                 </div>
                 <div>

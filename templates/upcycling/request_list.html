@@ -18,17 +18,28 @@
 
     <header class="relative mx-auto mb-10 max-w-4xl text-center text-[var(--cream-light)]">
         <p class="text-xs uppercase tracking-[0.3em]">Upcycle · Culture · Value</p>
-        <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">My Upcycling Requests</h1>
+        <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">Permintaan Saya</h1>
         <p class="mt-3 text-base sm:text-lg">Pantau semua permintaan upcycling Anda di sini.</p>
     </header>
 
     <main
-        class="mx-auto max-w-6xl rounded-2xl border border-[var(--border)] bg-[#f3ebe1]
+        id="upcycling-page-content"
+        hx-push-url="true"
+        hx-indicator="#request-list-loading"
+        class="mx-auto max-w-6xl rounded-2xl border border-[var(--upcycling-card-border)]
+               bg-[var(--upcycling-panel)]
                p-5 text-[var(--brown)] shadow-2xl sm:rounded-3xl sm:p-8 lg:p-10"
     >
         {% include "upcycling/_toast_messages.html" %}
+        <div
+            id="request-list-status"
+            data-htmx-feedback
+            role="status"
+            aria-live="polite"
+            class="hidden mt-4 rounded-lg border border-[var(--danger)] bg-[var(--card)] p-3 text-sm font-semibold text-[var(--danger)]"
+        ></div>
 
-        {% if requests %}
+        {% if has_any_requests %}
             <div class="mb-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h2 class="text-2xl font-bold sm:text-3xl">Daftar Permintaan</h2>
@@ -46,14 +57,20 @@
                 </a>
             </div>
 
-            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div class="grid gap-4 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-start">
                 <nav
                     aria-label="Filter status permintaan"
                     class="inline-flex w-fit max-w-full items-center gap-1 rounded-full
                            border border-[var(--border)] bg-[var(--card)] p-1.5 shadow-sm"
                 >
                     <a
-                        href="?{% if selected_category %}category={{ selected_category }}{% endif %}"
+                        href="{% querystring status='' page=None %}"
+                        hx-get="{% url 'upcycling:request_list' %}"
+                        hx-target="#request-results"
+                        hx-select="#request-results"
+                        hx-swap="outerHTML"
+                        hx-sync="#request-results:replace"
+                        data-status-filter=""
                         {% if selected_status != 'ONGOING' and selected_status != 'COMPLETED' %}
                             aria-current="page"
                         {% else %}
@@ -67,7 +84,13 @@
                                {% endif %}"
                     >Semua</a>
                     <a
-                        href="?status=ONGOING{% if selected_category %}&category={{ selected_category }}{% endif %}"
+                        href="{% querystring status='ONGOING' page=None %}"
+                        hx-get="{% url 'upcycling:request_list' %}"
+                        hx-target="#request-results"
+                        hx-select="#request-results"
+                        hx-swap="outerHTML"
+                        hx-sync="#request-results:replace"
+                        data-status-filter="ONGOING"
                         aria-current="{% if selected_status == 'ONGOING' %}page{% else %}false{% endif %}"
                         class="rounded-full px-5 py-2 text-sm transition sm:px-7 sm:text-base
                                {% if selected_status == 'ONGOING' %}
@@ -77,7 +100,13 @@
                                {% endif %}"
                     >Berjalan</a>
                     <a
-                        href="?status=COMPLETED{% if selected_category %}&category={{ selected_category }}{% endif %}"
+                        href="{% querystring status='COMPLETED' page=None %}"
+                        hx-get="{% url 'upcycling:request_list' %}"
+                        hx-target="#request-results"
+                        hx-select="#request-results"
+                        hx-swap="outerHTML"
+                        hx-sync="#request-results:replace"
+                        data-status-filter="COMPLETED"
                         aria-current="{% if selected_status == 'COMPLETED' %}page{% else %}false{% endif %}"
                         class="rounded-full px-5 py-2 text-sm transition sm:px-7 sm:text-base
                                {% if selected_status == 'COMPLETED' %}
@@ -88,9 +117,9 @@
                     >Selesai</a>
                 </nav>
 
-                <details class="group text-sm">
+                <details id="upcycling-extra-filters" class="group relative z-30 min-w-0 text-sm">
                     <summary
-                        class="cursor-pointer list-none font-semibold text-[var(--button-hover)]
+                        class="cursor-pointer list-none text-right font-semibold text-[var(--button-hover)]
                                underline decoration-[var(--gold)] underline-offset-4
                                focus-visible:outline focus-visible:outline-2
                                focus-visible:outline-[var(--brown)]"
@@ -98,15 +127,54 @@
                         Filter lainnya
                     </summary>
                     <form
+                        id="upcycling-extra-filter-form"
                         method="get"
-                        class="mt-3 grid gap-3 rounded-xl border border-[var(--border)]
-                               bg-[var(--card)] p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
+                        action="{% url 'upcycling:request_list' %}"
+                        hx-get="{% url 'upcycling:request_list' %}"
+                        hx-trigger="submit"
+                        hx-target="#request-results"
+                        hx-select="#request-results"
+                        hx-swap="outerHTML"
+                        hx-sync="#request-results:replace"
+                        hx-disabled-elt="button[type='submit']"
+                        class="absolute right-0 top-full z-50 mt-3 grid
+                               max-h-[70vh] w-[min(42rem,calc(100vw-2rem))] grid-cols-1
+                               gap-4 overflow-y-auto rounded-xl border border-[var(--border)]
+                               bg-[var(--card)] p-4 text-left shadow-2xl
+                               sm:grid-cols-2 xl:grid-cols-3"
                     >
+                        <div class="space-y-1 sm:col-span-2 xl:col-span-2">
+                            <label for="filter-query" class="font-semibold">Cari produk, kain, atau catatan</label>
+                            <input
+                                id="filter-query"
+                                type="search"
+                                name="q"
+                                value="{{ selected_query }}"
+                                placeholder="Contoh: tote bag, Parang, atau warna biru"
+                                hx-get="{% url 'upcycling:request_list' %}"
+                                hx-trigger="input changed delay:500ms"
+                                hx-target="#request-results"
+                                hx-select="#request-results"
+                                hx-swap="outerHTML"
+                                hx-include="closest form"
+                                hx-sync="#request-results:replace"
+                                class="block w-full rounded-lg border border-[var(--border)] bg-white
+                                       px-3 py-2 text-[var(--brown)] focus:border-[var(--gold)]
+                                       focus:outline-none focus:ring-2 focus:ring-[var(--gold)]"
+                            >
+                        </div>
                         <div class="space-y-1">
                             <label for="filter-status" class="font-semibold">Status</label>
                             <select
                                 id="filter-status"
                                 name="status"
+                                hx-get="{% url 'upcycling:request_list' %}"
+                                hx-trigger="change"
+                                hx-target="#request-results"
+                                hx-select="#request-results"
+                                hx-swap="outerHTML"
+                                hx-include="closest form"
+                                hx-sync="#request-results:replace"
                                 class="block w-full rounded-lg border border-[var(--border)] bg-white
                                        px-3 py-2 text-[var(--brown)] focus:border-[var(--gold)]
                                        focus:outline-none focus:ring-2 focus:ring-[var(--gold)]"
@@ -125,15 +193,22 @@
                             </select>
                         </div>
                         <div class="space-y-1">
-                            <label for="filter-category" class="font-semibold">Kategori</label>
+                            <label for="filter-category" class="font-semibold">Kategori Produk</label>
                             <select
                                 id="filter-category"
                                 name="category"
+                                hx-get="{% url 'upcycling:request_list' %}"
+                                hx-trigger="change"
+                                hx-target="#request-results"
+                                hx-select="#request-results"
+                                hx-swap="outerHTML"
+                                hx-include="closest form"
+                                hx-sync="#request-results:replace"
                                 class="block w-full rounded-lg border border-[var(--border)] bg-white
                                        px-3 py-2 text-[var(--brown)] focus:border-[var(--gold)]
                                        focus:outline-none focus:ring-2 focus:ring-[var(--gold)]"
                             >
-                                <option value="">Semua kategori</option>
+                                <option value="">Semua kategori produk</option>
                                 {% for value, label in category_options %}
                                     <option
                                         value="{{ value }}"
@@ -142,9 +217,70 @@
                                 {% endfor %}
                             </select>
                         </div>
+                        <div class="space-y-1">
+                            <label for="filter-from" class="font-semibold">Dari tanggal</label>
+                            <input
+                                id="filter-from"
+                                type="date"
+                                name="from"
+                                value="{{ selected_from }}"
+                                hx-get="{% url 'upcycling:request_list' %}"
+                                hx-trigger="change"
+                                hx-target="#request-results"
+                                hx-select="#request-results"
+                                hx-swap="outerHTML"
+                                hx-include="closest form"
+                                hx-sync="#request-results:replace"
+                                class="block w-full rounded-lg border border-[var(--border)] bg-white
+                                       px-3 py-2 text-[var(--brown)] focus:border-[var(--gold)]
+                                       focus:outline-none focus:ring-2 focus:ring-[var(--gold)]"
+                            >
+                        </div>
+                        <div class="space-y-1">
+                            <label for="filter-to" class="font-semibold">Sampai tanggal</label>
+                            <input
+                                id="filter-to"
+                                type="date"
+                                name="to"
+                                value="{{ selected_to }}"
+                                hx-get="{% url 'upcycling:request_list' %}"
+                                hx-trigger="change"
+                                hx-target="#request-results"
+                                hx-select="#request-results"
+                                hx-swap="outerHTML"
+                                hx-include="closest form"
+                                hx-sync="#request-results:replace"
+                                class="block w-full rounded-lg border border-[var(--border)] bg-white
+                                       px-3 py-2 text-[var(--brown)] focus:border-[var(--gold)]
+                                       focus:outline-none focus:ring-2 focus:ring-[var(--gold)]"
+                            >
+                        </div>
+                        <div class="space-y-1">
+                            <label for="filter-order" class="font-semibold">Urutkan</label>
+                            <select
+                                id="filter-order"
+                                name="order"
+                                hx-get="{% url 'upcycling:request_list' %}"
+                                hx-trigger="change"
+                                hx-target="#request-results"
+                                hx-select="#request-results"
+                                hx-swap="outerHTML"
+                                hx-include="closest form"
+                                hx-sync="#request-results:replace"
+                                class="block w-full rounded-lg border border-[var(--border)] bg-white
+                                       px-3 py-2 text-[var(--brown)] focus:border-[var(--gold)]
+                                       focus:outline-none focus:ring-2 focus:ring-[var(--gold)]"
+                            >
+                                {% for value, label in order_options %}
+                                    <option value="{{ value }}" {% if selected_order == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
                         <button
                             type="submit"
-                            class="rounded-lg bg-[var(--brown)] px-5 py-2 font-semibold
+                            class="min-h-11 rounded-lg bg-[var(--brown)] px-5 py-2 font-semibold
                                    text-[var(--cream-light)] hover:bg-[var(--button-hover)]"
                         >
                             Terapkan
@@ -153,16 +289,18 @@
                 </details>
             </div>
 
-            <div class="mt-6 space-y-4">
+            <div id="request-results" class="mt-6">
+            {% if requests %}
+            <div class="space-y-4">
                 {% for item in requests %}
                     <article
-                        class="grid grid-cols-[4rem_minmax(0,1fr)] items-center gap-x-3 gap-y-3
-                               rounded-xl border-2 border-[var(--gold)] bg-[var(--card)] p-4
+                        class="grid grid-cols-[5.5rem_minmax(0,1fr)] items-start gap-x-4 gap-y-3
+                               rounded-2xl border border-[var(--upcycling-card-border)] bg-[var(--upcycling-surface)] p-2
                                text-[var(--brown)] shadow-md transition hover:shadow-lg
-                               sm:grid-cols-[5rem_minmax(0,1fr)] sm:gap-x-4 sm:p-5
-                               lg:grid-cols-[6rem_minmax(0,1fr)_auto_auto] lg:gap-6"
+                               sm:grid-cols-[7rem_minmax(0,1fr)] sm:gap-x-5 sm:p-4
+                               lg:grid-cols-[11rem_minmax(0,1fr)_auto_auto] lg:gap-4"
                     >
-                        <div class="size-16 overflow-hidden rounded-lg sm:size-20 lg:size-24">
+                        <div class="aspect-[1.35] w-full overflow-hidden rounded-xl">
                             {% if item.fabric == "PARANG" %}
                                 <img
                                     src="{% static 'img/upcycling/motif-parang.webp' %}"
@@ -193,48 +331,51 @@
                                     alt="Kain donasi baru"
                                     loading="lazy"
                                     decoding="async"
-                                    class="h-full w-full bg-[var(--upcycling-soft)] object-contain p-1"
+                                    class="h-full w-full bg-[var(--upcycling-soft)] object-contain p-3"
                                 >
                             {% endif %}
                         </div>
 
                         <div class="min-w-0">
-                            <h3 class="break-words text-lg font-bold leading-tight sm:text-2xl">
-                                {{ item.get_product_name }}
-                            </h3>
-                            <p class="mt-1 break-words text-sm leading-snug text-[var(--brown-dark)] sm:text-base">
+                            <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
+                                <h3 class="break-words text-xl font-bold leading-tight sm:text-3xl">
+                                    {{ item.get_product_name }}
+                                </h3>
+                                <span
+                                    class="upcycling-status-badge min-h-11 w-fit shrink-0 rounded-full px-4 py-2 text-base font-bold lg:hidden
+                                           {% if item.status == 'PENDING' %}bg-[var(--upcycling-status-pending)] text-[var(--upcycling-status-pending-text)]
+                                           {% elif item.status == 'PROCESSING' %}bg-[var(--upcycling-status-processing)] text-[var(--upcycling-status-processing-text)]
+                                           {% elif item.status == 'COMPLETED' %}bg-[var(--upcycling-status-completed)] text-[var(--upcycling-status-completed-text)]
+                                           {% else %}bg-[var(--upcycling-status-cancelled)] text-[var(--upcycling-status-cancelled-text)]{% endif %}"
+                                >
+                                    {{ item.get_status_display }}
+                                </span>
+                            </div>
+                            <p class="mt-1 break-words text-base leading-snug text-[var(--brown-muted)] sm:text-lg">
                                 {{ item.get_fabric_display }}
-                                <span aria-hidden="true"> · </span>
+                            </p>
+                            <p class="mt-1 break-words text-sm leading-snug text-[var(--brown-muted)] sm:text-base">
                                 #RB-{{ item.pk|stringformat:"s"|slice:":8"|upper }}
-                                <span aria-hidden="true"> · </span>
-                                {{ item.created_at|date:"d M Y" }}
+                                <span aria-hidden="true"> · </span>{{ item.created_at|date:"d M Y" }}
                             </p>
                         </div>
 
                         <span
-                            class="col-start-2 w-fit rounded-full px-4 py-2 text-sm font-bold lg:col-start-auto
-                                   {% if item.status == 'PENDING' %}bg-[#dbe6f1] text-[#1f3a56]
-                                   {% elif item.status == 'PROCESSING' %}bg-[#f3dcc0] text-[#6a3b12]
-                                   {% elif item.status == 'COMPLETED' %}bg-[#d6e6d2] text-[#1f4a22]
-                                   {% else %}bg-[#f4d6d2] text-[#7a3027]{% endif %}"
+                            class="upcycling-status-badge hidden min-h-11 w-fit self-center rounded-full px-4 py-2 text-base font-bold lg:inline-flex
+                                   {% if item.status == 'PENDING' %}bg-[var(--upcycling-status-pending)] text-[var(--upcycling-status-pending-text)]
+                                   {% elif item.status == 'PROCESSING' %}bg-[var(--upcycling-status-processing)] text-[var(--upcycling-status-processing-text)]
+                                   {% elif item.status == 'COMPLETED' %}bg-[var(--upcycling-status-completed)] text-[var(--upcycling-status-completed-text)]
+                                   {% else %}bg-[var(--upcycling-status-cancelled)] text-[var(--upcycling-status-cancelled-text)]{% endif %}"
                         >
-                            {% if item.status == "PENDING" %}
-                                Ditinjau
-                            {% elif item.status == "PROCESSING" %}
-                                Diproses
-                            {% elif item.status == "COMPLETED" %}
-                                Selesai
-                            {% else %}
-                                Dibatalkan
-                            {% endif %}
+                            {{ item.get_status_display }}
                         </span>
 
                         <a
                             href="{% url 'upcycling:request_detail' item.pk %}"
-                            class="upcycling-button-dark col-span-2 min-h-11 px-5 py-2 text-sm
+                            class="upcycling-button-dark col-span-2 min-h-11 px-3 py-2 text-sm
                                    focus-visible:outline focus-visible:outline-offset-2
-                                   focus-visible:outline-[var(--gold)] sm:col-start-2
-                                   lg:col-span-1 lg:col-start-auto"
+                                   focus-visible:outline-[var(--gold)]
+                                   lg:col-span-1 lg:self-center lg:px-5"
                         >
                             Lihat Detail →
                         </a>
@@ -247,6 +388,11 @@
                     {% if page_obj.has_previous %}
                         <a
                             href="{% querystring page=page_obj.previous_page_number %}"
+                            hx-get="{% querystring page=page_obj.previous_page_number %}"
+                            hx-target="#request-results"
+                            hx-select="#request-results"
+                            hx-swap="outerHTML"
+                            hx-sync="#request-results:replace"
                             class="rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-2
                                    font-semibold hover:bg-[var(--upcycling-soft)]
                                    focus-visible:outline focus-visible:outline-2
@@ -259,6 +405,11 @@
                     {% if page_obj.has_next %}
                         <a
                             href="{% querystring page=page_obj.next_page_number %}"
+                            hx-get="{% querystring page=page_obj.next_page_number %}"
+                            hx-target="#request-results"
+                            hx-select="#request-results"
+                            hx-swap="outerHTML"
+                            hx-sync="#request-results:replace"
                             class="rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-2
                                    font-semibold hover:bg-[var(--upcycling-soft)]
                                    focus-visible:outline focus-visible:outline-2
@@ -267,27 +418,23 @@
                     {% endif %}
                 </nav>
             {% endif %}
-        {% elif has_any_requests %}
-            <div class="mb-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h2 class="text-2xl font-bold sm:text-3xl">Daftar Permintaan</h2>
-                    <p class="mt-1 text-[var(--brown-dark)]">
-                        Semua kain yang sudah Anda ajukan untuk diubah menjadi produk baru.
-                    </p>
-                </div>
-                <a
-                    href="{% url 'upcycling:request_create' %}"
-                    class="upcycling-button-dark min-h-12 px-6 py-3 font-semibold"
-                >+ Buat Permintaan</a>
-            </div>
+            {% else %}
             <div class="rounded-xl border border-[var(--border)] bg-[var(--card)] px-5 py-10 text-center">
                 <h3 class="text-xl font-bold">Tidak ada permintaan yang cocok</h3>
                 <p class="mt-2 text-[var(--brown-dark)]">Coba ubah atau reset filter yang dipilih.</p>
                 <a
                     href="{% url 'upcycling:request_list' %}"
+                    hx-get="{% url 'upcycling:request_list' %}"
+                    hx-target="#request-results"
+                    hx-select="#request-results"
+                    hx-swap="outerHTML"
+                    hx-sync="#request-results:replace"
+                    data-reset-filters
                     class="mt-4 inline-block font-semibold text-[var(--button-hover)]
                            underline decoration-[var(--gold)] underline-offset-4"
                 >Reset filter</a>
+            </div>
+            {% endif %}
             </div>
         {% else %}
             <div
@@ -313,6 +460,15 @@
                 >Mulai Upcycling →</a>
             </div>
         {% endif %}
+
+        <span id="request-list-loading" class="htmx-indicator mt-4 text-sm font-semibold" role="status">
+            Memuat permintaan…
+        </span>
     </main>
 </section>
 {% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/htmx.min.js' %}" defer></script>
+<script src="{% static 'js/upcycling-htmx-feedback.js' %}" defer></script>
+{% endblock scripts %}

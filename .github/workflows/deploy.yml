@@ -13,10 +13,28 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      SECRET_KEY: ci-only-not-for-production
+      DEBUG: "False"
+      PRODUCTION: "False"
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      - name: Install Tailwind dependencies
+        run: npm ci
+
+      - name: Build Tailwind CSS
+        run: npm run tailwind:build
+
+      - name: Verify Tailwind CSS was generated
+        run: test -s static/css/tailwind.css
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -34,9 +52,8 @@ jobs:
       - name: Run Django tests
         run: python manage.py test
 
-  deploy:
-    needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  verify-pws-access:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:
@@ -45,7 +62,74 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Push to PWS
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      - name: Install Tailwind dependencies
+        run: npm ci
+
+      - name: Build Tailwind CSS
+        run: npm run tailwind:build
+
+      - name: Dry-run deployment push to PWS
         env:
           PWS_URL: ${{ secrets.PWS_URL }}
-        run: git push "$PWS_URL" HEAD:main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git fetch "$PWS_URL" main
+          pws_parent="$(git rev-parse FETCH_HEAD)"
+
+          git add --force static/css/tailwind.css
+          deployment_tree="$(git write-tree)"
+          deployment_commit="$(git commit-tree "$deployment_tree" -p "$pws_parent" \
+            -m "chore(deploy): include generated Tailwind CSS" \
+            -m "GitHub source commit: $GITHUB_SHA")"
+
+          git push --dry-run "$PWS_URL" "$deployment_commit:main"
+
+  deploy:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pws-deployment
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      - name: Install Tailwind dependencies
+        run: npm ci
+
+      - name: Build Tailwind CSS
+        run: npm run tailwind:build
+
+      - name: Create deployment commit and push to PWS
+        env:
+          PWS_URL: ${{ secrets.PWS_URL }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git fetch "$PWS_URL" main
+          pws_parent="$(git rev-parse FETCH_HEAD)"
+
+          git add --force static/css/tailwind.css
+          deployment_tree="$(git write-tree)"
+          deployment_commit="$(git commit-tree "$deployment_tree" -p "$pws_parent" \
+            -m "chore(deploy): include generated Tailwind CSS" \
+            -m "GitHub source commit: $GITHUB_SHA")"
+
+          git push "$PWS_URL" "$deployment_commit:main"
