@@ -1,64 +1,165 @@
 .add-batik-page {
-    min-height: 70vh;
+    width: 100%;
+    min-width: 0;
+    min-height: 100vh;
+    margin: 0;
+    color: #654332;
     background: #f3ebe1;
-    color: #654a39;
-    font-family: "EB Garamond", Georgia, serif;
+    overflow-x: clip;
+    font-family: "Garamond", Georgia, serif;
 }
 
+.add-batik-page *,
+.add-batik-page *::before,
+.add-batik-page *::after {
+    box-sizing: border-box;
+}
+
+/* Area utama */
+.add-batik-page > section {
+    width: 100%;
+    min-height: auto;
+    padding: 40px 20px 64px;
+    background: #f3ebe1;
+}
+
+/* Kartu form */
+.add-batik-page > section > div {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 36px 40px;
+    border: 1px solid #e8d7c5;
+    border-radius: 24px;
+    background: #fffdf9;
+    box-shadow: 0 12px 35px rgba(91, 60, 39, 0.08);
+}
+
+/* Breadcrumb */
+.add-batik-page > section > div > p:first-child {
+    margin: 0 0 20px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    line-height: 1.5;
+    color: #8a674e;
+}
+
+/* Judul */
+.add-batik-page h1 {
+    margin: 0;
+    color: #603b2b;
+    font-size: clamp(32px, 4vw, 46px);
+    font-weight: 700;
+    line-height: 1.15;
+    text-align: center;
+}
+
+/* Garis dekorasi di bawah judul */
+.add-batik-page h1::after {
+    content: "";
+    display: block;
+    width: 76px;
+    height: 3px;
+    margin: 18px auto 20px;
+    border-radius: 999px;
+    background: #d9a441;
+}
+
+/* Deskripsi pembuka */
+.add-batik-page h1 + p {
+    margin: 0;
+    color: #84644f;
+    font-size: 17px;
+    line-height: 1.65;
+    text-align: center;
+}
+
+/* Form */
 .add-batik-page .batik-form {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 22px;
+    width: 100%;
+    margin-top: 32px;
 }
 
+/* Kelompok field */
 .add-batik-page .batik-form > div {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    min-width: 0;
 }
 
 .add-batik-page .batik-form label {
-    color: #6a3b12;
-    font-size: 18px;
-    font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
+    color: #704523;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.4;
 }
 
-.add-batik-page .batik-form input:not([type="checkbox"]),
+/* Input dan dropdown */
+.add-batik-page .batik-form input:not([type="checkbox"]):not([type="radio"]),
 .add-batik-page .batik-form select,
 .add-batik-page .batik-form textarea {
-    box-sizing: border-box;
+    display: block;
     width: 100%;
-    padding: 15px 16px;
-    border: 1px solid #dfc4af;
-    border-radius: 16px;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 13px 15px;
+    border: 1px solid #e3cdb9;
+    border-radius: 12px;
     outline: none;
-    background: #fffdfa;
-    color: #654a39;
+    background: #ffffff;
+    color: #654332;
     font-family: inherit;
-    font-size: 17px;
-    transition: border-color .2s ease, box-shadow .2s ease;
+    font-size: 16px;
+    line-height: 1.5;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Tinggi input biasa */
+.add-batik-page .batik-form input:not([type="file"]):not([type="checkbox"]):not([type="radio"]),
+.add-batik-page .batik-form select {
+    min-height: 50px;
+}
+
+/* Input unggah gambar */
 .add-batik-page .batik-form input[type="file"] {
-    padding: 12px;
+    min-height: 50px;
+    padding: 9px;
+    font-size: 14px;
 }
 
+/* Area teks */
 .add-batik-page .batik-form textarea {
-    min-height: 150px;
+    min-height: 125px;
     resize: vertical;
-    line-height: 1.6;
 }
 
+/* Fokus input */
 .add-batik-page .batik-form input:focus,
 .add-batik-page .batik-form select:focus,
 .add-batik-page .batik-form textarea:focus {
-    border-color: #ad8069;
-    box-shadow: 0 0 0 3px rgba(173, 128, 105, .15);
+    border-color: #b58a51;
+    box-shadow: 0 0 0 3px rgba(181, 138, 81, 0.15);
 }
 
+/* Placeholder */
 .add-batik-page .batik-form input::placeholder,
 .add-batik-page .batik-form textarea::placeholder {
-    color: #b7a394;
+    color: #b29b88;
+}
+
+/* Pesan error */
+.add-batik-page .batik-form .text-red-800 {
+    margin-top: 6px;
+    color: #a52f2f;
+    font-size: 14px;
 }
 
 .add-batik-page .batik-form ul.errorlist {
@@ -68,32 +169,111 @@
     font-size: 14px;
 }
 
-/* Tombol form */
+/* Bagian tombol */
+.add-batik-page .batik-form > div:last-child {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 6px;
+    padding-top: 22px;
+    border-top: 1px solid #eadfd3;
+}
 
-.add-batik-page .batik-form button,
 .add-batik-page .batik-form a {
     font-family: inherit;
     cursor: pointer;
     text-decoration: none;
 }
 
+.add-batik-page .batik-form button {
+    min-height: 46px;
+    padding: 12px 20px;
+    border-radius: 11px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.add-batik-page .batik-form button:hover {
+    transform: translateY(-1px);
+}
+
+/* Tombol simpan */
 .add-batik-page .batik-form button[type="submit"] {
     border: 1px solid #a34235;
     background: #a34235;
-    color: #fff9f1;
+    color: #ffffff;
 }
 
 .add-batik-page .batik-form button[type="submit"]:hover {
     background: #87372b;
 }
 
+/* Tombol batal */
 .add-batik-page .batik-form #cancel-batik-btn {
     background: #fffdfa;
     border: 1px solid #654a39;
+    color: black;
 }
 
 .add-batik-page .batik-form #cancel-batik-btn:hover {
     background: #f3ebe1;
+}
+
+/* Modal pembatalan tetap menggunakan CSS yang sudah ada */
+.add-batik-page .cancel-modal {
+    z-index: 1000;
+}
+
+/* Responsif tablet dan HP */
+@media (max-width: 768px) {
+    .add-batik-page > section {
+        padding: 26px 16px 40px;
+    }
+
+    .add-batik-page > section > div {
+        padding: 26px 22px;
+        border-radius: 18px;
+    }
+
+    .add-batik-page h1 {
+        font-size: 34px;
+    }
+
+    .add-batik-page h1 + p {
+        font-size: 16px;
+    }
+
+    .add-batik-page .batik-form {
+        gap: 19px;
+        margin-top: 26px;
+    }
+}
+
+@media (max-width: 480px) {
+    .add-batik-page > section {
+        padding: 20px 12px 32px;
+    }
+
+    .add-batik-page > section > div {
+        padding: 22px 16px;
+    }
+
+    .add-batik-page h1 {
+        font-size: 30px;
+    }
+
+    .add-batik-page .batik-form > div:last-child {
+        flex-direction: column-reverse;
+    }
+
+    .add-batik-page .batik-form button {
+        width: 100%;
+    }
 }
 
 .cancel-modal {
