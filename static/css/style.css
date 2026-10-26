@@ -571,12 +571,9 @@ footer h3 {
 }
 
 .site-footer {
-    width: calc(100% - 60px);
+    width: 100%;
 
     min-height: 58px;
-
-    margin: 32px auto 0;
-
     display: flex;
 
     align-items: center;

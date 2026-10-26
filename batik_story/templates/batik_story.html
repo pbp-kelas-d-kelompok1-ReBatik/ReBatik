@@ -20,7 +20,6 @@
     <!-- HERO SECTION -->
     <section class="batik-hero">
         <div class="hero-overlay"></div>
-
         <div class="hero-container">
             <div class="hero-copy">
 
@@ -138,7 +137,24 @@
             </button>
         </div>
 
+
         <p id="story-search-status" class="story-search-status" aria-live="polite"></p>
+        <div id="story-empty-state" class="story-empty-state" hidden>
+            <img src="{% static 'img/story/nangis.png' %}"
+                alt="Kapy sedih karena cerita tidak ditemukan" class="story-empty-mascot">
+
+            <h3>Yah, motifnya belum ditemukan :D</h3>
+
+            <p>
+                Sepertinya Kapy belum menemukan cerita yang kamu cari.
+                Coba kata kunci lain, ya!
+            </p>
+
+            <button type="button" id="story-empty-reset">
+                Lihat Semua Cerita
+            </button>
+        </div>
+
 
 
 
@@ -184,6 +200,11 @@
                             <button type="button" class="delete-batik-btn" popovertarget="delete-batik-{{ batik.id }}"
                                 title="Hapus motif batik" aria-label="Hapus {{ batik.nama }}">🗑</button>
                             {% endif %}
+
+
+
+
+            
                         </div>
                     </div>
 
@@ -271,6 +292,7 @@
         </dialog>
 
 
+
         <!-- ADD BATIK CARD: ONLY ONCE -->
         {% if user.is_authenticated and user.is_staff %}
         <article class="add-batik-card">
@@ -296,16 +318,7 @@
 
         </article>
         {% endif %}
-
         </div>
-
-
-        <!-- FOOTER COLLECTION -->
-        <div class="story-footer">
-            <span>REBATIK</span>
-            <p>Merawat warisan, merangkai masa depan.</p>
-        </div>
-
     </section>
 
 </main>

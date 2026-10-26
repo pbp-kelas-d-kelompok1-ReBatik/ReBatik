@@ -1,4 +1,3 @@
-
 from django.db import migrations
 
 
@@ -10,7 +9,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RemoveField(
-            model_name='batikstory',
+            model_name='batikmotif',
             name='favorit',
         ),
     ]
