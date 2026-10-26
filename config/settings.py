@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     'upcycling',
     'rewards',
     'batik_story',
+    'donasi',
 ]
 
 MIDDLEWARE = [
