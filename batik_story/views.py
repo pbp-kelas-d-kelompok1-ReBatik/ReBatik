@@ -39,22 +39,6 @@ def delete_story(request,id_story):
 
 
 def story_detail(request, id_story):
-<<<<<<< Updated upstream
     story = get_object_or_404(BatikMotif,id_story=id_story,)
 
     return render(request, "batik_story/story_detail.html",{"story": story} )
-=======
-    story = get_object_or_404(
-        BatikMotif,
-        id_story=id_story
-    )
-
-    return render(
-        request,
-        "story_detail.html",
-        {"story": story}
-    )
->>>>>>> Stashed changes
-
-
-
