@@ -1,5 +1,6 @@
-document.addEventListener("DOMContentLoaded", () => {
+const initializeUpcyclingForm = () => {
     const form = document.getElementById("upcycling-form");
+    if (!form) return;
     const errorSummary = document.getElementById("form-error-summary");
     if (errorSummary) {
         errorSummary.focus({ preventScroll: true });
@@ -13,9 +14,15 @@ document.addEventListener("DOMContentLoaded", () => {
         product: ["Model produk", "Pilih model produk."],
         custom_product: ["Produk yang diinginkan", "Tuliskan produk yang Anda inginkan."],
         quantity: ["Jumlah produk", "Masukkan jumlah antara 1 dan 20."],
-        delivery_method: ["Metode pengiriman", "Pilih metode pengiriman kain."],
-        address: ["Alamat / Lokasi", "Isi alamat atau lokasi penyerahan kain."],
-        whatsapp: ["No. WhatsApp", "Masukkan nomor HP Indonesia yang valid, misalnya +6281234567890."],
+        delivery_method: [
+            "Metode penerimaan produk",
+            "Pilih cara menerima produk jadi.",
+        ],
+        address: [
+            "Alamat / Lokasi Penerimaan Produk",
+            "Isi alamat pengiriman atau lokasi pengambilan produk.",
+        ],
+        whatsapp: ["Nomor WhatsApp", "Masukkan nomor HP Indonesia yang valid, misalnya +6281234567890."],
     };
     const validationTargets = {
         fabric: "#pilih-kain",
@@ -27,6 +34,30 @@ document.addEventListener("DOMContentLoaded", () => {
         address: "#id_address",
         whatsapp: "#id_whatsapp",
     };
+    const deliveryMethodFields = form.querySelectorAll('[name="delivery_method"]');
+    const addressField = document.getElementById("id_address");
+    const addressLabel = document.getElementById("address-label");
+    const addressHelp = document.getElementById("address-help");
+
+    function updateAddressDetails() {
+        const selectedMethod = form.querySelector(
+            'input[name="delivery_method"]:checked'
+        )?.value;
+        const dataPrefix = selectedMethod === "KURIR"
+            ? "kurir"
+            : selectedMethod === "DROP_OFF"
+                ? "dropOff"
+                : "default";
+        const label = addressField.dataset[`${dataPrefix}Label`];
+        const placeholder = addressField.dataset[`${dataPrefix}Placeholder`];
+        const helpText = addressField.dataset[`${dataPrefix}HelpText`];
+        const requiredMessage = addressField.dataset[`${dataPrefix}RequiredMessage`];
+
+        addressLabel.textContent = label;
+        addressField.placeholder = placeholder;
+        addressHelp.textContent = helpText;
+        validationMessages.address = [label, requiredMessage];
+    }
 
     document.querySelectorAll("[data-error-field]").forEach((link) => {
         const target = validationTargets[link.dataset.errorField];
@@ -92,14 +123,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateSummary() {
         fabricSummary.textContent = getRadioLabel("fabric", "Pilih kain");
-        categorySummary.textContent = getRadioLabel("category", "Pilih kategori");
+        categorySummary.textContent = getRadioLabel("category", "Pilih kategori produk");
         const selectedProduct = productField.selectedOptions[0];
         if (productField.value === "LAINNYA") {
             productSummary.textContent = customProductField.value.trim() || "Isi nama produk";
         } else {
             productSummary.textContent = productField.value && selectedProduct
                 ? selectedProduct.textContent
-                : "Pilih model";
+                : "Pilih model produk";
         }
     }
 
@@ -130,7 +161,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const button = document.createElement("button");
             button.type = "button";
             button.className = "upcycling-product-option";
-            button.textContent = option.textContent;
+            button.textContent = item.value === "LAINNYA"
+                ? "Tulis sendiri"
+                : option.textContent;
             button.dataset.productValue = item.value;
             button.setAttribute("aria-pressed", String(item.value === productField.value));
             button.addEventListener("click", () => {
@@ -155,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
         updateCustomProductField();
 
         if (!category) {
-            productOptions.textContent = "Pilih kategori untuk melihat model.";
+            productOptions.textContent = "Pilih kategori produk untuk melihat model produk.";
             updateCustomProductField();
             return;
         }
@@ -182,6 +215,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     fabricFields.forEach((field) => field.addEventListener("change", updateSummary));
+    deliveryMethodFields.forEach((field) => {
+        field.addEventListener("change", updateAddressDetails);
+    });
     categoryFields.forEach((field) => field.addEventListener("change", () => {
         customProductField.value = "";
         loadProducts();
@@ -193,5 +229,10 @@ document.addEventListener("DOMContentLoaded", () => {
         updateCustomProductField();
     });
     customProductField.addEventListener("input", updateSummary);
+    updateAddressDetails();
     loadProducts(true);
-});
+
+};
+
+document.addEventListener("DOMContentLoaded", () => initializeUpcyclingForm());
+document.body.addEventListener("htmx:afterSwap", initializeUpcyclingForm);

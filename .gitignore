@@ -8,5 +8,6 @@ db.sqlite3
 .env.*
 !.env.example
 
-# File ini sengaja dilacak Git untuk deployment: static/css/tailwind.css
+# Generated Tailwind CSS; build locally and in the deployment workflow.
+static/css/tailwind.css
 node_modules/

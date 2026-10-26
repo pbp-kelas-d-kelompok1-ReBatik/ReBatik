@@ -10,20 +10,44 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import os
+import re
 from pathlib import Path
+
+from django.core.exceptions import ImproperlyConfigured
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure--!w@inaziu02bj2#)xlib7cchm24ov#wk@)+mx1o479nym^bg_'
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise ImproperlyConfigured(
+        "SECRET_KEY must be set in the environment or .env file."
+    )
+
+
+def get_environment_bool(name, default="False"):
+    """Read a boolean environment variable and reject ambiguous values."""
+    value = os.getenv(name, default).strip().lower()
+    if value in {"true", "1", "yes"}:
+        return True
+    if value in {"false", "0", "no"}:
+        return False
+    raise ImproperlyConfigured(
+        f"{name} must be set to true/false, 1/0, or yes/no."
+    )
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = get_environment_bool("DEBUG")
+PRODUCTION = get_environment_bool("PRODUCTION")
 
 ALLOWED_HOSTS = [
     "localhost",
@@ -47,6 +71,7 @@ INSTALLED_APPS = [
     'main',
     'marketplace',
     'upcycling',
+    'rewards',
     'batik_story',
     'batik_custom',
 ]
@@ -86,12 +111,55 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Database
+# https://docs.djangoproject.com/en/6.1/ref/settings/#databases
+
+if PRODUCTION:
+    required_database_variables = (
+        "DB_NAME",
+        "DB_USER",
+        "DB_PASSWORD",
+        "DB_HOST",
+        "DB_PORT",
+        "SCHEMA",
+    )
+    missing_database_variables = [
+        name for name in required_database_variables if not os.getenv(name)
+    ]
+    if missing_database_variables:
+        missing_variables = ", ".join(missing_database_variables)
+        raise ImproperlyConfigured(
+            f"Set these environment variables when PRODUCTION=True: "
+            f"{missing_variables}."
+        )
+
+    schema = os.getenv("SCHEMA")
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", schema):
+        raise ImproperlyConfigured(
+            "SCHEMA must be a valid PostgreSQL schema name "
+            "(letters, numbers, and underscores; it cannot start with a number)."
+        )
+
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("DB_NAME"),
+            "USER": os.getenv("DB_USER"),
+            "PASSWORD": os.getenv("DB_PASSWORD"),
+            "HOST": os.getenv("DB_HOST"),
+            "PORT": os.getenv("DB_PORT"),
+            "OPTIONS": {
+                "options": f"-c search_path={schema}"
+            },
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 # Password validation
 # https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
 
