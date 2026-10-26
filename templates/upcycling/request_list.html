@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/upcycling.css' %}">
+{% endblock css %}
+
 {% block content %}
 <section class="relative isolate overflow-hidden px-4 pb-12 pt-10 sm:px-6 sm:pt-12">
     <img
@@ -49,7 +53,7 @@
                 </div>
                 <a
                     href="{% url 'upcycling:request_create' %}"
-                    class="upcycling-button-dark min-h-12 px-6 py-3 font-semibold
+                    class="primary-action-button min-h-12 px-6 py-3 font-semibold
                            focus-visible:outline focus-visible:outline-offset-2
                            focus-visible:outline-[var(--brown)]"
                 >
@@ -372,7 +376,7 @@
 
                         <a
                             href="{% url 'upcycling:request_detail' item.pk %}"
-                            class="upcycling-button-dark col-span-2 min-h-11 px-3 py-2 text-sm
+                            class="primary-action-button col-span-2 min-h-11 px-3 py-2 text-sm
                                    focus-visible:outline focus-visible:outline-offset-2
                                    focus-visible:outline-[var(--gold)]
                                    lg:col-span-1 lg:self-center lg:px-5"
@@ -454,7 +458,7 @@
                 </p>
                 <a
                     href="{% url 'upcycling:request_create' %}"
-                    class="upcycling-button-dark px-6 py-3 font-semibold
+                    class="primary-action-button px-6 py-3 font-semibold
                            focus-visible:outline focus-visible:outline-offset-2
                            focus-visible:outline-[var(--brown)]"
                 >Mulai Upcycling →</a>
