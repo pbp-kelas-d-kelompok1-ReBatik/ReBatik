@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/upcycling.css' %}">
+{% endblock css %}
+
 {% block meta %}
 <link
     rel="preload"
@@ -51,7 +55,7 @@
     <div class="relative mx-auto mb-6 flex max-w-6xl justify-center">
         <a
             href="{% url 'upcycling:request_list' %}"
-            class="upcycling-button-dark px-6 py-2 focus-visible:outline
+            class="primary-action-button px-6 py-2 focus-visible:outline
                    focus-visible:outline-offset-2 focus-visible:outline-[var(--cream-light)]"
         >
             ← Permintaan Saya
@@ -494,7 +498,7 @@
 
         <button
             type="submit"
-            class="upcycling-button-dark min-h-14 w-full px-5 py-4 text-lg font-extrabold leading-normal
+            class="primary-action-button min-h-14 w-full px-5 py-4 text-lg font-extrabold leading-normal
                    focus-visible:outline focus-visible:outline-offset-2
                    focus-visible:outline-[var(--brown)]"
         >
