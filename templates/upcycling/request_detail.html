@@ -146,7 +146,7 @@
                     {% endif %}
                 </section>
                 <img
-                    src="{% static 'img/upcycling/mascot-shirt.webp' %}"
+                    src="{% static 'img/mascot/shirt.webp' %}"
                     alt=""
                     aria-hidden="true"
                     loading="lazy"
@@ -163,7 +163,7 @@
                 <h3 id="summary-heading" class="text-2xl font-bold">Ringkasan</h3>
                 {% if upcycling_request.fabric == 'PARANG' %}
                     <img
-                        src="{% static 'img/upcycling/motif-parang.webp' %}"
+                        src="{% get_media_prefix %}batik/parang.webp"
                         alt="Motif Parang"
                         loading="lazy"
                         decoding="async"
@@ -171,7 +171,7 @@
                     >
                 {% elif upcycling_request.fabric == 'KAWUNG' %}
                     <img
-                        src="{% static 'img/upcycling/motif-kawung.webp' %}"
+                        src="{% get_media_prefix %}batik/kawung.webp"
                         alt="Motif Kawung"
                         loading="lazy"
                         decoding="async"
@@ -179,7 +179,7 @@
                     >
                 {% elif upcycling_request.fabric == 'MEGA_MENDUNG' %}
                     <img
-                        src="{% static 'img/upcycling/motif-mega-mendung.webp' %}"
+                        src="{% get_media_prefix %}batik/megamendung.webp"
                         alt="Motif Mega Mendung"
                         loading="lazy"
                         decoding="async"
@@ -187,7 +187,7 @@
                     >
                 {% else %}
                     <img
-                        src="{% static 'img/upcycling/mascot-question.webp' %}"
+                        src="{% static 'img/mascot/thinking.webp' %}"
                         alt="Kain donasi baru"
                         loading="lazy"
                         decoding="async"

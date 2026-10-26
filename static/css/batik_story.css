@@ -54,7 +54,7 @@ html {
         linear-gradient(0deg,
             rgba(101, 74, 57, .28),
             transparent 45%),
-        url("../img/bgbatik.png");
+        url("../img/bgbatik.webp");
 
     background-position: center;
     background-size: cover;
@@ -977,7 +977,7 @@ html {
             linear-gradient(0deg,
                 rgba(101, 74, 57, .38),
                 transparent 65%),
-            url("../img/bgbatik.png");
+            url("../img/bgbatik.webp");
         background-position: center, center, 62% center;
     }
 
