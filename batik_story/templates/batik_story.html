@@ -113,6 +113,7 @@
         </div>
 
 
+
         <!-- COLLECTION TOOLBAR -->
         <div class="story-toolbar">
             <div>
@@ -120,8 +121,24 @@
                 <p>Temukan keindahan di setiap motif.</p>
             </div>
 
-            <span class="story-count">{{ batiks|length }} Cerita</span>
+            <span class="story-count" id="story-count">
+                {{ batiks|length }} Cerita
+            </span>
         </div>
+
+        <!-- SEARCH BAR -->
+        <div class="story-search">
+            <span class="story-search-icon" aria-hidden="true">⌕</span>
+
+            <input type="search" id="story-search-input" placeholder="Cari nama motif atau asal daerah..."
+                aria-label="Cari motif batik" autocomplete="off">
+
+            <button type="button" id="story-search-clear" aria-label="Hapus pencarian">
+                ×
+            </button>
+        </div>
+
+        <p id="story-search-status" class="story-search-status" aria-live="polite"></p>
 
 
 
@@ -174,9 +191,20 @@
                         {{ batik.deskripsi|default:"Mengenal keindahan motif batik Nusantara."|truncatewords:22 }}
                     </p>
 
-                    <a href="#" class="story-button">
+
+
+                    {% if batik.id_story %}
+                    <button type="button" class="story-button"
+                        data-story-url="{% url 'batik_story:story_detail' batik.id_story %}">
                         Baca Cerita <span>→</span>
-                    </a>
+                    </button>
+                    {% else %}
+                    <button type="button" class="story-button" disabled>
+                        Cerita belum tersedia
+                    </button>
+                    {% endif %}
+
+
 
                 </div>
 
@@ -231,6 +259,16 @@
             {% endfor %}
         </div>
 
+
+        <dialog id="story-modal" class="story-modal">
+            <button type="button" id="story-modal-close" class="story-modal-close" aria-label="Tutup cerita">
+                ×
+            </button>
+
+            <div id="story-modal-content">
+                <p>Memuat cerita batik...</p>
+            </div>
+        </dialog>
 
 
         <!-- ADD BATIK CARD: ONLY ONCE -->

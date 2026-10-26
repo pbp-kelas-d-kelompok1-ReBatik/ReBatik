@@ -1198,13 +1198,6 @@ input[type="file"].form-input {
         justify-content: center;
     }
 
-    .story-search {
-        flex-direction: column;
-    }
-
-    .story-search .button {
-        width: 100%;
-    }
 
     .story-delete-modal {
         align-items: flex-end;
@@ -1261,3 +1254,247 @@ input[type="file"].form-input {
         transform: translateY(-2px);
     }
 }
+    
+/* SEARCH BAR - REBATIK */
+.story-search {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    width: min(100%, 620px);
+    min-height: 54px;
+    margin: 28px auto 10px;
+    padding: 0 18px;
+
+    background: rgba(255, 250, 241, 0.88);
+    border: 1px solid #dfcfb6;
+    border-radius: 999px;
+    box-shadow: 0 5px 18px rgba(79, 54, 32, 0.06);
+    transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.story-search:focus-within {
+    border-color: #c49a50;
+    box-shadow: 0 0 0 3px rgba(196, 154, 80, 0.12);
+}
+
+.story-search-icon {
+    flex-shrink: 0;
+    color: #a17b43;
+    font-size: 23px;
+    line-height: 1;
+}
+
+.story-search input[type="search"] {
+    box-sizing: border-box;
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    height: 48px;
+    padding: 0;
+    border: 0;
+    outline: none;
+    box-shadow: none;
+    background: transparent;
+    color: #594433;
+    font-family: "EB Garamond", serif;
+    font-size: 17px;
+}
+
+.story-search input[type="search"]::placeholder {
+    color: #a59480;
+    opacity: 1;
+}
+
+.story-search #story-search-clear {
+    display: none;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    box-shadow: none;
+    color: #947044;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.story-search #story-search-clear.visible {
+    display: inline-flex;
+}
+
+.story-search #story-search-clear:hover {
+    background: #f0e4d1;
+}
+
+.story-search-status {
+    min-height: 20px;
+    margin: 0 auto 22px;
+    color: #98794f;
+    text-align: center;
+    font-family: "EB Garamond", serif;
+    font-size: 15px;
+}
+
+.story-card.search-hidden {
+    display: none !important;
+}
+
+@media (max-width: 600px) {
+    .story-search {
+        width: 100%;
+        min-height: 48px;
+        margin-top: 20px;
+        padding: 0 14px;
+    }
+
+    .story-search input[type="search"] {
+        height: 44px;
+        font-size: 15px;
+    }
+}
+
+
+/* BACA CERITA MODAL */
+.story-modal {
+    width: min(920px, 92vw);
+    max-width: 920px;
+    max-height: 88vh;
+    padding: 28px;
+    border: 1px solid #dfc99f;
+    border-radius: 20px;
+    background: #fffaf1;
+    color: #654a39;
+    box-shadow: 0 24px 80px rgba(40, 25, 15, 0.3);
+    overflow-y: auto;
+}
+
+.story-modal[open] {
+    margin: auto;
+}
+
+.story-modal::backdrop {
+    background: rgba(38, 25, 18, 0.72);
+    backdrop-filter: blur(4px);
+}
+
+.story-modal-close {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    width: 36px;
+    height: 36px;
+    margin: -8px -8px 12px auto;
+    padding: 0;
+    border: 1px solid #dfcfb6;
+    border-radius: 50%;
+    background: #f4ebdd;
+    color: #654a39;
+    font-size: 25px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.story-modal-loading {
+    padding: 40px 0;
+    text-align: center;
+    color: #947044;
+}
+
+.story-detail {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 28px;
+    align-items: start;
+}
+
+.story-detail-image img {
+    display: block;
+    width: 100%;
+    max-height: 560px;
+    object-fit: cover;
+    border-radius: 13px;
+}
+
+.story-detail-placeholder {
+    display: grid;
+    place-items: center;
+    min-height: 300px;
+    padding: 20px;
+    border-radius: 13px;
+    background: #eee1ce;
+    color: #947044;
+}
+
+.story-detail-location {
+    margin: 0 0 8px;
+    color: #b18a4c;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.story-detail-content h2 {
+    margin: 0 0 22px;
+    font-family: "EB Garamond", serif;
+    font-size: clamp(30px, 4vw, 42px);
+    font-weight: 500;
+}
+
+.story-detail-content h3 {
+    margin: 20px 0 8px;
+    color: #98713d;
+    font-family: "EB Garamond", serif;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.story-detail-content p {
+    color: #78604f;
+    font-size: 17px;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+
+.story-button {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.story-button-disabled {
+    display: block;
+    color: #9b8b7b;
+    cursor: not-allowed;
+}
+
+@media (max-width: 650px) {
+    .story-modal {
+        width: 94vw;
+        padding: 18px;
+    }
+
+    .story-detail {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .story-detail-image img {
+        max-height: 300px;
+    }
+}
+
+
+
+

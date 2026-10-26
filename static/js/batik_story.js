@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", function () {
 
     const typingElement = document.getElementById("typing-text");
@@ -83,4 +82,51 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     );
 
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const modal = document.getElementById("story-modal");
+    const modalContent = document.getElementById("story-modal-content");
+    const closeButton = document.getElementById("story-modal-close");
+
+    if (!modal || !modalContent) {
+        console.error("Modal cerita batik tidak ditemukan.");
+        return;
+    }
+
+    document.querySelectorAll(".story-button[data-story-url]").forEach(function (button) {
+        button.addEventListener("click", async function () {
+            const url = button.dataset.storyUrl;
+
+            modalContent.innerHTML = "<p>Memuat cerita batik...</p>";
+            modal.showModal();
+
+            try {
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error("HTTP " + response.status);
+                }
+
+                modalContent.innerHTML = await response.text();
+            } catch (error) {
+                console.error("Gagal memuat cerita:", error);
+                modalContent.innerHTML =
+                    "<p>Cerita gagal dimuat. Silakan periksa URL dan server Django.</p>";
+            }
+        });
+    });
+
+    if (closeButton) {
+        closeButton.addEventListener("click", function () {
+            modal.close();
+        });
+    }
+
+    modal.addEventListener("click", function (event) {
+        if (event.target === modal) {
+            modal.close();
+        }
+    });
 });
