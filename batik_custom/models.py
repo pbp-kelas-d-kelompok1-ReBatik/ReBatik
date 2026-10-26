@@ -7,6 +7,7 @@ class StyleOptions(models.Model):
     GENDER_CHOICES = [
         ("women", "Women"),
         ("men", "Men"),
+        ("unisex","Unisex")
     ]
 
     name = models.CharField(max_length=100)
