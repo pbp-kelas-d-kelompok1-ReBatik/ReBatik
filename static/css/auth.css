@@ -7,13 +7,17 @@
     font-family: "Garamond", Georgia, serif;
 }
 
+.body{
+    background-color: #d8c6b8;
+}
+
 .auth-card {
     width: 100%;
     max-width: 520px;
     min-height: 620px;
     padding: 70px 75px;
     box-sizing: border-box;
-    background-color: #D2A98F;
+    background-color: #d8c6b8;
     border: 1px solid #2b2b2b;
     border-radius: 4px;
     background-image: url("/static/img/auth-background.png");
