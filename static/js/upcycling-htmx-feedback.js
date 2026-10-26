@@ -32,7 +32,7 @@
         filterParams.delete("page");
 
         document.querySelectorAll(
-            '#request-results nav[aria-label="Navigasi halaman"] a'
+            '#request-results nav[aria-label="Navigasi halaman permintaan"] a'
         ).forEach((link) => {
             const page = new URL(link.href, window.location.href).searchParams.get("page");
             if (!page) return;
