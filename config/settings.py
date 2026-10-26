@@ -109,11 +109,6 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
-
-
-# Database
-# https://docs.djangoproject.com/en/6.1/ref/settings/#databases
-
 if PRODUCTION:
     required_database_variables = (
         "DB_NAME",
@@ -123,9 +118,11 @@ if PRODUCTION:
         "DB_PORT",
         "SCHEMA",
     )
+
     missing_database_variables = [
         name for name in required_database_variables if not os.getenv(name)
     ]
+
     if missing_database_variables:
         missing_variables = ", ".join(missing_database_variables)
         raise ImproperlyConfigured(
@@ -134,6 +131,7 @@ if PRODUCTION:
         )
 
     schema = os.getenv("SCHEMA")
+
     if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", schema):
         raise ImproperlyConfigured(
             "SCHEMA must be a valid PostgreSQL schema name "

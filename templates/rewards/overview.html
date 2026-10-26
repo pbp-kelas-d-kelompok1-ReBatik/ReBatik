@@ -99,6 +99,109 @@
                 </article>
             </div>
 
+            <section class="earning-guide" aria-label="Panduan mendapatkan poin">
+                <details class="earning-guide-details">
+                    <summary>Cara Mendapatkan Poin</summary>
+                    <div class="earning-guide-content">
+                        <p class="earning-guide-intro">Tiga langkah sederhana, lalu poin masuk ke akun Anda setelah diverifikasi.</p>
+
+                        <div class="earning-guide-steps" aria-label="Alur memperoleh poin dari donasi kain">
+                            <article class="earning-guide-step">
+                                <span
+                                    class="earning-guide-step-number relative grid size-10 shrink-0 place-items-center
+                                           overflow-hidden rounded-full font-bold text-[var(--cream-light)]"
+                                    role="img"
+                                    aria-label="Langkah 1"
+                                >
+                                    <img
+                                        src="{% static 'img/upcycling/step-number.svg' %}"
+                                        alt=""
+                                        aria-hidden="true"
+                                        class="absolute left-0 top-0 origin-top-left scale-[0.097] max-w-none"
+                                    >
+                                    <span class="relative">1</span>
+                                </span>
+                                <h3>Donasikan kain</h3>
+                                <p>Ajukan donasi, lalu pilih drop-off atau kurir.</p>
+                            </article>
+                            <span class="earning-guide-step-arrow" aria-hidden="true">→</span>
+                            <article class="earning-guide-step">
+                                <span
+                                    class="earning-guide-step-number relative grid size-10 shrink-0 place-items-center
+                                           overflow-hidden rounded-full font-bold text-[var(--cream-light)]"
+                                    role="img"
+                                    aria-label="Langkah 2"
+                                >
+                                    <img
+                                        src="{% static 'img/upcycling/step-number.svg' %}"
+                                        alt=""
+                                        aria-hidden="true"
+                                        class="absolute left-0 top-0 origin-top-left scale-[0.097] max-w-none"
+                                    >
+                                    <span class="relative">2</span>
+                                </span>
+                                <h3>Verifikasi tim</h3>
+                                <p>Tim ReBatik menimbang dan memeriksa kondisi kain.</p>
+                            </article>
+                            <span class="earning-guide-step-arrow" aria-hidden="true">→</span>
+                            <article class="earning-guide-step">
+                                <span
+                                    class="earning-guide-step-number relative grid size-10 shrink-0 place-items-center
+                                           overflow-hidden rounded-full font-bold text-[var(--cream-light)]"
+                                    role="img"
+                                    aria-label="Langkah 3"
+                                >
+                                    <img
+                                        src="{% static 'img/upcycling/step-number.svg' %}"
+                                        alt=""
+                                        aria-hidden="true"
+                                        class="absolute left-0 top-0 origin-top-left scale-[0.097] max-w-none"
+                                    >
+                                    <span class="relative">3</span>
+                                </span>
+                                <h3>Poin masuk</h3>
+                                <p>Poin dihitung dari berat kain dan masuk setelah verifikasi.</p>
+                            </article>
+                        </div>
+
+                        <section class="earning-guide-points" aria-label="Aturan perolehan poin">
+                            <p class="earning-guide-kicker">ATURAN PEROLEHAN POIN</p>
+                            <ul class="earning-guide-point-list">
+                                <li class="earning-guide-point-row">
+                                    <span>Bonus donasi pertama bulan ini</span>
+                                    <strong>+25</strong>
+                                </li>
+                                <li class="earning-guide-point-row">
+                                    <span>Upcycling selesai</span>
+                                    <strong>+150</strong>
+                                </li>
+                            </ul>
+
+                            <p class="earning-guide-kicker earning-guide-tier-heading">POIN DONASI SESUAI BERAT (DITIMBANG SAAT VERIFIKASI)</p>
+                            <ul class="earning-guide-point-list">
+                                <li class="earning-guide-point-row">
+                                    <span>Kurang dari 0,5 kg</span>
+                                    <strong>+50</strong>
+                                </li>
+                                <li class="earning-guide-point-row">
+                                    <span>0,5–2 kg</span>
+                                    <strong>+100</strong>
+                                </li>
+                                <li class="earning-guide-point-row">
+                                    <span>Lebih dari 2 hingga 5 kg</span>
+                                    <strong>+200</strong>
+                                </li>
+                                <li class="earning-guide-point-row">
+                                    <span>Lebih dari 5 kg</span>
+                                    <strong>+300</strong>
+                                </li>
+                            </ul>
+                            <p class="earning-guide-note">Poin donasi dihitung berdasarkan berat akhir setelah ditimbang dan diverifikasi tim ReBatik. Bonus 25 poin berlaku untuk donasi pertama yang diverifikasi setiap bulan.</p>
+                        </section>
+                    </div>
+                </details>
+            </section>
+
             <div class="donate-fabric-action">
                 <a
                     href="{% url 'marketplace:dropoff' %}"
