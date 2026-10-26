@@ -37,19 +37,13 @@ ReBatik adalah platform yang menghadirkan konsep upcycling dengan mengolah pakai
 
 **Penanggung Jawab:** M. Rezky Syahputra
 
-## Sumber/Dokumentasi Public API
+## Sumber/Dokumentasi API
 
-- **Circularity API**  
-  Digunakan sebagai referensi data terkait circular economy dan pengelolaan limbah tekstil.  
-  https://circularity.id/
+### Public API
 
-- **Batik API**  
-  Digunakan untuk memperoleh data terkait batik, motif, atau informasi budaya batik.  
-  https://batikita.docs.apiary.io/#
-
-- **Alamat API**  
-  Digunakan untuk memperoleh data alamat/lokasi yang mendukung fitur Drop-Off Point.  
-  https://alamat.thecloudalert.com/
+| Layanan | Endpoint / Metode | Kegunaan | Dokumentasi |
+|---|---|---|---|
+| API Wilayah Indonesia (emsifa) | `GET https://www.emsifa.com/api-wilayah-indonesia/v2/provinces.json` dan endpoint turunannya (`regencies`, `districts`, `villages`) | Dropdown provinsi sampai kelurahan beserta kode pos pada form alamat (Drop-Off Point, Donasi, Upcycling Request). | [Dokumentasi emsifa](https://www.emsifa.com/api-wilayah-indonesia/) |
 
 ## Jenis/Peran Pengguna Aplikasi
 
