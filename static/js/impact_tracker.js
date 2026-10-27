@@ -1,217 +1,76 @@
-
-/* ReBatik Impact Tracker - interaksi tanpa dependency eksternal. */
+/* Impact Tracker: animasi angka statistik dan pencarian aktivitas.
+   Halaman tetap lengkap tanpa JavaScript; skrip ini hanya tambahan. */
 (function () {
     "use strict";
 
-    // 1. Animasi angka statistik
-    function initCountUp() {
-        const counters = document.querySelectorAll("[data-count-up]");
-        if (!counters.length) return;
+    // ---------- Count-up angka statistik ----------
+    var reduceMotion = window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-        const formatter = new Intl.NumberFormat("id-ID", {
-            maximumFractionDigits: 0
-        });
-
-        function animateCounter(element) {
-            if (element.dataset.animated === "true") return;
-
-            const raw = (element.textContent || "").trim();
-            const target = Number(raw.replace(/[^0-9-]/g, ""));
-
-            if (!Number.isFinite(target) || target < 0) return;
-
-            element.dataset.animated = "true";
-
-            if (
-                window.matchMedia(
-                    "(prefers-reduced-motion: reduce)"
-                ).matches
-            ) {
-                element.textContent = formatter.format(target);
-                return;
-            }
-
-            const duration = 850;
-            const startTime = performance.now();
-
-            function frame(now) {
-                const progress = Math.min(
-                    (now - startTime) / duration,
-                    1
-                );
-
-                const eased = 1 - Math.pow(1 - progress, 3);
-
-                element.textContent = formatter.format(
-                    Math.round(target * eased)
-                );
-
-                if (progress < 1) {
-                    window.requestAnimationFrame(frame);
-                }
-            }
-
-            window.requestAnimationFrame(frame);
-        }
-
-        if (!("IntersectionObserver" in window)) {
-            counters.forEach(animateCounter);
+    function animateCount(el) {
+        var target = parseInt(el.textContent.replace(/\D/g, ""), 10);
+        if (isNaN(target) || target <= 0) {
             return;
         }
+        var duration = 900;
+        var start = null;
+        el.setAttribute("aria-label", String(target));
 
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        animateCounter(entry.target);
-                        observer.unobserve(entry.target);
-                    }
-                });
-            },
-            { threshold: 0.35 }
-        );
-
-        counters.forEach((counter) => observer.observe(counter));
+        function step(timestamp) {
+            if (start === null) {
+                start = timestamp;
+            }
+            var progress = Math.min((timestamp - start) / duration, 1);
+            var eased = 1 - Math.pow(1 - progress, 3);
+            el.textContent = String(Math.round(target * eased));
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            } else {
+                el.textContent = String(target);
+            }
+        }
+        window.requestAnimationFrame(step);
     }
 
-    // 2. Animasi batang grafik
-    function initChartBars() {
-        const bars = document.querySelectorAll(".impact-chart__seg");
-        if (!bars.length) return;
-
-        bars.forEach((bar) => {
-            const finalHeight = bar.style.height;
-            bar.dataset.finalHeight = finalHeight || "0%";
-            bar.style.height = "0%";
-        });
-
-        function reveal() {
-            bars.forEach((bar, index) => {
-                window.setTimeout(() => {
-                    bar.style.height = bar.dataset.finalHeight;
-                }, Math.min(index * 18, 360));
-            });
-        }
-
-        if (
-            window.matchMedia(
-                "(prefers-reduced-motion: reduce)"
-            ).matches
-        ) {
-            bars.forEach((bar) => {
-                bar.style.height = bar.dataset.finalHeight;
-            });
-            return;
-        }
-
-        if (!("IntersectionObserver" in window)) {
-            reveal();
-            return;
-        }
-
-        const chart = document.querySelector(".impact-chart");
-        if (!chart) return;
-
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries.some((entry) => entry.isIntersecting)) {
-                    reveal();
-                    observer.disconnect();
-                }
-            },
-            { threshold: 0.15 }
-        );
-
-        observer.observe(chart);
+    if (!reduceMotion) {
+        document.querySelectorAll("[data-count-up]").forEach(animateCount);
     }
 
-    // 3. Pencarian aktivitas tanpa reload halaman
-    function initActivitySearch() {
-        const input = document.getElementById("impactActivitySearch");
-        const list = document.getElementById("impactActivityList");
-        const noResults = document.getElementById(
-            "impactActivityNoResults"
-        );
-        const hint = document.querySelector(
-            ".impact-activity-search-hint"
-        );
+    // ---------- Pencarian aktivitas ----------
+    var input = document.getElementById("impactActivitySearch");
+    var list = document.getElementById("impactActivityList");
+    var noResults = document.getElementById("impactActivityNoResults");
+    if (!input || !list) {
+        return;
+    }
 
-        if (!input || !list) return;
+    var items = Array.prototype.slice.call(
+        list.querySelectorAll("[data-activity-item]")
+    );
+    var hint = document.querySelector(".impact-activity-search-hint");
 
-        const items = Array.from(
-            list.querySelectorAll("[data-activity-item]")
-        );
+    function filterActivity() {
+        var query = input.value.trim().toLowerCase();
+        var visible = 0;
 
-        const normalize = (value) =>
-            value.toLocaleLowerCase("id-ID").trim();
-
-        input.addEventListener("input", function () {
-            const query = normalize(input.value);
-            let visible = 0;
-
-            items.forEach((item) => {
-                const matches = normalize(
-                    item.textContent || ""
-                ).includes(query);
-
-                item.hidden = !matches;
-
-                if (matches) visible += 1;
-            });
-
-            if (noResults) {
-                noResults.hidden = visible !== 0;
-            }
-
-            if (hint) {
-                hint.textContent = query
-                    ? `Menampilkan ${visible} dari ${items.length} aktivitas.`
-                    : "Menampilkan seluruh aktivitas terbaru.";
+        items.forEach(function (item) {
+            var match = !query ||
+                item.textContent.toLowerCase().indexOf(query) !== -1;
+            item.hidden = !match;
+            if (match) {
+                visible += 1;
             }
         });
-    }
 
-    // 4. Scroll halus untuk tautan bagian Impact Tracker
-    function initSmoothAnchorLinks() {
-        if (
-            window.matchMedia(
-                "(prefers-reduced-motion: reduce)"
-            ).matches
-        ) {
-            return;
+        if (noResults) {
+            noResults.hidden = visible !== 0;
         }
-
-        document
-            .querySelectorAll('a[href^="#impact-"]')
-            .forEach((link) => {
-                link.addEventListener("click", (event) => {
-                    const target = document.querySelector(
-                        link.getAttribute("href")
-                    );
-
-                    if (!target) return;
-
-                    event.preventDefault();
-
-                    target.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start"
-                    });
-
-                    history.replaceState(
-                        null,
-                        "",
-                        link.getAttribute("href")
-                    );
-                });
-            });
+        if (hint) {
+            hint.textContent = query
+                ? "Menampilkan " + visible + " dari " + items.length + " aktivitas."
+                : "Menampilkan seluruh aktivitas terbaru.";
+        }
     }
 
-    // Jalankan semua fitur setelah HTML siap
-    document.addEventListener("DOMContentLoaded", function () {
-        initCountUp();
-        initChartBars();
-        initActivitySearch();
-        initSmoothAnchorLinks();
-    });
+    input.addEventListener("input", filterActivity);
 })();
