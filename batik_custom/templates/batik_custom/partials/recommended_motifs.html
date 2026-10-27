@@ -1,8 +1,11 @@
+{% load static %}
 {% if motifs %}
 <div class="motif-grid">
     {% for motif in motifs %}
     <article class="motif-card">
-        {% if motif.image %}
+        {% if motif.static_image_path %}
+        <img src="{% static motif.static_image_path %}" alt="{{ motif.name }}" loading="lazy">
+        {% elif motif.image %}
         <img src="{{ motif.image.url }}" alt="{{ motif.name }}" loading="lazy">
         {% else %}
         <div class="motif-placeholder">ReBatik</div>

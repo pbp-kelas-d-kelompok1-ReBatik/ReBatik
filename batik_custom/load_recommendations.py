@@ -47,7 +47,7 @@ def load_recommendations():
             image_name = Path(str(motif_data.get("image", ""))).name
             if image_name:
                 relative_image = Path("recommended_motifs") / image_name
-                absolute_image = Path(settings.MEDIA_ROOT) / relative_image
+                absolute_image = Path(settings.BASE_DIR) / "static" / "img" / "catalog" / relative_image
                 if absolute_image.is_file():
                     defaults["image"] = relative_image.as_posix()
                 else:

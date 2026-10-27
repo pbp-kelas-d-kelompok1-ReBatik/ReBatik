@@ -46,7 +46,14 @@
                     <div class="vibe-card">
                         <span class="vibe-check" aria-hidden="true">✓</span>
 
-                        {% if style.image %}
+                        {% if style.static_image_path %}
+                        <img
+                            class="vibe-image"
+                            src="{% static style.static_image_path %}"
+                            alt="Gaya batik {{ style.name }}"
+                            loading="lazy"
+                        >
+                        {% elif style.image %}
                         <img
                             class="vibe-image"
                             src="{{ style.image.url }}"

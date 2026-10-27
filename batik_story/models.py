@@ -98,6 +98,26 @@ class BatikMotif(models.Model):
     deskripsi=models.TextField()
     gambar=models.ImageField(upload_to='batik/',blank=True, null=True)
 
+    @property
+    def static_gambar_path(self):
+        """Return the static path for bundled examples; user uploads stay in MEDIA."""
+        if not self.gambar:
+            return ""
+        name = self.gambar.name
+        if name.startswith("img/catalog/batik/"):
+            return name
+        if name in {
+            "batik/parang.webp",
+            "batik/parang.png",
+            "batik/ondel2.png",
+            "batik/megamendung.webp",
+            "batik/kawung.webp",
+            "shared/creative1.png",
+            "shared/minimalis1.webp",
+        }:
+            return f"img/catalog/{name}"
+        return ""
+
     def __str__(self):
         return self.nama
 

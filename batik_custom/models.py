@@ -25,6 +25,16 @@ class StyleOptions(models.Model):
     )
     is_active = models.BooleanField(default=True)
 
+    @property
+    def static_image_path(self):
+        """Static path for the bundled style images referenced by existing rows."""
+        if not self.image:
+            return ""
+        name = self.image.name
+        if name.startswith(("style_options/", "shared/")):
+            return f"img/catalog/{name}"
+        return ""
+
     def __str__(self):
         return f"{self.name} ({self.get_gender_display()})"
     
@@ -92,6 +102,12 @@ class RecommendedMotif(models.Model):
     )
     is_active = models.BooleanField(default=True)
 
+    @property
+    def static_image_path(self):
+        if self.image and self.image.name.startswith("recommended_motifs/"):
+            return f"img/catalog/{self.image.name}"
+        return ""
+
     def __str__(self):
         return self.name
 
@@ -150,3 +166,9 @@ class MotifRecommendation(models.Model):
             f"{self.name} - {self.fashion_preference} - "
             f"{self.style.name} - {self.palette.name}"
         )
+
+    @property
+    def static_image_path(self):
+        if self.image and self.image.name.startswith("recommended_motifs/"):
+            return f"img/catalog/{self.image.name}"
+        return ""
