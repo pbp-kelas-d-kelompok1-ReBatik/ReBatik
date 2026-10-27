@@ -142,6 +142,8 @@ Di proyek ReBatik yang sudah ada, buka tab **Environs**, lalu atur variabel beri
 
 Saat `PRODUCTION=True`, semua variabel database di atas, termasuk `SCHEMA`, dan `CLOUDINARY_URL` wajib diisi. Upload gambar memakai Cloudinary di production, sedangkan development lokal tetap memakai `media/`. Nilai boolean `DEBUG` dan `PRODUCTION` yang diterima adalah `true`/`false`, `1`/`0`, atau `yes`/`no` (huruf besar-kecil tidak berpengaruh).
 
+Sebelum media lama di PWS dihapus atau tidak lagi tersedia, jalankan `python manage.py migrate_legacy_media_to_cloudinary --dry-run` untuk memeriksa file lokal lama, lalu jalankan `python manage.py migrate_legacy_media_to_cloudinary` untuk mengunggahnya dan memperbarui referensi database. Perintah migrasi berhenti tanpa mengunggah jika ada file lokal yang hilang. Jalankan saat aplikasi terhubung ke database PWS dan file lama masih tersedia di `MEDIA_ROOT`.
+
 Pertahankan variabel PWS lain yang sudah ada, lalu simpan perubahan dengan **Update All Variables**.
 
 Jangan membagikan nilai rahasia melalui chat atau memasukkannya ke repository. Database SQLite lokal terpisah dari PostgreSQL PWS; datanya tidak otomatis disalin saat database production disiapkan. GitHub Actions menggunakan kunci sementara khusus untuk testing dan `PRODUCTION=False`.

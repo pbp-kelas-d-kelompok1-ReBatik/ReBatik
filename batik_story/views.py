@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from .forms import BatikMotifForm
 from .models import BatikMotif
 # Create your views here.
@@ -17,7 +18,11 @@ def show_batik_story(request):
     }
     return render(request, "batik_story.html",context)
 
+@login_required
 def add_batik(request):
+    if not request.user.is_staff:
+        raise PermissionDenied
+
     if request.method=="POST":
         form=BatikMotifForm(request.POST, request.FILES)
         if form.is_valid():
