@@ -68,9 +68,8 @@ class RecommendedMotif(models.Model):
     FASHION_PREFERENCE_CHOICES = [
         ("Women", "Women"),
         ("Men", "Men"),
-        ("Semua Outfit", "Semua Outfit"),
+        ("Unisex", "Unisex"),
     ]
-
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True)
     image = models.ImageField(

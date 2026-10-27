@@ -1,7 +1,7 @@
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import StyleOptions, StyleProfile, ColorPalette,RecommendedMotif
+from .models import MotifRecommendation, StyleOptions, StyleProfile, ColorPalette,RecommendedMotif
 
 @login_required
 def show_home(request):
@@ -56,28 +56,33 @@ def custom_studio(request):
     return render(request, "batik_custom/custom_studio.html")
 
 
+
 @login_required
 def recommended_motifs(request):
+    preference_raw = request.session.get("fashion_preference", "").strip().lower()
+    preference_map = {
+        "women": "Women",
+        "men": "Men",
+        "unisex": "Unisex",
+        "semua outfit": "Unisex",
+    }
+    preference = preference_map.get(preference_raw)
     style_id = request.session.get("selected_style_id")
     palette_id = request.session.get("selected_palette_id")
-    fashion = request.session.get("fashion_preference", "").strip().lower()
 
-    # Belum memilih semua preferensi? Kembalikan ke tahap yang sesuai.
-    if not fashion:
+    if not preference:
         return redirect("batik_custom:fashion_preference")
-
     if not style_id:
         return redirect("batik_custom:style_quiz")
-
     if not palette_id:
         return redirect("batik_custom:explore_colors")
 
-    motifs = RecommendedMotif.objects.filter(
+    motifs = MotifRecommendation.objects.filter(
         is_active=True,
-        fashion_preference__in=[fashion, "Semua Outfit", "semua outfit"],
-        styles__id=style_id,
-        palettes__id=palette_id,
-    ).distinct()
+        fashion_preference=preference,
+        style_id=style_id,
+        palette_id=palette_id,
+    ).order_by("name")
 
     template = (
         "batik_custom/partials/recommended_motifs.html"
