@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/upcycling.css' %}">
+{% endblock css %}
+
 {% block content %}
 <section id="upcycling-page-content" class="relative overflow-hidden px-4 pb-12 pt-10 sm:px-6 sm:pt-12">
     <header class="relative mx-auto mb-8 max-w-3xl text-center text-[var(--cream-light)]">

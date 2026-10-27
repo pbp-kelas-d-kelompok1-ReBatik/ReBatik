@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/upcycling.css' %}">
+{% endblock css %}
+
 {% block content %}
 <section class="relative isolate overflow-hidden px-4 pb-12 pt-10 sm:px-6 sm:pt-12">
     <img
@@ -49,7 +53,7 @@
                 </div>
                 <a
                     href="{% url 'upcycling:request_create' %}"
-                    class="upcycling-button-dark min-h-12 px-6 py-3 font-semibold
+                    class="primary-action-button min-h-12 px-6 py-3 font-semibold
                            focus-visible:outline focus-visible:outline-offset-2
                            focus-visible:outline-[var(--brown)]"
                 >
@@ -303,7 +307,7 @@
                         <div class="aspect-[1.35] w-full overflow-hidden rounded-xl">
                             {% if item.fabric == "PARANG" %}
                                 <img
-                                    src="{% static 'img/upcycling/motif-parang.webp' %}"
+                                    src="{% get_media_prefix %}batik/parang.webp"
                                     alt="Motif Parang"
                                     loading="lazy"
                                     decoding="async"
@@ -311,7 +315,7 @@
                                 >
                             {% elif item.fabric == "KAWUNG" %}
                                 <img
-                                    src="{% static 'img/upcycling/motif-kawung.webp' %}"
+                                    src="{% get_media_prefix %}batik/kawung.webp"
                                     alt="Motif Kawung"
                                     loading="lazy"
                                     decoding="async"
@@ -319,7 +323,7 @@
                                 >
                             {% elif item.fabric == "MEGA_MENDUNG" %}
                                 <img
-                                    src="{% static 'img/upcycling/motif-mega-mendung.webp' %}"
+                                    src="{% get_media_prefix %}batik/megamendung.webp"
                                     alt="Motif Mega Mendung"
                                     loading="lazy"
                                     decoding="async"
@@ -327,7 +331,7 @@
                                 >
                             {% else %}
                                 <img
-                                    src="{% static 'img/upcycling/mascot-question.webp' %}"
+                                    src="{% static 'img/mascot/thinking.webp' %}"
                                     alt="Kain donasi baru"
                                     loading="lazy"
                                     decoding="async"
@@ -372,7 +376,7 @@
 
                         <a
                             href="{% url 'upcycling:request_detail' item.pk %}"
-                            class="upcycling-button-dark col-span-2 min-h-11 px-3 py-2 text-sm
+                            class="primary-action-button col-span-2 min-h-11 px-3 py-2 text-sm
                                    focus-visible:outline focus-visible:outline-offset-2
                                    focus-visible:outline-[var(--gold)]
                                    lg:col-span-1 lg:self-center lg:px-5"
@@ -442,7 +446,7 @@
                        bg-[#f3ebe1] px-5 py-10 text-center sm:gap-6 sm:px-10 sm:py-16"
             >
                 <img
-                    src="{% static 'img/upcycling/mascot-crying.webp' %}"
+                    src="{% static 'img/mascot/crying.webp' %}"
                     alt="Maskot ReBatik menangis karena belum ada permintaan"
                     loading="lazy"
                     decoding="async"
@@ -454,7 +458,7 @@
                 </p>
                 <a
                     href="{% url 'upcycling:request_create' %}"
-                    class="upcycling-button-dark px-6 py-3 font-semibold
+                    class="primary-action-button px-6 py-3 font-semibold
                            focus-visible:outline focus-visible:outline-offset-2
                            focus-visible:outline-[var(--brown)]"
                 >Mulai Upcycling →</a>

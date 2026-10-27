@@ -138,7 +138,7 @@ class UpcyclingBrowserTests(StaticLiveServerTestCase):
             '[data-status-filter=""]',
         ).click()
         self.wait.until(
-            lambda _browser: set(self.get_result_headings()) == {"Tote Bag", "Pouch"}
+            lambda _browser: self.get_result_headings().count("Pouch") == 2
         )
 
     def test_pagination_url_tracks_live_filter_values(self):
@@ -156,7 +156,7 @@ class UpcyclingBrowserTests(StaticLiveServerTestCase):
 
         pagination_link = self.browser.find_element(
             By.CSS_SELECTOR,
-            '#request-results nav[aria-label="Navigasi halaman"] a',
+            '#request-results nav[aria-label="Navigasi halaman permintaan"] a',
         )
         parsed_url, href, hx_get = self.browser.execute_script(
             """

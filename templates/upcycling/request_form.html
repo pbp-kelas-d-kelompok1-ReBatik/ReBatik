@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/upcycling.css' %}">
+{% endblock css %}
+
 {% block meta %}
 <link
     rel="preload"
@@ -51,7 +55,7 @@
     <div class="relative mx-auto mb-6 flex max-w-6xl justify-center">
         <a
             href="{% url 'upcycling:request_list' %}"
-            class="upcycling-button-dark px-6 py-2 focus-visible:outline
+            class="primary-action-button px-6 py-2 focus-visible:outline
                    focus-visible:outline-offset-2 focus-visible:outline-[var(--cream-light)]"
         >
             ← Permintaan Saya
@@ -211,7 +215,7 @@
                             {{ radio.tag }}
                             {% if radio.data.value == "PARANG" %}
                                 <img
-                                    src="{% static 'img/upcycling/motif-parang.webp' %}"
+                                    src="{% get_media_prefix %}batik/parang.webp"
                                     alt=""
                                     loading="lazy"
                                     decoding="async"
@@ -219,7 +223,7 @@
                                 >
                             {% elif radio.data.value == "KAWUNG" %}
                                 <img
-                                    src="{% static 'img/upcycling/motif-kawung.webp' %}"
+                                    src="{% get_media_prefix %}batik/kawung.webp"
                                     alt=""
                                     loading="lazy"
                                     decoding="async"
@@ -227,7 +231,7 @@
                                 >
                             {% elif radio.data.value == "MEGA_MENDUNG" %}
                                 <img
-                                    src="{% static 'img/upcycling/motif-mega-mendung.webp' %}"
+                                    src="{% get_media_prefix %}batik/megamendung.webp"
                                     alt=""
                                     loading="lazy"
                                     decoding="async"
@@ -236,7 +240,7 @@
                             {% else %}
                                 <div class="grid aspect-[2] place-items-center overflow-hidden bg-[var(--upcycling-soft)]">
                                     <img
-                                        src="{% static 'img/upcycling/mascot-question.webp' %}"
+                                        src="{% static 'img/mascot/thinking.webp' %}"
                                         alt=""
                                         loading="lazy"
                                         decoding="async"
@@ -484,7 +488,7 @@
                 </p>
             </aside>
             <img
-                src="{% static 'img/upcycling/mascot-shirt.webp' %}"
+                src="{% static 'img/mascot/shirt.webp' %}"
                 alt="Maskot ReBatik membawa kain"
                 loading="lazy"
                 decoding="async"
@@ -494,7 +498,7 @@
 
         <button
             type="submit"
-            class="upcycling-button-dark min-h-14 w-full px-5 py-4 text-lg font-extrabold leading-normal
+            class="primary-action-button min-h-14 w-full px-5 py-4 text-lg font-extrabold leading-normal
                    focus-visible:outline focus-visible:outline-offset-2
                    focus-visible:outline-[var(--brown)]"
         >
