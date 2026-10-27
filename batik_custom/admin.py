@@ -7,15 +7,6 @@ from .models import (
     RecommendedMotif,
 )
 
-from django.contrib import admin
-from .models import (
-    StyleOptions,
-    ColorPalette,
-    StyleProfile,
-    FashionPreference,
-    RecommendedMotif,
-)
-
 
 @admin.register(StyleOptions)
 class StyleOptionsAdmin(admin.ModelAdmin):
@@ -47,8 +38,4 @@ class RecommendedMotifAdmin(admin.ModelAdmin):
     list_display = ("name", "is_active")
     list_filter = ("styles", "palettes", "is_active")
     search_fields = ("name",)
-    filter_horizontal = (
-        "styles",
-        "palettes",
-        "fashion_preference",
-    )
+    filter_horizontal = ("styles", "palettes", "fashion_preference")

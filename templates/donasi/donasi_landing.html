@@ -1,0 +1,90 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<title>Donasi Pakaian | ReBatik</title>
+<meta name="description" content="Donasikan pakaian dan kain yang masih layak pakai bersama ReBatik.">
+{% endblock meta %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/donasi.css' %}">
+{% endblock css %}
+
+{% block content %}
+
+<div class="donasi-page">
+
+    <!-- BAGIAN HERO -->
+    <section class="donasi-hero">
+
+        <div class="ornament ornament-top-right"></div>
+        <div class="ornament ornament-left"></div>
+
+        <div class="donasi-hero-content">
+            <p class="donasi-eyebrow">GERAKAN PEDULI LINGKUNGAN</p>
+
+            <h1>Donasi Pakaian</h1>
+
+            <p class="donasi-hero-description">
+                Pakaian yang tidak lagi kamu gunakan masih memiliki
+                nilai. Yuk, donasikan kain dan pakaianmu agar dapat
+                dimanfaatkan kembali, mengurangi limbah tekstil,
+                dan menjadi bagian dari gerakan peduli lingkungan.
+                Satu donasi kecil dapat memberikan perubahan besar.
+            </p>
+        </div>
+
+    </section>
+
+
+    <!-- BAGIAN AJAKAN DONASI -->
+    <section class="donasi-intro">
+
+        <div class="donasi-decoration donasi-decoration-left"></div>
+
+        <div class="donasi-mascot">
+            <img
+                src="{% static 'img/kapy nunjuk.png' %}"
+                alt="Kapy, maskot ReBatik yang mengajak berdonasi"
+                loading="lazy"
+            >
+        </div>
+
+        <div class="donasi-intro-content">
+
+            <div class="donasi-speech-bubble">
+                <h2>
+                    Ayo Donasikan Pakaianmu Sekarang Juga!
+                </h2>
+                <p>
+                    Berikan kesempatan kedua bagi pakaian dan kain
+                    yang sudah tidak terpakai.
+                </p>
+            </div>
+
+            <div class="donasi-actions">
+                <a
+                    href="{% url 'donasi:create' %}"
+                    class="donasi-button"
+                >
+                    Mulai Berdonasi
+                </a>
+
+                <a
+                    href="{% url 'donasi:history' %}"
+                    class="donasi-button donasi-button-secondary"
+                >
+                    Riwayat Donasi
+                </a>
+            </div>
+
+        </div>
+
+        <div class="donasi-decoration donasi-decoration-bottom"></div>
+
+    </section>
+
+</div>
+
+{% endblock content %}

@@ -9,8 +9,18 @@
     <script src="{% static 'js/htmx.min.js' %}" defer></script>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+<<<<<<< HEAD
     {% block meta %}{% endblock meta %}
     {% block css %}{% endblock css %}
+=======
+    
+
+    {% block meta %}
+    {% endblock meta %}
+
+    {% block css %}
+    {% endblock css %}
+>>>>>>> donasi
 </head>
 
 <body>
@@ -45,7 +55,7 @@
                 {% endif %}
                 <a href="{% url 'marketplace:home' %}">MarketPlace</a>
                 <a href="{% url 'rewards:overview' %}">Points and Rewards</a>
-                <a href="#">Donasi Kain</a>
+                <a href="{% url 'donasi:landing' %}">Donasi Kain</a>
                 <a href="{% url 'marketplace:dropoff' %}">Drop-off Point</a>
                 <a href="{% url 'upcycling:request_list' %}">Upcycling Request</a>
                 <a href="{% url 'batik_custom:show_home' %}">Custom Batik</a>
