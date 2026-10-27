@@ -48,6 +48,12 @@ def get_environment_bool(name, default="False"):
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_environment_bool("DEBUG")
 PRODUCTION = get_environment_bool("PRODUCTION")
+CLOUDINARY_URL = os.getenv("CLOUDINARY_URL", "").strip()
+
+if PRODUCTION and not CLOUDINARY_URL:
+    raise ImproperlyConfigured(
+        "CLOUDINARY_URL must be set when PRODUCTION=True."
+    )
 
 ALLOWED_HOSTS = [
     "localhost",
@@ -207,6 +213,19 @@ WHITENOISE_USE_FINDERS = True
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+STORAGES = {
+    "default": {
+        "BACKEND": (
+            "config.storage_backends.CloudinaryMediaStorage"
+            if PRODUCTION
+            else "django.core.files.storage.FileSystemStorage"
+        ),
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
