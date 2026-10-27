@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static marketplace_format %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/marketplace.css' %}">
+{% endblock css %}
+
+{% block content %}
+<section id="marketplace-page-content" class="relative overflow-hidden px-4 pb-12 pt-10 sm:px-6 sm:pt-12">
+    <header class="relative mx-auto mb-8 max-w-3xl text-center text-[var(--cream-light)]">
+        <p class="text-xs uppercase tracking-[0.3em]">Khusus Staff · Marketplace</p>
+        <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">Sembunyikan Produk</h1>
+    </header>
+
+    <div
+        class="mx-auto max-w-2xl rounded-3xl border-2 border-[var(--mp-accent)]
+               bg-[var(--mp-panel)] p-5 text-[var(--brown)] shadow-2xl sm:p-8"
+    >
+        <div class="rounded-2xl border border-[var(--mp-accent)] bg-[var(--mp-surface)] p-5 sm:p-7">
+            <p class="text-sm font-bold uppercase tracking-[0.18em] text-[var(--brown-muted)]">
+                Konfirmasi penyembunyian produk
+            </p>
+            <h2 class="mt-2 text-2xl font-bold sm:text-3xl">{{ product.name }}</h2>
+            <p class="mt-1 text-[var(--brown-muted)]">
+                Motif {{ product.motif }} · {{ product.get_category_display }} · {{ product.price|rupiah }}
+            </p>
+        </div>
+
+        <p class="mt-5 text-center text-base text-[var(--brown-muted)]">
+            Produk ini akan disembunyikan dari katalog publik, tetapi riwayat pesanan yang sudah ada tetap tersimpan dan Anda dapat menampilkannya kembali kapan saja.
+        </p>
+
+        <form
+            method="post"
+            action="{% url 'marketplace:manage_product_delete' product.pk %}"
+            class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center"
+        >
+            {% csrf_token %}
+            <a
+                href="{% url 'marketplace:manage_product_list' %}"
+                class="inline-flex min-h-12 items-center justify-center rounded-xl border-2
+                       border-[var(--brown)] px-6 py-3 font-bold text-[var(--brown)] hover:bg-[var(--mp-summary)]"
+            >
+                Kembali
+            </a>
+            <button
+                type="submit"
+                class="inline-flex min-h-12 items-center justify-center rounded-xl border-2
+                       border-[var(--danger)] bg-[var(--danger)] px-6 py-3 font-bold text-white hover:bg-[var(--danger-hover)]"
+            >
+                Ya, sembunyikan produk
+            </button>
+        </form>
+    </div>
+</section>
+{% endblock content %}
+

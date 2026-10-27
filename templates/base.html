@@ -57,6 +57,12 @@
                 <a href="#">Profile</a>
                 {% endif %}
                 <a href="{% url 'marketplace:home' %}">MarketPlace</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'marketplace:order_list' %}">Pesanan Saya</a>
+                {% endif %}
+                {% if user.is_staff %}
+                <a href="{% url 'marketplace:manage_product_list' %}">Kelola Produk</a>
+                {% endif %}
                 <a href="{% url 'rewards:overview' %}">Points and Rewards</a>
                 <a href="#">Donasi Kain</a>
                 <a href="{% url 'marketplace:dropoff' %}">Drop-off Point</a>
