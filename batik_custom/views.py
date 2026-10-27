@@ -165,13 +165,6 @@ def recommended_motifs(request):
     motifs = by_palette.filter(
         fashion_preference__name__in=matching_preferences
     ).distinct().order_by("name")
-
-    print("=== DEBUG RECOMMENDATION ===")
-    print("Preference:", preference)
-    print("Style ID:", style_id)
-    print("Palette ID:", palette_id)
-    print("Motif cocok:", motifs.count())
-
     template = (
         "batik_custom/partials/recommended_motifs.html"
         if request.headers.get("HX-Request") == "true"
