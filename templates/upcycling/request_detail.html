@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/upcycling.css' %}">
+{% endblock css %}
+
 {% block content %}
 <section id="upcycling-page-content" class="relative overflow-hidden px-4 pb-12 pt-8 sm:px-6 sm:pt-10">
     <img
@@ -142,7 +146,7 @@
                     {% endif %}
                 </section>
                 <img
-                    src="{% static 'img/upcycling/mascot-shirt.webp' %}"
+                    src="{% static 'img/mascot/shirt.webp' %}"
                     alt=""
                     aria-hidden="true"
                     loading="lazy"
@@ -159,7 +163,7 @@
                 <h3 id="summary-heading" class="text-2xl font-bold">Ringkasan</h3>
                 {% if upcycling_request.fabric == 'PARANG' %}
                     <img
-                        src="{% static 'img/upcycling/motif-parang.webp' %}"
+                        src="{% get_media_prefix %}batik/parang.webp"
                         alt="Motif Parang"
                         loading="lazy"
                         decoding="async"
@@ -167,7 +171,7 @@
                     >
                 {% elif upcycling_request.fabric == 'KAWUNG' %}
                     <img
-                        src="{% static 'img/upcycling/motif-kawung.webp' %}"
+                        src="{% get_media_prefix %}batik/kawung.webp"
                         alt="Motif Kawung"
                         loading="lazy"
                         decoding="async"
@@ -175,7 +179,7 @@
                     >
                 {% elif upcycling_request.fabric == 'MEGA_MENDUNG' %}
                     <img
-                        src="{% static 'img/upcycling/motif-mega-mendung.webp' %}"
+                        src="{% get_media_prefix %}batik/megamendung.webp"
                         alt="Motif Mega Mendung"
                         loading="lazy"
                         decoding="async"
@@ -183,7 +187,7 @@
                     >
                 {% else %}
                     <img
-                        src="{% static 'img/upcycling/mascot-question.webp' %}"
+                        src="{% static 'img/mascot/thinking.webp' %}"
                         alt="Kain donasi baru"
                         loading="lazy"
                         decoding="async"
@@ -240,7 +244,7 @@
                 type="button"
                 disabled
                 title="Kontak WhatsApp tim belum tersedia"
-                class="upcycling-button-dark min-h-12 w-full cursor-not-allowed px-5 py-3
+                class="primary-action-button min-h-12 w-full cursor-not-allowed px-5 py-3
                        font-bold opacity-60
                        sm:w-auto"
             >

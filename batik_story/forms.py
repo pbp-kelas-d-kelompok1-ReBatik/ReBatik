@@ -46,7 +46,9 @@ class SignUpForm(UserCreationForm):
             "autocomplete": "new-password",
         })
     )
+from .models import BatikMotif
 
+class BatikMotifForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ("username", "password1", "password2")
@@ -63,7 +65,7 @@ class DonasiKainForm(forms.ModelForm):
             "whatsapp",
             "email",
             "address",
-            "city",
+                                                                                                                                                                                              "city",
             "item_name",
             "donation_type",
             "clothing_category",
@@ -125,3 +127,43 @@ class DonasiKainForm(forms.ModelForm):
             )
 
         return photo
+        model = BatikMotif
+        fields = [
+            "nama",
+            "asal",
+            "gambar",
+            "deskripsi",
+            "filosofi",
+        ]
+
+        labels = {
+            "nama": "Nama Motif Batik",
+            "asal": "Asal Daerah",
+            "gambar": "Foto Motif Batik",
+            "deskripsi": "Deskripsi Singkat",
+            "filosofi": "Filosofi dan Makna",
+        }
+
+        widgets = {
+            "nama": forms.TextInput(attrs={
+                "class": "form-input",
+                "placeholder": "Contoh: Batik Kawung",
+            }),
+            "asal": forms.Select(attrs={
+                "class": "form-input",
+            }),
+            "gambar": forms.ClearableFileInput(attrs={
+                "class": "form-input",
+                "accept": "image/*",
+            }),
+            "deskripsi": forms.Textarea(attrs={
+                "class": "form-input",
+                "placeholder": "Ceritakan deskripsi motif batik...",
+                "rows": 3,
+            }),
+            "filosofi": forms.Textarea(attrs={
+                "class": "form-input",
+                "placeholder": "Jelaskan filosofi dan makna motif...",
+                "rows": 5,
+            }),
+        }

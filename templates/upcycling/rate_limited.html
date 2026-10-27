@@ -1,4 +1,9 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/upcycling.css' %}">
+{% endblock css %}
 
 {% block content %}
 <section class="px-4 py-12 sm:px-6">
@@ -11,7 +16,7 @@
         </p>
         <a
             href="{% url 'upcycling:request_list' %}"
-            class="upcycling-button-dark mt-6 inline-flex min-h-11 items-center px-5 py-2 font-semibold"
+            class="primary-action-button mt-6 inline-flex min-h-11 items-center px-5 py-2 font-semibold"
         >Kembali ke daftar permintaan</a>
     </div>
 </section>
