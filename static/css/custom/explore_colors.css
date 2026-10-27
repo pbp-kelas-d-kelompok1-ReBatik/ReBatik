@@ -1,6 +1,6 @@
 @font-face {
     font-family: "ReBatik Garamond";
-    src: url("static/font/Garamond.ttf") format("truetype");
+    src: url("../../font/Garamond.ttf") format("truetype");
     font-display: swap;
 }
 
