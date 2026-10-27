@@ -52,15 +52,20 @@ def restore_legacy_preferences(apps, schema_editor):
                 "Cannot restore multiple fashion preferences to the legacy "
                 f"single-value field on RecommendedMotif {motif.pk}."
             )
-        if preference_names:
-            legacy_value = LEGACY_PREFERENCE_NAMES.get(preference_names[0])
-            if legacy_value is None:
-                raise RuntimeError(
-                    "Unknown fashion preference while restoring "
-                    f"RecommendedMotif {motif.pk}: {preference_names[0]!r}"
-                )
-            motif.fashion_preference = legacy_value
-            motif.save(using=database, update_fields=["fashion_preference"])
+        if not preference_names:
+            raise RuntimeError(
+                "Cannot restore an empty fashion preference relation to the "
+                f"legacy field on RecommendedMotif {motif.pk}."
+            )
+
+        legacy_value = LEGACY_PREFERENCE_NAMES.get(preference_names[0])
+        if legacy_value is None:
+            raise RuntimeError(
+                "Unknown fashion preference while restoring "
+                f"RecommendedMotif {motif.pk}: {preference_names[0]!r}"
+            )
+        motif.fashion_preference = legacy_value
+        motif.save(using=database, update_fields=["fashion_preference"])
 
 
 class Migration(migrations.Migration):
