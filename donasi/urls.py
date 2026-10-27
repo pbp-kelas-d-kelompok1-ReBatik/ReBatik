@@ -5,7 +5,7 @@ from . import views
 app_name = "donasi"
 
 urlpatterns = [
-    path("", views.donasi_landing, name="landing"),
-    path("form/", views.donasi_create, name="create"),
-    path("riwayat/", views.donasi_history, name="history"),
+    path("", views.landing, name="landing"),
+    path("form/", views.create, name="create"),
+    path("riwayat/", views.history, name="history"),
 ]
