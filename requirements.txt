@@ -1,5 +1,6 @@
 asgiref==3.12.1
 Django==5.2.17
+cloudinary==1.46.3
 gunicorn==26.2.0
 pillow==12.3.0
 python-dotenv==1.2.4

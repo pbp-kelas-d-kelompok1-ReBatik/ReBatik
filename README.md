@@ -138,8 +138,9 @@ Di proyek ReBatik yang sudah ada, buka tab **Environs**, lalu atur variabel beri
 - `DEBUG=False` dan `PRODUCTION=True`.
 - `DB_NAME`, `DB_HOST`, `DB_PORT`, `DB_USER`, dan `DB_PASSWORD`: gunakan kredensial database dari ITF.
 - `SCHEMA=tugas_kelompok`.
+- `CLOUDINARY_URL`: salin nilai URL API dari Cloudinary Console untuk menyimpan foto unggahan. Simpan hanya di Environs PWS atau `.env` lokal; jangan commit nilainya.
 
-Saat `PRODUCTION=True`, semua variabel database di atas, termasuk `SCHEMA`, wajib diisi. Nilai boolean `DEBUG` dan `PRODUCTION` yang diterima adalah `true`/`false`, `1`/`0`, atau `yes`/`no` (huruf besar-kecil tidak berpengaruh).
+Saat `PRODUCTION=True`, semua variabel database di atas, termasuk `SCHEMA`, dan `CLOUDINARY_URL` wajib diisi. Upload gambar memakai Cloudinary di production, sedangkan development lokal tetap memakai `media/`. Nilai boolean `DEBUG` dan `PRODUCTION` yang diterima adalah `true`/`false`, `1`/`0`, atau `yes`/`no` (huruf besar-kecil tidak berpengaruh).
 
 Pertahankan variabel PWS lain yang sudah ada, lalu simpan perubahan dengan **Update All Variables**.
 
