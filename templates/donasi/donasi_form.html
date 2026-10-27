@@ -1,0 +1,252 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<title>Form Donasi | ReBatik</title>
+{% endblock meta %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/donasi.css' %}">
+{% endblock css %}
+
+{% block content %}
+
+<div class="donasi-form-page">
+
+    <div class="donasi-form-card">
+
+        <div class="donasi-form-heading">
+            <h1>Form Donasi</h1>
+            <p>
+                Lengkapi informasi berikut untuk mendonasikan
+                pakaian atau kainmu.
+            </p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="donasi-alert {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form
+            method="post"
+            enctype="multipart/form-data"
+            class="donasi-form"
+            id="donasiForm"
+        >
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="donasi-alert error">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <!-- DATA DONATUR -->
+            <fieldset class="donasi-fieldset">
+                <legend>Informasi Donatur</legend>
+
+                <div class="donasi-field">
+                    <label for="{{ form.donor_name.id_for_label }}">
+                        Nama Donatur
+                    </label>
+                    {{ form.donor_name }}
+                    {{ form.donor_name.errors }}
+                </div>
+
+                <div class="donasi-field">
+                    <label for="{{ form.whatsapp.id_for_label }}">
+                        Nomor WhatsApp
+                    </label>
+                    {{ form.whatsapp }}
+                    {{ form.whatsapp.errors }}
+                </div>
+
+                <div class="donasi-field">
+                    <label for="{{ form.email.id_for_label }}">
+                        E-mail
+                    </label>
+                    {{ form.email }}
+                    {{ form.email.errors }}
+                </div>
+
+                <div class="donasi-field">
+                    <label for="{{ form.address.id_for_label }}">
+                        Alamat
+                    </label>
+                    {{ form.address }}
+                    {{ form.address.errors }}
+                </div>
+
+                <div class="donasi-field">
+                    <label for="{{ form.city.id_for_label }}">
+                        Kota/Kabupaten
+                    </label>
+                    {{ form.city }}
+                    {{ form.city.errors }}
+                </div>
+            </fieldset>
+
+
+            <!-- DETAIL BARANG -->
+            <fieldset class="donasi-fieldset">
+                <legend>Detail Barang</legend>
+
+                <div class="donasi-field">
+                    <label for="{{ form.item_name.id_for_label }}">
+                        Nama Barang
+                    </label>
+                    {{ form.item_name }}
+                    {{ form.item_name.errors }}
+                </div>
+
+                <div class="donasi-field">
+                    <span class="donasi-label">Jenis Donasi</span>
+                    <div class="donasi-radio-group">
+                        {% for choice in form.donation_type %}
+                            <label class="donasi-radio-option">
+                                {{ choice.tag }}
+                                <span>{{ choice.choice_label }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    {{ form.donation_type.errors }}
+                </div>
+
+                <div class="donasi-field">
+                    <span class="donasi-label">Kategori Pakaian</span>
+                    <div class="donasi-radio-group donasi-radio-vertical">
+                        {% for choice in form.clothing_category %}
+                            <label class="donasi-radio-option">
+                                {{ choice.tag }}
+                                <span>{{ choice.choice_label }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    {{ form.clothing_category.errors }}
+                </div>
+
+                <div class="donasi-field">
+                    <label for="{{ form.quantity.id_for_label }}">
+                        Jumlah Barang (pcs)
+                    </label>
+                    {{ form.quantity }}
+                    {{ form.quantity.errors }}
+                </div>
+
+                <div class="donasi-field">
+                    <span class="donasi-label">Kondisi Barang</span>
+                    <div class="donasi-radio-group donasi-radio-vertical">
+                        {% for choice in form.condition %}
+                            <label class="donasi-radio-option">
+                                {{ choice.tag }}
+                                <span>{{ choice.choice_label }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    {{ form.condition.errors }}
+                </div>
+
+                <div class="donasi-field">
+                    <label for="{{ form.description.id_for_label }}">
+                        Deskripsi Barang
+                    </label>
+                    {{ form.description }}
+                    {{ form.description.errors }}
+                    <small>
+                        Jelaskan warna, motif, bahan, ukuran,
+                        dan kondisi barang.
+                    </small>
+                </div>
+
+                <div class="donasi-field">
+                    <label for="{{ form.photo.id_for_label }}">
+                        Foto Barang
+                    </label>
+
+                    <div class="donasi-photo-preview" id="photoPreview">
+                        <span id="photoPlaceholder">
+                            Pilih foto barang yang akan didonasikan
+                        </span>
+
+                        <img
+                            id="photoPreviewImage"
+                            alt="Pratinjau foto barang"
+                            hidden
+                        >
+                    </div>
+
+                    {{ form.photo }}
+                    {{ form.photo.errors }}
+
+                    <small>Format gambar yang didukung browser, maksimal 5 MB.</small>
+                </div>
+            </fieldset>
+
+
+            <!-- PENGIRIMAN / PENGAMBILAN -->
+            <fieldset class="donasi-fieldset">
+                <legend>Pengiriman/Pengambilan Barang</legend>
+
+                <div class="donasi-field">
+                    <span class="donasi-label">Metode Donasi</span>
+                    <div class="donasi-radio-group donasi-radio-vertical">
+                        {% for choice in form.donation_method %}
+                            <label class="donasi-radio-option">
+                                {{ choice.tag }}
+                                <span>{{ choice.choice_label }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    {{ form.donation_method.errors }}
+                </div>
+
+                <div class="donasi-field">
+                    <label for="{{ form.pickup_date.id_for_label }}">
+                        Tanggal Pengambilan/Pengiriman
+                    </label>
+                    {{ form.pickup_date }}
+                    {{ form.pickup_date.errors }}
+                </div>
+
+                <div class="donasi-field">
+                    <label for="{{ form.additional_notes.id_for_label }}">
+                        Deskripsi Tambahan
+                    </label>
+                    {{ form.additional_notes }}
+                    {{ form.additional_notes.errors }}
+                </div>
+            </fieldset>
+
+            <div class="donasi-form-actions">
+                <a
+                    href="{% url 'donasi:landing' %}"
+                    class="donasi-button donasi-button-outline"
+                >
+                    Kembali
+                </a>
+
+                <button
+                    type="submit"
+                    class="donasi-button"
+                    id="donasiSubmit"
+                >
+                    Kirim Donasi
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'js/donasi.js' %}" defer></script>
+{% endblock scripts %}
