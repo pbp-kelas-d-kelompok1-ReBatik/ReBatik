@@ -1,0 +1,23 @@
+{% if motifs %}
+<div class="motif-grid">
+    {% for motif in motifs %}
+    <article class="motif-card">
+        {% if motif.image %}
+        <img src="{{ motif.image.url }}" alt="{{ motif.name }}" loading="lazy">
+        {% else %}
+        <div class="motif-placeholder">ReBatik</div>
+        {% endif %}
+        <div class="motif-card-content">
+            <h3>{{ motif.name }}</h3>
+            <p>{{ motif.description }}</p>
+            <a href="#" class="motif-select">Pilih Motif</a>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<div class="motif-empty">
+    <h3>Belum ada rekomendasi motif</h3>
+    <p>Coba pilih gaya dan warna lainnya, atau periksa koleksi motif di admin.</p>
+</div>
+{% endif %}

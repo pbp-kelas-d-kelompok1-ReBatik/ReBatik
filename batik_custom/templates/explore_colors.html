@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+{% block meta %}
+<meta name="description" content="Pilih palet warna batik favoritmu di ReBatik.">
+{% endblock meta %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/custom/explore_colors.css' %}">
+{% endblock css %}
+{% block content %}
+<section class="colors-page">
+    <div class="colors-panel">
+        <header class="colors-header">
+            <p class="colors-step">LANGKAH 3 DARI 3</p>
+            <div class="colors-divider">
+                <span></span>
+                <b>✿</b>
+                <span></span>
+            </div>
+            <h1>Explore My Colors</h1>
+            <div class="colors-underline"></div>
+            <p class="colors-subtitle">Pilih palet warna yang paling kamu sukai.</p>
+        </header>
+        <form method="POST" action="{% url 'batik_custom:explore_colors' %}">
+            {% csrf_token %}
+            <div class="colors-grid">
+                {% for palette in palettes %}
+                <label class="palette-option">
+                    <input type="radio" name="palette" value="{{ palette.id }}" {% if palette.id|stringformat:"s" == selected_palette|stringformat:"s" %}checked{% endif %} required>
+                    <div class="palette-card">
+                        <span class="palette-check" aria-hidden="true">✓</span>
+                        {% if palette.image %}
+                        <img class="palette-image" src="{{ palette.image.url }}" alt="Palet batik {{ palette.name }}" loading="lazy">
+                        {% else %}
+                        <div class="palette-image palette-placeholder">
+                            <span>✿</span>
+                            <p>{{ palette.name }}</p>
+                        </div>
+                        {% endif %}
+                        <div class="palette-info">
+                            <h2>{{ palette.name }}</h2>
+                            <p class="palette-description">{{ palette.description }}</p>
+                            {% if palette.colors %}
+                            <div class="palette-swatches">
+                                {% for color in palette.colors %}
+                                <span class="palette-swatch" style="--swatch-color: {{ color }};" title="{{ color }}"></span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </label>
+                {% empty %}
+                <div class="palette-empty">
+                    <p>Belum ada palet warna yang tersedia.</p>
+                    <p>Tambahkan ColorPalette melalui Django Admin.</p>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="colors-actions">
+                <a class="colors-back" href="{% url 'batik_custom:style_quiz' %}">
+                    <span aria-hidden="true">←</span>
+                    Kembali
+                </a>
+                <button type="submit" class="colors-next">
+                    <span>Lanjutkan</span>
+                    <span aria-hidden="true">→</span>
+                </button>
+            </div>
+        </form>
+        <footer class="colors-footer">
+            <span>THE BEAUTY OF HERITAGE</span>
+            <span>Est. ReBatik 2026</span>
+        </footer>
+    </div>
+</section>
+{% endblock content %}

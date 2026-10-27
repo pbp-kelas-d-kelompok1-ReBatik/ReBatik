@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<meta name="description" content="Temukan gaya batik yang sesuai dengan kepribadianmu bersama Kapy di ReBatik.">
+{% endblock meta %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/custom/home_custom.css' %}">
+{% endblock css %}
+
+{% block content %}
+<section class="kapy-home" id="kapyHome">
+    <div class="kapy-home__ornament kapy-home__ornament--top" aria-hidden="true"></div>
+    <div class="kapy-home__ornament kapy-home__ornament--bottom" aria-hidden="true"></div>
+
+    <div class="kapy-home__content">
+        <p class="kapy-home__eyebrow" data-reveal style="--d:0">ReBatik · Style Discovery</p>
+
+        <h1 class="kapy-home__title" data-reveal style="--d:1">
+            <span class="kapy-home__flower" aria-hidden="true">✿</span>
+            <span class="line">Discover</span>
+            <span class="line">Your Style</span>
+            <span class="line line--accent">in Every Story</span>
+        </h1>
+
+        <p class="kapy-home__description" data-reveal style="--d:2">
+            Temukan gaya yang merefleksikan kepribadianmu
+            melalui keindahan batik Nusantara.
+        </p>
+
+        <div class="kapy-home__actions" data-reveal style="--d:3">
+            <a href="{% url 'batik_custom:fashion_preference' %}" class="kapy-home__button">
+                <span>Mulai Custom</span>
+                <span class="kapy-home__arrow" aria-hidden="true">→</span>
+            </a>
+            <a href="#kapyFeatures" class="kapy-home__link">Lihat yang bisa kamu lakukan</a>
+        </div>
+
+        <div class="kapy-home__features" id="kapyFeatures" data-reveal style="--d:4">
+            <div class="kapy-home__feature">
+                <span class="kapy-home__feature-icon" aria-hidden="true">✿</span>
+                <div>
+                    <h2>Personalisasi Gaya</h2>
+                    <p>Temukan style yang sesuai denganmu.</p>
+                </div>
+            </div>
+            <div class="kapy-home__feature">
+                <span class="kapy-home__feature-icon" aria-hidden="true">▧</span>
+                <div>
+                    <h2>Koleksi Batik</h2>
+                    <p>Jelajahi motif Nusantara.</p>
+                </div>
+            </div>
+            <div class="kapy-home__feature">
+                <span class="kapy-home__feature-icon" aria-hidden="true">♧</span>
+                <div>
+                    <h2>Inspirasi Budaya</h2>
+                    <p>Kenali cerita di balik motif.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="kapy-home__visual" data-reveal style="--d:2">
+        <div class="kapy-home__scene" id="kapyScene" data-mood="klasik">
+            <img class="kapy-home__background" src="{% static 'images/batik-hero.jpg' %}" alt="">
+            <div class="kapy-home__pattern" aria-hidden="true"></div>
+            <div class="kapy-home__scene-overlay"></div>
+
+            <div class="kapy-home__speech" aria-live="polite">
+                <span class="kapy-home__speech-sparkle" aria-hidden="true">✦</span>
+                <p id="kapyText">Hai! Aku Kapy. Temanmu untuk menemukan gaya batik yang paling cocok dengan kamu!</p>
+            </div>
+
+            <div class="kapy-home__mascot-wrap" id="kapyMascot">
+                <img class="kapy-home__mascot" src="{% static 'img/upcycling/mascot-shirt.webp' %}"
+                    alt="Kapy, teman eksplorasi batik ReBatik">
+                <span class="kapy-home__shadow" aria-hidden="true"></span>
+            </div>
+
+            <div class="kapy-home__chips" role="group" aria-label="Pilih suasana gaya">
+                <button type="button" class="kapy-home__chip is-active" data-mood="klasik">Klasik</button>
+                <button type="button" class="kapy-home__chip" data-mood="modern">Modern</button>
+                <button type="button" class="kapy-home__chip" data-mood="santai">Santai</button>
+                <button type="button" class="kapy-home__chip" data-mood="elegan">Elegan</button>
+            </div>
+        </div>
+
+        <div class="kapy-home__caption">
+            <span>Coba pilih suasana gayamu</span>
+            <span>Kapy · ReBatik</span>
+        </div>
+    </div>
+</section>
+
+<script>
+    (function () {
+        var scene = document.getElementById('kapyScene');
+        var text = document.getElementById('kapyText');
+        var home = document.getElementById('kapyHome');
+        if (!scene || !text) return;
+
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var lines = {
+            klasik: 'Wah, kamu tipe yang suka yang abadi, ya? Aku kasih tahu satu rahasia: parang dan kawung itu nggak pernah ketinggalan zaman. Tampil rapi, tapi tetap ada ceritanya.',
+            modern: 'Suka yang simpel tapi nggak membosankan? Aku juga! Coba potongan bersih dengan satu motif yang berani. Batik jadi terasa segar, dan enak dipakai tiap hari.',
+            santai: 'Santai itu bukan berarti asal, lho. Pilih motif yang ceria dan bahan yang adem, jadi kamu tetap nyaman dan tetap punya karakter. Aku bantu cariin, yuk!',
+            elegan: 'Kamu memperhatikan detail, ya. Warna sogan yang hangat dan mega mendung yang tenang itu pas banget buat kesan berkelas yang nggak berlebihan.'
+        };
+        var timer;
+
+        function type(str) {
+            clearInterval(timer);
+            if (reduce) { text.textContent = str; return; }
+            var i = 0;
+            text.textContent = '';
+            timer = setInterval(function () {
+                text.textContent = str.slice(0, ++i);
+                if (i >= str.length) clearInterval(timer);
+            }, 18);
+        }
+
+        document.querySelectorAll('.kapy-home__chip').forEach(function (chip) {
+            chip.addEventListener('click', function () {
+                document.querySelectorAll('.kapy-home__chip').forEach(function (c) { c.classList.remove('is-active'); });
+                chip.classList.add('is-active');
+                scene.dataset.mood = chip.dataset.mood;
+                type(lines[chip.dataset.mood]);
+                var m = document.getElementById('kapyMascot');
+                m.classList.remove('is-hop'); void m.offsetWidth; m.classList.add('is-hop');
+            });
+        });
+
+        if (!reduce && window.matchMedia('(hover: hover)').matches) {
+            home.addEventListener('mousemove', function (e) {
+                var r = home.getBoundingClientRect();
+                scene.style.setProperty('--mx', ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
+                scene.style.setProperty('--my', ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
+            });
+        }
+    })();
+</script>
+{% endblock content %}

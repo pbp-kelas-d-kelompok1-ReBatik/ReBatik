@@ -1,0 +1,444 @@
+@font-face {
+    font-family: "ReBatik Garamond";
+    src: url("static/font/Garamond.ttf") format("truetype");
+    font-display: swap;
+}
+
+.colors-page {
+    --color-brown: #58351f;
+    --color-terracotta: #a75f35;
+    --color-gold: #c9954e;
+    --color-cream: #fff4e4;
+    --color-border: #e8c49d;
+
+    position: relative;
+    isolation: isolate;
+    padding: 34px 24px;
+    overflow: hidden;
+    color: var(--color-brown);
+    background: linear-gradient(
+        120deg,
+        #ad8069 0%,
+        #c99b7c 50%,
+        #a87860 100%
+    );
+    font-family: "ReBatik Garamond", Garamond, Georgia, serif;
+}
+
+.colors-page *,
+.colors-page *::before,
+.colors-page *::after {
+    box-sizing: border-box;
+}
+
+.colors-panel {
+    position: relative;
+    z-index: 0;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px clamp(18px, 4vw, 48px) 22px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 22px;
+    background:
+        radial-gradient(
+            ellipse at 15% 10%,
+            rgba(255, 250, 235, 0.98),
+            transparent 50%
+        ),
+        linear-gradient(135deg, #fff1dc, #f2d1ad);
+    box-shadow: 0 18px 45px rgba(75, 42, 24, 0.12);
+}
+
+.colors-panel::before,
+.colors-panel::after {
+    position: absolute;
+    z-index: -1;
+    color: rgba(160, 99, 54, 0.12);
+    font-size: clamp(100px, 16vw, 200px);
+    line-height: 1;
+    pointer-events: none;
+}
+
+.colors-panel::before {
+    content: "❋";
+    top: 20px;
+    left: -45px;
+}
+
+.colors-panel::after {
+    content: "❋";
+    right: -50px;
+    bottom: 20px;
+}
+
+.colors-header {
+    margin: 0 auto 28px;
+    text-align: center;
+}
+
+.colors-step {
+    margin: 0 0 10px;
+    color: #a25d34;
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+}
+
+.colors-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 5px;
+    color: var(--color-gold);
+}
+
+.colors-divider span {
+    width: 70px;
+    height: 1px;
+    background: var(--color-gold);
+}
+
+.colors-divider b {
+    font-size: 22px;
+    font-weight: normal;
+}
+
+.colors-header h1 {
+    margin: 0;
+    color: #482719;
+    font-size: clamp(34px, 4.5vw, 52px);
+    font-weight: 500;
+    line-height: 1.1;
+}
+
+.colors-underline {
+    width: 62px;
+    height: 3px;
+    margin: 11px auto;
+    border-radius: 10px;
+    background: var(--color-gold);
+}
+
+.colors-subtitle {
+    margin: 0;
+    color: #806047;
+    font-size: 17px;
+    line-height: 1.5;
+}
+
+/* Palet */
+.colors-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.palette-option {
+    position: relative;
+    display: block;
+    min-width: 0;
+    cursor: pointer;
+}
+
+.palette-option input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.palette-card {
+    position: relative;
+    height: 100%;
+    padding: 10px;
+    overflow: hidden;
+    border: 1.5px solid var(--color-border);
+    border-radius: 15px;
+    background: rgba(255, 251, 244, 0.88);
+    box-shadow: 0 4px 12px rgba(87, 51, 31, 0.035);
+    transition:
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.palette-option:hover .palette-card {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(87, 51, 31, 0.1);
+}
+
+.palette-option input:checked + .palette-card {
+    border: 2px solid #b95e26;
+    background: #fff8ed;
+    box-shadow: 0 0 0 3px rgba(185, 94, 38, 0.1);
+}
+
+.palette-option input:focus-visible + .palette-card {
+    outline: 3px solid #704126;
+    outline-offset: 4px;
+}
+
+.palette-image {
+    display: block;
+    width: 100%;
+    height: clamp(100px, 12vw, 150px);
+    margin-bottom: 11px;
+    border-radius: 9px;
+    object-fit: cover;
+    background: #ead6bf;
+}
+
+.palette-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #8b684b;
+}
+
+.palette-placeholder span {
+    font-size: 27px;
+}
+
+.palette-placeholder p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.palette-check {
+    position: absolute;
+    z-index: 2;
+    top: 17px;
+    right: 17px;
+    display: grid;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    border: 2px solid #fff8ed;
+    border-radius: 50%;
+    color: #fff;
+    background: #b76531;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.palette-option input:checked + .palette-card .palette-check {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.palette-info {
+    padding: 0 3px 4px;
+}
+
+.palette-info h2 {
+    margin: 0 0 5px;
+    color: #593621;
+    font-size: 21px;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.palette-description {
+    margin: 0 0 10px;
+    color: #85664e;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.palette-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 10px;
+}
+
+.palette-swatch {
+    display: block;
+    width: 21px;
+    height: 21px;
+    border: 1px solid rgba(75, 45, 26, 0.13);
+    border-radius: 50%;
+    background: var(--swatch-color, #b78c65);
+}
+
+.palette-empty {
+    grid-column: 1 / -1;
+    padding: 28px;
+    border: 1px dashed var(--color-border);
+    border-radius: 14px;
+    text-align: center;
+}
+
+/* Tombol navigasi */
+.colors-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 26px;
+}
+
+.colors-back,
+.colors-next {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-width: 180px;
+    padding: 13px 22px;
+    border: 1px solid transparent;
+    border-radius: 40px;
+    font-family: "ReBatik Garamond", Garamond, Georgia, serif;
+    font-size: 16px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.colors-back {
+    border-color: #e7c9a9;
+    color: #704a32;
+    background: rgba(255, 248, 236, 0.72);
+}
+
+.colors-back:hover {
+    background: #fffaf2;
+}
+
+.colors-next {
+    color: #fff5e9;
+    background: #62371f;
+}
+
+.colors-next:hover {
+    background: #824b2b;
+    transform: translateY(-2px);
+}
+
+.colors-back:focus-visible,
+.colors-next:focus-visible {
+    outline: 3px solid #c9954e;
+    outline-offset: 4px;
+}
+
+.colors-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(160, 99, 54, 0.14);
+    color: #89664d;
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+    letter-spacing: 1px;
+}
+
+/* Tablet */
+@media (max-width: 760px) {
+    .colors-page {
+        padding: 22px 14px;
+    }
+
+    .colors-panel {
+        padding: 27px 20px 20px;
+    }
+
+    .colors-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+    }
+
+    .palette-image {
+        height: clamp(110px, 22vw, 155px);
+    }
+}
+
+/* HP */
+@media (max-width: 480px) {
+    .colors-page {
+        padding: 12px 8px;
+    }
+
+    .colors-panel {
+        padding: 24px 12px 16px;
+        border-radius: 16px;
+    }
+
+    .colors-header h1 {
+        font-size: 34px;
+    }
+
+    .colors-subtitle {
+        font-size: 15px;
+    }
+
+    .colors-grid {
+        gap: 10px;
+    }
+
+    .palette-card {
+        padding: 7px;
+        border-radius: 12px;
+    }
+
+    .palette-image {
+        height: 105px;
+    }
+
+    .palette-info h2 {
+        font-size: 18px;
+    }
+
+    .palette-description {
+        font-size: 12px;
+    }
+
+    .palette-swatches {
+        gap: 5px;
+    }
+
+    .palette-swatch {
+        width: 16px;
+        height: 16px;
+    }
+
+    .palette-check {
+        top: 12px;
+        right: 12px;
+        width: 24px;
+        height: 24px;
+    }
+
+    .colors-actions {
+        gap: 9px;
+    }
+
+    .colors-back,
+    .colors-next {
+        flex: 1;
+        min-width: 0;
+        padding: 12px 8px;
+        font-size: 14px;
+    }
+
+    .colors-footer {
+        font-size: 7px;
+        letter-spacing: 0.3px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .palette-card,
+    .palette-check,
+    .colors-back,
+    .colors-next {
+        transition: none;
+    }
+}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+{% block meta %}
+<meta name="description" content="Buat desain batik personal di ReBatik.">
+{% endblock meta %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/custom/custom_studio.css' %}">
+{% endblock css %}
+{% block content %}
+<section class="custom-studio-page">
+    <header>
+        <p>REBatik · YOUR PERSONAL BATIK GUIDE</p>
+        <h1>Custom Batik Studio</h1>
+        <p>Temukan motif batik yang sesuai dengan gaya dan warna pilihanmu.</p>
+    </header>
+    <a href="{% url 'batik_custom:recommended_motifs' %}" class="studio-button">
+        Explore Recommended Motifs →
+    </a>
+</section>
+{% endblock content %}
