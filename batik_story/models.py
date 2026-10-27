@@ -104,18 +104,8 @@ class BatikMotif(models.Model):
         if not self.gambar:
             return ""
         name = self.gambar.name
-        if name.startswith("img/catalog/batik/"):
+        if name.startswith("img/catalog/"):
             return name
-        if name in {
-            "batik/parang.webp",
-            "batik/parang.png",
-            "batik/ondel2.png",
-            "batik/megamendung.webp",
-            "batik/kawung.webp",
-            "shared/creative1.png",
-            "shared/minimalis1.webp",
-        }:
-            return f"img/catalog/{name}"
         return ""
 
     def __str__(self):

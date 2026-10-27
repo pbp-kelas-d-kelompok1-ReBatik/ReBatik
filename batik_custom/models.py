@@ -27,12 +27,9 @@ class StyleOptions(models.Model):
 
     @property
     def static_image_path(self):
-        """Static path for the bundled style images referenced by existing rows."""
-        if not self.image:
-            return ""
-        name = self.image.name
-        if name.startswith(("style_options/", "shared/")):
-            return f"img/catalog/{name}"
+        """Static path for catalog references; uploaded files stay in MEDIA."""
+        if self.image and self.image.name.startswith("img/catalog/"):
+            return self.image.name
         return ""
 
     def __str__(self):
@@ -104,8 +101,8 @@ class RecommendedMotif(models.Model):
 
     @property
     def static_image_path(self):
-        if self.image and self.image.name.startswith("recommended_motifs/"):
-            return f"img/catalog/{self.image.name}"
+        if self.image and self.image.name.startswith("img/catalog/"):
+            return self.image.name
         return ""
 
     def __str__(self):
@@ -169,6 +166,6 @@ class MotifRecommendation(models.Model):
 
     @property
     def static_image_path(self):
-        if self.image and self.image.name.startswith("recommended_motifs/"):
-            return f"img/catalog/{self.image.name}"
+        if self.image and self.image.name.startswith("img/catalog/"):
+            return self.image.name
         return ""

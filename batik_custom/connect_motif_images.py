@@ -51,7 +51,7 @@ def connect_images():
             print(f"Gambar belum ditemukan untuk: {motif.name}")
             continue
 
-        relative_path = Path("recommended_motifs", files[0].name).as_posix()
+        relative_path = Path("img/catalog/recommended_motifs", files[0].name).as_posix()
 
         motif.image.name = relative_path
         motif.save(update_fields=["image"])
