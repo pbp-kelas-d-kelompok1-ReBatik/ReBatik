@@ -1,4 +1,5 @@
 from pathlib import Path
+import filecmp
 import shutil
 
 from django.conf import settings
@@ -37,6 +38,19 @@ MOTIF_IMAGE_PATHS = {
     f"recommended_motifs/{name}": f"img/catalog/recommended_motifs/{name}"
     for name in MOTIF_IMAGE_NAMES
 }
+ROLLBACK_MEDIA_PREFIX = "_catalog_rollback/"
+
+
+def move_restored_references(queryset, field_name, new_path):
+    rollback_path = f"{ROLLBACK_MEDIA_PREFIX}{new_path}"
+    rows = queryset.filter(**{field_name: rollback_path})
+    if not rows.exists():
+        return
+
+    rows.update(**{field_name: new_path})
+    restored_copy = Path(settings.MEDIA_ROOT) / rollback_path
+    if restored_copy.is_file():
+        restored_copy.unlink()
 
 
 def move_catalog_references(apps, schema_editor):
@@ -44,21 +58,19 @@ def move_catalog_references(apps, schema_editor):
     RecommendedMotif = apps.get_model("batik_custom", "RecommendedMotif")
     MotifRecommendation = apps.get_model("batik_custom", "MotifRecommendation")
 
-    for old_path, new_path in STYLE_IMAGE_PATHS.items():
-        # Preserve an actual upload if one occupies the same legacy filename.
-        if (Path(settings.MEDIA_ROOT) / old_path).is_file():
-            continue
-        StyleOptions.objects.using(schema_editor.connection.alias).filter(
-            image=old_path
-        ).update(image=new_path)
-
-    for model in (RecommendedMotif, MotifRecommendation):
-        for old_path, new_path in MOTIF_IMAGE_PATHS.items():
+    database = schema_editor.connection.alias
+    for model, paths in (
+        (StyleOptions, STYLE_IMAGE_PATHS),
+        (RecommendedMotif, MOTIF_IMAGE_PATHS),
+        (MotifRecommendation, MOTIF_IMAGE_PATHS),
+    ):
+        model = model.objects.using(database)
+        for old_path, new_path in paths.items():
+            move_restored_references(model, "image", new_path)
+            # Preserve an actual upload if one occupies the same legacy filename.
             if (Path(settings.MEDIA_ROOT) / old_path).is_file():
                 continue
-            model.objects.using(schema_editor.connection.alias).filter(
-                image=old_path
-            ).update(image=new_path)
+            model.filter(image=old_path).update(image=new_path)
 
 
 def restore_catalog_references(apps, schema_editor):
@@ -78,11 +90,16 @@ def restore_catalog_references(apps, schema_editor):
                 continue
 
             source = Path(settings.BASE_DIR) / "static" / new_path
-            destination = Path(settings.MEDIA_ROOT) / old_path
-            if source.is_file() and not destination.exists():
+            rollback_path = f"{ROLLBACK_MEDIA_PREFIX}{new_path}"
+            destination = Path(settings.MEDIA_ROOT) / rollback_path
+            if not source.is_file():
+                raise RuntimeError(f"Cannot restore missing catalog image: {source}")
+            if destination.exists() and not filecmp.cmp(source, destination, shallow=False):
+                raise RuntimeError(f"Rollback image path is occupied: {destination}")
+            if not destination.exists():
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(source, destination)
-            rows.update(image=old_path)
+            rows.update(image=rollback_path)
 
 
 class Migration(migrations.Migration):
