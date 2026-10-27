@@ -28,6 +28,7 @@ urlpatterns = [
     path("upcycling/", include("upcycling.urls")),
     path('donasi/', include('donasi.urls')),
     path("batik_custom/", include("batik_custom.urls")),
+    path('impact-tracker/', include('impact_tracker.urls')),
 ]
 
 if settings.DEBUG:

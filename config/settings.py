@@ -81,6 +81,7 @@ INSTALLED_APPS = [
     'batik_story',
     'donasi',
     'batik_custom',
+    'impact_tracker',
 ]
 
 MIDDLEWARE = [
