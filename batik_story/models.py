@@ -4,7 +4,6 @@ from django.db import models
 
 # Create your models here.
 
-
 # Model Batik Motif
 class BatikMotif(models.Model):
     id_story = models.UUIDField(default=uuid.uuid4, editable=False,null=True,blank=True)

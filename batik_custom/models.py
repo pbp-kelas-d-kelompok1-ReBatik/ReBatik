@@ -1,13 +1,12 @@
 from django.db import models
 from django.conf import settings
 
-# Create your models here.
 
 class StyleOptions(models.Model):
     GENDER_CHOICES = [
         ("women", "Women"),
         ("men", "Men"),
-        ("unisex","Unisex")
+        ("unisex", "Unisex"),
     ]
 
     name = models.CharField(max_length=100)
@@ -34,12 +33,13 @@ class StyleOptions(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.get_gender_display()})"
-    
+
+
 class ColorPalette(models.Model):
-    name=models.CharField(max_length=70, unique=True)
-    description=models.CharField(max_length=150, blank=True)
-    colors=models.JSONField(default=list)
-    is_active=models.BooleanField(default=True)
+    name = models.CharField(max_length=70, unique=True)
+    description = models.CharField(max_length=150, blank=True)
+    colors = models.JSONField(default=list)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -51,19 +51,16 @@ class StyleProfile(models.Model):
         on_delete=models.CASCADE,
         related_name="batik_style_profiles",
     )
-
     style = models.ForeignKey(
         StyleOptions,
         on_delete=models.PROTECT,
         related_name="profiles",
     )
-
     palette = models.ForeignKey(
         ColorPalette,
         on_delete=models.PROTECT,
         related_name="profiles",
     )
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -71,12 +68,18 @@ class StyleProfile(models.Model):
         return f"{self.user} - {self.style.name}"
 
 
+class FashionPreference(models.Model):
+    name = models.CharField(max_length=20, unique=True)
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name = "Fashion preference"
+        verbose_name_plural = "Fashion preferences"
+
+    def __str__(self):
+        return self.name
+
 class RecommendedMotif(models.Model):
-    FASHION_PREFERENCE_CHOICES = [
-        ("Women", "Women"),
-        ("Men", "Men"),
-        ("Unisex", "Unisex"),
-    ]
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True)
     image = models.ImageField(
@@ -87,17 +90,24 @@ class RecommendedMotif(models.Model):
     styles = models.ManyToManyField(
         StyleOptions,
         blank=True,
+        related_name="recommended_motifs",
     )
     palettes = models.ManyToManyField(
         ColorPalette,
         blank=True,
+        related_name="recommended_motifs",
     )
-    fashion_preference = models.CharField(
-        max_length=20,
-        choices=FASHION_PREFERENCE_CHOICES,
-        default="Women",
+    fashion_preference = models.ManyToManyField(
+        FashionPreference,
+        blank=True,
+        related_name="recommended_motifs",
     )
     is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name = "Recommended motif"
+        verbose_name_plural = "Recommended motifs"
 
     @property
     def static_image_path(self):
@@ -107,65 +117,3 @@ class RecommendedMotif(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class MotifRecommendation(models.Model):
-    FASHION_PREFERENCE_CHOICES = [
-        ("Women", "Women"),
-        ("Men", "Men"),
-    ]
-
-    recommendation_key = models.CharField(
-        max_length=255,
-        unique=True,
-    )
-
-    fashion_preference = models.CharField(
-        max_length=10,
-        choices=FASHION_PREFERENCE_CHOICES,
-    )
-
-    style = models.ForeignKey(
-        StyleOptions,
-        on_delete=models.CASCADE,
-        related_name="exact_motif_recommendations",
-    )
-
-    palette = models.ForeignKey(
-        ColorPalette,
-        on_delete=models.CASCADE,
-        related_name="exact_motif_recommendations",
-    )
-
-    name = models.CharField(max_length=150)
-    description = models.TextField(blank=True)
-
-    image = models.ImageField(
-        upload_to="recommended_motifs/",
-        blank=True,
-        null=True,
-    )
-
-    suggested_colors = models.JSONField(
-        default=list,
-        blank=True,
-    )
-
-    is_active = models.BooleanField(default=True)
-
-    class Meta:
-        ordering = ["fashion_preference", "name"]
-        verbose_name = "Motif Recommendation"
-        verbose_name_plural = "Motif Recommendations"
-
-    def __str__(self):
-        return (
-            f"{self.name} - {self.fashion_preference} - "
-            f"{self.style.name} - {self.palette.name}"
-        )
-
-    @property
-    def static_image_path(self):
-        if self.image and self.image.name.startswith("img/catalog/"):
-            return self.image.name
-        return ""
