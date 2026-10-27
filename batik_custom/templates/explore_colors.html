@@ -1,11 +1,10 @@
-
 {% extends "base.html" %}
 {% load static %}
 {% block meta %}
 <meta name="description" content="Pilih palet warna batik favoritmu di ReBatik.">
 {% endblock meta %}
 {% block css %}
-<link rel="stylesheet" href="{% static 'css/custom/explore_color.css' %}">
+<link rel="stylesheet" href="{% static 'css/custom/explore_colors.css' %}">
 {% endblock css %}
 {% block content %}
 <section class="colors-page">
@@ -43,7 +42,7 @@
                             {% if palette.colors %}
                             <div class="palette-swatches">
                                 {% for color in palette.colors %}
-                                <span class="palette-swatch" style="--swatch-color: {{ color }}" title="{{ color }}"></span>
+                                <span class="palette-swatch" style="--swatch-color: {{ color }};" title="{{ color }}"></span>
                                 {% endfor %}
                             </div>
                             {% endif %}

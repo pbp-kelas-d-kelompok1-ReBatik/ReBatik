@@ -15,10 +15,12 @@
     isolation: isolate;
     overflow: hidden;
     padding: 34px 24px;
-    background: linear-gradient(120deg,
-            #ad8069 0%,
-            #c99b7c 50%,
-            #a87860 100%);
+    background: linear-gradient(
+        120deg,
+        #ad8069 0%,
+        #c99b7c 50%,
+        #a87860 100%
+    );
     color: var(--vibe-brown);
     font-family: "ReBatik Garamond", Garamond, Georgia, serif;
 }
@@ -39,9 +41,11 @@
     border: 1px solid rgba(255, 255, 255, 0.55);
     border-radius: 22px;
     background:
-        radial-gradient(ellipse at 12% 10%,
+        radial-gradient(
+            ellipse at 12% 10%,
             rgba(255, 250, 235, 0.98),
-            transparent 48%),
+            transparent 48%
+        ),
         linear-gradient(135deg, #fff1dc, #f2d1ad);
     box-shadow: 0 18px 45px rgba(75, 42, 24, 0.12);
 }
@@ -169,13 +173,13 @@
     box-shadow: 0 10px 22px rgba(87, 51, 31, 0.1);
 }
 
-.vibe-option input:checked+.vibe-card {
+.vibe-option input:checked + .vibe-card {
     border: 2px solid #b95e26;
     background: #fff8ed;
     box-shadow: 0 0 0 3px rgba(185, 94, 38, 0.1);
 }
 
-.vibe-option input:focus-visible+.vibe-card {
+.vibe-option input:focus-visible + .vibe-card {
     outline: 3px solid #704126;
     outline-offset: 4px;
 }
@@ -229,7 +233,7 @@
     transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
-.vibe-option input:checked+.vibe-card .vibe-check {
+.vibe-option input:checked + .vibe-card .vibe-check {
     background: #b76531;
     opacity: 1;
     transform: scale(1);
@@ -411,7 +415,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-
     .vibe-card,
     .vibe-check,
     .vibe-next {

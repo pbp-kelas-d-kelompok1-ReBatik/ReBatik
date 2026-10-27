@@ -1,0 +1,1993 @@
+{
+    "title": "ReBatik Recommendation Catalog",
+    "version": 2,
+    "note": "Katalog JSON biasa, bukan Django loaddata fixture. Berisi 48 kombinasi Women/Men, 6 style, dan 4 palette. Nama file gambar adalah saran; pastikan file tersedia sebelum dihubungkan.",
+    "fashion_preferences": [
+        "Women",
+        "Men"
+    ],
+    "styles": [
+        "Elegant",
+        "Minimalist",
+        "Creative",
+        "Natural",
+        "Bohemian",
+        "Casual"
+    ],
+    "color_palettes": [
+        {
+            "name": "Earth Tone",
+            "description": "Natural, hangat, cocok untuk batik sehari-hari.",
+            "colors": [
+                "cokelat",
+                "krem",
+                "terracotta"
+            ]
+        },
+        {
+            "name": "Elegant",
+            "description": "Navy, emerald, burgundy, dan gold untuk kesan elegan.",
+            "colors": [
+                "navy",
+                "emerald",
+                "burgundy",
+                "gold"
+            ]
+        },
+        {
+            "name": "Minimalist",
+            "description": "Warna netral, sederhana, dan mudah dipadukan.",
+            "colors": [
+                "ivory",
+                "beige",
+                "abu-abu",
+                "hitam"
+            ]
+        },
+        {
+            "name": "Soft Pastel",
+            "description": "Lembut dan cerah untuk tampilan yang ringan.",
+            "colors": [
+                "sage",
+                "dusty pink",
+                "lavender",
+                "ivory"
+            ]
+        }
+    ],
+    "image_folder": "media/recommended_motifs/",
+    "recommendations": [
+        {
+            "id": "women_elegant_earth_tone",
+            "fashion_preference": "Women",
+            "style": "Elegant",
+            "color_palette": "Earth Tone",
+            "motifs": [
+                {
+                    "name": "Kawung",
+                    "description": "Motif geometris klasik dengan nuansa bumi yang hangat.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Truntum",
+                    "description": "Motif klasik bertabur yang memberi kesan anggun.",
+                    "image": "truntum.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Parang",
+                    "description": "Motif diagonal tradisional dengan kesan berwibawa.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_elegant_elegant",
+            "fashion_preference": "Women",
+            "style": "Elegant",
+            "color_palette": "Elegant",
+            "motifs": [
+                {
+                    "name": "Parang",
+                    "description": "Motif diagonal klasik dengan palet warna mewah.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Mega Mendung",
+                    "description": "Motif awan khas Cirebon dalam warna kaya.",
+                    "image": "megamendung.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Truntum",
+                    "description": "Motif klasik untuk tampilan formal dan anggun.",
+                    "image": "truntum.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_elegant_minimalist",
+            "fashion_preference": "Women",
+            "style": "Elegant",
+            "color_palette": "Minimalist",
+            "motifs": [
+                {
+                    "name": "Kawung",
+                    "description": "Motif simetris dengan tampilan rapi.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Ceplok",
+                    "description": "Motif geometris berulang dengan kesan tertata.",
+                    "image": "ceplok.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Parang Sederhana",
+                    "description": "Motif diagonal dengan detail tidak berlebihan.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_elegant_soft_pastel",
+            "fashion_preference": "Women",
+            "style": "Elegant",
+            "color_palette": "Soft Pastel",
+            "motifs": [
+                {
+                    "name": "Truntum",
+                    "description": "Motif kecil berulang dalam tampilan lembut.",
+                    "image": "truntum.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Kawung Minimal",
+                    "description": "Adaptasi Kawung dengan susunan sederhana.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Flora Sederhana",
+                    "description": "Motif flora yang ringan dan anggun.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_minimalist_earth_tone",
+            "fashion_preference": "Women",
+            "style": "Minimalist",
+            "color_palette": "Earth Tone",
+            "motifs": [
+                {
+                    "name": "Kawung Minimal",
+                    "description": "Susunan Kawung sederhana dalam warna bumi.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Parang Sederhana",
+                    "description": "Motif diagonal yang tidak terlalu ramai.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Ceplok Geometris",
+                    "description": "Motif geometris berulang dengan palet natural.",
+                    "image": "ceplok.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_minimalist_elegant",
+            "fashion_preference": "Women",
+            "style": "Minimalist",
+            "color_palette": "Elegant",
+            "motifs": [
+                {
+                    "name": "Ceplok Geometris",
+                    "description": "Geometri bersih dengan aksen warna elegan.",
+                    "image": "ceplok.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Kawung Minimal",
+                    "description": "Pola seimbang dengan kombinasi warna tegas.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Parang Sederhana",
+                    "description": "Motif diagonal ringkas dengan aksen warna kaya.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_minimalist_minimalist",
+            "fashion_preference": "Women",
+            "style": "Minimalist",
+            "color_palette": "Minimalist",
+            "motifs": [
+                {
+                    "name": "Kawung Minimal",
+                    "description": "Pola Kawung sederhana dan mudah dipadukan.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Ceplok Geometris",
+                    "description": "Pola geometris rapi dengan warna netral.",
+                    "image": "ceplok.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Parang Sederhana",
+                    "description": "Pola diagonal ringkas untuk outfit simpel.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_minimalist_soft_pastel",
+            "fashion_preference": "Women",
+            "style": "Minimalist",
+            "color_palette": "Soft Pastel",
+            "motifs": [
+                {
+                    "name": "Ceplok Geometris",
+                    "description": "Motif berulang dengan warna pastel lembut.",
+                    "image": "ceplok.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Flora Sederhana",
+                    "description": "Motif flora minimal dengan warna cerah lembut.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Kawung Minimal",
+                    "description": "Pola sederhana dalam kombinasi pastel.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_creative_earth_tone",
+            "fashion_preference": "Women",
+            "style": "Creative",
+            "color_palette": "Earth Tone",
+            "motifs": [
+                {
+                    "name": "Sekar Jagad",
+                    "description": "Motif beragam bentuk dengan warna bumi.",
+                    "image": "sekar_jagad.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Ceplok",
+                    "description": "Geometri berulang untuk perpaduan ekspresif.",
+                    "image": "ceplok.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Mega Mendung",
+                    "description": "Motif awan dengan kontras warna hangat.",
+                    "image": "megamendung.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_creative_elegant",
+            "fashion_preference": "Women",
+            "style": "Creative",
+            "color_palette": "Elegant",
+            "motifs": [
+                {
+                    "name": "Sekar Jagad",
+                    "description": "Motif beragam bentuk untuk eksplorasi warna berani.",
+                    "image": "sekar_jagad.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Mega Mendung",
+                    "description": "Motif awan dengan aksen warna kaya.",
+                    "image": "megamendung.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Parang Kontemporer",
+                    "description": "Motif diagonal dengan pendekatan modern.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_creative_minimalist",
+            "fashion_preference": "Women",
+            "style": "Creative",
+            "color_palette": "Minimalist",
+            "motifs": [
+                {
+                    "name": "Ceplok Geometris",
+                    "description": "Pola geometris unik dengan warna netral.",
+                    "image": "ceplok.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Kawung Minimal",
+                    "description": "Motif simetris untuk gaya modern.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Parang Kontemporer",
+                    "description": "Motif diagonal dengan pendekatan kontemporer.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_creative_soft_pastel",
+            "fashion_preference": "Women",
+            "style": "Creative",
+            "color_palette": "Soft Pastel",
+            "motifs": [
+                {
+                    "name": "Flora Nusantara",
+                    "description": "Motif flora dengan pastel ceria.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Sekar Jagad",
+                    "description": "Motif beragam bentuk dalam warna lembut.",
+                    "image": "sekar_jagad.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Mega Mendung",
+                    "description": "Motif awan dengan kombinasi pastel.",
+                    "image": "megamendung.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_natural_earth_tone",
+            "fashion_preference": "Women",
+            "style": "Natural",
+            "color_palette": "Earth Tone",
+            "motifs": [
+                {
+                    "name": "Batik Semen",
+                    "description": "Motif tumbuhan dan ornamen bernuansa alam.",
+                    "image": "semen.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Flora Nusantara",
+                    "description": "Motif flora yang selaras dengan warna bumi.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Truntum",
+                    "description": "Motif berulang yang tenang dan klasik.",
+                    "image": "truntum.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_natural_elegant",
+            "fashion_preference": "Women",
+            "style": "Natural",
+            "color_palette": "Elegant",
+            "motifs": [
+                {
+                    "name": "Batik Semen",
+                    "description": "Motif alam dengan sentuhan warna mewah.",
+                    "image": "semen.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Flora Nusantara",
+                    "description": "Motif flora dalam kombinasi warna kaya.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Truntum",
+                    "description": "Motif klasik dengan aksen warna elegan.",
+                    "image": "truntum.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_natural_minimalist",
+            "fashion_preference": "Women",
+            "style": "Natural",
+            "color_palette": "Minimalist",
+            "motifs": [
+                {
+                    "name": "Flora Sederhana",
+                    "description": "Motif flora yang bersih dan tidak ramai.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Batik Semen",
+                    "description": "Motif alam dengan susunan seimbang.",
+                    "image": "semen.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Kawung Minimal",
+                    "description": "Motif simetris yang tenang dan sederhana.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_natural_soft_pastel",
+            "fashion_preference": "Women",
+            "style": "Natural",
+            "color_palette": "Soft Pastel",
+            "motifs": [
+                {
+                    "name": "Flora Nusantara",
+                    "description": "Motif flora bernuansa lembut.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Truntum",
+                    "description": "Motif kecil berulang dalam warna pastel.",
+                    "image": "truntum.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Flora Sederhana",
+                    "description": "Motif tumbuhan dengan tampilan ringan.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_bohemian_earth_tone",
+            "fashion_preference": "Women",
+            "style": "Bohemian",
+            "color_palette": "Earth Tone",
+            "motifs": [
+                {
+                    "name": "Sekar Jagad",
+                    "description": "Motif beragam bentuk dalam nuansa hangat.",
+                    "image": "sekar_jagad.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Batik Semen",
+                    "description": "Motif alam dengan nuansa tradisional.",
+                    "image": "semen.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Flora Nusantara",
+                    "description": "Motif flora untuk tampilan organik.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_bohemian_elegant",
+            "fashion_preference": "Women",
+            "style": "Bohemian",
+            "color_palette": "Elegant",
+            "motifs": [
+                {
+                    "name": "Sekar Jagad",
+                    "description": "Motif kaya bentuk dengan warna mendalam.",
+                    "image": "sekar_jagad.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Mega Mendung",
+                    "description": "Motif awan dengan perpaduan warna berani.",
+                    "image": "megamendung.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Parang Kontemporer",
+                    "description": "Motif diagonal untuk gaya artistik.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_bohemian_minimalist",
+            "fashion_preference": "Women",
+            "style": "Bohemian",
+            "color_palette": "Minimalist",
+            "motifs": [
+                {
+                    "name": "Flora Sederhana",
+                    "description": "Motif flora sederhana dengan sentuhan artistik.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Ceplok Geometris",
+                    "description": "Motif berulang untuk tampilan etnik tertata.",
+                    "image": "ceplok.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Kawung Minimal",
+                    "description": "Motif klasik dalam komposisi tidak ramai.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_bohemian_soft_pastel",
+            "fashion_preference": "Women",
+            "style": "Bohemian",
+            "color_palette": "Soft Pastel",
+            "motifs": [
+                {
+                    "name": "Flora Nusantara",
+                    "description": "Motif flora dalam palet lembut.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Sekar Jagad",
+                    "description": "Motif beragam bentuk dengan nuansa pastel.",
+                    "image": "sekar_jagad.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Truntum",
+                    "description": "Motif kecil berulang dengan kesan ringan.",
+                    "image": "truntum.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_casual_earth_tone",
+            "fashion_preference": "Women",
+            "style": "Casual",
+            "color_palette": "Earth Tone",
+            "motifs": [
+                {
+                    "name": "Parang Sederhana",
+                    "description": "Motif diagonal untuk sehari-hari.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Kawung",
+                    "description": "Motif klasik yang serbaguna.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Sekar Jagad",
+                    "description": "Motif beragam bentuk dengan warna hangat.",
+                    "image": "sekar_jagad.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_casual_elegant",
+            "fashion_preference": "Women",
+            "style": "Casual",
+            "color_palette": "Elegant",
+            "motifs": [
+                {
+                    "name": "Mega Mendung",
+                    "description": "Motif awan dengan palet kaya.",
+                    "image": "megamendung.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Parang Kontemporer",
+                    "description": "Motif diagonal untuk gaya santai modern.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Truntum",
+                    "description": "Motif klasik untuk outfit kasual rapi.",
+                    "image": "truntum.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_casual_minimalist",
+            "fashion_preference": "Women",
+            "style": "Casual",
+            "color_palette": "Minimalist",
+            "motifs": [
+                {
+                    "name": "Kawung Minimal",
+                    "description": "Motif sederhana untuk outfit santai.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Ceplok Geometris",
+                    "description": "Pola berulang yang mudah dipadukan.",
+                    "image": "ceplok.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Parang Sederhana",
+                    "description": "Motif diagonal yang tidak terlalu ramai.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "women_casual_soft_pastel",
+            "fashion_preference": "Women",
+            "style": "Casual",
+            "color_palette": "Soft Pastel",
+            "motifs": [
+                {
+                    "name": "Flora Sederhana",
+                    "description": "Motif flora ringan dengan warna lembut.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Truntum",
+                    "description": "Motif kecil berulang untuk tampilan kasual.",
+                    "image": "truntum.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Mega Mendung",
+                    "description": "Motif awan dalam warna pastel.",
+                    "image": "megamendung.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_elegant_earth_tone",
+            "fashion_preference": "Men",
+            "style": "Elegant",
+            "color_palette": "Earth Tone",
+            "motifs": [
+                {
+                    "name": "Kawung",
+                    "description": "Motif geometris klasik dengan nuansa bumi yang hangat.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Truntum",
+                    "description": "Motif klasik bertabur yang memberi kesan anggun.",
+                    "image": "truntum.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Parang",
+                    "description": "Motif diagonal tradisional dengan kesan berwibawa.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_elegant_elegant",
+            "fashion_preference": "Men",
+            "style": "Elegant",
+            "color_palette": "Elegant",
+            "motifs": [
+                {
+                    "name": "Parang",
+                    "description": "Motif diagonal klasik dengan palet warna mewah.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Mega Mendung",
+                    "description": "Motif awan khas Cirebon dalam warna kaya.",
+                    "image": "megamendung.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Truntum",
+                    "description": "Motif klasik untuk tampilan formal dan anggun.",
+                    "image": "truntum.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_elegant_minimalist",
+            "fashion_preference": "Men",
+            "style": "Elegant",
+            "color_palette": "Minimalist",
+            "motifs": [
+                {
+                    "name": "Kawung",
+                    "description": "Motif simetris dengan tampilan rapi.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Ceplok",
+                    "description": "Motif geometris berulang dengan kesan tertata.",
+                    "image": "ceplok.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Parang Sederhana",
+                    "description": "Motif diagonal dengan detail tidak berlebihan.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_elegant_soft_pastel",
+            "fashion_preference": "Men",
+            "style": "Elegant",
+            "color_palette": "Soft Pastel",
+            "motifs": [
+                {
+                    "name": "Truntum",
+                    "description": "Motif kecil berulang dalam tampilan lembut.",
+                    "image": "truntum.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Kawung Minimal",
+                    "description": "Adaptasi Kawung dengan susunan sederhana.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Flora Sederhana",
+                    "description": "Motif flora yang ringan dan anggun.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_minimalist_earth_tone",
+            "fashion_preference": "Men",
+            "style": "Minimalist",
+            "color_palette": "Earth Tone",
+            "motifs": [
+                {
+                    "name": "Kawung Minimal",
+                    "description": "Susunan Kawung sederhana dalam warna bumi.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Parang Sederhana",
+                    "description": "Motif diagonal yang tidak terlalu ramai.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Ceplok Geometris",
+                    "description": "Motif geometris berulang dengan palet natural.",
+                    "image": "ceplok.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_minimalist_elegant",
+            "fashion_preference": "Men",
+            "style": "Minimalist",
+            "color_palette": "Elegant",
+            "motifs": [
+                {
+                    "name": "Ceplok Geometris",
+                    "description": "Geometri bersih dengan aksen warna elegan.",
+                    "image": "ceplok.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Kawung Minimal",
+                    "description": "Pola seimbang dengan kombinasi warna tegas.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Parang Sederhana",
+                    "description": "Motif diagonal ringkas dengan aksen warna kaya.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_minimalist_minimalist",
+            "fashion_preference": "Men",
+            "style": "Minimalist",
+            "color_palette": "Minimalist",
+            "motifs": [
+                {
+                    "name": "Kawung Minimal",
+                    "description": "Pola Kawung sederhana dan mudah dipadukan.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Ceplok Geometris",
+                    "description": "Pola geometris rapi dengan warna netral.",
+                    "image": "ceplok.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Parang Sederhana",
+                    "description": "Pola diagonal ringkas untuk outfit simpel.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_minimalist_soft_pastel",
+            "fashion_preference": "Men",
+            "style": "Minimalist",
+            "color_palette": "Soft Pastel",
+            "motifs": [
+                {
+                    "name": "Ceplok Geometris",
+                    "description": "Motif berulang dengan warna pastel lembut.",
+                    "image": "ceplok.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Flora Sederhana",
+                    "description": "Motif flora minimal dengan warna cerah lembut.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Kawung Minimal",
+                    "description": "Pola sederhana dalam kombinasi pastel.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_creative_earth_tone",
+            "fashion_preference": "Men",
+            "style": "Creative",
+            "color_palette": "Earth Tone",
+            "motifs": [
+                {
+                    "name": "Sekar Jagad",
+                    "description": "Motif beragam bentuk dengan warna bumi.",
+                    "image": "sekar_jagad.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Ceplok",
+                    "description": "Geometri berulang untuk perpaduan ekspresif.",
+                    "image": "ceplok.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Mega Mendung",
+                    "description": "Motif awan dengan kontras warna hangat.",
+                    "image": "megamendung.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_creative_elegant",
+            "fashion_preference": "Men",
+            "style": "Creative",
+            "color_palette": "Elegant",
+            "motifs": [
+                {
+                    "name": "Sekar Jagad",
+                    "description": "Motif beragam bentuk untuk eksplorasi warna berani.",
+                    "image": "sekar_jagad.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Mega Mendung",
+                    "description": "Motif awan dengan aksen warna kaya.",
+                    "image": "megamendung.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Parang Kontemporer",
+                    "description": "Motif diagonal dengan pendekatan modern.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_creative_minimalist",
+            "fashion_preference": "Men",
+            "style": "Creative",
+            "color_palette": "Minimalist",
+            "motifs": [
+                {
+                    "name": "Ceplok Geometris",
+                    "description": "Pola geometris unik dengan warna netral.",
+                    "image": "ceplok.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Kawung Minimal",
+                    "description": "Motif simetris untuk gaya modern.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Parang Kontemporer",
+                    "description": "Motif diagonal dengan pendekatan kontemporer.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_creative_soft_pastel",
+            "fashion_preference": "Men",
+            "style": "Creative",
+            "color_palette": "Soft Pastel",
+            "motifs": [
+                {
+                    "name": "Flora Nusantara",
+                    "description": "Motif flora dengan pastel ceria.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Sekar Jagad",
+                    "description": "Motif beragam bentuk dalam warna lembut.",
+                    "image": "sekar_jagad.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Mega Mendung",
+                    "description": "Motif awan dengan kombinasi pastel.",
+                    "image": "megamendung.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_natural_earth_tone",
+            "fashion_preference": "Men",
+            "style": "Natural",
+            "color_palette": "Earth Tone",
+            "motifs": [
+                {
+                    "name": "Batik Semen",
+                    "description": "Motif tumbuhan dan ornamen bernuansa alam.",
+                    "image": "semen.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Flora Nusantara",
+                    "description": "Motif flora yang selaras dengan warna bumi.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Truntum",
+                    "description": "Motif berulang yang tenang dan klasik.",
+                    "image": "truntum.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_natural_elegant",
+            "fashion_preference": "Men",
+            "style": "Natural",
+            "color_palette": "Elegant",
+            "motifs": [
+                {
+                    "name": "Batik Semen",
+                    "description": "Motif alam dengan sentuhan warna mewah.",
+                    "image": "semen.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Flora Nusantara",
+                    "description": "Motif flora dalam kombinasi warna kaya.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Truntum",
+                    "description": "Motif klasik dengan aksen warna elegan.",
+                    "image": "truntum.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_natural_minimalist",
+            "fashion_preference": "Men",
+            "style": "Natural",
+            "color_palette": "Minimalist",
+            "motifs": [
+                {
+                    "name": "Flora Sederhana",
+                    "description": "Motif flora yang bersih dan tidak ramai.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Batik Semen",
+                    "description": "Motif alam dengan susunan seimbang.",
+                    "image": "semen.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Kawung Minimal",
+                    "description": "Motif simetris yang tenang dan sederhana.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_natural_soft_pastel",
+            "fashion_preference": "Men",
+            "style": "Natural",
+            "color_palette": "Soft Pastel",
+            "motifs": [
+                {
+                    "name": "Flora Nusantara",
+                    "description": "Motif flora bernuansa lembut.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Truntum",
+                    "description": "Motif kecil berulang dalam warna pastel.",
+                    "image": "truntum.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Flora Sederhana",
+                    "description": "Motif tumbuhan dengan tampilan ringan.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_bohemian_earth_tone",
+            "fashion_preference": "Men",
+            "style": "Bohemian",
+            "color_palette": "Earth Tone",
+            "motifs": [
+                {
+                    "name": "Sekar Jagad",
+                    "description": "Motif beragam bentuk dalam nuansa hangat.",
+                    "image": "sekar_jagad.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Batik Semen",
+                    "description": "Motif alam dengan nuansa tradisional.",
+                    "image": "semen.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Flora Nusantara",
+                    "description": "Motif flora untuk tampilan organik.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_bohemian_elegant",
+            "fashion_preference": "Men",
+            "style": "Bohemian",
+            "color_palette": "Elegant",
+            "motifs": [
+                {
+                    "name": "Sekar Jagad",
+                    "description": "Motif kaya bentuk dengan warna mendalam.",
+                    "image": "sekar_jagad.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Mega Mendung",
+                    "description": "Motif awan dengan perpaduan warna berani.",
+                    "image": "megamendung.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Parang Kontemporer",
+                    "description": "Motif diagonal untuk gaya artistik.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_bohemian_minimalist",
+            "fashion_preference": "Men",
+            "style": "Bohemian",
+            "color_palette": "Minimalist",
+            "motifs": [
+                {
+                    "name": "Flora Sederhana",
+                    "description": "Motif flora sederhana dengan sentuhan artistik.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Ceplok Geometris",
+                    "description": "Motif berulang untuk tampilan etnik tertata.",
+                    "image": "ceplok.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Kawung Minimal",
+                    "description": "Motif klasik dalam komposisi tidak ramai.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_bohemian_soft_pastel",
+            "fashion_preference": "Men",
+            "style": "Bohemian",
+            "color_palette": "Soft Pastel",
+            "motifs": [
+                {
+                    "name": "Flora Nusantara",
+                    "description": "Motif flora dalam palet lembut.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Sekar Jagad",
+                    "description": "Motif beragam bentuk dengan nuansa pastel.",
+                    "image": "sekar_jagad.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Truntum",
+                    "description": "Motif kecil berulang dengan kesan ringan.",
+                    "image": "truntum.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_casual_earth_tone",
+            "fashion_preference": "Men",
+            "style": "Casual",
+            "color_palette": "Earth Tone",
+            "motifs": [
+                {
+                    "name": "Parang Sederhana",
+                    "description": "Motif diagonal untuk sehari-hari.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Kawung",
+                    "description": "Motif klasik yang serbaguna.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                },
+                {
+                    "name": "Sekar Jagad",
+                    "description": "Motif beragam bentuk dengan warna hangat.",
+                    "image": "sekar_jagad.png",
+                    "suggested_colors": [
+                        "cokelat",
+                        "krem",
+                        "terracotta"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_casual_elegant",
+            "fashion_preference": "Men",
+            "style": "Casual",
+            "color_palette": "Elegant",
+            "motifs": [
+                {
+                    "name": "Mega Mendung",
+                    "description": "Motif awan dengan palet kaya.",
+                    "image": "megamendung.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Parang Kontemporer",
+                    "description": "Motif diagonal untuk gaya santai modern.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                },
+                {
+                    "name": "Truntum",
+                    "description": "Motif klasik untuk outfit kasual rapi.",
+                    "image": "truntum.png",
+                    "suggested_colors": [
+                        "navy",
+                        "emerald",
+                        "burgundy",
+                        "gold"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_casual_minimalist",
+            "fashion_preference": "Men",
+            "style": "Casual",
+            "color_palette": "Minimalist",
+            "motifs": [
+                {
+                    "name": "Kawung Minimal",
+                    "description": "Motif sederhana untuk outfit santai.",
+                    "image": "kawung.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Ceplok Geometris",
+                    "description": "Pola berulang yang mudah dipadukan.",
+                    "image": "ceplok.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                },
+                {
+                    "name": "Parang Sederhana",
+                    "description": "Motif diagonal yang tidak terlalu ramai.",
+                    "image": "parang.png",
+                    "suggested_colors": [
+                        "ivory",
+                        "beige",
+                        "abu-abu",
+                        "hitam"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "men_casual_soft_pastel",
+            "fashion_preference": "Men",
+            "style": "Casual",
+            "color_palette": "Soft Pastel",
+            "motifs": [
+                {
+                    "name": "Flora Sederhana",
+                    "description": "Motif flora ringan dengan warna lembut.",
+                    "image": "flora_nusantara.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Truntum",
+                    "description": "Motif kecil berulang untuk tampilan kasual.",
+                    "image": "truntum.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                },
+                {
+                    "name": "Mega Mendung",
+                    "description": "Motif awan dalam warna pastel.",
+                    "image": "megamendung.png",
+                    "suggested_colors": [
+                        "sage",
+                        "dusty pink",
+                        "lavender",
+                        "ivory"
+                    ]
+                }
+            ]
+        }
+    ]
+}

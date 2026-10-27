@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<meta name="description" content="Temukan rekomendasi motif batik sesuai gaya dan warna pilihanmu di ReBatik.">
+{% endblock meta %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/custom/recommended_motifs.css' %}">
+{% endblock css %}
+
+{% block content %}
+<section class="recommended-page">
+    <header class="recommended-header">
+        <p class="recommended-eyebrow">YOUR PERSONAL BATIK GUIDE</p>
+        <h1>Recommended Batik Motifs</h1>
+        <p>Temukan motif batik yang sesuai dengan gaya dan warna favoritmu.</p>
+    </header>
+
+    <div id="motif-results">
+        {% include "batik_custom/partials/recommended_motifs.html" %}
+    </div>
+</section>
+{% endblock content %}
