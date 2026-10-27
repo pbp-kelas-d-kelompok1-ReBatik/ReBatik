@@ -177,7 +177,7 @@
 
 @font-face {
     font-family: "ReBatik Garamond";
-    src: url("../fonts/Garamond.ttf") format("truetype");
+    src: url("static/font/Garamond.ttf") format("truetype");
     font-display: swap;
 }
 
@@ -516,7 +516,7 @@
 
 @font-face {
     font-family: "ReBatik Garamond";
-    src: url("../fonts/Garamond.ttf") format("truetype");
+    src: url("static/font/Garamond.ttf") format("truetype");
     font-display: swap;
 }
 

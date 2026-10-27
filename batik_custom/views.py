@@ -8,7 +8,7 @@ def show_home(request):
     return render(request, "home_custom.html", {"selected_preference": request.session.get("fashion_preference", "")})
 
 def fashion_preference(request):
-    allowed_preferences = {"women", "men"}
+    allowed_preferences = {"women", "men", "unisex"}
     if request.method == "POST":
         preference = request.POST.get("fashion_preference", "")
         if preference not in allowed_preferences:
