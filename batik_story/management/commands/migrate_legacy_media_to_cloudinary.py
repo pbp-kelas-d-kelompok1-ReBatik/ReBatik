@@ -78,14 +78,66 @@ class Command(BaseCommand):
             )
             return
 
+        migrated = 0
+        failed = 0
         for instance, field_name, old_name, source_path in pending:
-            with source_path.open("rb") as source:
-                cloudinary_name = default_storage.save(old_name, File(source))
-            setattr(instance, field_name, cloudinary_name)
-            instance.save(update_fields=[field_name])
+            record = f"{instance._meta.label}#{instance.pk}.{field_name}"
+            cloudinary_name = None
+            try:
+                with source_path.open("rb") as source:
+                    cloudinary_name = default_storage.save(old_name, File(source))
+            except Exception as error:
+                failed += 1
+                self.stderr.write(
+                    self.style.ERROR(f"Failed to upload {record}: {error}")
+                )
+                continue
 
+            try:
+                updated = instance.__class__.objects.filter(
+                    pk=instance.pk,
+                    **{field_name: old_name},
+                ).update(**{field_name: cloudinary_name})
+            except Exception as error:
+                failed += 1
+                try:
+                    default_storage.delete(cloudinary_name)
+                except Exception as cleanup_error:
+                    error = f"{error}; cleanup failed: {cleanup_error}"
+                self.stderr.write(
+                    self.style.ERROR(f"Failed to update {record}: {error}")
+                )
+                continue
+
+            if not updated:
+                failed += 1
+                try:
+                    default_storage.delete(cloudinary_name)
+                except Exception as error:
+                    self.stderr.write(
+                        self.style.ERROR(
+                            f"Could not remove unused upload for {record}: {error}"
+                        )
+                    )
+                self.stderr.write(
+                    self.style.ERROR(
+                        f"Skipped {record}: its stored file changed after preflight."
+                    )
+                )
+                continue
+
+            migrated += 1
+
+        if failed:
+            self.stdout.write(
+                f"Migrated {migrated} local image/file record(s) to Cloudinary."
+            )
+            raise CommandError(
+                f"{failed} record(s) failed or changed during migration; "
+                "see errors above and rerun after resolving them."
+            )
         self.stdout.write(
             self.style.SUCCESS(
-                f"Migrated {len(pending)} local image/file record(s) to Cloudinary."
+                f"Migrated {migrated} local image/file record(s) to Cloudinary."
             )
         )
