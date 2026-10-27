@@ -163,7 +163,7 @@
                 <h3 id="summary-heading" class="text-2xl font-bold">Ringkasan</h3>
                 {% if upcycling_request.fabric == 'PARANG' %}
                     <img
-                        src="{% get_media_prefix %}batik/parang.webp"
+                        src="{% static 'img/catalog/batik/parang.webp' %}"
                         alt="Motif Parang"
                         loading="lazy"
                         decoding="async"
@@ -171,7 +171,7 @@
                     >
                 {% elif upcycling_request.fabric == 'KAWUNG' %}
                     <img
-                        src="{% get_media_prefix %}batik/kawung.webp"
+                        src="{% static 'img/catalog/batik/kawung.webp' %}"
                         alt="Motif Kawung"
                         loading="lazy"
                         decoding="async"
@@ -179,7 +179,7 @@
                     >
                 {% elif upcycling_request.fabric == 'MEGA_MENDUNG' %}
                     <img
-                        src="{% get_media_prefix %}batik/megamendung.webp"
+                        src="{% static 'img/catalog/batik/megamendung.webp' %}"
                         alt="Motif Mega Mendung"
                         loading="lazy"
                         decoding="async"

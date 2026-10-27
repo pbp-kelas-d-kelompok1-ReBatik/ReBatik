@@ -1,3 +1,4 @@
+
 from django.db import models
 from django.conf import settings
 
@@ -18,15 +19,11 @@ class StyleOptions(models.Model):
         default="women",
     )
     icon = models.CharField(max_length=50, blank=True)
-    image = models.ImageField(
-        upload_to="style_options/",
-        blank=True,
-    )
+    image = models.ImageField(upload_to="style_options/", blank=True)
     is_active = models.BooleanField(default=True)
 
     @property
     def static_image_path(self):
-        """Static path for catalog references; uploaded files stay in MEDIA."""
         if self.image and self.image.name.startswith("img/catalog/"):
             return self.image.name
         return ""
@@ -79,6 +76,7 @@ class FashionPreference(models.Model):
     def __str__(self):
         return self.name
 
+
 class RecommendedMotif(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True)
@@ -117,3 +115,4 @@ class RecommendedMotif(models.Model):
 
     def __str__(self):
         return self.name
+

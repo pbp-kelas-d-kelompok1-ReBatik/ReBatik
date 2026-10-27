@@ -162,7 +162,9 @@
             <article class="story-card">
 
                 <div class="card-image">
-                    {% if batik.gambar %}
+                    {% if batik.static_gambar_path %}
+                    <img src="{% static batik.static_gambar_path %}" alt="Motif batik {{ batik.nama }}" loading="lazy">
+                    {% elif batik.gambar %}
                     <img src="{{ batik.gambar.url }}" alt="Motif batik {{ batik.nama }}" loading="lazy">
                     {% else %}
                     <div class="image-placeholder">

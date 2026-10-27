@@ -4,7 +4,6 @@ from django.db import models
 
 # Create your models here.
 
-
 # Model Batik Motif
 class BatikMotif(models.Model):
     id_story = models.UUIDField(default=uuid.uuid4, editable=False,null=True,blank=True)
@@ -97,6 +96,16 @@ class BatikMotif(models.Model):
     filosofi=models.TextField()
     deskripsi=models.TextField()
     gambar=models.ImageField(upload_to='batik/',blank=True, null=True)
+
+    @property
+    def static_gambar_path(self):
+        """Return the static path for bundled examples; user uploads stay in MEDIA."""
+        if not self.gambar:
+            return ""
+        name = self.gambar.name
+        if name.startswith("img/catalog/"):
+            return name
+        return ""
 
     def __str__(self):
         return self.nama

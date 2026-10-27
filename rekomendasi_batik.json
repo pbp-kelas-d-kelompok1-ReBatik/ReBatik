@@ -141,7 +141,7 @@
             ]
         }
     ],
-    "image_folder": "media/recommended_motifs/",
+    "image_folder": "static/img/catalog/recommended_motifs/",
     "motif_images": [
         "ceplok.png",
         "flora_nusantara.png",
@@ -150,7 +150,8 @@
         "parang.png",
         "sekar_jagad.png",
         "semen.png",
-        "truntum.png"
+        "truntum.png",
+        "kawung_minimal.png"
     ],
     "recommendations": [
         {
@@ -500,7 +501,7 @@
                 {
                     "name": "Kawung Minimal",
                     "description": "Kawung dengan susunan renggang dan detail ringkas, mudah dipadukan. Palet bumi memberi kesan hangat dan membumi.",
-                    "image": "kawung.png",
+                    "image": "kawung_minimal.png",
                     "suggested_colors": [
                         {
                             "name": "cokelat",
@@ -606,7 +607,7 @@
                 {
                     "name": "Kawung Minimal",
                     "description": "Kawung dengan susunan renggang dan detail ringkas, mudah dipadukan. Warna kaya seperti navy dan emerald membuatnya tampak berkelas.",
-                    "image": "kawung.png",
+                    "image": "kawung_minimal.png",
                     "suggested_colors": [
                         {
                             "name": "navy",
@@ -666,7 +667,7 @@
                 {
                     "name": "Kawung Minimal",
                     "description": "Kawung dengan susunan renggang dan detail ringkas, mudah dipadukan. Warna netral membuatnya bersih dan mudah dipadukan.",
-                    "image": "kawung.png",
+                    "image": "kawung_minimal.png",
                     "suggested_colors": [
                         {
                             "name": "ivory",
@@ -1021,7 +1022,7 @@
                 {
                     "name": "Kawung Minimal",
                     "description": "Kawung dengan susunan renggang dan detail ringkas, mudah dipadukan. Warna netral membuatnya bersih dan mudah dipadukan.",
-                    "image": "kawung.png",
+                    "image": "kawung_minimal.png",
                     "suggested_colors": [
                         {
                             "name": "ivory",
@@ -1376,7 +1377,7 @@
                 {
                     "name": "Kawung Minimal",
                     "description": "Kawung dengan susunan renggang dan detail ringkas, mudah dipadukan. Warna netral membuatnya bersih dan mudah dipadukan.",
-                    "image": "kawung.png",
+                    "image": "kawung_minimal.png",
                     "suggested_colors": [
                         {
                             "name": "ivory",
@@ -1457,9 +1458,9 @@
                     ]
                 },
                 {
-                    "name": "Flora Sederhana",
-                    "description": "Flora bersulur tipis dengan banyak ruang kosong, terasa ringan. Warna pastel membuatnya terasa ringan dan lembut.",
-                    "image": "flora_nusantara.png",
+                    "name": "Batik Semen",
+                    "description": "Tumbuhan merambat dan ornamen alam yang melambangkan pertumbuhan. Warna pastel membuatnya terasa ringan dan lembut.",
+                    "image": "semen.png",
                     "suggested_colors": [
                         {
                             "name": "sage",
@@ -1708,7 +1709,7 @@
                 {
                     "name": "Kawung Minimal",
                     "description": "Kawung dengan susunan renggang dan detail ringkas, mudah dipadukan. Warna netral membuatnya bersih dan mudah dipadukan.",
-                    "image": "kawung.png",
+                    "image": "kawung_minimal.png",
                     "suggested_colors": [
                         {
                             "name": "ivory",
@@ -2017,7 +2018,7 @@
                 {
                     "name": "Kawung Minimal",
                     "description": "Kawung dengan susunan renggang dan detail ringkas, mudah dipadukan. Warna netral membuatnya bersih dan mudah dipadukan.",
-                    "image": "kawung.png",
+                    "image": "kawung_minimal.png",
                     "suggested_colors": [
                         {
                             "name": "ivory",
@@ -2492,7 +2493,7 @@
                 {
                     "name": "Kawung Minimal",
                     "description": "Kawung dengan susunan renggang dan detail ringkas, mudah dipadukan. Palet bumi memberi kesan hangat dan membumi.",
-                    "image": "kawung.png",
+                    "image": "kawung_minimal.png",
                     "suggested_colors": [
                         {
                             "name": "cokelat",
@@ -2598,7 +2599,7 @@
                 {
                     "name": "Kawung Minimal",
                     "description": "Kawung dengan susunan renggang dan detail ringkas, mudah dipadukan. Warna kaya seperti navy dan emerald membuatnya tampak berkelas.",
-                    "image": "kawung.png",
+                    "image": "kawung_minimal.png",
                     "suggested_colors": [
                         {
                             "name": "navy",
@@ -3013,7 +3014,7 @@
                 {
                     "name": "Kawung Minimal",
                     "description": "Kawung dengan susunan renggang dan detail ringkas, mudah dipadukan. Warna netral membuatnya bersih dan mudah dipadukan.",
-                    "image": "kawung.png",
+                    "image": "kawung_minimal.png",
                     "suggested_colors": [
                         {
                             "name": "ivory",
@@ -3177,9 +3178,9 @@
                     ]
                 },
                 {
-                    "name": "Semen Nusantara",
-                    "description": "Batik semen dengan ornamen tumbuhan dan satwa yang lebih tegas. Palet bumi memberi kesan hangat dan membumi.",
-                    "image": "semen.png",
+                    "name": "Truntum",
+                    "description": "Bintang-bintang kecil bertabur yang melambangkan cinta yang tumbuh. Palet bumi memberi kesan hangat dan membumi.",
+                    "image": "truntum.png",
                     "suggested_colors": [
                         {
                             "name": "cokelat",
@@ -3200,9 +3201,9 @@
                     ]
                 },
                 {
-                    "name": "Truntum",
-                    "description": "Bintang-bintang kecil bertabur yang melambangkan cinta yang tumbuh. Palet bumi memberi kesan hangat dan membumi.",
-                    "image": "truntum.png",
+                    "name": "Kawung",
+                    "description": "Pola lingkaran bersilang yang simetris, melambangkan kebijaksanaan dan keteraturan. Palet bumi memberi kesan hangat dan membumi.",
+                    "image": "kawung.png",
                     "suggested_colors": [
                         {
                             "name": "cokelat",
@@ -3260,9 +3261,9 @@
                     ]
                 },
                 {
-                    "name": "Batik Semen",
-                    "description": "Tumbuhan merambat dan ornamen alam yang melambangkan pertumbuhan. Warna kaya seperti navy dan emerald membuatnya tampak berkelas.",
-                    "image": "semen.png",
+                    "name": "Kawung",
+                    "description": "Pola lingkaran bersilang yang simetris, melambangkan kebijaksanaan dan keteraturan. Warna kaya seperti navy dan emerald membuatnya tampak berkelas.",
+                    "image": "kawung.png",
                     "suggested_colors": [
                         {
                             "name": "navy",
@@ -3283,9 +3284,9 @@
                     ]
                 },
                 {
-                    "name": "Kawung",
-                    "description": "Pola lingkaran bersilang yang simetris, melambangkan kebijaksanaan dan keteraturan. Warna kaya seperti navy dan emerald membuatnya tampak berkelas.",
-                    "image": "kawung.png",
+                    "name": "Truntum",
+                    "description": "Bintang-bintang kecil bertabur yang melambangkan cinta yang tumbuh. Warna kaya seperti navy dan emerald membuatnya tampak berkelas.",
+                    "image": "truntum.png",
                     "suggested_colors": [
                         {
                             "name": "navy",
@@ -3343,9 +3344,9 @@
                     ]
                 },
                 {
-                    "name": "Batik Semen",
-                    "description": "Tumbuhan merambat dan ornamen alam yang melambangkan pertumbuhan. Warna netral membuatnya bersih dan mudah dipadukan.",
-                    "image": "semen.png",
+                    "name": "Kawung Minimal",
+                    "description": "Kawung dengan susunan renggang dan detail ringkas, mudah dipadukan. Warna netral membuatnya bersih dan mudah dipadukan.",
+                    "image": "kawung_minimal.png",
                     "suggested_colors": [
                         {
                             "name": "ivory",
@@ -3366,9 +3367,9 @@
                     ]
                 },
                 {
-                    "name": "Kawung Minimal",
-                    "description": "Kawung dengan susunan renggang dan detail ringkas, mudah dipadukan. Warna netral membuatnya bersih dan mudah dipadukan.",
-                    "image": "kawung_minimal.png",
+                    "name": "Ceplok Geometris",
+                    "description": "Ceplok dengan bentuk geometri bersih dan susunan rapi. Warna netral membuatnya bersih dan mudah dipadukan.",
+                    "image": "ceplok.png",
                     "suggested_colors": [
                         {
                             "name": "ivory",
@@ -3449,9 +3450,9 @@
                     ]
                 },
                 {
-                    "name": "Semen Sederhana",
-                    "description": "Batik semen dengan ornamen terbatas dan tata letak rapi. Warna pastel membuatnya terasa ringan dan lembut.",
-                    "image": "semen.png",
+                    "name": "Kawung Minimal",
+                    "description": "Kawung dengan susunan renggang dan detail ringkas, mudah dipadukan. Warna pastel membuatnya terasa ringan dan lembut.",
+                    "image": "kawung_minimal.png",
                     "suggested_colors": [
                         {
                             "name": "sage",
@@ -3532,9 +3533,9 @@
                     ]
                 },
                 {
-                    "name": "Semen Nusantara",
-                    "description": "Batik semen dengan ornamen tumbuhan dan satwa yang lebih tegas. Palet bumi memberi kesan hangat dan membumi.",
-                    "image": "semen.png",
+                    "name": "Mega Mendung",
+                    "description": "Awan bergradasi khas Cirebon yang melambangkan ketenangan. Palet bumi memberi kesan hangat dan membumi.",
+                    "image": "megamendung.png",
                     "suggested_colors": [
                         {
                             "name": "cokelat",
@@ -4982,7 +4983,7 @@
                 {
                     "name": "Kawung Minimal",
                     "description": "Kawung dengan susunan renggang dan detail ringkas, mudah dipadukan. Warna netral membuatnya bersih dan mudah dipadukan.",
-                    "image": "kawung.png",
+                    "image": "kawung_minimal.png",
                     "suggested_colors": [
                         {
                             "name": "ivory",
@@ -5337,7 +5338,7 @@
                 {
                     "name": "Kawung Minimal",
                     "description": "Kawung dengan susunan renggang dan detail ringkas, mudah dipadukan. Warna netral membuatnya bersih dan mudah dipadukan.",
-                    "image": "kawung.png",
+                    "image": "kawung_minimal.png",
                     "suggested_colors": [
                         {
                             "name": "ivory",
@@ -5418,8 +5419,8 @@
                     ]
                 },
                 {
-                    "name": "Flora Sederhana",
-                    "description": "Flora bersulur tipis dengan banyak ruang kosong, terasa ringan. Warna pastel membuatnya terasa ringan dan lembut.",
+                    "name": "Flora Nusantara",
+                    "description": "Bunga dan dedaunan khas Nusantara yang mengalir luwes. Warna pastel membuatnya terasa ringan dan lembut.",
                     "image": "flora_nusantara.png",
                     "suggested_colors": [
                         {
@@ -5441,9 +5442,9 @@
                     ]
                 },
                 {
-                    "name": "Flora Nusantara",
-                    "description": "Bunga dan dedaunan khas Nusantara yang mengalir luwes. Warna pastel membuatnya terasa ringan dan lembut.",
-                    "image": "flora_nusantara.png",
+                    "name": "Batik Semen",
+                    "description": "Tumbuhan merambat dan ornamen alam yang melambangkan pertumbuhan. Warna pastel membuatnya terasa ringan dan lembut.",
+                    "image": "semen.png",
                     "suggested_colors": [
                         {
                             "name": "sage",
@@ -5669,7 +5670,7 @@
                 {
                     "name": "Kawung Minimal",
                     "description": "Kawung dengan susunan renggang dan detail ringkas, mudah dipadukan. Warna netral membuatnya bersih dan mudah dipadukan.",
-                    "image": "kawung.png",
+                    "image": "kawung_minimal.png",
                     "suggested_colors": [
                         {
                             "name": "ivory",
@@ -5978,7 +5979,7 @@
                 {
                     "name": "Kawung Minimal",
                     "description": "Kawung dengan susunan renggang dan detail ringkas, mudah dipadukan. Warna netral membuatnya bersih dan mudah dipadukan.",
-                    "image": "kawung.png",
+                    "image": "kawung_minimal.png",
                     "suggested_colors": [
                         {
                             "name": "ivory",

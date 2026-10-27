@@ -26,7 +26,14 @@ urlpatterns = [
     path('marketplace/', include('marketplace.urls')),
     path("rewards/", include("rewards.urls")),
     path("upcycling/", include("upcycling.urls")),
+    path('donasi/', include('donasi.urls')),
     path("batik_custom/", include("batik_custom.urls")),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT,
+    )
