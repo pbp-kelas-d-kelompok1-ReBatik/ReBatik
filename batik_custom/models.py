@@ -117,3 +117,53 @@ class RecommendedMotif(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class MotifRecommendation(models.Model):
+    """Legacy per-style and per-palette recommendation records.
+
+    New recommendations use RecommendedMotif. Keep this model mapped to its
+    existing table so migration state and previously stored records remain
+    intact while the old data can be reviewed separately.
+    """
+
+    FASHION_PREFERENCE_CHOICES = [
+        ("Women", "Women"),
+        ("Men", "Men"),
+    ]
+
+    recommendation_key = models.CharField(max_length=255, unique=True)
+    fashion_preference = models.CharField(
+        max_length=10,
+        choices=FASHION_PREFERENCE_CHOICES,
+    )
+    style = models.ForeignKey(
+        StyleOptions,
+        on_delete=models.CASCADE,
+        related_name="exact_motif_recommendations",
+    )
+    palette = models.ForeignKey(
+        ColorPalette,
+        on_delete=models.CASCADE,
+        related_name="exact_motif_recommendations",
+    )
+    name = models.CharField(max_length=150)
+    description = models.TextField(blank=True)
+    image = models.ImageField(
+        upload_to="recommended_motifs/",
+        blank=True,
+        null=True,
+    )
+    suggested_colors = models.JSONField(default=list, blank=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["fashion_preference", "name"]
+        verbose_name = "Motif Recommendation"
+        verbose_name_plural = "Motif Recommendations"
+
+    def __str__(self):
+        return (
+            f"{self.name} - {self.fashion_preference} - "
+            f"{self.style.name} - {self.palette.name}"
+        )

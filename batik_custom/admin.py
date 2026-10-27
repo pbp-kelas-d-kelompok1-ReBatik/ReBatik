@@ -5,7 +5,6 @@ from .models import (
     StyleProfile,
     FashionPreference,
     RecommendedMotif,
-    MotifRecommendation,
 )
 
 @admin.register(StyleOptions)
@@ -35,15 +34,3 @@ class RecommendedMotifAdmin(admin.ModelAdmin):
     list_filter = ("styles", "palettes", "is_active")
     search_fields = ("name",)
     filter_horizontal = ("styles", "palettes", "fashion_preference")
-
-@admin.register(MotifRecommendation)
-class MotifRecommendationAdmin(admin.ModelAdmin):
-    list_display = (
-        "name",
-        "fashion_preference",
-        "style",
-        "palette",
-        "is_active",
-    )
-    list_filter = ("fashion_preference", "style", "palette", "is_active")
-    search_fields = ("name",)

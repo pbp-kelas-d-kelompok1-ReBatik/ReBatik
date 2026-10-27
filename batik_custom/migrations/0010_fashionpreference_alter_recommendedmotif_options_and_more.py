@@ -3,6 +3,71 @@
 from django.db import migrations, models
 
 
+PREFERENCE_NAMES = {
+    "women": "WOMEN",
+    "men": "MEN",
+    "unisex": "UNISEX",
+    "semua outfit": "UNISEX",
+}
+LEGACY_PREFERENCE_NAMES = {
+    "WOMEN": "Women",
+    "MEN": "Men",
+    "UNISEX": "Unisex",
+}
+
+
+def copy_legacy_preferences(apps, schema_editor):
+    FashionPreference = apps.get_model("batik_custom", "FashionPreference")
+    RecommendedMotif = apps.get_model("batik_custom", "RecommendedMotif")
+    database = schema_editor.connection.alias
+
+    preferences = {
+        name: FashionPreference.objects.using(database).get_or_create(name=name)[0]
+        for name in ("WOMEN", "MEN", "UNISEX")
+    }
+
+    for motif in RecommendedMotif.objects.using(database).iterator():
+        legacy_value = (motif.fashion_preference or "").strip().casefold()
+        preference_name = PREFERENCE_NAMES.get(legacy_value)
+        if preference_name is None:
+            raise RuntimeError(
+                "Unknown legacy fashion preference on RecommendedMotif "
+                f"{motif.pk}: {motif.fashion_preference!r}"
+            )
+        motif.fashion_preference_new.add(preferences[preference_name])
+
+
+def restore_legacy_preferences(apps, schema_editor):
+    RecommendedMotif = apps.get_model("batik_custom", "RecommendedMotif")
+    database = schema_editor.connection.alias
+
+    for motif in RecommendedMotif.objects.using(database).iterator():
+        preference_names = list(
+            motif.fashion_preference_new.using(database).values_list(
+                "name", flat=True
+            )
+        )
+        if len(preference_names) > 1:
+            raise RuntimeError(
+                "Cannot restore multiple fashion preferences to the legacy "
+                f"single-value field on RecommendedMotif {motif.pk}."
+            )
+        if not preference_names:
+            raise RuntimeError(
+                "Cannot restore an empty fashion preference relation to the "
+                f"legacy field on RecommendedMotif {motif.pk}."
+            )
+
+        legacy_value = LEGACY_PREFERENCE_NAMES.get(preference_names[0])
+        if legacy_value is None:
+            raise RuntimeError(
+                "Unknown fashion preference while restoring "
+                f"RecommendedMotif {motif.pk}: {preference_names[0]!r}"
+            )
+        motif.fashion_preference = legacy_value
+        motif.save(using=database, update_fields=["fashion_preference"])
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -26,6 +91,19 @@ class Migration(migrations.Migration):
             name='recommendedmotif',
             options={'ordering': ['name'], 'verbose_name': 'Recommended motif', 'verbose_name_plural': 'Recommended motifs'},
         ),
+        migrations.AddField(
+            model_name='recommendedmotif',
+            name='fashion_preference_new',
+            field=models.ManyToManyField(
+                blank=True,
+                related_name='recommended_motifs',
+                to='batik_custom.fashionpreference',
+            ),
+        ),
+        migrations.RunPython(
+            copy_legacy_preferences,
+            restore_legacy_preferences,
+        ),
         migrations.RemoveField(
             model_name='recommendedmotif',
             name='fashion_preference',
@@ -40,9 +118,9 @@ class Migration(migrations.Migration):
             name='styles',
             field=models.ManyToManyField(blank=True, related_name='recommended_motifs', to='batik_custom.styleoptions'),
         ),
-        migrations.AddField(
+        migrations.RenameField(
             model_name='recommendedmotif',
-            name='fashion_preference',
-            field=models.ManyToManyField(blank=True, related_name='recommended_motifs', to='batik_custom.fashionpreference'),
+            old_name='fashion_preference_new',
+            new_name='fashion_preference',
         ),
     ]
