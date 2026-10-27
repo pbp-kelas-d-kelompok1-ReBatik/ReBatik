@@ -3,7 +3,11 @@
     --rewards-brown: var(--brown);
     --rewards-muted: var(--brown-muted);
     --rewards-tan: var(--border);
-    --rewards-accent: var(--upcycling-accent);
+    --rewards-panel: #F3EBE1;
+    --rewards-surface: #FCF9F5;
+    --rewards-card-border: #E7C9A8;
+    --rewards-accent: var(--primary-action-accent);
+    --rewards-soft: #F0E2D5;
     position: relative;
     isolation: isolate;
     overflow: hidden;
@@ -76,9 +80,9 @@
     max-width: 1152px;
     margin: 0 auto;
     padding: 32px;
-    border: 1px solid var(--upcycling-card-border);
+    border: 1px solid var(--rewards-card-border);
     border-radius: 16px;
-    background: var(--upcycling-panel);
+    background: var(--rewards-panel);
     color: var(--brown);
     box-shadow: 0 25px 50px -12px rgb(0 0 0 / 25%);
 }
@@ -130,9 +134,9 @@
     overflow: hidden;
     margin-top: 22px;
     padding: 22px 28px;
-    border: 1px solid var(--upcycling-card-border);
+    border: 1px solid var(--rewards-card-border);
     border-radius: 16px;
-    background: var(--upcycling-surface);
+    background: var(--rewards-surface);
     box-shadow: 0 8px 22px rgb(74 46 41 / 12%);
 }
 
@@ -173,9 +177,9 @@
     width: fit-content;
     margin-top: 8px;
     padding: 6px 14px;
-    border: 1px solid var(--upcycling-card-border);
+    border: 1px solid var(--rewards-card-border);
     border-radius: 9999px;
-    background: var(--upcycling-soft);
+    background: var(--rewards-soft);
     color: var(--brown);
     font-family: "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
     font-size: 1.05rem;
@@ -223,7 +227,7 @@
     padding: 10px;
     border: 1px solid var(--border);
     border-radius: 16px;
-    background: linear-gradient(135deg, var(--upcycling-surface), var(--upcycling-panel));
+    background: linear-gradient(135deg, var(--rewards-surface), var(--rewards-panel));
 }
 
 .level-ladder {
@@ -251,7 +255,7 @@
 }
 
 .level-tier.is-current {
-    border-color: var(--upcycling-accent);
+    border-color: var(--rewards-accent);
     background: var(--cream-light);
     border-radius: 0 0 10px 10px;
 }
@@ -288,7 +292,7 @@
     padding: 16px 14px;
     border: 1px solid var(--border);
     border-radius: 16px;
-    background: var(--upcycling-surface);
+    background: var(--rewards-surface);
     text-align: center;
     box-shadow: 0 5px 14px rgb(74 46 41 / 8%);
 }
@@ -305,6 +309,171 @@
     color: var(--rewards-muted);
     font-size: 1rem;
     font-weight: 400;
+}
+
+.earning-guide {
+    margin-top: 18px;
+}
+
+.earning-guide-details {
+    overflow: hidden;
+    border: 1px solid var(--rewards-card-border);
+    border-radius: 16px;
+    background: var(--rewards-surface);
+    box-shadow: 0 5px 14px rgb(74 46 41 / 8%);
+}
+
+.earning-guide-details > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 15px 18px;
+    color: var(--brown);
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 700;
+    list-style: none;
+}
+
+.earning-guide-details > summary::-webkit-details-marker {
+    display: none;
+}
+
+.earning-guide-details > summary::after {
+    content: "+";
+    flex: 0 0 auto;
+    color: var(--rewards-muted);
+    font-family: "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+.earning-guide-details[open] > summary {
+    border-bottom: 1px solid var(--border);
+}
+
+.earning-guide-details[open] > summary::after {
+    content: "−";
+}
+
+.earning-guide-details > summary:focus-visible {
+    outline: 2px solid var(--brown);
+    outline-offset: -3px;
+}
+
+.earning-guide-content {
+    display: grid;
+    gap: 18px;
+    padding: 18px;
+    background: var(--rewards-panel);
+}
+
+.earning-guide-intro {
+    margin: 0;
+    color: var(--rewards-muted);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.earning-guide-steps {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 10px;
+}
+
+.earning-guide-step {
+    min-height: 142px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgb(74 46 41 / 10%);
+}
+
+.earning-guide-step h3 {
+    margin: 8px 0 4px;
+    color: var(--brown);
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.earning-guide-step p {
+    margin: 0;
+    color: var(--brown-muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.45;
+}
+
+.earning-guide-step-arrow {
+    color: var(--rewards-accent);
+    font-family: "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
+    font-size: 1.35rem;
+}
+
+.earning-guide-points {
+    padding: 18px 22px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgb(74 46 41 / 8%);
+}
+
+.earning-guide-kicker {
+    margin: 0 0 10px;
+    color: var(--brown);
+    font-family: "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.025em;
+}
+
+.earning-guide-point-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.earning-guide-point-row {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 0;
+    border-bottom: 1px solid rgb(214 191 175 / 40%);
+    color: var(--brown);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.earning-guide-point-row:last-child {
+    border-bottom: 0;
+}
+
+.earning-guide-point-row strong {
+    min-width: 68px;
+    padding: 5px 13px;
+    border-radius: 999px;
+    background: var(--rewards-soft);
+    color: var(--brown);
+    font-size: 0.95rem;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.earning-guide-tier-heading {
+    margin-top: 16px;
+}
+
+.earning-guide-note {
+    margin: 12px 0 0;
+    color: var(--brown-muted);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
 }
 
 .donate-fabric-action {
@@ -324,7 +493,7 @@
     padding: 0 20px;
     border: 1px solid var(--border);
     border-radius: 16px;
-    background: var(--upcycling-surface);
+    background: var(--rewards-surface);
 }
 
 .history-row {
@@ -432,7 +601,7 @@
 }
 
 .history-filters a:not([aria-current="page"]):hover {
-    background: var(--upcycling-soft);
+    background: var(--rewards-soft);
 }
 
 .history-filters a:focus-visible,
@@ -471,7 +640,7 @@
 
 .history-pagination a {
     padding: 7px 15px;
-    border: 1px solid var(--upcycling-accent);
+    border: 1px solid var(--rewards-accent);
     border-radius: 999px;
     background: linear-gradient(180deg, #7f5237 0%, #432e2b 100%);
     color: var(--cream-light);
@@ -532,6 +701,40 @@
     .rewards-stats {
         grid-template-columns: 1fr;
         gap: 10px;
+    }
+
+    .earning-guide-content {
+        padding: 10px;
+        gap: 12px;
+    }
+
+    .earning-guide-steps {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+    }
+
+    .earning-guide-step {
+        min-height: 0;
+        padding: 14px;
+    }
+
+    .earning-guide-step-arrow {
+        justify-self: center;
+        transform: rotate(90deg);
+    }
+
+    .earning-guide-points {
+        padding: 14px 12px;
+    }
+
+    .earning-guide-point-row {
+        gap: 8px;
+        font-size: 0.95rem;
+    }
+
+    .earning-guide-point-row strong {
+        min-width: 60px;
+        padding: 5px 9px;
     }
 
     .rewards-stat-card {

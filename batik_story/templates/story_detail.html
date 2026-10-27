@@ -1,0 +1,36 @@
+<div class="story-detail">
+    <div class="story-detail-image">
+        {% if story.gambar %}
+        <img src="{{ story.gambar.url }}" alt="{{ story.nama }}">
+        {% endif %}
+    </div>
+
+    <div class="story-detail-content">
+        <p class="story-detail-location">
+            ✥ {{ story.get_asal_display }}
+        </p>
+
+        <h2>{{ story.nama }}</h2>
+
+        <div class="story-detail-tags">
+            <span>Filosofi</span>
+            <span>Warisan</span>
+            <span>Nusantara</span>
+        </div>
+
+        <section>
+            <h3>Sejarah</h3>
+            <p>{{ story.deskripsi|linebreaksbr }}</p>
+        </section>
+
+        <section>
+            <h3>Filosofi</h3>
+            <p>{{ story.filosofi|linebreaksbr }}</p>
+        </section>
+
+        <section>
+            <h3>Makna</h3>
+            <p>{{ story.filosofi|linebreaksbr }}</p>
+        </section>
+    </div>
+</div>

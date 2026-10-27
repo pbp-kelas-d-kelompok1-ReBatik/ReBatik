@@ -1,0 +1,567 @@
+.add-batik-page {
+    width: 100%;
+    min-width: 0;
+    min-height: 100vh;
+    margin: 0;
+    color: #654332;
+    background: #f3ebe1;
+    overflow-x: clip;
+    font-family: "Garamond", Georgia, serif;
+}
+
+.add-batik-page *,
+.add-batik-page *::before,
+.add-batik-page *::after {
+    box-sizing: border-box;
+}
+
+/* Area utama */
+.add-batik-page > section {
+    width: 100%;
+    min-height: auto;
+    padding: 40px 20px 64px;
+    background: #f3ebe1;
+}
+
+/* Kartu form */
+.add-batik-page > section > div {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 36px 40px;
+    border: 1px solid #e8d7c5;
+    border-radius: 24px;
+    background: #fffdf9;
+    box-shadow: 0 12px 35px rgba(91, 60, 39, 0.08);
+}
+
+/* Breadcrumb */
+.add-batik-page > section > div > p:first-child {
+    margin: 0 0 20px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    line-height: 1.5;
+    color: #8a674e;
+}
+
+/* Judul */
+.add-batik-page h1 {
+    margin: 0;
+    color: #603b2b;
+    font-size: clamp(32px, 4vw, 46px);
+    font-weight: 700;
+    line-height: 1.15;
+    text-align: center;
+}
+
+/* Garis dekorasi di bawah judul */
+.add-batik-page h1::after {
+    content: "";
+    display: block;
+    width: 76px;
+    height: 3px;
+    margin: 18px auto 20px;
+    border-radius: 999px;
+    background: #d9a441;
+}
+
+/* Deskripsi pembuka */
+.add-batik-page h1 + p {
+    margin: 0;
+    color: #84644f;
+    font-size: 17px;
+    line-height: 1.65;
+    text-align: center;
+}
+
+/* Form */
+.add-batik-page .batik-form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    width: 100%;
+    margin-top: 32px;
+}
+
+/* Kelompok field */
+.add-batik-page .batik-form > div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.add-batik-page .batik-form label {
+    display: block;
+    margin-bottom: 8px;
+    color: #704523;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+/* Input dan dropdown */
+.add-batik-page .batik-form input:not([type="checkbox"]):not([type="radio"]),
+.add-batik-page .batik-form select,
+.add-batik-page .batik-form textarea {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 13px 15px;
+    border: 1px solid #e3cdb9;
+    border-radius: 12px;
+    outline: none;
+    background: #ffffff;
+    color: #654332;
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 1.5;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Tinggi input biasa */
+.add-batik-page .batik-form input:not([type="file"]):not([type="checkbox"]):not([type="radio"]),
+.add-batik-page .batik-form select {
+    min-height: 50px;
+}
+
+/* Input unggah gambar */
+.add-batik-page .batik-form input[type="file"] {
+    min-height: 50px;
+    padding: 9px;
+    font-size: 14px;
+}
+
+/* Area teks */
+.add-batik-page .batik-form textarea {
+    min-height: 125px;
+    resize: vertical;
+}
+
+/* Fokus input */
+.add-batik-page .batik-form input:focus,
+.add-batik-page .batik-form select:focus,
+.add-batik-page .batik-form textarea:focus {
+    border-color: #b58a51;
+    box-shadow: 0 0 0 3px rgba(181, 138, 81, 0.15);
+}
+
+/* Placeholder */
+.add-batik-page .batik-form input::placeholder,
+.add-batik-page .batik-form textarea::placeholder {
+    color: #b29b88;
+}
+
+/* Pesan error */
+.add-batik-page .batik-form .text-red-800 {
+    margin-top: 6px;
+    color: #a52f2f;
+    font-size: 14px;
+}
+
+.add-batik-page .batik-form ul.errorlist {
+    margin: 0;
+    padding-left: 20px;
+    color: #a34235;
+    font-size: 14px;
+}
+
+/* Bagian tombol */
+.add-batik-page .batik-form > div:last-child {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 6px;
+    padding-top: 22px;
+    border-top: 1px solid #eadfd3;
+}
+
+.add-batik-page .batik-form a {
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.add-batik-page .batik-form button {
+    min-height: 46px;
+    padding: 12px 20px;
+    border-radius: 11px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.add-batik-page .batik-form button:hover {
+    transform: translateY(-1px);
+}
+
+/* Tombol simpan */
+.add-batik-page .batik-form button[type="submit"] {
+    border: 1px solid #a34235;
+    background: #a34235;
+    color: #ffffff;
+}
+
+.add-batik-page .batik-form button[type="submit"]:hover {
+    background: #87372b;
+}
+
+/* Tombol batal */
+.add-batik-page .batik-form #cancel-batik-btn {
+    background: #fffdfa;
+    border: 1px solid #654a39;
+    color: black;
+}
+
+.add-batik-page .batik-form #cancel-batik-btn:hover {
+    background: #f3ebe1;
+}
+
+/* Modal pembatalan tetap menggunakan CSS yang sudah ada */
+.add-batik-page .cancel-modal {
+    z-index: 1000;
+}
+
+/* Responsif tablet dan HP */
+@media (max-width: 768px) {
+    .add-batik-page > section {
+        padding: 26px 16px 40px;
+    }
+
+    .add-batik-page > section > div {
+        padding: 26px 22px;
+        border-radius: 18px;
+    }
+
+    .add-batik-page h1 {
+        font-size: 34px;
+    }
+
+    .add-batik-page h1 + p {
+        font-size: 16px;
+    }
+
+    .add-batik-page .batik-form {
+        gap: 19px;
+        margin-top: 26px;
+    }
+}
+
+@media (max-width: 480px) {
+    .add-batik-page > section {
+        padding: 20px 12px 32px;
+    }
+
+    .add-batik-page > section > div {
+        padding: 22px 16px;
+    }
+
+    .add-batik-page h1 {
+        font-size: 30px;
+    }
+
+    .add-batik-page .batik-form > div:last-child {
+        flex-direction: column-reverse;
+    }
+
+    .add-batik-page .batik-form button {
+        width: 100%;
+    }
+}
+
+.cancel-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transition:
+        opacity .3s ease,
+        visibility .3s ease;
+}
+
+.cancel-modal.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* Latar gelap di belakang modal */
+.cancel-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(42, 30, 23, .68);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+/* Kotak utama modal */
+.cancel-modal-content {
+    position: relative;
+    z-index: 1;
+
+    width: min(100%, 795px);
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    box-sizing: border-box;
+
+    padding: 30px 60px 38px;
+    border: 1px solid rgba(217, 170, 83, .28);
+    border-radius: 30px;
+
+    background:
+        radial-gradient(
+            circle at 50% 16%,
+            rgba(244, 229, 207, .9),
+            transparent 36%
+        ),
+        #fff8ed;
+
+    box-shadow: 0 28px 90px rgba(40, 24, 15, .28);
+    text-align: center;
+
+    transform: translateY(18px) scale(.97);
+    transition: transform .3s ease;
+}
+
+.cancel-modal.is-open .cancel-modal-content {
+    transform: translateY(0) scale(1);
+}
+
+.cancel-mascot-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 290px;
+    height: 280px;
+    max-width: 100%;
+    margin: 0 auto 12px;
+}
+
+.mascot-glow {
+    position: absolute;
+    width: 230px;
+    height: 230px;
+    border-radius: 50%;
+    background: #f4e7d5;
+}
+
+.cancel-mascot {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    animation: mascot-sad 3s ease-in-out infinite;
+}
+
+.mascot-accent {
+    position: absolute;
+    z-index: 2;
+    color: #a34235;
+    font-family: Georgia, serif;
+    font-size: 35px;
+    font-weight: 700;
+}
+
+.accent-one {
+    top: 40px;
+    right: 40px;
+    transform: rotate(-12deg);
+}
+
+.accent-two {
+    top: 65px;
+    right: 24px;
+    font-size: 28px;
+    transform: rotate(10deg);
+}
+
+.cancel-eyebrow {
+    margin: 0 0 16px;
+    color: #c58b5b;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .2em;
+}
+
+.cancel-modal-content h2 {
+    margin: 0;
+
+    color: #65432f;
+    font-family: "EB Garamond", Georgia, serif;
+    font-size: clamp(30px, 4vw, 46px);
+    font-weight: 700;
+    line-height: 1.15;
+}
+
+.cancel-decoration {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    margin: 20px 0;
+    color: #b88d72;
+}
+
+.cancel-decoration span {
+    width: 75px;
+    height: 1px;
+    background: #c8a58b;
+}
+
+.cancel-decoration i {
+    font-size: 22px;
+    font-style: normal;
+}
+
+.cancel-description {
+    max-width: 600px;
+    margin: 0 auto;
+
+    color: #8a6b58;
+    font-family: "EB Garamond", Georgia, serif;
+    font-size: 21px;
+    line-height: 1.55;
+}
+
+.cancel-modal-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+
+    margin-top: 36px;
+}
+
+.cancel-modal-actions button {
+    min-height: 74px;
+    padding: 15px 22px;
+
+    border-radius: 17px;
+    font-family: "EB Garamond", Georgia, serif;
+    font-size: 22px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        transform .2s ease,
+        background .2s ease,
+        box-shadow .2s ease;
+}
+
+.cancel-modal-actions button:hover {
+    transform: translateY(-2px);
+}
+
+/* Lanjut mengisi */
+.continue-editing-btn {
+    border: 1.5px solid #8c411d;
+    background: transparent;
+    color: #65432f;
+}
+
+.continue-editing-btn:hover {
+    background: #f4e8d9;
+}
+
+/* Ya, batalkan */
+.confirm-cancel-btn {
+    border: 1px solid #a34235;
+    background: #ad4938;
+    color: #fffaf3;
+
+    box-shadow: 0 6px 14px rgba(117, 54, 35, .18);
+}
+
+.confirm-cancel-btn:hover {
+    background: #8f382b;
+    box-shadow: 0 8px 18px rgba(117, 54, 35, .24);
+}
+
+/* Kunci scroll ketika modal aktif */
+body.modal-open {
+    overflow: hidden;
+}
+
+@media (max-width: 600px) {
+    .cancel-modal {
+        padding: 16px;
+    }
+
+    .cancel-modal-content {
+        padding: 24px 20px;
+        border-radius: 24px;
+    }
+
+    .cancel-mascot-wrap {
+        width: 210px;
+        height: 190px;
+    }
+
+    .mascot-glow {
+        width: 165px;
+        height: 165px;
+    }
+
+    .cancel-description {
+        font-size: 17px;
+    }
+
+    .cancel-modal-actions {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-top: 26px;
+    }
+
+    .cancel-modal-actions button {
+        min-height: 54px;
+        font-size: 19px;
+    }
+
+    .accent-one {
+        right: 25px;
+    }
+
+    .accent-two {
+        right: 12px;
+    }
+}
+
+/* Hormati preferensi pengurangan animasi */
+@media (prefers-reduced-motion: reduce) {
+    .cancel-modal,
+    .cancel-modal-content,
+    .cancel-modal-actions button,
+    .cancel-mascot {
+        transition: none;
+        animation: none;
+    }
+}
+
+@keyframes mascot-sad {
+    0%, 100% {
+        transform: translateY(0) rotate(0);
+    }
+
+    50% {
+        transform: translateY(-5px) rotate(-1deg);
+    }
+}
