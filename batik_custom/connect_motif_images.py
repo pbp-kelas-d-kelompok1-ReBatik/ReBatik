@@ -32,7 +32,7 @@ IMAGE_MAP = {
 
 
 def connect_images():
-    image_dir = Path(settings.MEDIA_ROOT) / "recommended_motifs"
+    image_dir = Path(settings.BASE_DIR) / "static" / "img" / "catalog" / "recommended_motifs"
     updated = 0
 
     if not image_dir.is_dir():
@@ -51,9 +51,7 @@ def connect_images():
             print(f"Gambar belum ditemukan untuk: {motif.name}")
             continue
 
-        relative_path = files[0].relative_to(
-            Path(settings.MEDIA_ROOT)
-        ).as_posix()
+        relative_path = Path("img/catalog/recommended_motifs", files[0].name).as_posix()
 
         motif.image.name = relative_path
         motif.save(update_fields=["image"])

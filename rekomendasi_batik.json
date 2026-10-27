@@ -141,7 +141,7 @@
             ]
         }
     ],
-    "image_folder": "media/recommended_motifs/",
+    "image_folder": "static/img/catalog/recommended_motifs/",
     "motif_images": [
         "ceplok.png",
         "flora_nusantara.png",
