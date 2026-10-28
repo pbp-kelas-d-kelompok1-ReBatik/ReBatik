@@ -1111,7 +1111,7 @@
     line-height: 1.2;
 }
 
-.recommended-heading > p:last-child {
+.recommended-heading>p:last-child {
     color: #756b61;
     line-height: 1.7;
 }
@@ -1206,6 +1206,7 @@
     line-height: 1.7;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
 }
 
 .motif-select {
@@ -1259,5 +1260,179 @@
 
     .motif-image-wrapper {
         height: 230px;
+    }
+}
+
+.motif-select {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    border: none;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+}
+
+
+.motif-modal {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 99999 !important;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.motif-modal.is-open {
+    display: flex !important;
+}
+
+.motif-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(35, 26, 19, .65);
+    backdrop-filter: blur(6px);
+}
+
+.motif-modal-card {
+    position: relative;
+    z-index: 1;
+    width: min(900px, 100%);
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 36px 42px;
+    background: #fff6e8;
+    border: 2px solid #e5c39e;
+    border-radius: 26px;
+    color: #68452f;
+    box-shadow: 0 24px 80px #0003;
+}
+
+.motif-modal-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    z-index: 2;
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 50%;
+    background: #fffaf2;
+    color: #68452f;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.motif-modal-visual {
+    display: grid;
+    grid-template-columns: .85fr 1.15fr;
+    align-items: center;
+    gap: 24px;
+    margin: 10px 0 24px;
+}
+
+.motif-modal-mascot {
+    display: block;
+    width: 100%;
+    max-width: 270px;
+    max-height: 270px;
+    object-fit: contain;
+    justify-self: center;
+}
+
+.motif-modal-image-wrap {
+    width: 100%;
+    aspect-ratio: 5 / 4;
+    overflow: hidden;
+    border: 7px solid white;
+    border-radius: 18px;
+    background: #ead7bd;
+    box-sizing: border-box;
+}
+
+.motif-modal-image-wrap img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.motif-modal-content {
+    text-align: center;
+}
+
+.motif-modal-content h2 {
+    max-width: 650px;
+    margin: 12px auto;
+    font: 600 clamp(27px, 4vw, 42px)/1.15 Garamond, Georgia, serif;
+}
+
+.motif-modal-content h3 {
+    margin: 8px 0;
+    font: 600 27px Garamond, Georgia, serif;
+}
+
+.motif-modal-content>p:last-of-type {
+    color: #8e7057;
+    line-height: 1.7;
+}
+
+.motif-modal-actions {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 16px;
+    margin-top: 28px;
+}
+
+.motif-modal-actions button {
+    min-height: 56px;
+    padding: 12px 18px;
+    border-radius: 14px;
+    font: 600 17px Garamond, Georgia, serif;
+    cursor: pointer;
+}
+
+.motif-modal-cancel {
+    background: transparent;
+    border: 1.5px solid #80583d;
+    color: #68452f;
+}
+
+.motif-modal-confirm {
+    background: #68452f;
+    border: 1.5px solid #68452f;
+    color: white;
+}
+
+body.modal-open {
+    overflow: hidden;
+}
+
+@media (max-width: 600px) {
+    .motif-modal {
+        padding: 12px;
+    }
+
+    .motif-modal-card {
+        padding: 54px 20px 22px;
+        max-height: calc(100vh - 24px);
+    }
+
+    .motif-modal-visual {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .motif-modal-mascot {
+        width: 130px;
+        height: 130px;
+    }
+
+    .motif-modal-actions {
+        grid-template-columns: 1fr;
     }
 }
