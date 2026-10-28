@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<title>Edit Profil | ReBatik</title>
+{% endblock meta %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+{% endblock css %}
+
+{% block content %}
+
+<div class="profile-page">
+
+    <header class="profile-heading">
+        <p class="profile-eyebrow">REBATIK MEMBER</p>
+        <h1>Edit Profil</h1>
+        <p>Perbarui informasi profilmu.</p>
+    </header>
+
+    <section class="profile-shell">
+
+        <div id="profile-content">
+            {% include "profiles/partials/profile_edit_form.html" %}
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock content %}

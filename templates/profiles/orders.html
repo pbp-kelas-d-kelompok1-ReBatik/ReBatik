@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<title>Pesanan Saya | ReBatik</title>
+{% endblock meta %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+{% endblock css %}
+
+{% block content %}
+
+<div class="profile-page">
+
+    <header class="profile-heading">
+        <p class="profile-eyebrow">REBATIK MEMBER</p>
+        <h1>Pesanan Saya</h1>
+        <p>
+            Pantau riwayat pembelian produk hasil upcycling.
+        </p>
+    </header>
+
+    <section class="profile-card profile-order-panel">
+
+        <form
+            method="get"
+            class="profile-search"
+            aria-label="Pencarian pesanan"
+        >
+            <input
+                type="search"
+                name="q"
+                placeholder="Cari pesanan..."
+                aria-label="Cari pesanan"
+                disabled
+            >
+        </form>
+
+        <div class="profile-order-empty">
+
+            <div class="profile-order-icon" aria-hidden="true">
+                <span>RB</span>
+            </div>
+
+            <h2>Belum Ada Pesanan</h2>
+
+            <p>
+                Riwayat pembelian akan ditampilkan di sini
+                setelah fitur checkout Marketplace tersedia.
+            </p>
+
+            <a
+                href="{% url 'marketplace:home' %}"
+                class="profile-button"
+            >
+                Jelajahi Marketplace
+            </a>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock content %}

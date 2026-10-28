@@ -1,0 +1,79 @@
+<article class="profile-card profile-account-card">
+
+    <div class="profile-account-top">
+        <div class="profile-avatar">
+            {% if profile.avatar %}
+                <img
+                    src="{{ profile.avatar.url }}"
+                    alt="Foto profil {{ profile.display_name }}"
+                >
+            {% else %}
+                <span>
+                    {{ profile.display_name|first|upper }}
+                </span>
+            {% endif %}
+        </div>
+
+        <div class="profile-account-info">
+            <p class="profile-eyebrow">AKUN REBATIK</p>
+            <h2>{{ profile.display_name }}</h2>
+            <p>@{{ request.user.username }}</p>
+        </div>
+    </div>
+
+    <div class="profile-details">
+
+        <div class="profile-detail-item">
+            <span>Email</span>
+            <p>{{ request.user.email|default:"Belum diisi" }}</p>
+        </div>
+
+        <div class="profile-detail-item">
+            <span>Nomor Telepon</span>
+            <p>
+                {{ profile.phone_number|default:"Belum diisi" }}
+            </p>
+        </div>
+
+        <div class="profile-detail-item">
+            <span>Alamat</span>
+            <p>{{ profile.address|default:"Belum diisi" }}</p>
+        </div>
+
+        <div class="profile-detail-item">
+            <span>Tentang Saya</span>
+            <p>{{ profile.bio|default:"Belum ada deskripsi." }}</p>
+        </div>
+
+    </div>
+
+    <div class="profile-card-actions">
+
+        <button
+            type="button"
+            class="profile-button"
+            hx-get="{% url 'profiles:edit' %}"
+            hx-target="#profile-content"
+            hx-swap="innerHTML"
+        >
+            Edit Profil
+        </button>
+
+        <form
+            method="post"
+            action="{% url 'profiles:delete' %}"
+            onsubmit="return confirm('Hapus data profil kamu?');"
+        >
+            {% csrf_token %}
+
+            <button
+                type="submit"
+                class="profile-button profile-button-danger"
+            >
+                Hapus Profil
+            </button>
+        </form>
+
+    </div>
+
+</article>
