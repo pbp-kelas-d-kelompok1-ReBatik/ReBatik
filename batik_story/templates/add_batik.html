@@ -30,10 +30,10 @@
                 Abadikan keindahan, sejarah, dan filosofi motif batik Nusantara.
             </p>
 
-            <!-- PESAN BERHASIL -->
+            <!-- PESAN NOTIFIKASI -->
             {% if messages %}
             {% for message in messages %}
-            <div class="mt-5 rounded-xl bg-green-100 p-4 text-sm text-green-800">
+            <div class="mt-5 rounded-xl bg-green-100 p-4 text-sm text-green-800" role="status">
                 {{ message }}
             </div>
             {% endfor %}
@@ -41,10 +41,11 @@
 
             <!-- FORM TAMBAH BATIK -->
             <form method="POST" enctype="multipart/form-data" class="batik-form mt-8 space-y-5">
+
                 {% csrf_token %}
 
                 {% if form.non_field_errors %}
-                <div class="rounded-xl bg-red-100 p-4 text-sm text-red-800">
+                <div class="rounded-xl bg-red-100 p-4 text-sm text-red-800" role="alert">
                     {{ form.non_field_errors }}
                 </div>
                 {% endif %}
@@ -58,7 +59,7 @@
                     {{ form.nama }}
 
                     {% if form.nama.errors %}
-                    <div class="text-sm text-red-800">
+                    <div class="text-sm text-red-800" role="alert">
                         {{ form.nama.errors }}
                     </div>
                     {% endif %}
@@ -73,7 +74,7 @@
                     {{ form.asal }}
 
                     {% if form.asal.errors %}
-                    <div class="text-sm text-red-800">
+                    <div class="text-sm text-red-800" role="alert">
                         {{ form.asal.errors }}
                     </div>
                     {% endif %}
@@ -88,7 +89,7 @@
                     {{ form.gambar }}
 
                     {% if form.gambar.errors %}
-                    <div class="text-sm text-red-800">
+                    <div class="text-sm text-red-800" role="alert">
                         {{ form.gambar.errors }}
                     </div>
                     {% endif %}
@@ -103,7 +104,7 @@
                     {{ form.deskripsi }}
 
                     {% if form.deskripsi.errors %}
-                    <div class="text-sm text-red-800">
+                    <div class="text-sm text-red-800" role="alert">
                         {{ form.deskripsi.errors }}
                     </div>
                     {% endif %}
@@ -118,7 +119,7 @@
                     {{ form.filosofi }}
 
                     {% if form.filosofi.errors %}
-                    <div class="text-sm text-red-800">
+                    <div class="text-sm text-red-800" role="alert">
                         {{ form.filosofi.errors }}
                     </div>
                     {% endif %}
@@ -144,23 +145,23 @@
         </div>
     </section>
 
-
     <!-- MODAL KONFIRMASI PEMBATALAN -->
     <div id="cancel-modal" class="cancel-modal" aria-hidden="true">
+
         <div class="cancel-modal-backdrop" data-close-modal></div>
 
         <div class="cancel-modal-content" role="dialog" aria-modal="true" aria-labelledby="cancel-title"
             aria-describedby="cancel-description" tabindex="-1">
 
-            <!-- MASCOT MENANGIS -->
+            <!-- MASKOT MENANGIS -->
             <div class="cancel-mascot-wrap">
                 <div class="mascot-glow"></div>
 
                 <img src="{% static 'img/story/nangis.png' %}" alt="Maskot ReBatik sedang menangis"
                     class="cancel-mascot">
 
-                <span class="mascot-accent accent-one">〃</span>
-                <span class="mascot-accent accent-two">!</span>
+                <span class="mascot-accent accent-one" aria-hidden="true">〃</span>
+                <span class="mascot-accent accent-two" aria-hidden="true">!</span>
             </div>
 
             <p class="cancel-eyebrow">
@@ -171,7 +172,7 @@
                 Yakin Ingin Membatalkan?
             </h2>
 
-            <div class="cancel-decoration">
+            <div class="cancel-decoration" aria-hidden="true">
                 <span></span>
                 <i>✥</i>
                 <span></span>
@@ -195,13 +196,11 @@
                 </button>
 
             </div>
-
         </div>
     </div>
 
 </main>
 {% endblock content %}
-
 
 {% block extra_js %}
 <script src="{% static 'js/add_batik.js' %}" defer></script>
