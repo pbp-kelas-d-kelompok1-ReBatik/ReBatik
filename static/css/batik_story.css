@@ -1810,3 +1810,21 @@ input[type="file"].form-input {
         animation: none;
     }
 }
+
+.edit_story-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    border: 1px solid #c99b45;
+    border-radius: 6px;
+    color: #8b6537;
+    text-decoration: none;
+    font-size: 14px;
+    background: transparent;
+}
+
+.edit_story-btn:hover {
+    background: #c99b45;
+    color: white;
+}

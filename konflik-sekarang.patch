@@ -1,0 +1,438 @@
+* Unmerged path batik_story/templates/story_detail.html
+* Unmerged path batik_story/templates/story_edit.html
+* Unmerged path static/img/catalog/recommended_motifs/megamendung.png
+* Unmerged path static/img/catalog/recommended_motifs/parang.png
+* Unmerged path static/css/custom/studio.css
+diff --git a/static/css/custom/studio.css b/static/css/custom/studio.css
+deleted file mode 100644
+index 3cf07c6..0000000
+--- a/static/css/custom/studio.css
++++ /dev/null
+@@ -1,402 +0,0 @@
+-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+-
+-:root {
+-    --ink: #21372d;
+-    --muted: #7a817b;
+-    --green: #254b3a;
+-    --gold: #d4b36c;
+-    --paper: #f7f6f1;
+-    --line: #e8e8df;
+-}
+-
+-* {
+-    box-sizing: border-box;
+-}
+-
+-body {
+-    margin: 0;
+-    color: var(--ink);
+-    background: var(--paper);
+-    font-family: 'DM Sans', sans-serif;
+-}
+-
+-.site-header {
+-    height: 70px;
+-    padding: 0 6%;
+-    background: #fff;
+-    display: flex;
+-    align-items: center;
+-    justify-content: space-between;
+-    border-bottom: 1px solid var(--line);
+-}
+-
+-.brand {
+-    color: var(--green);
+-    font-family: 'Playfair Display', serif;
+-    font-size: 27px;
+-    font-weight: 700;
+-    text-decoration: none;
+-}
+-
+-.brand span {
+-    color: #b38b3e;
+-}
+-
+-.header-label,
+-.eyebrow {
+-    font-size: 10px;
+-    letter-spacing: 2px;
+-    font-weight: 700;
+-    color: #9b885c;
+-}
+-
+-.studio {
+-    width: min(1160px, 92%);
+-    margin: 36px auto;
+-}
+-
+-.intro {
+-    margin-bottom: 28px;
+-}
+-
+-.intro .eyebrow {
+-    margin-bottom: 10px;
+-}
+-
+-h1,
+-h2 {
+-    font-family: 'Playfair Display', serif;
+-}
+-
+-h1 {
+-    font-size: clamp(30px, 4vw, 43px);
+-    margin: 0 0 8px;
+-}
+-
+-.intro>p:last-child {
+-    color: var(--muted);
+-    margin: 0;
+-}
+-
+-.studio-layout {
+-    display: grid;
+-    grid-template-columns: minmax(0, 1.15fr) minmax(340px, .85fr);
+-    gap: 22px;
+-    align-items: start;
+-}
+-
+-.preview-panel,
+-.controls-panel {
+-    background: #fff;
+-    border: 1px solid var(--line);
+-    border-radius: 16px;
+-    padding: 24px;
+-    min-width: 0;
+-}
+-
+-.panel-heading {
+-    display: flex;
+-    justify-content: space-between;
+-    align-items: center;
+-    gap: 12px;
+-}
+-
+-.panel-heading .eyebrow {
+-    margin: 0 0 7px;
+-}
+-
+-h2 {
+-    font-size: 23px;
+-    margin: 0;
+-}
+-
+-.preview-tag {
+-    background: #edf3ed;
+-    color: #365d46;
+-    border-radius: 30px;
+-    padding: 7px 10px;
+-    font-size: 11px;
+-    white-space: nowrap;
+-}
+-
+-.shirt-stage {
+-    position: relative;
+-    margin-top: 18px;
+-    min-height: 430px;
+-    display: grid;
+-    place-items: center;
+-    overflow: hidden;
+-    border-radius: 12px;
+-    background: radial-gradient(ellipse at center, #fff 0%, #f2f0e9 75%);
+-}
+-
+-#shirtSvg {
+-    width: min(100%, 380px);
+-    height: auto;
+-    filter: drop-shadow(0 12px 12px #172c2018);
+-}
+-
+-.stage-caption {
+-    position: absolute;
+-    left: 16px;
+-    top: 16px;
+-    font-size: 11px;
+-    color: #969990;
+-}
+-
+-.preview-footer {
+-    display: flex;
+-    align-items: center;
+-    justify-content: space-between;
+-    gap: 12px;
+-    padding-top: 15px;
+-    font-size: 11px;
+-    color: var(--muted);
+-}
+-
+-.status-dot {
+-    display: inline-block;
+-    width: 7px;
+-    height: 7px;
+-    border-radius: 50%;
+-    background: #6b9a69;
+-    margin-right: 6px;
+-}
+-
+-.control-group {
+-    border: 0;
+-    border-bottom: 1px solid var(--line);
+-    padding: 20px 0;
+-    margin: 0;
+-    min-width: 0;
+-}
+-
+-.control-group legend {
+-    padding: 0;
+-    font-weight: 700;
+-    font-size: 13px;
+-    margin-bottom: 13px;
+-}
+-
+-.step {
+-    color: #b08a45;
+-    margin-right: 8px;
+-    font-size: 11px;
+-    letter-spacing: 1px;
+-}
+-
+-.model-options {
+-    display: grid;
+-    grid-template-columns: 1fr 1fr;
+-    gap: 10px;
+-}
+-
+-.model-option input,
+-.motif-option input,
+-.color-options input {
+-    position: absolute;
+-    opacity: 0;
+-    pointer-events: none;
+-}
+-
+-.option-card {
+-    min-height: 70px;
+-    border: 1px solid var(--line);
+-    border-radius: 10px;
+-    display: flex;
+-    flex-direction: column;
+-    justify-content: center;
+-    align-items: center;
+-    gap: 5px;
+-    font-size: 11px;
+-    cursor: pointer;
+-}
+-
+-.mini-shirt {
+-    font-size: 24px;
+-    color: #597565;
+-}
+-
+-.model-option input:checked+.option-card,
+-.motif-option input:checked+.motif-swatch {
+-    outline: 2px solid #55795d;
+-    outline-offset: 1px;
+-    border-color: #55795d;
+-}
+-
+-.help-text {
+-    color: #939890;
+-    font-size: 10px;
+-    margin: 9px 0 0;
+-}
+-
+-.motif-options {
+-    display: grid;
+-    grid-template-columns: repeat(3, minmax(0, 1fr));
+-    gap: 9px;
+-}
+-
+-.motif-option {
+-    cursor: pointer;
+-    display: flex;
+-    flex-direction: column;
+-    gap: 5px;
+-    font-size: 11px;
+-    min-width: 0;
+-}
+-
+-.motif-swatch {
+-    height: 67px;
+-    display: block;
+-    border-radius: 8px;
+-    border: 1px solid #e3e0d7;
+-}
+-
+-.motif-option small,
+-.color-options small {
+-    color: var(--muted);
+-    font-size: 10px;
+-}
+-
+-.kawung-swatch {
+-    background-color: #254b3a;
+-    background-image: radial-gradient(ellipse at 50% 0%, transparent 7px, #d4b36c 7.5px, #d4b36c 8.5px, transparent 9px), radial-gradient(ellipse at 50% 100%, transparent 7px, #d4b36c 7.5px, #d4b36c 8.5px, transparent 9px), radial-gradient(ellipse at 0% 50%, transparent 7px, #d4b36c 7.5px, #d4b36c 8.5px, transparent 9px), radial-gradient(ellipse at 100% 50%, transparent 7px, #d4b36c 7.5px, #d4b36c 8.5px, transparent 9px);
+-    background-size: 28px 28px;
+-}
+-
+-.parang-swatch {
+-    background: repeating-linear-gradient(135deg, #254b3a 0 8px, #d4b36c 8px 10px, #254b3a 10px 17px);
+-}
+-
+-.mega-swatch {
+-    background-color: #254b3a;
+-    background-image: repeating-radial-gradient(ellipse at 0 100%, transparent 0 8px, #d4b36c 9px 11px, transparent 12px 19px);
+-    background-size: 38px 27px;
+-}
+-
+-.color-options {
+-    display: flex;
+-    flex-wrap: wrap;
+-    gap: 13px;
+-}
+-
+-.color-options label {
+-    display: flex;
+-    flex-direction: column;
+-    align-items: center;
+-    gap: 6px;
+-    cursor: pointer;
+-}
+-
+-.color-options label>span {
+-    width: 29px;
+-    height: 29px;
+-    background: var(--swatch);
+-    border-radius: 50%;
+-    border: 2px solid #fff;
+-    outline: 1px solid #deded6;
+-}
+-
+-.color-options input:checked+span {
+-    outline: 2px solid #55795d;
+-    outline-offset: 2px;
+-}
+-
+-.design-summary {
+-    background: #f7f7f1;
+-    border-radius: 9px;
+-    margin: 18px 0 13px;
+-    padding: 13px;
+-    display: flex;
+-    flex-direction: column;
+-    gap: 5px;
+-}
+-
+-.design-summary span {
+-    color: var(--muted);
+-    font-size: 10px;
+-}
+-
+-.design-summary strong {
+-    font-size: 13px;
+-}
+-
+-.button {
+-    border: 0;
+-    border-radius: 8px;
+-    padding: 11px 15px;
+-    font: inherit;
+-    font-size: 12px;
+-    font-weight: 700;
+-    cursor: pointer;
+-}
+-
+-.button-primary {
+-    width: 100%;
+-    color: #fff;
+-    background: var(--green);
+-}
+-
+-.button-primary:hover {
+-    background: #183a2a;
+-}
+-
+-.button-outline {
+-    color: var(--green);
+-    background: #fff;
+-    border: 1px solid #dce3db;
+-}
+-
+-.save-message {
+-    min-height: 14px;
+-    font-size: 10px;
+-    color: var(--muted);
+-    text-align: center;
+-    margin: 10px 0 0;
+-}
+-
+-.page-note {
+-    text-align: center;
+-    font-size: 11px;
+-    color: #9b9f96;
+-    margin: 25px 0 0;
+-}
+-
+-@media (max-width: 820px) {
+-    .studio-layout {
+-        grid-template-columns: 1fr;
+-    }
+-
+-    .shirt-stage {
+-        min-height: 350px;
+-    }
+-}
+-
+-@media (max-width: 480px) {
+-    .site-header {
+-        padding: 0 4%;
+-    }
+-
+-    .header-label {
+-        font-size: 8px;
+-        letter-spacing: 1px;
+-    }
+-
+-    .studio {
+-        width: 94%;
+-        margin: 24px auto;
+-    }
+-
+-    .preview-panel,
+-    .controls-panel {
+-        padding: 17px;
+-    }
+-
+-    .shirt-stage {
+-        min-height: 300px;
+-    }
+-
+-    .motif-options {
+-        gap: 7px;
+-    }
+-}
+\ No newline at end of file
+* Unmerged path static/css/tailwind.css
+* Unmerged path static/img/catalog/batik/kawung.webp
+* Unmerged path static/img/catalog/batik/ondel2.png
+diff --git a/static/img/catalog/batik/ondel2.png b/static/img/catalog/batik/ondel2.png
+deleted file mode 100644
+index 32b183e..0000000
+Binary files a/static/img/catalog/batik/ondel2.png and /dev/null differ
+* Unmerged path static/img/catalog/recommended_motifs/megamendung.png
+* Unmerged path static/img/catalog/recommended_motifs/parang.png
+* Unmerged path static/img/catalog/shared/creative1.png
+diff --git a/static/img/catalog/shared/minimalis1.webp b/static/img/catalog/shared/minimalis1.webp
+deleted file mode 100644
+index c01a2f9..0000000
+Binary files a/static/img/catalog/shared/minimalis1.webp and /dev/null differ
+diff --git a/static/img/catalog/style_options/creative.jpg b/static/img/catalog/style_options/creative.jpg
+deleted file mode 100644
+index 11b0f75..0000000
+Binary files a/static/img/catalog/style_options/creative.jpg and /dev/null differ
+* Unmerged path static/img/catalog/shared/creative1.png
+* Unmerged path static/img/catalog/style_options/creative_iXI3qGg.jpg
+* Unmerged path static/img/catalog/style_options/elegant1.png
+* Unmerged path static/img/catalog/style_options/elegant1_UGFVhna.png
+* Unmerged path static/img/catalog/style_options/minimalis1.png
+* Unmerged path static/img/mascot/shirt.webp

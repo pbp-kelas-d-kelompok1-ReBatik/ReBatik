@@ -1,0 +1,348 @@
+diff --cc README.md
+index 3f6c10a,219b162..0000000
+--- a/README.md
++++ b/README.md
+@@@ -138,8 -138,11 +138,16 @@@ Di proyek ReBatik yang sudah ada, buka 
+  - `DEBUG=False` dan `PRODUCTION=True`.
+  - `DB_NAME`, `DB_HOST`, `DB_PORT`, `DB_USER`, dan `DB_PASSWORD`: gunakan kredensial database dari ITF.
+  - `SCHEMA=tugas_kelompok`.
+++<<<<<<< Updated upstream
+ +
+ +Saat `PRODUCTION=True`, semua variabel database di atas, termasuk `SCHEMA`, wajib diisi. Nilai boolean `DEBUG` dan `PRODUCTION` yang diterima adalah `true`/`false`, `1`/`0`, atau `yes`/`no` (huruf besar-kecil tidak berpengaruh).
+++=======
++ - `CLOUDINARY_URL`: salin nilai URL API dari Cloudinary Console untuk menyimpan foto unggahan. Simpan hanya di Environs PWS atau `.env` lokal; jangan commit nilainya.
++ 
++ Saat `PRODUCTION=True`, semua variabel database di atas, termasuk `SCHEMA`, dan `CLOUDINARY_URL` wajib diisi. Upload gambar memakai Cloudinary di production, sedangkan development lokal tetap memakai `media/`. Nilai boolean `DEBUG` dan `PRODUCTION` yang diterima adalah `true`/`false`, `1`/`0`, atau `yes`/`no` (huruf besar-kecil tidak berpengaruh).
++ 
++ Sebelum media lama di PWS dihapus atau tidak lagi tersedia, jalankan `python manage.py migrate_legacy_media_to_cloudinary --dry-run` untuk memeriksa file lokal lama, lalu jalankan `python manage.py migrate_legacy_media_to_cloudinary` untuk mengunggahnya dan memperbarui referensi database. Perintah migrasi berhenti tanpa mengunggah jika ada file lokal yang hilang. Jalankan saat aplikasi terhubung ke database PWS dan file lama masih tersedia di `MEDIA_ROOT`.
+++>>>>>>> Stashed changes
+  
+  Pertahankan variabel PWS lain yang sudah ada, lalu simpan perubahan dengan **Update All Variables**.
+  
+diff --cc batik_custom/admin.py
+index 37f54b8,443073f..0000000
+--- a/batik_custom/admin.py
++++ b/batik_custom/admin.py
+@@@ -7,27 -7,32 +7,50 @@@ from .models import 
+      RecommendedMotif,
+  )
+  
+++<<<<<<< Updated upstream
+ +@admin.register(StyleOptions)
+ +class StyleOptionsAdmin(admin.ModelAdmin):
+ +    list_display = ("name", "gender", "is_active")
+ +    list_filter = ("gender", "is_active")
+ +    search_fields = ("name",)
+ +
+++=======
++ 
++ @admin.register(StyleOptions)
++ class StyleOptionsAdmin(admin.ModelAdmin):
++     list_display = ("name", "gender", "is_active")
++     list_filter = ("gender", "is_active")
++     search_fields = ("name",)
++ 
++ 
+++>>>>>>> Stashed changes
+  @admin.register(ColorPalette)
+  class ColorPaletteAdmin(admin.ModelAdmin):
+      list_display = ("name", "is_active")
+      list_filter = ("is_active",)
+      search_fields = ("name",)
+  
+++<<<<<<< Updated upstream
+++=======
++ 
+++>>>>>>> Stashed changes
+  @admin.register(StyleProfile)
+  class StyleProfileAdmin(admin.ModelAdmin):
+      list_display = ("user", "style", "palette", "updated_at")
+  
+++<<<<<<< Updated upstream
+++=======
++ 
+++>>>>>>> Stashed changes
+  @admin.register(FashionPreference)
+  class FashionPreferenceAdmin(admin.ModelAdmin):
+      list_display = ("name",)
+      search_fields = ("name",)
+  
+++<<<<<<< Updated upstream
+++=======
++ 
+++>>>>>>> Stashed changes
+  @admin.register(RecommendedMotif)
+  class RecommendedMotifAdmin(admin.ModelAdmin):
+      list_display = ("name", "is_active")
+diff --cc batik_custom/migrations/0010_move_catalog_images_to_static.py
+index f816c53,d331d3d..0000000
+--- a/batik_custom/migrations/0010_move_catalog_images_to_static.py
++++ b/batik_custom/migrations/0010_move_catalog_images_to_static.py
+@@@ -38,6 -40,7 +38,10 @@@ MOTIF_IMAGE_PATHS = 
+      f"recommended_motifs/{name}": f"img/catalog/recommended_motifs/{name}"
+      for name in MOTIF_IMAGE_NAMES
+  }
+++<<<<<<< Updated upstream
+++=======
++ 
+++>>>>>>> Stashed changes
+  ROLLBACK_MEDIA_PREFIX = "_catalog_rollback/"
+  
+  
+@@@ -48,6 -52,7 +52,10 @@@ def move_restored_references(queryset, 
+          return
+  
+      rows.update(**{field_name: new_path})
+++<<<<<<< Updated upstream
+++=======
++ 
+++>>>>>>> Stashed changes
+      restored_copy = Path(settings.MEDIA_ROOT) / rollback_path
+      if restored_copy.is_file():
+          restored_copy.unlink()
+@@@ -56,49 -61,58 +64,96 @@@
+  def move_catalog_references(apps, schema_editor):
+      StyleOptions = apps.get_model("batik_custom", "StyleOptions")
+      RecommendedMotif = apps.get_model("batik_custom", "RecommendedMotif")
+++<<<<<<< Updated upstream
+ +    MotifRecommendation = apps.get_model("batik_custom", "MotifRecommendation")
+ +
+ +    database = schema_editor.connection.alias
+ +    for model, paths in (
+ +        (StyleOptions, STYLE_IMAGE_PATHS),
+ +        (RecommendedMotif, MOTIF_IMAGE_PATHS),
+ +        (MotifRecommendation, MOTIF_IMAGE_PATHS),
+ +    ):
+ +        model = model.objects.using(database)
+ +        for old_path, new_path in paths.items():
+ +            move_restored_references(model, "image", new_path)
+ +            # Preserve an actual upload if one occupies the same legacy filename.
+ +            if (Path(settings.MEDIA_ROOT) / old_path).is_file():
+ +                continue
+++=======
++     database = schema_editor.connection.alias
++ 
++     for model, paths in (
++         (StyleOptions, STYLE_IMAGE_PATHS),
++         (RecommendedMotif, MOTIF_IMAGE_PATHS),
++     ):
++         model = model.objects.using(database)
++ 
++         for old_path, new_path in paths.items():
++             move_restored_references(model, "image", new_path)
++ 
++             if (Path(settings.MEDIA_ROOT) / old_path).is_file():
++                 continue
++ 
+++>>>>>>> Stashed changes
+              model.filter(image=old_path).update(image=new_path)
+  
+  
+  def restore_catalog_references(apps, schema_editor):
+      StyleOptions = apps.get_model("batik_custom", "StyleOptions")
+      RecommendedMotif = apps.get_model("batik_custom", "RecommendedMotif")
+++<<<<<<< Updated upstream
+ +    MotifRecommendation = apps.get_model("batik_custom", "MotifRecommendation")
+++=======
+++>>>>>>> Stashed changes
+      database = schema_editor.connection.alias
+  
+      for model, paths in (
+          (StyleOptions, STYLE_IMAGE_PATHS),
+          (RecommendedMotif, MOTIF_IMAGE_PATHS),
+++<<<<<<< Updated upstream
+ +        (MotifRecommendation, MOTIF_IMAGE_PATHS),
+ +    ):
+ +        for old_path, new_path in paths.items():
+ +            rows = model.objects.using(database).filter(image=new_path)
+++=======
++     ):
++         for old_path, new_path in paths.items():
++             rows = model.objects.using(database).filter(image=new_path)
++ 
+++>>>>>>> Stashed changes
+              if not rows.exists():
+                  continue
+  
+              source = Path(settings.BASE_DIR) / "static" / new_path
+              rollback_path = f"{ROLLBACK_MEDIA_PREFIX}{new_path}"
+              destination = Path(settings.MEDIA_ROOT) / rollback_path
+++<<<<<<< Updated upstream
+ +            if not source.is_file():
+ +                raise RuntimeError(f"Cannot restore missing catalog image: {source}")
+ +            if destination.exists() and not filecmp.cmp(source, destination, shallow=False):
+ +                raise RuntimeError(f"Rollback image path is occupied: {destination}")
+ +            if not destination.exists():
+ +                destination.parent.mkdir(parents=True, exist_ok=True)
+ +                shutil.copy2(source, destination)
+++=======
++ 
++             if not source.is_file():
++                 raise RuntimeError(
++                     f"Cannot restore missing catalog image: {source}"
++                 )
++ 
++             if destination.exists() and not filecmp.cmp(
++                 source, destination, shallow=False
++             ):
++                 raise RuntimeError(
++                     f"Rollback image path is occupied: {destination}"
++                 )
++ 
++             if not destination.exists():
++                 destination.parent.mkdir(parents=True, exist_ok=True)
++                 shutil.copy2(source, destination)
++ 
+++>>>>>>> Stashed changes
+              rows.update(image=rollback_path)
+  
+  
+diff --cc batik_story/views.py
+index 77c9c7c,df483c8..0000000
+--- a/batik_story/views.py
++++ b/batik_story/views.py
+@@@ -17,7 -18,11 +17,15 @@@ def show_batik_story(request)
+      }
+      return render(request, "batik_story.html",context)
+  
+++<<<<<<< Updated upstream
+ +def add_batik(request):
+++=======
++ @login_required
++ def add_batik(request):
++     if not request.user.is_staff:
++         raise PermissionDenied
++ 
+++>>>>>>> Stashed changes
+      if request.method=="POST":
+          form=BatikMotifForm(request.POST, request.FILES)
+          if form.is_valid():
+@@@ -37,7 -42,20 +45,27 @@@ def delete_story(request,id_story)
+      messages.success(request, "Cerita batik berhasil dihapus!")
+      return redirect("batik_story:show_batik_story")
+  
+++<<<<<<< Updated upstream
+++
+++def story_detail(request, id_story):
+++    story = get_object_or_404(BatikMotif,id_story=id_story,)
+++    return render(request, "story_detail.html",{"story": story} )
+++=======
+  
+  def story_detail(request, id_story):
+      story = get_object_or_404(BatikMotif,id_story=id_story,)
+      return render(request, "story_detail.html",{"story": story} )
++ 
++ @login_required
++ def story_edit(request, id_story):
++     batik=get_object_or_404(BatikMotif, id_story=id_story)
++     if request.method=="POST":
++         form=BatikMotifForm(request.POST, request.FILES, instance=batik)
++         if form.is_valid():
++             form.save()
++             messages.success(request, "YEAYY BERHASIL DI EDIT")
++             return redirect("batik_story:show_batik_story")
++     else:
++         form=BatikMotifForm(instance=batik)
+ -    return render(request, "story_edit.html", {"form":form,"batik":batik})
+++    return render(request, "story_edit.html", {"form":form,"batik":batik})
+++>>>>>>> Stashed changes
+diff --cc config/settings.py
+index 608c9c4,c4673ef..0000000
+--- a/config/settings.py
++++ b/config/settings.py
+@@@ -48,6 -48,12 +48,15 @@@ def get_environment_bool(name, default=
+  # SECURITY WARNING: don't run with debug turned on in production!
+  DEBUG = get_environment_bool("DEBUG")
+  PRODUCTION = get_environment_bool("PRODUCTION")
+++<<<<<<< Updated upstream
+++=======
++ CLOUDINARY_URL = os.getenv("CLOUDINARY_URL", "").strip()
++ 
++ if PRODUCTION and not CLOUDINARY_URL:
++     raise ImproperlyConfigured(
++         "CLOUDINARY_URL must be set when PRODUCTION=True."
++     )
+++>>>>>>> Stashed changes
+  
+  ALLOWED_HOSTS = [
+      "localhost",
+diff --cc config/urls.py
+index c77bfb0,cc9e83d..0000000
+--- a/config/urls.py
++++ b/config/urls.py
+@@@ -28,10 -28,9 +28,14 @@@ urlpatterns = 
+      path("upcycling/", include("upcycling.urls")),
+      path('donasi/', include('donasi.urls')),
+      path("batik_custom/", include("batik_custom.urls")),
++     path('impact-tracker/', include('impact_tracker.urls')),
+  ]
+  
+++<<<<<<< Updated upstream
+ +urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+ +
+++=======
+++>>>>>>> Stashed changes
+  if settings.DEBUG:
+      urlpatterns += static(
+          settings.MEDIA_URL,
+diff --cc static/css/batik_story.css
+index ac77e19,2088392..0000000
+--- a/static/css/batik_story.css
++++ b/static/css/batik_story.css
+@@@ -1810,3 -1810,21 +1810,24 @@@ input[type="file"].form-input 
+          animation: none;
+      }
+  }
+++<<<<<<< Updated upstream
+++=======
++ 
++ .edit_story-btn {
++     display: inline-flex;
++     align-items: center;
++     justify-content: center;
++     padding: 8px 14px;
++     border: 1px solid #c99b45;
++     border-radius: 6px;
++     color: #8b6537;
++     text-decoration: none;
++     font-size: 14px;
++     background: transparent;
++ }
++ 
++ .edit_story-btn:hover {
++     background: #c99b45;
++     color: white;
+ -}
+++}
+++>>>>>>> Stashed changes
+diff --cc templates/base.html
+index 4c4b8c7,a4e74ee..0000000
+--- a/templates/base.html
++++ b/templates/base.html
+@@@ -79,4 -79,4 +79,8 @@@
+      {% block scripts %}{% endblock scripts %}
+  </body>
+  
+- </html>
+++<<<<<<< Updated upstream
++ </html>
+++=======
+++</html>
+++>>>>>>> Stashed changes
+* Unmerged path batik_story/templates/story_detail.html
+* Unmerged path batik_story/templates/story_edit.html
+* Unmerged path media/recommended_motifs/megamendung.png
+* Unmerged path media/recommended_motifs/parang.png
+* Unmerged path static/css/custom/studio.css
+* Unmerged path static/css/tailwind.css
+* Unmerged path static/img/catalog/batik/kawung.webp
+* Unmerged path static/img/catalog/batik/ondel2.png
+* Unmerged path static/img/catalog/recommended_motifs/megamendung.png
+* Unmerged path static/img/catalog/recommended_motifs/parang.png
+* Unmerged path static/img/catalog/shared/creative1.png
+* Unmerged path static/img/catalog/style_options/creative1.png
+* Unmerged path static/img/catalog/style_options/creative_iXI3qGg.jpg
+* Unmerged path static/img/catalog/style_options/elegant1.png
+* Unmerged path static/img/catalog/style_options/elegant1_UGFVhna.png
+* Unmerged path static/img/catalog/style_options/minimalis1.png
+* Unmerged path static/img/mascot/shirt.webp

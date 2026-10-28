@@ -1,0 +1,20 @@
+{% load static %}
+
+{% block content %}
+<section class="story-edit">
+    <h1>Edit Cerita Batik</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="button">
+            Simpan Perubahan
+        </button>
+
+        <a href="{% url 'batik_story:show_batik_story' %}" class="button">
+            Batalkan
+        </a>
+    </form>
+</section>
+{% endblock content %}

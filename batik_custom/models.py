@@ -37,6 +37,13 @@ class ColorPalette(models.Model):
     description = models.CharField(max_length=150, blank=True)
     colors = models.JSONField(default=list)
     is_active = models.BooleanField(default=True)
+    image=models.ImageField(upload_to="colorpalette/", blank=True)
+
+    @property
+    def static_image_path(self):
+        if self.image and self.image.name.startswith("img/catalog/"):
+            return self.image.name
+        return ""
 
     def __str__(self):
         return self.name

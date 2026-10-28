@@ -1,0 +1,461 @@
+diff --git a/README.md b/README.md
+index 3f6c10a..ca5e4a2 100644
+--- a/README.md
++++ b/README.md
+@@ -138,8 +138,14 @@ Di proyek ReBatik yang sudah ada, buka tab **Environs**, lalu atur variabel beri
+ - `DEBUG=False` dan `PRODUCTION=True`.
+ - `DB_NAME`, `DB_HOST`, `DB_PORT`, `DB_USER`, dan `DB_PASSWORD`: gunakan kredensial database dari ITF.
+ - `SCHEMA=tugas_kelompok`.
++- `DEBUG=False` dan `PRODUCTION=True`.
++- `DB_NAME`, `DB_HOST`, `DB_PORT`, `DB_USER`, dan `DB_PASSWORD`: gunakan kredensial database dari ITF.
++- `SCHEMA=tugas_kelompok`.
++- `CLOUDINARY_URL`: salin URL API dari Cloudinary Console untuk menyimpan foto unggahan. Simpan hanya di Environs PWS atau `.env` lokal; jangan commit nilainya.
++
++Saat `PRODUCTION=True`, semua variabel database di atas, termasuk `SCHEMA`, dan `CLOUDINARY_URL` wajib diisi. Upload gambar memakai Cloudinary di production, sedangkan development lokal tetap memakai `media/`. Nilai boolean `DEBUG` dan `PRODUCTION` yang diterima adalah `true`/`false`, `1`/`0`, atau `yes`/`no` (huruf besar-kecil tidak berpengaruh).
+ 
+-Saat `PRODUCTION=True`, semua variabel database di atas, termasuk `SCHEMA`, wajib diisi. Nilai boolean `DEBUG` dan `PRODUCTION` yang diterima adalah `true`/`false`, `1`/`0`, atau `yes`/`no` (huruf besar-kecil tidak berpengaruh).
++Sebelum media lama di PWS dihapus atau tidak lagi tersedia, jalankan `python manage.py migrate_legacy_media_to_cloudinary --dry-run` untuk memeriksa file lokal lama, lalu jalankan `python manage.py migrate_legacy_media_to_cloudinary` untuk mengunggahnya dan memperbarui referensi database. Perintah migrasi berhenti tanpa mengunggah jika ada file lokal yang hilang. Jalankan saat aplikasi terhubung ke database PWS dan file lama masih tersedia di `MEDIA_ROOT`.
+ 
+ Pertahankan variabel PWS lain yang sudah ada, lalu simpan perubahan dengan **Update All Variables**.
+ 
+diff --git a/batik_custom/admin.py b/batik_custom/admin.py
+index 37f54b8..b0ac652 100644
+--- a/batik_custom/admin.py
++++ b/batik_custom/admin.py
+@@ -1,3 +1,4 @@
++
+ from django.contrib import admin
+ from .models import (
+     StyleOptions,
+diff --git a/batik_custom/migrations/0010_move_catalog_images_to_static.py b/batik_custom/migrations/0010_move_catalog_images_to_static.py
+index f816c53..308a31e 100644
+--- a/batik_custom/migrations/0010_move_catalog_images_to_static.py
++++ b/batik_custom/migrations/0010_move_catalog_images_to_static.py
+@@ -1,3 +1,4 @@
++
+ from pathlib import Path
+ import filecmp
+ import shutil
+@@ -34,20 +35,24 @@ MOTIF_IMAGE_NAMES = (
+     "semen.png",
+     "truntum.png",
+ )
++
+ MOTIF_IMAGE_PATHS = {
+     f"recommended_motifs/{name}": f"img/catalog/recommended_motifs/{name}"
+     for name in MOTIF_IMAGE_NAMES
+ }
++
+ ROLLBACK_MEDIA_PREFIX = "_catalog_rollback/"
+ 
+ 
+ def move_restored_references(queryset, field_name, new_path):
+     rollback_path = f"{ROLLBACK_MEDIA_PREFIX}{new_path}"
+     rows = queryset.filter(**{field_name: rollback_path})
++
+     if not rows.exists():
+         return
+ 
+     rows.update(**{field_name: new_path})
++
+     restored_copy = Path(settings.MEDIA_ROOT) / rollback_path
+     if restored_copy.is_file():
+         restored_copy.unlink()
+@@ -56,55 +61,87 @@ def move_restored_references(queryset, field_name, new_path):
+ def move_catalog_references(apps, schema_editor):
+     StyleOptions = apps.get_model("batik_custom", "StyleOptions")
+     RecommendedMotif = apps.get_model("batik_custom", "RecommendedMotif")
+-    MotifRecommendation = apps.get_model("batik_custom", "MotifRecommendation")
++    MotifRecommendation = apps.get_model(
++        "batik_custom", "MotifRecommendation"
++    )
+ 
+     database = schema_editor.connection.alias
+-    for model, paths in (
++
++    models_and_paths = (
+         (StyleOptions, STYLE_IMAGE_PATHS),
+         (RecommendedMotif, MOTIF_IMAGE_PATHS),
+         (MotifRecommendation, MOTIF_IMAGE_PATHS),
+-    ):
+-        model = model.objects.using(database)
++    )
++
++    for model, paths in models_and_paths:
++        queryset = model.objects.using(database)
++
+         for old_path, new_path in paths.items():
+-            move_restored_references(model, "image", new_path)
+-            # Preserve an actual upload if one occupies the same legacy filename.
+-            if (Path(settings.MEDIA_ROOT) / old_path).is_file():
++            move_restored_references(queryset, "image", new_path)
++
++            # Jangan menimpa file upload lama yang masih tersedia.
++            old_file = Path(settings.MEDIA_ROOT) / old_path
++            if old_file.is_file():
+                 continue
+-            model.filter(image=old_path).update(image=new_path)
++
++            queryset.filter(image=old_path).update(image=new_path)
+ 
+ 
+ def restore_catalog_references(apps, schema_editor):
+     StyleOptions = apps.get_model("batik_custom", "StyleOptions")
+     RecommendedMotif = apps.get_model("batik_custom", "RecommendedMotif")
+-    MotifRecommendation = apps.get_model("batik_custom", "MotifRecommendation")
++    MotifRecommendation = apps.get_model(
++        "batik_custom", "MotifRecommendation"
++    )
++
+     database = schema_editor.connection.alias
+ 
+-    for model, paths in (
++    models_and_paths = (
+         (StyleOptions, STYLE_IMAGE_PATHS),
+         (RecommendedMotif, MOTIF_IMAGE_PATHS),
+         (MotifRecommendation, MOTIF_IMAGE_PATHS),
+-    ):
++    )
++
++    for model, paths in models_and_paths:
++        queryset = model.objects.using(database)
++
+         for old_path, new_path in paths.items():
+-            rows = model.objects.using(database).filter(image=new_path)
++            rows = queryset.filter(image=new_path)
++
+             if not rows.exists():
+                 continue
+ 
+             source = Path(settings.BASE_DIR) / "static" / new_path
+             rollback_path = f"{ROLLBACK_MEDIA_PREFIX}{new_path}"
+             destination = Path(settings.MEDIA_ROOT) / rollback_path
++
+             if not source.is_file():
+-                raise RuntimeError(f"Cannot restore missing catalog image: {source}")
+-            if destination.exists() and not filecmp.cmp(source, destination, shallow=False):
+-                raise RuntimeError(f"Rollback image path is occupied: {destination}")
++                raise RuntimeError(
++                    f"Cannot restore missing catalog image: {source}"
++                )
++
++            if destination.exists() and not filecmp.cmp(
++                source, destination, shallow=False
++            ):
++                raise RuntimeError(
++                    f"Rollback image path is occupied: {destination}"
++                )
++
+             if not destination.exists():
+                 destination.parent.mkdir(parents=True, exist_ok=True)
+                 shutil.copy2(source, destination)
++
+             rows.update(image=rollback_path)
+ 
+ 
+ class Migration(migrations.Migration):
+-    dependencies = [("batik_custom", "0009_merge_20261027_1159")]
++    dependencies = [
++        ("batik_custom", "0009_merge_20261027_1159"),
++    ]
+ 
+     operations = [
+-        migrations.RunPython(move_catalog_references, restore_catalog_references),
++        migrations.RunPython(
++            move_catalog_references,
++            restore_catalog_references,
++        ),
+     ]
+diff --git a/batik_story/forms.py b/batik_story/forms.py
+index 993036c..75c3b84 100644
+--- a/batik_story/forms.py
++++ b/batik_story/forms.py
+@@ -1,4 +1,5 @@
+ from django import forms
++
+ from .models import BatikMotif
+ 
+ class BatikMotifForm(forms.ModelForm):
+diff --git a/batik_story/templates/delete_story.html b/batik_story/templates/delete_story.html
+index f89e268..c95b725 100644
+--- a/batik_story/templates/delete_story.html
++++ b/batik_story/templates/delete_story.html
+@@ -32,4 +32,5 @@
+         </div>
+     </div>
+ </div>
+-{% endif %}
+\ No newline at end of file
++{% endif %}
++
+* Unmerged path batik_story/templates/story_detail.html
+* Unmerged path batik_story/templates/story_edit.html
+diff --git a/batik_story/urls.py b/batik_story/urls.py
+index 5d4f6b4..2446050 100644
+--- a/batik_story/urls.py
++++ b/batik_story/urls.py
+@@ -8,5 +8,8 @@ urlpatterns = [
+     path("BatikMotif/", views.show_batik_story, name="show_batik_story"),
+     path("add_batik/", views.add_batik, name="add_batik"),
+     path("story/<uuid:id_story>/delete/", views.delete_story,name="delete_story"),
+-    path("story/<uuid:id_story>/detail/", views.story_detail, name="story_detail",),
++    path("story/<uuid:id_story>/detail/", views.story_detail, name="story_detail"),
++    path("story/<uuid:id_story>/edit/", views.story_edit, name="story_edit",
++),
++
+ ]
+diff --git a/batik_story/views.py b/batik_story/views.py
+index 77c9c7c..51dae00 100644
+--- a/batik_story/views.py
++++ b/batik_story/views.py
+@@ -1,43 +1,86 @@
++
+ from django.contrib import messages
++from django.contrib.auth.decorators import login_required
++from django.core.exceptions import PermissionDenied
+ from django.shortcuts import render, redirect, get_object_or_404
+ from django.views.decorators.http import require_POST
+-from django.contrib.auth.decorators import login_required
++
+ from .forms import BatikMotifForm
+ from .models import BatikMotif
+-# Create your views here.
++
+ 
+ def show_home(request):
+     return render(request, "home.html")
+ 
++
+ def show_batik_story(request):
+-    context={
+-        "judul":"Batik Story",
+-        "ket1": "Jelajahi kisah di balik batik Indonesia. Kenali sejarah, filosofi, dan makna dari berbagai motif batik Nusantara. ",
+-        "batiks":BatikMotif.objects.all()
++    context = {
++        "judul": "Batik Story",
++        "ket1": (
++            "Jelajahi kisah di balik batik Indonesia. Kenali sejarah, "
++            "filosofi, dan makna dari berbagai motif batik Nusantara."
++        ),
++        "batiks": BatikMotif.objects.all(),
+     }
+-    return render(request, "batik_story.html",context)
++    return render(request, "batik_story.html", context)
++
+ 
++@login_required
+ def add_batik(request):
+-    if request.method=="POST":
+-        form=BatikMotifForm(request.POST, request.FILES)
++    if not request.user.is_staff:
++        raise PermissionDenied
++
++    if request.method == "POST":
++        form = BatikMotifForm(request.POST, request.FILES)
+         if form.is_valid():
+             form.save()
+-            messages.success(request,"Motif batik berhasil ditambahkan!")
++            messages.success(
++                request, "Motif batik berhasil ditambahkan!"
++            )
+             return redirect("batik_story:show_batik_story")
+     else:
+         form = BatikMotifForm()
+ 
+-    return render(request, "add_batik.html",{"form": form})
++    return render(request, "add_batik.html", {"form": form})
++
+ 
+ @login_required
+ @require_POST
+-def delete_story(request,id_story):
+-    story=get_object_or_404(BatikMotif, id_story=id_story)
++def delete_story(request, id_story):
++    story = get_object_or_404(BatikMotif, id_story=id_story)
+     story.delete()
+     messages.success(request, "Cerita batik berhasil dihapus!")
+     return redirect("batik_story:show_batik_story")
+ 
+ 
+ def story_detail(request, id_story):
+-    story = get_object_or_404(BatikMotif,id_story=id_story,)
+-    return render(request, "story_detail.html",{"story": story} )
++    story = get_object_or_404(BatikMotif, id_story=id_story)
++    return render(
++        request,
++        "story_detail.html",
++        {"story": story},
++    )
++
++
++@login_required
++def story_edit(request, id_story):
++    batik = get_object_or_404(BatikMotif, id_story=id_story)
++
++    if request.method == "POST":
++        form = BatikMotifForm(
++            request.POST,
++            request.FILES,
++            instance=batik,
++        )
++        if form.is_valid():
++            form.save()
++            messages.success(request, "YEAYY BERHASIL DI EDIT")
++            return redirect("batik_story:show_batik_story")
++    else:
++        form = BatikMotifForm(instance=batik)
++
++    return render(
++        request,
++        "story_edit.html",
++        {"form": form, "batik": batik},
++    )
+diff --git a/config/settings.py b/config/settings.py
+index 608c9c4..c06c0ec 100644
+--- a/config/settings.py
++++ b/config/settings.py
+@@ -49,6 +49,14 @@ def get_environment_bool(name, default="False"):
+ DEBUG = get_environment_bool("DEBUG")
+ PRODUCTION = get_environment_bool("PRODUCTION")
+ 
++CLOUDINARY_URL = os.getenv("CLOUDINARY_URL", "").strip()
++
++if PRODUCTION and not CLOUDINARY_URL:
++    raise ImproperlyConfigured(
++        "CLOUDINARY_URL must be set when PRODUCTION=True."
++    )
++
++
+ ALLOWED_HOSTS = [
+     "localhost",
+     "127.0.0.1",
+@@ -75,6 +83,7 @@ INSTALLED_APPS = [
+     'batik_story',
+     'donasi',
+     'batik_custom',
++    'impact_tracker',
+ ]
+ 
+ MIDDLEWARE = [
+@@ -207,6 +216,19 @@ WHITENOISE_USE_FINDERS = True
+ 
+ MEDIA_URL = '/media/'
+ MEDIA_ROOT = BASE_DIR / 'media'
++
++STORAGES = {
++    "default": {
++        "BACKEND": (
++            "config.storage_backends.CloudinaryMediaStorage"
++            if PRODUCTION
++            else "django.core.files.storage.FileSystemStorage"
++        ),
++    },
++    "staticfiles": {
++        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
++    },
++}
+ # Email
+ # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
+ 
+diff --git a/config/urls.py b/config/urls.py
+index c77bfb0..3a0fa0c 100644
+--- a/config/urls.py
++++ b/config/urls.py
+@@ -19,6 +19,7 @@ from django.urls import path, include
+ from django.conf import settings
+ from django.conf.urls.static import static
+ 
++
+ urlpatterns = [
+     path('admin/', admin.site.urls),
+     path('', include('main.urls')),
+@@ -28,12 +29,13 @@ urlpatterns = [
+     path("upcycling/", include("upcycling.urls")),
+     path('donasi/', include('donasi.urls')),
+     path("batik_custom/", include("batik_custom.urls")),
++    path('impact-tracker/', include('impact_tracker.urls')),
+ ]
+ 
+-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+-
+ if settings.DEBUG:
+     urlpatterns += static(
+         settings.MEDIA_URL,
+         document_root=settings.MEDIA_ROOT,
+     )
++
++
+* Unmerged path media/recommended_motifs/megamendung.png
+* Unmerged path media/recommended_motifs/parang.png
+diff --git a/requirements.txt b/requirements.txt
+index cbcc012..6b784f1 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,5 +1,6 @@
+ asgiref==3.12.1
+ Django==5.2.17
++cloudinary==1.46.3
+ gunicorn==26.2.0
+ pillow==12.3.0
+ python-dotenv==1.2.4
+diff --git a/static/css/batik_story.css b/static/css/batik_story.css
+index ac77e19..2088392 100644
+--- a/static/css/batik_story.css
++++ b/static/css/batik_story.css
+@@ -1810,3 +1810,21 @@ input[type="file"].form-input {
+         animation: none;
+     }
+ }
++
++.edit_story-btn {
++    display: inline-flex;
++    align-items: center;
++    justify-content: center;
++    padding: 8px 14px;
++    border: 1px solid #c99b45;
++    border-radius: 6px;
++    color: #8b6537;
++    text-decoration: none;
++    font-size: 14px;
++    background: transparent;
++}
++
++.edit_story-btn:hover {
++    background: #c99b45;
++    color: white;
++}
+\ No newline at end of file
+* Unmerged path static/css/custom/studio.css
+* Unmerged path static/css/tailwind.css
+* Unmerged path static/img/catalog/batik/kawung.webp
+* Unmerged path static/img/catalog/batik/ondel2.png
+* Unmerged path static/img/catalog/recommended_motifs/megamendung.png
+* Unmerged path static/img/catalog/recommended_motifs/parang.png
+* Unmerged path static/img/catalog/shared/creative1.png
+* Unmerged path static/img/catalog/style_options/creative1.png
+* Unmerged path static/img/catalog/style_options/creative_iXI3qGg.jpg
+* Unmerged path static/img/catalog/style_options/elegant1.png
+* Unmerged path static/img/catalog/style_options/elegant1_UGFVhna.png
+* Unmerged path static/img/catalog/style_options/minimalis1.png
+* Unmerged path static/img/mascot/shirt.webp
+diff --git a/templates/base.html b/templates/base.html
+index 4c4b8c7..4887e00 100644
+--- a/templates/base.html
++++ b/templates/base.html
+@@ -49,7 +49,7 @@
+                 <a href="{% url 'marketplace:dropoff' %}">Drop-off Point</a>
+                 <a href="{% url 'upcycling:request_list' %}">Upcycling Request</a>
+                 <a href="{% url 'batik_custom:show_home' %}">Custom Batik</a>
+-                <a href="#">Impact Tracker</a>
++                <a href="{% url 'impact_tracker:dashboard' %}">Impact Tracker</a>
+                 <a href="#">Landing page</a>
+                 {% if user.is_authenticated %}
+                 <form method="post" action="{% url 'main:logout' %}" class="nav-menu-logout-form">
+@@ -79,4 +79,5 @@
+     {% block scripts %}{% endblock scripts %}
+ </body>
+ 
+-</html>
+\ No newline at end of file
++
++</html>

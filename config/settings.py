@@ -55,6 +55,14 @@ if PRODUCTION and not CLOUDINARY_URL:
         "CLOUDINARY_URL must be set when PRODUCTION=True."
     )
 
+CLOUDINARY_URL = os.getenv("CLOUDINARY_URL", "").strip()
+
+if PRODUCTION and not CLOUDINARY_URL:
+    raise ImproperlyConfigured(
+        "CLOUDINARY_URL must be set when PRODUCTION=True."
+    )
+
+
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
