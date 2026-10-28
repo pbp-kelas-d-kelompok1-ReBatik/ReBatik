@@ -7,14 +7,14 @@ from .forms import DonasiKainForm
 from .models import DonasiKain
 
 
-def landing(request):
+def landing(request):  ###menampilkan halaman pengenalan donasi
     return render(
         request,
         "donasi/donasi_landing.html",
     )
 
 
-def create(request):
+def create(request):    #####membukan form dan meneruma pengiriman form
     if request.method == "POST":
         form = DonasiKainForm(
             request.POST,
@@ -29,7 +29,7 @@ def create(request):
                 "Donasi berhasil diajukan. Terima kasih sudah berbagi!",
             )
 
-            return redirect("donasi:history")
+            return redirect("donasi:history")  ##kalau dia udah berhasil nyimpen lgsg pindah ke laman history
 
     else:
         form = DonasiKainForm()
@@ -41,7 +41,7 @@ def create(request):
     )
 
 
-def history(request):
+def history(request):   ###mengambil data donasi
     query = request.GET.get("q", "").strip()[:100]
 
     donations = DonasiKain.objects.all()
