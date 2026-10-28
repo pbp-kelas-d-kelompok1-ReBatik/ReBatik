@@ -1,6 +1,7 @@
 
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.conf import settings
 
 
 class DonasiKain(models.Model):
@@ -32,6 +33,7 @@ class DonasiKain(models.Model):
         DIKONFIRMASI = "DIKONFIRMASI", "Dikonfirmasi"
         SELESAI = "SELESAI", "Selesai"
 
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="donasi_kain",)
     donor_name = models.CharField("Nama donatur", max_length=120)
     whatsapp = models.CharField("Nomor WhatsApp", max_length=25)
     email = models.EmailField("E-mail")

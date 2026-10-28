@@ -22,7 +22,9 @@ def create(request):
         )
 
         if form.is_valid():
-            form.save()
+            donation = form.save(commit=False)
+            donation.user = request.user
+            donation.save()
 
             messages.success(
                 request,
