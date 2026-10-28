@@ -2,8 +2,7 @@
    REBATIK - IMPACT TRACKER
    Semua selector memakai prefix "impact-" agar tidak
    bentrok dengan halaman lain.
-   Aset: static/img/impact/ (batik-cloud-top.png,
-   batik-cloud-bottom.png, batik-pattern.png)
+   Tekstur batik memakai aset katalog bersama.
    ===================================================== */
 
 .impact-page {
@@ -165,7 +164,7 @@
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: url("../img/impact/batik-pattern.png") center / 380px auto repeat;
+    background: url("../img/catalog/batik/parang.webp") center / 380px auto repeat;
     opacity: 0.12;
     pointer-events: none;
 }

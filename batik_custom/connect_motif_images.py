@@ -45,13 +45,18 @@ def connect_images():
         if not prefix:
             continue
 
-        files = sorted(image_dir.glob(f"{prefix}.*"))
+        if prefix == "ondel2":
+            shared_image = Path(settings.BASE_DIR) / "static" / "img" / "catalog" / "batik" / "ondel2.png"
+            files = [shared_image] if shared_image.is_file() else []
+        else:
+            files = sorted(image_dir.glob(f"{prefix}.*"))
 
         if not files:
             print(f"Gambar belum ditemukan untuk: {motif.name}")
             continue
 
-        relative_path = Path("img/catalog/recommended_motifs", files[0].name).as_posix()
+        folder = "batik" if prefix == "ondel2" else "recommended_motifs"
+        relative_path = Path("img/catalog", folder, files[0].name).as_posix()
 
         motif.image.name = relative_path
         motif.save(update_fields=["image"])
