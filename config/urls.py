@@ -29,6 +29,7 @@ urlpatterns = [
     path('donasi/', include('donasi.urls')),
     path("batik_custom/", include("batik_custom.urls")),
     path('impact-tracker/', include('impact_tracker.urls')),
+    path("profile/", include("profiles.urls")),
 ]
 
 if settings.DEBUG:
