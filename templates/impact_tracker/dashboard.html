@@ -1,0 +1,533 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<title>Impact Tracker | ReBatik</title>
+<meta name="description" content="Pantau dampak nyata donasi pakaian dan kain serta upcycling batik bersama ReBatik.">
+{% endblock meta %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/impact_tracker.css' %}">
+{% endblock css %}
+
+{% block content %}
+<div class="impact-page">
+
+    <!-- 1. HERO SECTION -->
+    <section class="impact-hero" aria-labelledby="impact-hero-title">
+        <img
+            class="impact-cloud impact-cloud--top"
+            src="{% static 'img/impact/batik-cloud-top.png' %}"
+            alt=""
+            aria-hidden="true"
+        >
+
+        <img
+            class="impact-cloud impact-cloud--bottom"
+            src="{% static 'img/impact/batik-cloud-bottom.png' %}"
+            alt=""
+            aria-hidden="true"
+        >
+
+        <div class="impact-hero__content">
+            <p class="impact-eyebrow">IMPACT TRACKER</p>
+
+            <h1 id="impact-hero-title">
+                Jejak Kebaikanmu, Dampak untuk Bumi.
+            </h1>
+
+            <p class="impact-hero__lead">
+                Setiap pakaian dan kain yang kamu donasikan mendapat
+                kesempatan kedua, diolah kembali menjadi karya bernilai
+                dan menjaga warisan batik Indonesia. Lihat bagaimana
+                kontribusi komunitas ReBatik tumbuh dari waktu ke waktu.
+            </p>
+
+            <div class="impact-hero__actions">
+                <a
+                    class="impact-btn impact-btn--primary"
+                    href="{% url 'donasi:create' %}"
+                >
+                    Mulai Berdonasi
+                </a>
+
+                <a
+                    class="impact-btn impact-btn--ghost"
+                    href="{% url 'upcycling:request_create' %}"
+                >
+                    Ajukan Upcycling
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. DASHBOARD STATISTIK -->
+    <section
+        class="impact-section"
+        aria-labelledby="impact-stats-title"
+    >
+        <header class="impact-section__head">
+            <h2 id="impact-stats-title">Dampak Komunitas</h2>
+
+            <p>
+                Angka berikut dihitung langsung dari data donasi
+                dan upcycling di ReBatik.
+            </p>
+        </header>
+
+        <div class="impact-stats">
+
+            <article class="impact-stat">
+                <p class="impact-stat__label">
+                    Barang donasi tercatat
+                </p>
+
+                <p class="impact-stat__value" data-count-up>
+                    {{ donation_stats.items_recorded }}
+                </p>
+
+                <p class="impact-stat__note">
+                    dari {{ donation_stats.submissions }} pengajuan donasi
+                </p>
+            </article>
+
+            <article class="impact-stat">
+                <p class="impact-stat__label">
+                    Barang selesai diproses
+                </p>
+
+                <p class="impact-stat__value" data-count-up>
+                    {{ donation_stats.items_completed }}
+                </p>
+
+                <p class="impact-stat__note">
+                    donasi berstatus selesai
+                </p>
+            </article>
+
+            <article class="impact-stat">
+                <p class="impact-stat__label">
+                    Donatur unik
+                </p>
+
+                <p class="impact-stat__value" data-count-up>
+                    {{ donation_stats.unique_donors }}
+                </p>
+
+                <p class="impact-stat__note">
+                    dihitung dari e-mail yang berbeda
+                </p>
+            </article>
+
+            <article class="impact-stat">
+                <p class="impact-stat__label">
+                    Produk upcycling selesai
+                </p>
+
+                <p class="impact-stat__value" data-count-up>
+                    {{ upcycling_stats.items_completed }}
+                </p>
+
+                <p class="impact-stat__note">
+                    dari {{ upcycling_stats.requests }} permintaan upcycling
+                </p>
+            </article>
+
+        </div>
+
+        <p class="impact-footnote">
+            Berat tekstil belum ditampilkan karena formulir donasi
+            belum mencatat berat barang. Kami juga tidak menampilkan
+            estimasi emisi atau penghematan air tanpa metodologi yang jelas.
+        </p>
+    </section>
+
+    <!-- 3. KONTRIBUSI PRIBADI -->
+    {% if user.is_authenticated %}
+    <section
+        class="impact-section impact-section--tight"
+        aria-labelledby="impact-personal-title"
+    >
+        <div class="impact-personal">
+
+            <header class="impact-section__head impact-section__head--left">
+                <h2 id="impact-personal-title">
+                    Kontribusi Upcycling Kamu
+                </h2>
+
+                <p>
+                    Halo, {{ user.username }}. Berikut ringkasan
+                    permintaan upcycling dari akunmu.
+                </p>
+            </header>
+
+            {% if personal.requests %}
+
+            <dl class="impact-personal__grid">
+                <div>
+                    <dt>Permintaan aktif &amp; selesai</dt>
+                    <dd>{{ personal.requests }}</dd>
+                </div>
+
+                <div>
+                    <dt>Sedang menunggu / diproses</dt>
+                    <dd>{{ personal.processing }}</dd>
+                </div>
+
+                <div>
+                    <dt>Selesai</dt>
+                    <dd>{{ personal.completed }}</dd>
+                </div>
+
+                <div>
+                    <dt>Produk selesai dibuat</dt>
+                    <dd>{{ personal.items_completed }}</dd>
+                </div>
+            </dl>
+
+            <a
+                class="impact-link"
+                href="{% url 'upcycling:request_list' %}"
+            >
+                Lihat permintaan upcycling saya &rarr;
+            </a>
+
+            {% else %}
+
+            <p class="impact-personal__empty">
+                Kamu belum punya permintaan upcycling.
+
+                <a
+                    class="impact-link"
+                    href="{% url 'upcycling:request_create' %}"
+                >
+                    Mulai dari sini &rarr;
+                </a>
+            </p>
+
+            {% endif %}
+
+            <p class="impact-footnote impact-footnote--left">
+                Donasi kain belum terhubung ke akun, sehingga belum
+                bisa ditampilkan sebagai kontribusi pribadi.
+            </p>
+
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- 4. PERJALANAN DONASI -->
+    <section
+        class="impact-section"
+        aria-labelledby="impact-journey-title"
+    >
+        <header class="impact-section__head">
+            <h2 id="impact-journey-title">
+                Perjalanan Donasi
+            </h2>
+
+            <p>
+                Angka pada setiap tahap menunjukkan jumlah pengajuan
+                yang saat ini berada di tahap tersebut.
+            </p>
+        </header>
+
+        <div class="impact-journeys">
+
+            {% for journey in journeys %}
+            <div class="impact-journey">
+                <h3>{{ journey.title }}</h3>
+
+                <ol class="impact-journey__steps">
+                    {% for stage in journey.stages %}
+                    <li class="impact-journey__step">
+                        <span
+                            class="impact-journey__index"
+                            aria-hidden="true"
+                        >
+                            {{ forloop.counter }}
+                        </span>
+
+                        <div>
+                            <p class="impact-journey__label">
+                                {{ stage.label }}
+
+                                <span class="impact-journey__count">
+                                    {{ stage.count }}
+                                </span>
+                            </p>
+
+                            <p class="impact-journey__desc">
+                                {{ stage.description }}
+                            </p>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ol>
+            </div>
+            {% endfor %}
+
+        </div>
+    </section>
+
+    <!-- 5. GRAFIK KONTRIBUSI -->
+    <section
+        class="impact-section"
+        id="impact-chart"
+        aria-labelledby="impact-chart-title"
+    >
+        <header class="impact-section__head">
+            <h2 id="impact-chart-title">
+                Kontribusi dari Waktu ke Waktu
+            </h2>
+
+            <p>
+                Jumlah barang donasi per bulan pengajuan,
+                dengan status terkininya.
+            </p>
+        </header>
+
+        <div class="impact-chart-card">
+
+            <div class="impact-chart-card__toolbar">
+                <div class="impact-legend" aria-hidden="true">
+                    <span>
+                        <i class="impact-legend__dot impact-legend__dot--done"></i>
+                        Selesai
+                    </span>
+
+                    <span>
+                        <i class="impact-legend__dot impact-legend__dot--progress"></i>
+                        Belum selesai
+                    </span>
+                </div>
+
+                <nav
+                    class="impact-filter"
+                    aria-label="Filter periode grafik"
+                >
+                    {% for option in period_options %}
+                    <a
+                        href="?period={{ option.key }}#impact-chart"
+                        class="impact-filter__item{% if option.active %} is-active{% endif %}"
+                        {% if option.active %}aria-current="true"{% endif %}
+                    >
+                        {{ option.label }}
+                    </a>
+                    {% endfor %}
+                </nav>
+            </div>
+
+            {% if chart.has_data %}
+            <div class="impact-chart-scroll">
+                <div
+                    class="impact-chart"
+                    role="group"
+                    aria-label="Grafik batang donasi per bulan"
+                >
+                    {% for bar in chart.bars %}
+                    <div class="impact-chart__col">
+                        <span class="impact-chart__total">
+                            {% if bar.total %}
+                                {{ bar.total }}
+                            {% endif %}
+                        </span>
+
+                        <div class="impact-chart__track">
+                            <div
+                                class="impact-chart__bar"
+                                title="{{ bar.long_label }}: {{ bar.completed }} selesai, {{ bar.in_progress }} belum selesai"
+                            >
+                                <span
+                                    class="impact-chart__seg impact-chart__seg--progress"style="height: {{ bar.in_progress_pct }}%"
+                                ></span>
+
+                                <span
+                                    class="impact-chart__seg impact-chart__seg--done"style="height: {{ bar.completed_pct }}%"
+                                ></span>
+                            </div>
+                        </div>
+
+                        <span class="impact-chart__label">
+                            {{ bar.label }}
+                        </span>
+
+                        <span class="impact-chart__year">
+                            {% if bar.show_year %}
+                                {{ bar.year }}
+                            {% endif %}
+                        </span>
+
+                        <span class="impact-sr-only">
+                            {{ bar.long_label }}:
+                            {{ bar.completed }} barang selesai,
+                            {{ bar.in_progress }} barang belum selesai.
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% else %}
+            <div class="impact-empty">
+                <p class="impact-empty__title">
+                    Belum ada donasi pada periode ini
+                </p>
+
+                <p>
+                    Grafik akan muncul begitu ada donasi yang tercatat.
+                    Jadilah yang pertama menorehkan jejak kebaikan.
+                </p>
+
+                <a
+                    class="impact-btn impact-btn--primary"
+                    href="{% url 'donasi:create' %}"
+                >
+                    Mulai Berdonasi
+                </a>
+            </div>
+            {% endif %}
+
+        </div>
+    </section>
+
+    <!-- 6. AKTIVITAS TERBARU -->
+    <section
+        class="impact-section"
+        aria-labelledby="impact-activity-title"
+    >
+        <header class="impact-section__head">
+            <h2 id="impact-activity-title">
+                Aktivitas Terbaru
+            </h2>
+
+            <p>
+                Ringkasan tanpa identitas. Nama, kontak, dan alamat
+                tidak pernah ditampilkan.
+            </p>
+        </header>
+
+        {% if recent_activity %}
+        <div class="impact-activity-tools">
+            <label
+                class="impact-activity-search-label"
+                for="impactActivitySearch"
+            >
+                Cari aktivitas
+            </label>
+
+            <input
+                id="impactActivitySearch"
+                class="impact-activity-search"
+                type="search"
+                placeholder="Cari jenis aktivitas atau status..."
+                autocomplete="off"
+            >
+
+            <p
+                class="impact-activity-search-hint"
+                aria-live="polite"
+            >
+                Menampilkan seluruh aktivitas terbaru.
+            </p>
+        </div>
+
+        <ul
+            class="impact-activity"
+            id="impactActivityList"
+        >
+            {% for item in recent_activity %}
+            <li
+                class="impact-activity__item"
+                data-activity-item
+            >
+                <span class="impact-badge impact-badge--{{ item.kind }}">
+                    {{ item.kind_label }}
+                </span>
+
+                <div class="impact-activity__body">
+                    <p class="impact-activity__title">
+                        {{ item.title }}
+                    </p>
+
+                    <p class="impact-activity__meta">
+                        {{ item.quantity }} barang
+                        &middot;
+                        {{ item.date_text }}
+                    </p>
+                </div>
+
+                <span class="impact-status{% if item.done %} is-done{% endif %}">
+                    {{ item.status_label }}
+                </span>
+            </li>
+            {% endfor %}
+        </ul>
+
+        {% else %}
+        <div class="impact-empty">
+            <p class="impact-empty__title">
+                Belum ada aktivitas
+            </p>
+
+            <p>
+                Donasi dan permintaan upcycling terbaru
+                akan muncul di sini.
+            </p>
+        </div>
+        {% endif %}
+
+        <p
+            class="impact-activity-no-results"
+            id="impactActivityNoResults"
+            aria-live="polite"
+            hidden
+        >
+            Tidak ada aktivitas yang cocok dengan pencarianmu.
+        </p>
+    </section>
+
+    <!-- 7. CALL TO ACTION -->
+    <section
+        class="impact-cta"
+        aria-labelledby="impact-cta-title"
+    >
+        <div class="impact-cta__content">
+            <h2 id="impact-cta-title">
+                Mulai Jejak Kebaikanmu Hari Ini
+            </h2>
+
+            <p>
+                Donasikan pakaian dan kain yang tak terpakai,
+                atau ajukan upcycling untuk mengubah kain batik
+                menjadi produk baru.
+            </p>
+
+            <div class="impact-hero__actions">
+                <a
+                    class="impact-btn impact-btn--light"
+                    href="{% url 'donasi:landing' %}"
+                >
+                    Donasi Kain
+                </a>
+
+                <a
+                    class="impact-btn impact-btn--outline-light"
+                    href="{% url 'upcycling:request_list' %}"
+                >
+                    Upcycling
+                </a>
+            </div>
+        </div>
+    </section>
+
+</div>
+{% endblock content %}
+
+<!-- 8. JAVASCRIPT -->
+{% block scripts %}
+<script
+    src="{% static 'js/impact_tracker.js' %}"
+    defer
+></script>
+{% endblock scripts %}
