@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             ctx.fillStyle = "#874a29";
             ctx.textAlign = "center";
-            ctx.font = "24px Georgia";
+            ctx.font = "24px Garamond";
             ctx.fillText("Loading batik motif...", w / 2, h / 2);
         }
 
@@ -129,9 +129,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // ========================================
+    
     // KARTU PERSONAL REBATIK
-    // ========================================
+    
 
     function makeCard() {
         const card = document.createElement("canvas");
@@ -309,23 +309,48 @@ document.addEventListener("DOMContentLoaded", function () {
 
         c.restore();
 
-        // Pesan personal
-        divider(915);
 
-        // Pesan personal
+
+        // Pemisah sebelum pesan personal
         divider(915);
         rounded(120, 940, 860, 168, 22, "#fbf3e6", "#ead9bf", 1.5);
         flower(195, 1022, 32, brown);
 
         fitText(`${user}, style ${style}`, 250, 988, 690, "bold 27px Georgia", ink);
+        fitText(`${user}, style ${style}`, 250, 988, 690, "bold 27px Georgia", ink);
         fitText(`dan color palette ${palette}`, 250, 1031, 690, "26px Georgia", ink);
-        fitText(`kamu cocok dengan motif ${motif}!`, 250, 1070, 690, "bold 26px Georgia", ink);
 
+        // Nama motif lengkap: kalau panjang, turun ke baris kedua
         c.textAlign = "left";
-        c.fillStyle = muted;
-        c.font = "italic 23px Georgia";
-        c.fillText("Your style. Your colors. Your batik.", 250, 1097);
+        c.fillStyle = ink;
+        c.font = "bold 26px Georgia";
 
+        const motifWords = `kamu cocok dengan motif ${motif}!`.split(" ");
+        const motifLines = [];
+        let currentLine = "";
+
+        motifWords.forEach(word => {
+            const test = currentLine ? `${currentLine} ${word}` : word;
+
+            if (c.measureText(test).width > 690 && currentLine) {
+                motifLines.push(currentLine);
+                currentLine = word;
+            } else {
+                currentLine = test;
+            }
+        });
+        motifLines.push(currentLine);
+
+        motifLines.slice(0, 2).forEach((text, i) => {
+            c.fillText(text, 250, 1068 + i * 30);
+        });
+
+        // Tagline hanya muncul kalau nama motif cukup 1 baris (biar tidak numpuk)
+        if (motifLines.length === 1) {
+            c.fillStyle = muted;
+            c.font = "italic 23px Georgia";
+            c.fillText("Your style. Your colors. Your batik.", 250, 2000);
+        }
         // Chip style
         rounded(120, 1125, 230, 62, 31, cream, "#e5cfad", 1.5);
         flower(153, 1156, 12, brown);
@@ -374,7 +399,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         c.textAlign = "center";
         c.fillStyle = gold;
-        c.font = "24px Georgia";
+        c.font = "24px Garamond";
         c.fillText("✦", 550, 1370);
 
         c.fillStyle = muted;
@@ -383,10 +408,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         return card;
     }
-    // ========================================
+    
     // DOWNLOAD KARTU
-    // ========================================
-
     function downloadCard() {
         if (!imageReady) {
             message("Tunggu sampai gambar motif berhasil dimuat.");
@@ -411,11 +434,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // ========================================
+    
     // POPUP SHARE
-    // ========================================
-
-
     function openSharePopup() {
         if (!imageReady) {
             message("Tunggu sampai gambar motif berhasil dimuat.");
@@ -521,7 +541,7 @@ document.addEventListener("DOMContentLoaded", function () {
     padding: 16px;
     align-items: center;
     justify-content: center;
-    font-family: Garamond, "EB Garamond", "Cormorant Garamond", Georgia, serif;
+    font-family: Garamond, "EB Garamond", "Cormorant Garamond", serif;
 }
 
 #rebatik-share-modal.is-open { display: flex; }
@@ -808,9 +828,9 @@ document.addEventListener("DOMContentLoaded", function () {
             "Kartu ReBatik siap dibagikan.";
     }
 
-    // ========================================
+    
     // EVENT LISTENERS
-    // ========================================
+    
 
     swatches.forEach(button => {
         button.addEventListener("click", () => {
