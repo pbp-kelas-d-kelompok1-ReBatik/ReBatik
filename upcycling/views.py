@@ -14,7 +14,11 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.dateparse import parse_date
 
-from .forms import UpcyclingRequestForm, get_product_options_by_category
+from .forms import (
+    FabricHandoffForm,
+    UpcyclingRequestForm,
+    get_product_options_by_category,
+)
 from .models import (
     ArtisanProfile,
     NOTES_MAX_LENGTH,
@@ -406,8 +410,46 @@ def request_detail(request, pk):
                 UpcyclingRequest.Status.AWAITING_FABRIC,
                 UpcyclingRequest.Status.INSPECTION,
             },
+            "fabric_handoff_form": (
+                FabricHandoffForm(instance=upcycling_request)
+                if status == UpcyclingRequest.Status.AWAITING_FABRIC
+                else None
+            ),
         },
     )
+
+
+@login_required
+def submit_fabric_handoff(request, pk):
+    """Save fabric delivery details after the artisan's preliminary approval."""
+    if request.method != "POST":
+        return redirect("upcycling:request_detail", pk=pk)
+
+    with transaction.atomic():
+        upcycling_request = get_object_or_404(
+            UpcyclingRequest.objects.select_for_update(),
+            pk=pk,
+            user=request.user,
+        )
+        if upcycling_request.status != UpcyclingRequest.Status.AWAITING_FABRIC:
+            messages.error(
+                request,
+                "Rencana penyerahan kain hanya dapat diisi setelah review awal disetujui.",
+            )
+        elif (
+            upcycling_request.fabric_deadline
+            and upcycling_request.fabric_deadline < timezone.now()
+        ):
+            messages.error(request, "Tenggat penyerahan kain sudah lewat.")
+        else:
+            form = FabricHandoffForm(request.POST, instance=upcycling_request)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Rencana penyerahan kain berhasil disimpan.")
+            else:
+                messages.error(request, "Isi cara dan lokasi penyerahan kain dengan benar.")
+
+    return redirect("upcycling:request_detail", pk=pk)
 
 
 @login_required

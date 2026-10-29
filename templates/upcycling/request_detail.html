@@ -85,6 +85,30 @@
                         </p>
                     {% endif %}
                 </aside>
+                {% if fabric_handoff_form %}
+                    <form
+                        method="post"
+                        action="{% url 'upcycling:submit_fabric_handoff' upcycling_request.pk %}"
+                        class="mt-4 space-y-4 rounded-xl border border-[var(--border)] bg-[var(--upcycling-surface)] p-4"
+                    >
+                        {% csrf_token %}
+                        <h4 class="font-bold">Rencana penyerahan kain</h4>
+                        <p class="text-sm text-[var(--brown-muted)]">
+                            Artisan telah menyetujui review awal. Pilih cara dan isi lokasi penyerahan sebelum tenggat.
+                        </p>
+                        {% for field in fabric_handoff_form %}
+                            <div class="space-y-2">
+                                <label for="{{ field.id_for_label }}" class="block font-semibold">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}<p class="text-sm text-[var(--brown-muted)]">{{ field.help_text }}</p>{% endif %}
+                                {{ field.errors }}
+                            </div>
+                        {% endfor %}
+                        <button class="primary-action-button min-h-12 w-full px-5 py-3 font-bold sm:w-auto">
+                            Simpan rencana penyerahan
+                        </button>
+                    </form>
+                {% endif %}
                 <ol class="mt-6 space-y-5 pb-36 sm:space-y-6 sm:pb-48">
                     {% for step in timeline_steps %}
                         <li class="flex items-center gap-4">
@@ -205,6 +229,14 @@
                     {% if upcycling_request.delivery_proof %}<div class="border-t border-[var(--border)] pt-3"><dt class="font-semibold">Bukti penyerahan produk</dt><dd class="mt-1"><a class="underline" href="{{ upcycling_request.delivery_proof.url }}" target="_blank" rel="noopener">Lihat bukti</a></dd></div>{% endif %}
                     {% if upcycling_request.status == 'AWAITING_FABRIC' and upcycling_request.fabric_deadline %}<div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]"><dt class="font-semibold">Batas serah kain</dt><dd>{{ upcycling_request.fabric_deadline|date:'d M Y, H:i' }}</dd></div>{% endif %}
                     {% if upcycling_request.return_status == 'PENDING_RETURN' %}<div class="border-t border-[var(--border)] pt-3"><dt class="font-semibold">Pengembalian kain</dt><dd class="mt-1">Kain menunggu pengembalian oleh admin.</dd></div>{% endif %}
+                    {% if upcycling_request.fabric_delivery_location %}
+                        <div class="border-t border-[var(--border)] pt-3">
+                            <dt class="font-semibold">Penyerahan kain</dt>
+                            <dd class="mt-1">
+                                {{ upcycling_request.get_fabric_delivery_method_display }} · {{ upcycling_request.fabric_delivery_location }}
+                            </dd>
+                        </div>
+                    {% endif %}
                     {% if upcycling_request.cancellation_reason %}<div class="border-t border-[var(--border)] pt-3"><dt class="font-semibold">Alasan pembatalan</dt><dd class="mt-1 whitespace-pre-line text-[var(--brown-muted)]">{{ upcycling_request.cancellation_reason }}</dd></div>{% endif %}
                     <div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
                         <dt class="font-semibold">Kategori produk</dt>

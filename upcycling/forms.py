@@ -68,7 +68,6 @@ class UpcyclingRequestForm(forms.ModelForm):
             "fabric": UpcyclingRequest.FABRIC_CHOICES,
             "category": UpcyclingRequest.CATEGORY_CHOICES,
             "delivery_method": UpcyclingRequest.DELIVERY_CHOICES,
-            "fabric_delivery_method": UpcyclingRequest.FABRIC_DELIVERY_CHOICES,
         }
         for field_name, choices in choices_by_field.items():
             self.fields[field_name].choices = choices
@@ -110,9 +109,6 @@ class UpcyclingRequestForm(forms.ModelForm):
         self.fields["fabric_photo"].widget.attrs.update({"accept": "image/*"})
         self.fields["fabric_condition"].label = "Kondisi kain menurut Anda"
         self.fields["fabric_dimensions"].label = "Perkiraan ukuran atau jumlah kain"
-        self.fields["fabric_delivery_method"].label = "Cara menyerahkan kain"
-        self.fields["fabric_delivery_location"].label = "Lokasi/rencana penyerahan kain"
-        self.fields["fabric_delivery_location"].required = False
         self.fields["fabric_other_description"].label = "Jenis kain lainnya"
         self.fields["fabric_other_description"].widget.attrs.update(
             {"placeholder": "Contoh: kanvas, corduroy, atau linen"}
@@ -126,8 +122,6 @@ class UpcyclingRequestForm(forms.ModelForm):
             "fabric_photo",
             "fabric_condition",
             "fabric_dimensions",
-            "fabric_delivery_method",
-            "fabric_delivery_location",
             "category",
             "product",
             "custom_product",
@@ -158,9 +152,7 @@ class UpcyclingRequestForm(forms.ModelForm):
             "fabric_other_description": forms.TextInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "maxlength": 100}),
             "fabric_photo": forms.ClearableFileInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "accept": "image/*"}),
             "fabric_dimensions": forms.TextInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "placeholder": "Contoh: 1 celana jeans atau kain 1 × 2 m"}),
-            "fabric_delivery_location": forms.TextInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "placeholder": "Lokasi/rencana penyerahan kain"}),
             "fabric_condition": forms.Select(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input"}),
-            "fabric_delivery_method": forms.Select(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input"}),
             "category": forms.RadioSelect(attrs={"class": "sr-only"}),
             # The product chips are rendered in the template; retain this
             # select as the submitted form value.
@@ -270,3 +262,40 @@ class UpcyclingRequestForm(forms.ModelForm):
                 )
 
         return cleaned_data
+
+
+class FabricHandoffForm(forms.ModelForm):
+    """Collect fabric handoff details after the artisan approves the request."""
+
+    class Meta:
+        model = UpcyclingRequest
+        fields = ["fabric_delivery_method", "fabric_delivery_location"]
+        labels = {
+            "fabric_delivery_method": "Cara menyerahkan kain",
+            "fabric_delivery_location": "Alamat atau lokasi penyerahan kain",
+        }
+        widgets = {
+            "fabric_delivery_method": forms.Select(
+                attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input"}
+            ),
+            "fabric_delivery_location": forms.TextInput(
+                attrs={
+                    "class": f"{FIELD_CLASSES} upcycling-field upcycling-input",
+                    "placeholder": "Alamat pengiriman atau lokasi drop-off kain",
+                }
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        method_field = self.fields["fabric_delivery_method"]
+        if not self.instance.fabric_delivery_location:
+            method_field.choices = [
+                ("", "Pilih cara menyerahkan kain"),
+                *method_field.choices,
+            ]
+            self.initial["fabric_delivery_method"] = ""
+        self.fields["fabric_delivery_location"].required = True
+        self.fields["fabric_delivery_location"].help_text = (
+            "Isi detail pengiriman atau lokasi drop-off kain setelah review awal disetujui."
+        )

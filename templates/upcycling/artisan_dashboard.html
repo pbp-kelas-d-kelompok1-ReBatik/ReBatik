@@ -23,6 +23,18 @@
                             <div><dt class="font-semibold">Jumlah produk</dt><dd>{{ item.quantity }}</dd></div>
                             <div><dt class="font-semibold">Catatan user</dt><dd>{{ item.notes|default:"—" }}</dd></div>
                             {% if item.fabric_deadline %}<div><dt class="font-semibold">Tenggat kain</dt><dd>{{ item.fabric_deadline|date:"d M Y, H:i" }}</dd></div>{% endif %}
+                            {% if item.status == "AWAITING_FABRIC" %}
+                                <div>
+                                    <dt class="font-semibold">Rencana penyerahan kain</dt>
+                                    <dd>
+                                        {% if item.fabric_delivery_location %}
+                                            {{ item.get_fabric_delivery_method_display }} · {{ item.fabric_delivery_location }}
+                                        {% else %}
+                                            Menunggu user mengisi cara dan lokasi penyerahan.
+                                        {% endif %}
+                                    </dd>
+                                </div>
+                            {% endif %}
                         </dl>
 
                         {% if item.status == "PENDING_REVIEW" %}

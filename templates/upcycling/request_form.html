@@ -263,16 +263,6 @@
                     {{ form.fabric_dimensions }}
                     {{ form.fabric_dimensions.errors }}
                 </div>
-                <div class="space-y-2">
-                    <label for="{{ form.fabric_delivery_method.id_for_label }}" class="block text-base font-semibold sm:text-lg">Cara menyerahkan kain</label>
-                    {{ form.fabric_delivery_method }}
-                    {{ form.fabric_delivery_method.errors }}
-                </div>
-                <div class="space-y-2">
-                    <label for="{{ form.fabric_delivery_location.id_for_label }}" class="block text-base font-semibold sm:text-lg">Rencana lokasi penyerahan</label>
-                    {{ form.fabric_delivery_location }}
-                    {{ form.fabric_delivery_location.errors }}
-                </div>
             </div>
         </section>
 
@@ -479,7 +469,9 @@
                     <span id="summary-product">Pilih model produk</span>
                 </p>
                 <p class="mt-2 text-base text-[var(--brown-muted)]">
-                    Harga final ditentukan artisan setelah kain diterima dan diperiksa. Produksi dimulai setelah Anda menyetujui harga. Kain pribadi tidak otomatis menjadi donasi.
+                    Harga final ditentukan artisan setelah kain diterima dan diperiksa. Produksi dimulai setelah Anda menyetujui harga.
+                    Cara dan lokasi penyerahan kain akan diminta setelah artisan menyetujui review awal.
+                    Kain pribadi tidak otomatis menjadi donasi.
                 </p>
             </aside>
             <img

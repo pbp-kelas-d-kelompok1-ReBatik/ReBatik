@@ -13,6 +13,11 @@ urlpatterns = [
     path("<uuid:pk>/edit/", views.request_update, name="request_update"),
     path("<uuid:pk>/delete/", views.request_delete, name="request_delete"),
     path("<uuid:pk>/approve-quote/", views.approve_quote, name="approve_quote"),
+    path(
+        "<uuid:pk>/fabric-handoff/",
+        views.submit_fabric_handoff,
+        name="submit_fabric_handoff",
+    ),
     path("<uuid:pk>/confirm-completion/", views.confirm_completion, name="confirm_completion"),
     path("<uuid:pk>/cancel/", views.cancel_request, name="cancel_request"),
 ]
