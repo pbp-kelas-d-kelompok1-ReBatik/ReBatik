@@ -39,6 +39,7 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         "whatsapp": "081234567890",
         "fabric_condition": "GOOD",
         "fabric_dimensions": "1 celana",
+        "fabric_composition": "Katun 95%, elastane 5%",
     }
 
     def form(self, data):
@@ -51,6 +52,27 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         """Test behavior: valid request form."""
         form = self.form(self.valid_data)
         self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(
+            form.cleaned_data["fabric_composition"],
+            "Katun 95%, elastane 5%",
+        )
+
+    def test_fabric_composition_is_optional_and_prompt_explains_the_choices(self):
+        form = self.form({**self.valid_data, "fabric_composition": ""})
+
+        self.assertFalse(form.fields["fabric_composition"].required)
+        self.assertEqual(
+            form.fields["fabric"].label,
+            "Jenis kain atau barang yang akan diolah",
+        )
+        self.assertEqual(
+            dict(form.fields["fabric"].choices)["DENIM"],
+            "Jeans/denim",
+        )
+        self.assertEqual(
+            dict(form.fields["fabric"].choices)["BATIK"],
+            "Kain bermotif batik",
+        )
 
     def test_fabric_condition_select_uses_a_clear_optional_prompt(self):
         """Test behavior: fabric condition has no ambiguous dash option."""
@@ -374,6 +396,7 @@ class UpcyclingRequestViewTests(TestCase):
         "fabric": "DENIM",
         "fabric_condition": "GOOD",
         "fabric_dimensions": "1 celana jeans",
+        "fabric_composition": "Katun 95%, elastane 5%",
         "category": "TAS",
         "product": "TOTE_BAG",
         "quantity": 1,
@@ -463,6 +486,10 @@ class UpcyclingRequestViewTests(TestCase):
             reverse("upcycling:request_success", args=[upcycling_request.pk]),
         )
         self.assertEqual(upcycling_request.status, "PENDING_ASSIGNMENT")
+        self.assertEqual(
+            upcycling_request.fabric_composition,
+            "Katun 95%, elastane 5%",
+        )
 
     def test_create_form_renders_an_expanded_fabric_photo_upload_area(self):
         self.client.force_login(self.user)
@@ -1004,6 +1031,20 @@ class UpcyclingRequestViewTests(TestCase):
             "Jl. Melati 10, Depok",
         )
         self.assertContains(response, "Rencana penyerahan kain berhasil disimpan.")
+
+    def test_request_detail_shows_optional_fabric_composition(self):
+        upcycling_request = self.make_request(
+            self.user,
+            fabric_composition="Katun 95%, elastane 5%",
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_detail", args=[upcycling_request.pk])
+        )
+
+        self.assertContains(response, "Komposisi bahan")
+        self.assertContains(response, "Katun 95%, elastane 5%")
 
     def test_detail_timeline_shows_when_completed_steps_changed(self):
         """Test behavior: completed timeline steps show their status dates."""

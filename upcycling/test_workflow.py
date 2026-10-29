@@ -95,8 +95,8 @@ class UpcyclingWorkflowTests(TestCase):
         self.client.force_login(self.user)
         response = self.client.get(reverse("upcycling:request_create"))
 
-        self.assertContains(response, "Jenis Kain yang Akan Diolah")
-        self.assertContains(response, "Pilih produk yang ingin dibuat pada bagian berikutnya.")
+        self.assertContains(response, "Jenis Kain atau Barang yang Akan Diolah")
+        self.assertContains(response, "Pilih kategori yang paling mendekati.")
         self.assertContains(response, "Pilih Produk")
 
     def test_product_catalog_includes_practical_upcycling_products(self):
@@ -232,6 +232,7 @@ class UpcyclingWorkflowTests(TestCase):
             self.user,
             artisan=self.artisan,
             status=UpcyclingRequest.Status.AWAITING_FABRIC,
+            fabric_composition="Katun 95%, elastane 5%",
             fabric_delivery_method=UpcyclingRequest.FabricDeliveryMethod.SELF_SHIP,
             fabric_delivery_location="Jl. Melati 10, Depok",
         )
@@ -240,6 +241,7 @@ class UpcyclingWorkflowTests(TestCase):
         response = self.client.get(reverse("upcycling:artisan_dashboard"))
 
         self.assertContains(response, "Rencana penyerahan kain")
+        self.assertContains(response, "Katun 95%, elastane 5%")
         self.assertContains(response, "Kirim kain sendiri")
         self.assertContains(response, "Jl. Melati 10, Depok")
 
