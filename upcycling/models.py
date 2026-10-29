@@ -108,6 +108,7 @@ class UpcyclingRequest(models.Model):
         ("POUCH", "Pouch"),
         ("PAKAIAN", "Pakaian"),
         ("AKSESORIS", "Aksesori"),
+        ("RUMAH_TANGGA", "Perlengkapan Rumah"),
         ("LAINNYA", "Lainnya"),
     ]
     PRODUCT_CHOICES = [
@@ -116,6 +117,10 @@ class UpcyclingRequest(models.Model):
         ("POUCH", "Pouch"),
         ("KEMEJA", "Kemeja"),
         ("AKSESORIS", "Aksesori"),
+        ("SCRUNCHIE", "Scrunchie"),
+        ("BUCKET_HAT", "Bucket Hat"),
+        ("LAPTOP_SLEEVE", "Sleeve Laptop"),
+        ("SARUNG_BANTAL", "Sarung Bantal"),
         ("LAINNYA", "Lainnya"),
     ]
     DELIVERY_CHOICES = DeliveryMethod.choices
