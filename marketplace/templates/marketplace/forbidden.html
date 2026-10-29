@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/marketplace.css' %}">
+{% endblock css %}
+
+{% block content %}
+<section id="marketplace-page-content" class="mp-page-shell relative overflow-hidden">
+    <header class="mp-hero-header relative mx-auto mb-8 max-w-3xl text-center text-[var(--brown)]">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--brown-muted)]">Keamanan Akses</p>
+        <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">Akses Terbatas</h1>
+        <p class="mt-3 text-base text-[var(--brown-dark)] sm:text-lg">
+            Halaman pengelolaan ini hanya dapat diakses oleh tim pengelola (Staff) ReBatik.
+        </p>
+    </header>
+
+    <div
+        role="alert"
+        class="mp-panel-box mx-auto max-w-2xl rounded-2xl border-2 border-[var(--mp-accent)]
+               bg-[var(--mp-panel)] p-6 text-center text-[var(--brown)] shadow-2xl
+               sm:rounded-3xl sm:p-8"
+    >
+        <img
+            src="{% static 'img/mascot/thinking.webp' %}"
+            alt="Maskot ReBatik"
+            loading="lazy"
+            decoding="async"
+            class="mx-auto h-28 w-28 object-contain"
+        >
+
+        <h2 class="mt-4 text-2xl font-bold sm:text-3xl">
+            Izin Pengelola Diperlukan
+        </h2>
+
+        <p class="mx-auto mt-3 max-w-lg text-base leading-relaxed text-[var(--brown-muted)]">
+            {{ message|default:"Maaf, akun Anda saat ini terdaftar sebagai Pembeli/Eco-Member dan tidak memiliki hak akses untuk menambah, mengubah, atau menyembunyikan produk katalog." }}
+        </p>
+
+        {% if user.is_authenticated %}
+            <p class="mt-3 text-sm font-semibold text-[var(--brown)]">
+                Masuk sebagai: <span class="underline">{{ user.username }}</span> (Non-Staff)
+            </p>
+        {% endif %}
+
+        <div class="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+            <a
+                href="{% url 'marketplace:home' %}"
+                class="primary-action-button min-h-12 justify-center px-6 py-3 font-bold"
+            >
+                ← Kembali ke Katalog Marketplace
+            </a>
+            {% if user.is_authenticated %}
+                <a
+                    href="{% url 'marketplace:order_list' %}"
+                    class="inline-flex min-h-12 items-center justify-center rounded-full border-2
+                           border-[var(--brown)] bg-[var(--mp-surface)] px-6 py-3 font-bold
+                           text-[var(--brown)] transition hover:bg-[var(--mp-soft)]"
+                >
+                    Lihat Pesanan Saya
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock content %}
+

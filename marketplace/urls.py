@@ -30,4 +30,5 @@ urlpatterns = [
         name="manage_product_restore",
     ),
     path("drop-off/", views.dropoff_list, name="dropoff"),
+    path("api/regions/", views.regions_api, name="regions_api"),
 ]

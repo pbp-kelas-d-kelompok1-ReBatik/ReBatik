@@ -1,14 +1,15 @@
 from functools import wraps
 import json
+import time
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import redirect_to_login
-from django.core.exceptions import PermissionDenied
+from django.core.cache import cache
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -27,17 +28,65 @@ MANAGE_PRODUCTS_PER_PAGE = 15
 
 
 def staff_required(view_func):
-    """Require an authenticated staff user; redirect guests and return 403 for non-staff."""
+    """Require an authenticated staff user; redirect guests and return styled 403 for non-staff."""
 
     @wraps(view_func)
     def _wrapped(request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect_to_login(request.get_full_path())
         if not request.user.is_staff:
-            raise PermissionDenied("Halaman ini hanya untuk tim pengelola ReBatik.")
+            return render(
+                request,
+                "marketplace/forbidden.html",
+                {
+                    "message": (
+                        "Halaman ini hanya untuk tim pengelola (Staff) ReBatik. "
+                        "Anda tidak memiliki izin untuk memanipulasi data katalog."
+                    ),
+                },
+                status=403,
+            )
         return view_func(request, *args, **kwargs)
 
     return _wrapped
+
+
+def rate_limit_post(action_key, action_label, *, limit=8, window_seconds=60):
+    """Protect sensitive POST endpoints against rapid automated submissions (HTTP 429)."""
+
+    def _decorator(view_func):
+        @wraps(view_func)
+        def _wrapped(request, *args, **kwargs):
+            if request.method != "POST" or not request.user.is_authenticated:
+                return view_func(request, *args, **kwargs)
+
+            cache_key = f"mp_rl:{action_key}:{request.user.pk}"
+            now = int(time.time())
+            entry = cache.get(cache_key)
+            if not entry or now >= entry["reset_at"]:
+                entry = {"count": 0, "reset_at": now + window_seconds}
+
+            if entry["count"] >= limit:
+                retry_after = max(1, entry["reset_at"] - now)
+                response = render(
+                    request,
+                    "marketplace/rate_limited.html",
+                    {
+                        "action_label": action_label,
+                        "retry_after": retry_after,
+                    },
+                    status=429,
+                )
+                response["Retry-After"] = str(retry_after)
+                return response
+
+            entry["count"] += 1
+            cache.set(cache_key, entry, timeout=window_seconds)
+            return view_func(request, *args, **kwargs)
+
+        return _wrapped
+
+    return _decorator
 
 
 def _htmx_location_or_redirect(request, route_name, **route_kwargs):
@@ -136,6 +185,7 @@ def product_detail(request, pk):
 
 
 @login_required
+@rate_limit_post("checkout", "pemesanan produk", limit=6, window_seconds=60)
 def checkout(request, pk):
     """Validate and place an order while atomically reserving product stock."""
     product = get_object_or_404(Product.objects.available(), pk=pk)
@@ -332,6 +382,7 @@ def order_detail(request, pk):
 
 
 @login_required
+@rate_limit_post("order_cancel", "pembatalan pesanan", limit=10, window_seconds=60)
 def order_cancel(request, pk):
     """Cancel an owned pending order and restore product stock."""
     order = get_object_or_404(
@@ -428,6 +479,7 @@ def manage_product_list(request):
 
 
 @staff_required
+@rate_limit_post("product_create", "penambahan produk", limit=10, window_seconds=60)
 def manage_product_create(request):
     """Create a new marketplace catalogue product (staff only)."""
     if request.method == "POST":
@@ -458,6 +510,7 @@ def manage_product_create(request):
 
 
 @staff_required
+@rate_limit_post("product_update", "pembaruan produk", limit=15, window_seconds=60)
 def manage_product_update(request, pk):
     """Update an existing marketplace product (staff only)."""
     product = get_object_or_404(Product, pk=pk)
@@ -503,6 +556,7 @@ def manage_product_update(request, pk):
 
 
 @staff_required
+@rate_limit_post("product_delete", "penyembunyian produk", limit=15, window_seconds=60)
 def manage_product_delete(request, pk):
     """Soft-delete (hide) a product so existing orders remain intact."""
     product = get_object_or_404(Product, pk=pk)
@@ -530,6 +584,7 @@ def manage_product_delete(request, pk):
 
 
 @staff_required
+@rate_limit_post("product_restore", "pemulihan produk", limit=15, window_seconds=60)
 def manage_product_restore(request, pk):
     """Restore a previously hidden product back to the public catalogue."""
     product = get_object_or_404(Product, pk=pk)
@@ -583,3 +638,83 @@ def dropoff_list(request):
         "has_any_drop_points": all_points.exists(),
     }
     return render(request, "marketplace/dropoff.html", context)
+
+
+FALLBACK_PROVINCES = [
+    {"id": "31", "name": "DKI JAKARTA"},
+    {"id": "32", "name": "JAWA BARAT"},
+    {"id": "33", "name": "JAWA TENGAH"},
+    {"id": "34", "name": "DI YOGYAKARTA"},
+    {"id": "35", "name": "JAWA TIMUR"},
+    {"id": "36", "name": "BANTEN"},
+]
+
+FALLBACK_REGENCIES = {
+    "31": [
+        {"id": "3171", "name": "KOTA JAKARTA SELATAN"},
+        {"id": "3172", "name": "KOTA JAKARTA TIMUR"},
+        {"id": "3173", "name": "KOTA JAKARTA PUSAT"},
+    ],
+    "32": [
+        {"id": "3276", "name": "KOTA DEPOK"},
+        {"id": "3273", "name": "KOTA BANDUNG"},
+        {"id": "3271", "name": "KOTA BOGOR"},
+    ],
+    "33": [
+        {"id": "3372", "name": "KOTA SURAKARTA"},
+        {"id": "3374", "name": "KOTA SEMARANG"},
+        {"id": "3375", "name": "KOTA PEKALONGAN"},
+    ],
+    "34": [
+        {"id": "3471", "name": "KOTA YOGYAKARTA"},
+        {"id": "3404", "name": "KABUPATEN SLEMAN"},
+    ],
+    "35": [
+        {"id": "3578", "name": "KOTA SURABAYA"},
+        {"id": "3573", "name": "KOTA MALANG"},
+    ],
+    "36": [
+        {"id": "3674", "name": "KOTA TANGERANG SELATAN"},
+        {"id": "3671", "name": "KOTA TANGERANG"},
+    ],
+}
+
+
+def regions_api(request):
+    """Fetch Indonesian provinces/regencies from Emsifa API with server-side caching & fallback mitigation."""
+    from urllib.error import URLError
+    from urllib.request import urlopen
+
+    province_id = request.GET.get("province_id", "").strip()
+    if province_id and not province_id.isdigit():
+        return JsonResponse({"items": [], "source": "invalid"}, status=400)
+
+    cache_key = f"mp_emsifa_regions:{province_id or 'provinces'}"
+    cached_items = cache.get(cache_key)
+    if cached_items is not None:
+        return JsonResponse({"items": cached_items, "source": "cache"})
+
+    url = (
+        f"https://www.emsifa.com/api-wilayah-indonesia/api/regencies/{province_id}.json"
+        if province_id
+        else "https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json"
+    )
+    try:
+        with urlopen(url, timeout=2.5) as resp:
+            raw_data = json.loads(resp.read().decode("utf-8"))
+            items = [
+                {"id": str(item.get("id", "")), "name": str(item.get("name", ""))}
+                for item in raw_data
+                if isinstance(item, dict) and item.get("id") and item.get("name")
+            ]
+            cache.set(cache_key, items, timeout=86400)
+            return JsonResponse({"items": items, "source": "remote"})
+    except (URLError, TimeoutError, ValueError, OSError):
+        fallback = (
+            FALLBACK_REGENCIES.get(province_id, [])
+            if province_id
+            else FALLBACK_PROVINCES
+        )
+        cache.set(cache_key, fallback, timeout=300)
+        return JsonResponse({"items": fallback, "source": "fallback"})
+
