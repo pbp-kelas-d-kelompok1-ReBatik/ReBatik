@@ -112,36 +112,71 @@
             </span>
         </div>
 
-        <!-- SEARCH BAR -->
-        <div class="story-search">
+
+        <!-- PENCARIAN, FILTER, DAN SORTING BERBASIS DATABASE -->
+        <form
+            method="GET"
+            action="{% url 'batik_story:show_batik_story' %}"
+            class="story-search"
+            role="search"
+        >
             <span class="story-search-icon" aria-hidden="true">⌕</span>
 
-            <input type="search" id="story-search-input" placeholder="Cari nama motif atau asal daerah..."
-                aria-label="Cari motif batik" autocomplete="off">
+            <input
+                type="search"
+                name="q"
+                value="{{ query }}"
+                placeholder="Cari nama motif, daerah, atau filosofi..."
+                aria-label="Cari motif batik"
+                autocomplete="off"
+            >
 
-            <button type="button" id="story-search-clear" aria-label="Hapus pencarian">
-                ×
-            </button>
-        </div>
+            <select name="asal" aria-label="Filter asal daerah">
+                <option value="">Semua daerah</option>
 
-        <p id="story-search-status" class="story-search-status" aria-live="polite"></p>
+            {% for kode, nama_daerah in asal_choices %}
+                <option
+                    value="{{ kode }}"
+                    {% if selected_asal == kode %}selected{% endif %}
+                >
+                    {{ nama_daerah }}
+                </option>
+            {% endfor %}
+        </select>
 
-        <!-- EMPTY SEARCH STATE -->
-        <div id="story-empty-state" class="story-empty-state" hidden>
-            <img src="{% static 'img/mascot/crying.webp' %}" alt="Kapy sedih karena cerita tidak ditemukan"
-                class="story-empty-mascot">
+        <select name="sort" aria-label="Urutkan nama motif">
+            <option
+                value="nama_asc"
+                {% if selected_sort == "nama_asc" %}selected{% endif %}
+            >
+                Nama: A–Z
+            </option>
 
-            <h3>Yah, motifnya belum ditemukan :D</h3>
+            <option
+                value="nama_desc"
+                {% if selected_sort == "nama_desc" %}selected{% endif %}
+            >
+                Nama: Z–A
+            </option>
+        </select>
 
-            <p>
-                Sepertinya Kapy belum menemukan cerita yang kamu cari.
-                Coba kata kunci lain, ya!
-            </p>
+        <button type="submit" class="story-search-submit">
+            Cari
+        </button>
 
-            <button type="button" id="story-empty-reset">
-                Lihat Semua Cerita
-            </button>
-        </div>
+        <a
+            href="{% url 'batik_story:show_batik_story' %}"
+            class="story-search-reset"
+        >
+            Reset
+        </a>
+    </form>
+
+    <!-- STATUS HASIL PENCARIAN -->
+    <p class="story-search-status" aria-live="polite">
+        Menampilkan {{ batiks|length }} cerita{% if query %} untuk kata kunci “{{ query }}”{% endif %}{% if selected_asal %} dari {{ selected_asal }}{% endif %}.
+    </p>
+
 
         <!-- BATIK CARDS GRID -->
         <div class="story-cards">

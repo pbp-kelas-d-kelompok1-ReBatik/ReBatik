@@ -550,3 +550,78 @@
     }
 }
 .cs-order-cta{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:22px;padding:20px 22px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(120deg,#fffaf1,#f7ead7)}.cs-order-cta h3{margin:0 0 5px;color:var(--dark-brown);font-size:22px}.cs-order-cta p{margin:0;color:var(--muted);font-size:16px;line-height:1.4}.cs-order-button{flex-shrink:0;min-height:50px;padding:13px 24px;border:0;border-radius:28px;background:var(--brown);color:white;font:bold 18px Garamond,Georgia,serif;cursor:pointer}.cs-order-button:hover{background:var(--dark-brown)}@media(max-width:560px){.cs-order-cta{align-items:stretch;flex-direction:column;padding:16px}.cs-order-button{width:100%}}
+=======
+.custom-studio-page {
+    max-width: 1040px;
+    margin: 48px auto;
+    padding: clamp(36px, 8vw, 88px) 24px;
+    border: 1px solid rgba(111, 73, 44, 0.18);
+    border-radius: 28px;
+    background: linear-gradient(135deg, #fffaf2, #f3e4d1);
+    color: #493322;
+    text-align: center;
+    box-shadow: 0 18px 48px rgba(73, 51, 34, 0.1);
+}
+
+.custom-studio-page header > p:first-child {
+    margin: 0 0 14px;
+    color: #94633e;
+    font: 700 0.78rem/1.4 "Plus Jakarta Sans", Arial, sans-serif;
+    letter-spacing: 0.18em;
+}
+
+.custom-studio-page h1 {
+    margin: 0 0 14px;
+    color: #493322;
+    font: 700 clamp(2.2rem, 6vw, 4rem)/1.1 "Garamond", Georgia, serif;
+}
+
+.custom-studio-page header > p:last-child {
+    max-width: 620px;
+    margin: 0 auto;
+    color: #72563f;
+    font-size: 1.1rem;
+    line-height: 1.7;
+}
+
+.custom-studio-page .studio-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    margin-top: 30px;
+    padding: 13px 24px;
+    border: 1px solid #774b2d;
+    border-radius: 999px;
+    background: #774b2d;
+    color: #fffaf2;
+    font: 700 0.95rem/1.4 "Plus Jakarta Sans", Arial, sans-serif;
+    text-decoration: none;
+    transition: background-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.custom-studio-page .studio-button:hover,
+.custom-studio-page .studio-button:focus-visible {
+    transform: translateY(-2px);
+    background: transparent;
+    color: #774b2d;
+}
+
+.custom-studio-page .studio-button:focus-visible {
+    outline: 3px solid #c99361;
+    outline-offset: 4px;
+}
+
+@media (max-width: 600px) {
+    .custom-studio-page {
+        margin: 24px 14px;
+        padding-inline: 18px;
+        border-radius: 20px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .custom-studio-page .studio-button {
+        transition: none;
+    }
+}

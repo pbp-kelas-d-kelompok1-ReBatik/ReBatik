@@ -1985,3 +1985,141 @@ input[type="file"].form-input {
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+
+/* ===== REFINEMENT: BATIK STORY SEARCH ===== */
+
+.story-search {
+    width: min(100%, 930px);
+    min-height: 76px;
+    margin: 24px auto 12px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    background: rgba(255, 251, 244, 0.96);
+    border: 1px solid #e4d1b8;
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(91, 60, 35, 0.06);
+    box-sizing: border-box;
+}
+
+.story-search .story-search-icon {
+    flex: 0 0 auto;
+    color: #a87837;
+    font-size: 27px;
+    line-height: 1;
+}
+
+.story-search input[type="search"] {
+    flex: 1 1 220px;
+    min-width: 100px;
+    width: 100%;
+    height: 44px;
+    padding: 8px 4px;
+
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #573822;
+    font: 18px Garamond, Georgia, serif;
+    box-shadow: none;
+}
+
+.story-search input[type="search"]::placeholder {
+    color: #aa9076;
+    opacity: 1;
+}
+
+.story-search select {
+    flex: 0 1 auto;
+    width: auto;
+    max-width: 190px;
+    min-width: 115px;
+    height: 42px;
+    padding: 8px 28px 8px 12px;
+
+    border: 1px solid #e2d1bc;
+    border-radius: 12px;
+    background-color: #fffaf2;
+    color: #68452d;
+    font: 16px Garamond, Georgia, serif;
+    cursor: pointer;
+}
+
+.story-search .story-search-submit {
+    flex: 0 0 auto;
+    min-height: 42px;
+    padding: 9px 18px;
+
+    border: 1px solid #8c6039;
+    border-radius: 999px;
+    background: #8c6039;
+    color: #fffaf2;
+    font: 16px Garamond, Georgia, serif;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.story-search .story-search-submit:hover {
+    background: #68452d;
+}
+
+.story-search .story-search-reset {
+    flex: 0 0 auto;
+    padding: 8px 2px;
+    color: #8c6039;
+    font: 17px Garamond, Georgia, serif;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.story-search .story-search-reset:hover {
+    color: #573822;
+    text-decoration: underline;
+}
+
+.story-search-status {
+    width: min(100%, 930px);
+    margin: 10px auto 24px;
+    color: #967653;
+    font: 17px Garamond, Georgia, serif;
+    text-align: center;
+    line-height: 1.5;
+}
+
+/* Tampilan tablet dan HP */
+@media (max-width: 760px) {
+    .story-search {
+        width: 100%;
+        padding: 16px;
+        border-radius: 22px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .story-search input[type="search"] {
+        flex: 1 1 calc(100% - 45px);
+    }
+
+    .story-search select {
+        flex: 1 1 calc(50% - 10px);
+        width: 100%;
+        max-width: none;
+        min-width: 0;
+    }
+
+    .story-search .story-search-submit {
+        flex: 1 1 100px;
+    }
+
+    .story-search .story-search-reset {
+        flex: 0 0 auto;
+    }
+
+    .story-search-status {
+        margin-bottom: 20px;
+        font-size: 16px;
+    }
+}

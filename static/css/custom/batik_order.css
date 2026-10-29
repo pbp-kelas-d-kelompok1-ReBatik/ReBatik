@@ -615,3 +615,50 @@
 .order-confirm-modal.is-open {
     display: flex;
 }
+
+
+/* FIX: Styling untuk field Django yang belum memiliki class order-field */
+.order-form .order-field-wrap input:not([type="checkbox"]):not([type="radio"]),
+.order-form .order-field-wrap select,
+.order-form .order-field-wrap textarea {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-height: 44px;
+    padding: 10px 13px;
+    border: 1px solid #e2d3c0;
+    border-radius: 9px;
+    background-color: #fffefa;
+    color: #492b1c;
+    font-family: Garamond, Georgia, serif;
+    font-size: 17px;
+    box-sizing: border-box;
+}
+
+.order-form .order-field-wrap textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.order-form .order-field-wrap input:focus,
+.order-form .order-field-wrap select:focus,
+.order-form .order-field-wrap textarea:focus {
+    outline: 2px solid #c49a62;
+    outline-offset: 1px;
+    border-color: #c49a62;
+}
+
+/* Penanda validasi */
+.order-form .order-field-wrap input:invalid,
+.order-form .order-field-wrap select:invalid,
+.order-form .order-field-wrap textarea:invalid {
+    border-color: #dc2626;
+    background-color: #fffafa;
+}
+
+/* Field error dari Django */
+.order-form .order-field-wrap.has-error input,
+.order-form .order-field-wrap.has-error select,
+.order-form .order-field-wrap.has-error textarea {
+    border-color: #dc2626;
+}

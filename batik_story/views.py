@@ -12,15 +12,56 @@ def show_home(request):
     return render(request, "home.html")
 
 def show_batik_story(request):
-    batiks = BatikMotif.objects.annotate(favorite_count=Count("favorited_by", distinct=True))
+    # Semua pencarian, filter, dan pengurutan dilakukan oleh QuerySet Django
+    # sehingga data diproses di database, bukan hanya menyembunyikan kartu via JavaScript.
+    batiks = BatikMotif.objects.all()
+
+    query = request.GET.get("q", "").strip()
+    asal = request.GET.get("asal", "").strip()
+    sort = request.GET.get("sort", "nama_asc").strip()
+
+    if query:
+        from django.db.models import Q
+        batiks = batiks.filter(
+            Q(nama__icontains=query)
+            | Q(asal__icontains=query)
+            | Q(filosofi__icontains=query)
+            | Q(deskripsi__icontains=query)
+        )
+
+    valid_asal = {choice[0] for choice in BatikMotif.ASAL_CHOICES}
+    if asal and asal in valid_asal:
+        batiks = batiks.filter(asal=asal)
+    else:
+        asal = ""
+
+    if sort == "nama_desc":
+        batiks = batiks.order_by("-nama", "id_story")
+    else:
+        sort = "nama_asc"
+        batiks = batiks.order_by("nama", "id_story")
+
+    batiks = batiks.annotate(favorite_count=Count("favorited_by", distinct=True))
     if request.user.is_authenticated:
-        batiks = batiks.annotate(is_favorited=Exists(BatikMotif.objects.filter(pk=OuterRef("pk"), favorited_by=request.user)))
+        batiks = batiks.annotate(
+            is_favorited=Exists(
+                BatikMotif.objects.filter(pk=OuterRef("pk"), favorited_by=request.user)
+            )
+        )
     else:
         batiks = batiks.annotate(is_favorited=Exists(BatikMotif.objects.none()))
+
     context = {
         "judul": "Batik Story",
-        "ket1": ("Jelajahi kisah di balik batik Indonesia. Kenali sejarah, " "filosofi, dan makna dari berbagai motif batik Nusantara."),
+        "ket1": (
+            "Jelajahi kisah di balik batik Indonesia. Kenali sejarah, "
+            "filosofi, dan makna dari berbagai motif batik Nusantara."
+        ),
         "batiks": batiks,
+        "query": query,
+        "selected_asal": asal,
+        "asal_choices": BatikMotif.ASAL_CHOICES,
+        "selected_sort": sort,
     }
     return render(request, "batik_story.html", context)
 
