@@ -1,20 +1,168 @@
+{% extends "base.html" %}
 {% load static %}
 
+{% block meta %}
+<title>Edit Cerita Batik - ReBatik</title>
+<meta name="description" content="Edit informasi, gambar, deskripsi, dan filosofi motif batik Nusantara.">
+{% endblock meta %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/batik_story.css' %}">
+<link rel="stylesheet" href="{% static 'css/add_batik.css' %}">
+{% endblock css %}
+
 {% block content %}
-<section class="story-edit">
-    <h1>Edit Cerita Batik</h1>
+<main class="add-batik-page">
 
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
+    <section class="min-h-80 bg-[#f3ebe1] px-4 py-10 sm:py-16">
+        <div class="mx-auto max-w-2xl rounded-3xl bg-white p-5 shadow-lg sm:p-8">
 
-        <button type="submit" class="button">
-            Simpan Perubahan
-        </button>
+            <!-- HEADER -->
+            <p class="text-sm font-semibold tracking-[0.18em] text-[#6a3b12]">
+                REBATIK · BATIK STORY
+            </p>
 
-        <a href="{% url 'batik_story:show_batik_story' %}" class="button">
-            Batalkan
-        </a>
-    </form>
-</section>
+            <h1 class="mt-4 text-3xl font-bold text-[#6a3b12] sm:text-4xl">
+                Edit Cerita Batik
+            </h1>
+
+            <p class="mt-3 text-base text-[#6a3b12]">
+                Perbarui informasi, deskripsi, dan filosofi motif batik Nusantara.
+            </p>
+
+            <!-- PESAN -->
+            {% if messages %}
+            {% for message in messages %}
+            <div class="mt-5 rounded-xl bg-green-100 p-4 text-sm text-green-800">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <!-- FORM EDIT -->
+            <form method="POST" enctype="multipart/form-data" class="batik-form mt-8 space-y-5">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="rounded-xl bg-red-100 p-4 text-sm text-red-800">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <!-- NAMA MOTIF -->
+                <div class="space-y-2">
+                    <label for="{{ form.nama.id_for_label }}" class="block font-semibold text-[#6a3b12]">
+                        {{ form.nama.label }}
+                    </label>
+
+                    {{ form.nama }}
+
+                    {% if form.nama.errors %}
+                    <div class="text-sm text-red-800">
+                        {{ form.nama.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- ASAL DAERAH -->
+                <div class="space-y-2">
+                    <label for="{{ form.asal.id_for_label }}" class="block font-semibold text-[#6a3b12]">
+                        {{ form.asal.label }}
+                    </label>
+
+                    {{ form.asal }}
+
+                    {% if form.asal.errors %}
+                    <div class="text-sm text-red-800">
+                        {{ form.asal.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- GAMBAR -->
+                <div class="space-y-2">
+                    <label for="{{ form.gambar.id_for_label }}" class="block font-semibold text-[#6a3b12]">
+                        {{ form.gambar.label }}
+                    </label>
+
+                    {% if batik.gambar %}
+                    <div class="current-batik-image">
+                        <p class="mb-2 text-sm text-[#8b735e]">
+                            Gambar saat ini:
+                        </p>
+
+                        {% if batik.static_gambar_path %}
+                        <img src="{% static batik.static_gambar_path %}" alt="{{ batik.nama }}"
+                            class="mb-3 max-h-64 w-full rounded-xl object-cover">
+                        {% else %}
+                        <img src="{{ batik.gambar.url }}" alt="{{ batik.nama }}"
+                            class="mb-3 max-h-64 w-full rounded-xl object-cover">
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    {{ form.gambar }}
+
+                    <p class="text-sm text-[#8b735e]">
+                        Pilih gambar baru jika ingin mengganti gambar saat ini.
+                        Kosongkan jika tidak ingin mengubahnya.
+                    </p>
+
+                    {% if form.gambar.errors %}
+                    <div class="text-sm text-red-800">
+                        {{ form.gambar.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- DESKRIPSI -->
+                <div class="space-y-2">
+                    <label for="{{ form.deskripsi.id_for_label }}" class="block font-semibold text-[#6a3b12]">
+                        {{ form.deskripsi.label }}
+                    </label>
+
+                    {{ form.deskripsi }}
+
+                    {% if form.deskripsi.errors %}
+                    <div class="text-sm text-red-800">
+                        {{ form.deskripsi.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- FILOSOFI -->
+                <div class="space-y-2">
+                    <label for="{{ form.filosofi.id_for_label }}" class="block font-semibold text-[#6a3b12]">
+                        {{ form.filosofi.label }}
+                    </label>
+
+                    {{ form.filosofi }}
+
+                    {% if form.filosofi.errors %}
+                    <div class="text-sm text-red-800">
+                        {{ form.filosofi.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- TOMBOL -->
+                <div class="flex flex-col gap-3 border-t border-[#e9e1d4] pt-5 sm:flex-row sm:justify-between">
+
+                    <a href="{% url 'batik_story:show_batik_story' %}"
+                        class="rounded-xl border border-[#654a39] px-5 py-3 text-center font-semibold text-[#6a3b12] transition hover:bg-[#f3ebe1]">
+                        ← Kembali
+                    </a>
+
+                    <button type="submit"
+                        class="rounded-xl bg-[#a34235] px-6 py-3 font-semibold text-white shadow-md transition hover:shadow-lg">
+                        Simpan Perubahan →
+                    </button>
+
+                </div>
+            </form>
+
+        </div>
+    </section>
+
+</main>
 {% endblock content %}
