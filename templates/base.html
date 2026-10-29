@@ -48,6 +48,9 @@
                 <a href="{% url 'donasi:landing' %}">Donasi Kain</a>
                 <a href="{% url 'marketplace:dropoff' %}">Drop-off Point</a>
                 <a href="{% url 'upcycling:request_list' %}">Upcycling Request</a>
+                {% if can_open_artisan_dashboard %}
+                <a href="{% url 'upcycling:artisan_dashboard' %}">Dashboard Artisan</a>
+                {% endif %}
                 <a href="{% url 'batik_custom:show_home' %}">Custom Batik</a>
                 <a href="{% url 'impact_tracker:dashboard' %}">Impact Tracker</a>
                 <a href="#">Landing page</a>

@@ -55,7 +55,9 @@ class UpcyclingRequestAdminForm(forms.ModelForm):
             return
         eligible = ArtisanProfile.objects.filter(is_available=True)
         if self.instance.pk:
-            eligible = eligible.filter(specializations__code=self.instance.product).distinct()
+            eligible = eligible.filter(
+                specializations__code=self.instance.product
+            ).exclude(user_id=self.instance.user_id).distinct()
             candidates = list(eligible)
             eligible_ids = [
                 profile.pk
@@ -83,7 +85,9 @@ class UpcyclingRequestAdminForm(forms.ModelForm):
         old_status = request_obj.status if request_obj.pk else None
 
         if artisan and artisan.pk != old_artisan_id:
-            if old_status not in {
+            if artisan.user_id == request_obj.user_id:
+                self.add_error("artisan", "Artisan tidak dapat menangani permintaannya sendiri.")
+            elif old_status not in {
                 None,
                 UpcyclingRequest.Status.PENDING_ASSIGNMENT,
                 UpcyclingRequest.Status.PENDING_REVIEW,

@@ -5,6 +5,7 @@ from decimal import Decimal, InvalidOperation
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Q
@@ -92,6 +93,16 @@ def _rate_limit_response(request, action):
     )
     response["Retry-After"] = str(retry_after)
     return response
+
+
+def _get_artisan_profile(user):
+    """Require the shared artisan role and an upcycling-specific profile."""
+    if not user.groups.filter(name="Artisan").exists():
+        raise PermissionDenied("Akun ini tidak memiliki peran artisan.")
+    try:
+        return user.artisan_profile
+    except ArtisanProfile.DoesNotExist:
+        raise PermissionDenied("Akun artisan ini belum memiliki profil Upcycling.") from None
 
 
 @login_required
@@ -206,7 +217,6 @@ def request_list(request):
             ("quantity", "Jumlah terbanyak"),
         ),
         "has_any_requests": has_any_requests,
-        "is_artisan": ArtisanProfile.objects.filter(user=request.user).exists(),
     }
     return render(request, "upcycling/request_list.html", context)
 
@@ -300,11 +310,27 @@ def request_success(request, pk):
 
 @login_required
 def request_detail(request, pk):
-    """Show one owned request with its progress timeline and status history."""
-    upcycling_request = get_object_or_404(
-        UpcyclingRequest,
-        pk=pk,
-        user=request.user,
+    """Show an owned request or a request assigned to the signed-in artisan."""
+    artisan = None
+    if request.user.groups.filter(name="Artisan").exists():
+        artisan = ArtisanProfile.objects.filter(user=request.user).first()
+
+    accessible_requests = UpcyclingRequest.objects.select_related("user", "artisan__user")
+    if artisan:
+        upcycling_request = get_object_or_404(
+            accessible_requests.filter(Q(user=request.user) | Q(artisan=artisan)),
+            pk=pk,
+        )
+    else:
+        upcycling_request = get_object_or_404(
+            accessible_requests,
+            pk=pk,
+            user=request.user,
+        )
+    is_assigned_artisan = bool(
+        artisan
+        and upcycling_request.artisan_id == artisan.pk
+        and upcycling_request.user_id != request.user.pk
     )
 
     status = upcycling_request.status
@@ -392,6 +418,22 @@ def request_detail(request, pk):
         },
     }
     next_step = next_steps[status]
+    if is_assigned_artisan:
+        if status == UpcyclingRequest.Status.AWAITING_APPROVAL:
+            next_step = {
+                "title": "Menunggu persetujuan user",
+                "description": "Produksi hanya dapat dimulai setelah user menyetujui penawaran harga.",
+            }
+        elif status == UpcyclingRequest.Status.READY:
+            next_step = {
+                "title": "Menunggu konfirmasi user",
+                "description": "User perlu mengonfirmasi penerimaan produk sebelum request selesai.",
+            }
+        elif status not in UpcyclingRequest.TERMINAL_STATUSES:
+            next_step = {
+                "title": "Tindakan Artisan",
+                "description": "Gunakan panel tindakan di bawah untuk memproses request sesuai statusnya.",
+            }
 
     return render(
         request,
@@ -402,9 +444,10 @@ def request_detail(request, pk):
             "timeline_steps": timeline_steps,
             "status_history": status_history,
             "next_step": next_step,
-            "can_approve_quote": status == UpcyclingRequest.Status.AWAITING_APPROVAL,
-            "can_confirm_receipt": status == UpcyclingRequest.Status.READY,
-            "can_cancel": status in {
+            "is_assigned_artisan": is_assigned_artisan,
+            "can_approve_quote": not is_assigned_artisan and status == UpcyclingRequest.Status.AWAITING_APPROVAL,
+            "can_confirm_receipt": not is_assigned_artisan and status == UpcyclingRequest.Status.READY,
+            "can_cancel": not is_assigned_artisan and status in {
                 UpcyclingRequest.Status.PENDING_ASSIGNMENT,
                 UpcyclingRequest.Status.PENDING_REVIEW,
                 UpcyclingRequest.Status.AWAITING_FABRIC,
@@ -412,7 +455,7 @@ def request_detail(request, pk):
             },
             "fabric_handoff_form": (
                 FabricHandoffForm(instance=upcycling_request)
-                if status == UpcyclingRequest.Status.AWAITING_FABRIC
+                if not is_assigned_artisan and status == UpcyclingRequest.Status.AWAITING_FABRIC
                 else None
             ),
         },
@@ -658,13 +701,12 @@ def cancel_request(request, pk):
 
 @login_required
 def artisan_dashboard(request):
-    artisan = get_object_or_404(ArtisanProfile, user=request.user)
+    artisan = _get_artisan_profile(request.user)
     assigned_requests = UpcyclingRequest.objects.filter(artisan=artisan).select_related("user")
-    active_requests = assigned_requests.exclude(status__in=UpcyclingRequest.TERMINAL_STATUSES)
     return render(
         request,
         "upcycling/artisan_dashboard.html",
-        {"artisan": artisan, "requests": active_requests},
+        {"artisan": artisan, "requests": assigned_requests},
     )
 
 
@@ -672,7 +714,7 @@ def artisan_dashboard(request):
 def artisan_update_request(request, pk):
     if request.method != "POST":
         return redirect("upcycling:artisan_dashboard")
-    artisan = get_object_or_404(ArtisanProfile, user=request.user)
+    artisan = _get_artisan_profile(request.user)
     action = request.POST.get("action", "")
     with transaction.atomic():
         upcycling_request = get_object_or_404(
@@ -708,6 +750,10 @@ def artisan_update_request(request, pk):
                         raise ValueError("Masukkan harga final yang valid.") from None
                     if not price.is_finite() or price <= 0:
                         raise ValueError("Harga final harus lebih dari nol.")
+                    if price != price.to_integral_value():
+                        raise ValueError("Harga final harus menggunakan nominal rupiah tanpa pecahan.")
+                    if price > Decimal("99999999"):
+                        raise ValueError("Harga final tidak boleh melebihi Rp99.999.999.")
                     upcycling_request.quoted_price = price
                     upcycling_request.quoted_at = now
                     upcycling_request.quotation_notes = note

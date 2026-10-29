@@ -22,6 +22,31 @@
         background: linear-gradient(180deg, #673a1f 0%, #98706b 100%);
     }
 
+    .upcycling-danger-action-button {
+        display: inline-flex;
+        min-height: 2.75rem;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #6f241d;
+        border-radius: 9999px;
+        background: linear-gradient(180deg, #b6534b 0%, #7a3027 100%);
+        padding: 0.5rem 1.25rem;
+        color: var(--cream-light);
+        font-family: "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
+        font-weight: 700;
+        box-shadow: 0 4px 8px rgb(74 46 40 / 22%);
+        transition: filter 0.2s ease;
+    }
+
+    .upcycling-danger-action-button:hover {
+        filter: brightness(1.1);
+    }
+
+    .upcycling-danger-action-button:focus-visible {
+        outline: 2px solid var(--gold);
+        outline-offset: 3px;
+    }
+
     .upcycling-field.upcycling-input {
         min-height: 3.5rem;
         border: 1px solid var(--border);

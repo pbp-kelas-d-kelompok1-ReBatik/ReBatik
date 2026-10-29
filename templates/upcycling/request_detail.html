@@ -23,7 +23,9 @@
     <header class="relative mx-auto mb-10 max-w-4xl text-center text-[var(--cream-light)]">
         <p class="text-xs uppercase tracking-[0.3em]">Upcycle · Culture · Value</p>
         <h1 class="mt-2 text-4xl font-bold italic sm:text-5xl">Detail Permintaan</h1>
-        <p class="mt-3 text-base sm:text-lg">Lihat perkembangan permintaan upcycling Anda.</p>
+        <p class="mt-3 text-base sm:text-lg">
+            {% if is_assigned_artisan %}Lihat rincian request yang ditugaskan kepada Anda.{% else %}Lihat perkembangan permintaan upcycling Anda.{% endif %}
+        </p>
     </header>
 
     <div
@@ -32,14 +34,14 @@
                p-5 text-[var(--brown)] shadow-2xl sm:p-8 lg:p-10"
     >
         <a
-            href="{% url 'upcycling:request_list' %}"
+            href="{% if is_assigned_artisan %}{% url 'upcycling:artisan_dashboard' %}{% else %}{% url 'upcycling:request_list' %}{% endif %}"
             class="inline-flex items-center rounded-lg px-1 py-2 font-semibold text-[var(--brown)]
                    underline decoration-[var(--upcycling-accent)] underline-offset-4
                    hover:text-[var(--button-hover)] focus-visible:outline
                    focus-visible:outline-2 focus-visible:outline-offset-2
                    focus-visible:outline-[var(--brown)]"
         >
-            ← Permintaan Saya
+            {% if is_assigned_artisan %}← Dashboard Artisan{% else %}← Permintaan Saya{% endif %}
         </a>
 
         {% include "upcycling/_toast_messages.html" %}
@@ -218,6 +220,7 @@
                 {% endif %}
 
                 <dl class="mt-5 space-y-3 text-base sm:text-lg">
+                    {% if is_assigned_artisan %}<div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]"><dt class="font-semibold">Pemesan</dt><dd>{{ upcycling_request.user.get_full_name|default:upcycling_request.user.username }}</dd></div>{% endif %}
                     <div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
                         <dt class="font-semibold">Kain</dt>
                         <dd>{{ upcycling_request.get_fabric_display }}{% if upcycling_request.fabric_other_description %} · {{ upcycling_request.fabric_other_description }}{% endif %}</dd>
@@ -279,6 +282,57 @@
             </section>
         </div>
 
+        {% if is_assigned_artisan %}
+            {% if upcycling_request.status == 'PENDING_REVIEW' %}
+                <section class="mt-7 rounded-2xl border border-[var(--upcycling-card-border)] bg-[var(--upcycling-surface)] p-5 sm:p-7" aria-labelledby="artisan-actions-heading">
+                    <h3 id="artisan-actions-heading" class="text-2xl font-bold">Tindakan Artisan</h3>
+                    <form method="post" action="{% url 'upcycling:artisan_update_request' upcycling_request.pk %}" class="mt-4 space-y-3">
+                        {% csrf_token %}
+                        <label class="block font-semibold" for="review-{{ upcycling_request.pk }}">Catatan review</label>
+                        <textarea id="review-{{ upcycling_request.pk }}" name="notes" rows="3" class="w-full rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--brown)]" placeholder="Catatan atau alasan bila ditolak"></textarea>
+                        <div class="flex flex-col gap-3 sm:flex-row">
+                            <button name="action" value="review_accept" class="primary-action-button min-h-11 px-5 py-2 font-bold">Terima review</button>
+                            <button name="action" value="review_reject" class="upcycling-danger-action-button">Tolak Permintaan</button>
+                        </div>
+                    </form>
+                </section>
+            {% elif upcycling_request.status == 'AWAITING_FABRIC' %}
+                <section class="mt-7 rounded-2xl border border-[var(--upcycling-card-border)] bg-[var(--upcycling-surface)] p-5 sm:p-7" aria-labelledby="artisan-actions-heading">
+                    <h3 id="artisan-actions-heading" class="text-2xl font-bold">Tindakan Artisan</h3>
+                    <form method="post" action="{% url 'upcycling:artisan_update_request' upcycling_request.pk %}" class="mt-4 space-y-3">
+                        {% csrf_token %}<input type="hidden" name="action" value="receive_fabric">
+                        <label class="block font-semibold" for="receipt-{{ upcycling_request.pk }}">Catatan penerimaan kain (opsional)</label>
+                        <textarea id="receipt-{{ upcycling_request.pk }}" name="notes" rows="3" class="w-full rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--brown)]"></textarea>
+                        <button class="primary-action-button min-h-11 px-5 py-2 font-bold">Konfirmasi kain diterima</button>
+                    </form>
+                </section>
+            {% elif upcycling_request.status == 'INSPECTION' %}
+                <section class="mt-7 rounded-2xl border border-[var(--upcycling-card-border)] bg-[var(--upcycling-surface)] p-5 sm:p-7" aria-labelledby="artisan-actions-heading">
+                    <h3 id="artisan-actions-heading" class="text-2xl font-bold">Tindakan Artisan</h3>
+                    <form method="post" action="{% url 'upcycling:artisan_update_request' upcycling_request.pk %}" class="mt-4 space-y-3">
+                        {% csrf_token %}
+                        <label class="block font-semibold" for="inspection-{{ upcycling_request.pk }}">Catatan inspeksi / alasan penolakan</label>
+                        <textarea id="inspection-{{ upcycling_request.pk }}" name="notes" rows="3" class="w-full rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--brown)]" placeholder="Jelaskan kondisi aktual kain"></textarea>
+                        <label class="block font-semibold" for="price-{{ upcycling_request.pk }}">Harga final (Rp)</label>
+                        <input id="price-{{ upcycling_request.pk }}" name="quoted_price" type="number" min="1" max="99999999" step="1" class="w-full rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--brown)]">
+                        <div class="flex flex-col gap-3 sm:flex-row">
+                            <button name="action" value="inspection_pass" class="primary-action-button min-h-11 px-5 py-2 font-bold">Kain layak · kirim penawaran</button>
+                            <button name="action" value="inspection_reject" class="upcycling-danger-action-button">Kain tidak layak</button>
+                        </div>
+                    </form>
+                </section>
+            {% elif upcycling_request.status == 'IN_PROGRESS' %}
+                <section class="mt-7 rounded-2xl border border-[var(--upcycling-card-border)] bg-[var(--upcycling-surface)] p-5 sm:p-7" aria-labelledby="artisan-actions-heading">
+                    <h3 id="artisan-actions-heading" class="text-2xl font-bold">Tindakan Artisan</h3>
+                    <form method="post" action="{% url 'upcycling:artisan_update_request' upcycling_request.pk %}" class="mt-4">
+                        {% csrf_token %}<input type="hidden" name="action" value="mark_ready">
+                        <button class="primary-action-button min-h-11 px-5 py-2 font-bold">Tandai siap diserahkan</button>
+                    </form>
+                </section>
+            {% endif %}
+        {% endif %}
+
+        {% if not is_assigned_artisan %}
         <div
             id="contact-team-actions"
             class="mt-7 flex flex-col gap-4 border-t border-[var(--border)] pt-5 sm:flex-row sm:items-center
@@ -305,6 +359,7 @@
                 Hubungi Tim via WhatsApp
             </button>
         </div>
+        {% endif %}
 
         {% if can_approve_quote %}
             <div class="mt-5 rounded-xl border border-[var(--border)] bg-[var(--upcycling-surface)] p-5">
@@ -335,6 +390,7 @@
                 <button class="primary-action-button min-h-12 px-5 py-3 font-bold">Konfirmasi produk diterima</button>
             </form>
         {% endif %}
+        {% if not is_assigned_artisan %}
         {% if can_cancel or upcycling_request.status == 'PENDING_ASSIGNMENT' %}
             <div id="request-actions" class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
                 {% if upcycling_request.status == 'PENDING_ASSIGNMENT' %}
@@ -363,6 +419,7 @@
                     </form>
                 {% endif %}
             </div>
+        {% endif %}
         {% endif %}
     </div>
 </section>

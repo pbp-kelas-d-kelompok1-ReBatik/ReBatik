@@ -24,7 +24,14 @@
         <p class="text-xs uppercase tracking-[0.3em]">Upcycle · Culture · Value</p>
         <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">Permintaan Saya</h1>
         <p class="mt-3 text-base sm:text-lg">Pantau semua permintaan upcycling Anda di sini.</p>
-        {% if is_artisan %}<a href="{% url 'upcycling:artisan_dashboard' %}" class="mt-3 inline-flex rounded-full bg-white/90 px-5 py-2 font-semibold text-[var(--brown)]">Buka dashboard artisan →</a>{% endif %}
+        {% if can_open_artisan_dashboard %}
+            <a
+                href="{% url 'upcycling:artisan_dashboard' %}"
+                class="primary-action-button mt-5 min-h-11 px-5 py-2 text-sm
+                       focus-visible:outline focus-visible:outline-offset-2
+                       focus-visible:outline-[var(--gold)]"
+            >Buka dashboard artisan →</a>
+        {% endif %}
     </header>
 
     <main
