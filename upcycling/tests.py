@@ -1187,6 +1187,8 @@ class UpcyclingRequestViewTests(TestCase):
             [
                 {"value": "TOTE_BAG", "label": "Tote Bag"},
                 {"value": "SLING_BAG", "label": "Sling Bag"},
+                {"value": "BACKPACK", "label": "Backpack"},
+                {"value": "SHOULDER_BAG", "label": "Shoulder Bag"},
                 {"value": "LAINNYA", "label": "Lainnya"},
             ],
         )
