@@ -15,6 +15,7 @@ from .models import (
     UpcyclingStatusHistory,
     fabric_handoff_deadline,
 )
+from .services import eligible_artisans_for_request
 
 
 class ArtisanProfileAdminForm(forms.ModelForm):
@@ -53,22 +54,15 @@ class UpcyclingRequestAdminForm(forms.ModelForm):
         artisan_field = self.fields.get("artisan")
         if not artisan_field:
             return
-        eligible = ArtisanProfile.objects.filter(is_available=True)
         if self.instance.pk:
-            eligible = eligible.filter(
-                specializations__code=self.instance.product
-            ).exclude(user_id=self.instance.user_id).distinct()
-            candidates = list(eligible)
             eligible_ids = [
-                profile.pk
-                for profile in candidates
-                if profile.active_request_count() < profile.max_active_requests
+                profile.pk for profile in eligible_artisans_for_request(self.instance)
             ]
             if self.instance.artisan_id:
                 eligible_ids.append(self.instance.artisan_id)
             eligible = ArtisanProfile.objects.filter(pk__in=eligible_ids)
         else:
-            eligible = eligible.none()
+            eligible = ArtisanProfile.objects.none()
         artisan_field.queryset = eligible
         artisan_field.label_from_instance = lambda artisan: (
             f"{artisan.user} · tersedia · {artisan.active_request_count()}/{artisan.max_active_requests} request aktif"

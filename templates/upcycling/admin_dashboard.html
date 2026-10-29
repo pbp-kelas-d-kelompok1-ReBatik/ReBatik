@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/upcycling.css' %}">
+{% endblock css %}
+
+{% block content %}
+<section class="relative isolate overflow-hidden px-4 pb-12 pt-10 sm:px-6 sm:pt-12">
+    <img src="{% static 'img/shared/cloud-left.webp' %}" alt="" aria-hidden="true" class="pointer-events-none absolute left-0 top-20 -z-10 w-24 -translate-x-1/3 sm:w-36">
+    <img src="{% static 'img/shared/cloud-right.webp' %}" alt="" aria-hidden="true" class="pointer-events-none absolute right-0 top-16 -z-10 w-24 translate-x-1/4 sm:w-36">
+
+    <header class="relative mx-auto mb-10 max-w-4xl text-center text-[var(--cream-light)]">
+        <p class="text-xs uppercase tracking-[0.3em]">Upcycle · Culture · Value</p>
+        <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">Dashboard Admin</h1>
+        <p class="mt-3 text-base sm:text-lg">Kelola antrean dan tugaskan request kepada artisan yang sesuai.</p>
+    </header>
+
+    <main class="mx-auto max-w-6xl rounded-2xl border border-[var(--upcycling-card-border)] bg-[var(--upcycling-panel)] p-5 text-[var(--brown)] shadow-2xl sm:rounded-3xl sm:p-8 lg:p-10">
+        {% include "upcycling/_toast_messages.html" %}
+
+        <section aria-label="Ringkasan request" class="mb-8 grid gap-3 sm:grid-cols-3">
+            <article class="rounded-2xl border border-[var(--upcycling-card-border)] bg-[var(--upcycling-surface)] p-5 shadow-sm">
+                <p class="text-sm font-semibold text-[var(--brown-muted)]">Menunggu penugasan</p>
+                <p class="mt-2 text-3xl font-bold">{{ pending_assignment_count }}</p>
+            </article>
+            <article class="rounded-2xl border border-[var(--upcycling-card-border)] bg-[var(--upcycling-surface)] p-5 shadow-sm">
+                <p class="text-sm font-semibold text-[var(--brown-muted)]">Menunggu review artisan</p>
+                <p class="mt-2 text-3xl font-bold">{{ pending_review_count }}</p>
+            </article>
+            <article class="rounded-2xl border border-[var(--upcycling-card-border)] bg-[var(--upcycling-surface)] p-5 shadow-sm">
+                <p class="text-sm font-semibold text-[var(--brown-muted)]">Sedang diproduksi</p>
+                <p class="mt-2 text-3xl font-bold">{{ in_progress_count }}</p>
+            </article>
+        </section>
+
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold sm:text-3xl">Antrean penugasan</h2>
+            <p class="mt-1 text-[var(--brown-dark)]">Pilih artisan yang tersedia, memiliki keahlian produk yang sesuai, dan masih memiliki kapasitas.</p>
+        </div>
+
+        {% if request_rows %}
+            <div class="space-y-4">
+                {% for row in request_rows %}
+                    <article class="grid gap-4 rounded-2xl border border-[var(--upcycling-card-border)] bg-[var(--upcycling-surface)] p-4 text-[var(--brown)] shadow-md sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-5 sm:p-5 lg:grid-cols-[11rem_minmax(0,1fr)]">
+                        <div class="aspect-[1.35] w-full overflow-hidden rounded-xl">
+                            {% if row.request.fabric_photo %}
+                                <img src="{{ row.request.fabric_photo.url }}" alt="Foto kain untuk {{ row.request.get_product_name }}" loading="lazy" decoding="async" class="h-full w-full object-cover">
+                            {% else %}
+                                <img src="{% static 'img/mascot/thinking.webp' %}" alt="Foto kain belum tersedia" loading="lazy" decoding="async" class="h-full w-full bg-[var(--upcycling-soft)] object-contain p-3">
+                            {% endif %}
+                        </div>
+
+                        <div class="min-w-0">
+                            <div class="flex flex-wrap items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <h3 class="break-words text-xl font-bold sm:text-2xl">{{ row.request.get_product_name }}</h3>
+                                    <p class="mt-1 break-words text-sm text-[var(--brown-muted)] sm:text-base">
+                                        #{{ row.request.reference_code }} · {{ row.request.created_at|date:"d M Y" }} · {{ row.request.user.username }}
+                                    </p>
+                                </div>
+                                <span class="upcycling-status-badge min-h-9 w-fit shrink-0 rounded-full bg-[var(--upcycling-status-pending)] px-3 py-1.5 text-sm font-bold text-[var(--upcycling-status-pending-text)]">
+                                    {{ row.request.get_status_display }}
+                                </span>
+                            </div>
+
+                            <dl class="mt-4 grid gap-x-5 gap-y-2 text-sm sm:grid-cols-2 sm:text-base">
+                                <div><dt class="font-semibold">Kain</dt><dd>{{ row.request.get_fabric_display }}{% if row.request.fabric_other_description %} · {{ row.request.fabric_other_description }}{% endif %}</dd></div>
+                                <div><dt class="font-semibold">Model produk</dt><dd>{{ row.request.get_product_name }}</dd></div>
+                                <div><dt class="font-semibold">Jumlah</dt><dd>{{ row.request.quantity }} produk</dd></div>
+                                {% if row.request.wants_batik_accent %}
+                                    <div class="sm:col-span-2"><dt class="font-semibold">Tambahan batik</dt><dd>{{ row.request.batik_motif|default:"Preferensi motif dibicarakan dengan artisan" }}{% if row.request.motif_placement %} · {{ row.request.motif_placement }}{% endif %}</dd></div>
+                                {% endif %}
+                            </dl>
+
+                            <a href="{% url 'admin:upcycling_upcyclingrequest_change' row.request.pk %}" class="mt-4 inline-flex font-semibold text-[var(--button-hover)] underline decoration-[var(--gold)] underline-offset-4">Lihat detail request di admin →</a>
+
+                            {% if row.candidates %}
+                                <form method="post" action="{% url 'upcycling:admin_assign_artisan' row.request.pk %}" class="mt-5 space-y-3 border-t border-[var(--border)] pt-5">
+                                    {% csrf_token %}
+                                    <label for="artisan-{{ row.request.pk }}" class="block font-semibold">Tugaskan artisan</label>
+                                    <select id="artisan-{{ row.request.pk }}" name="artisan" required class="w-full rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 text-[var(--brown)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--brown)]">
+                                        <option value="">Pilih artisan yang sesuai</option>
+                                        {% for candidate in row.candidates %}
+                                            <option value="{{ candidate.pk }}">{{ candidate.user.username }} · {{ candidate.active_request_count }}/{{ candidate.max_active_requests }} request aktif</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="primary-action-button min-h-11 px-5 py-2 font-bold">Tugaskan artisan</button>
+                                </form>
+                            {% else %}
+                                <p class="mt-5 rounded-xl border border-[var(--upcycling-card-border)] bg-[var(--upcycling-panel)] p-4 text-sm sm:text-base">
+                                    Belum ada artisan yang cocok dan tersedia. Request tetap menunggu penugasan.
+                                    <a href="{% url 'admin:upcycling_artisanprofile_changelist' %}" class="font-semibold underline decoration-[var(--gold)] underline-offset-4">Periksa profil artisan</a>.
+                                </p>
+                            {% endif %}
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="flex flex-col items-center gap-5 rounded-2xl border border-[var(--border)] bg-[#f3ebe1] px-5 py-10 text-center sm:gap-6 sm:px-10 sm:py-16">
+                <img src="{% static 'img/mascot/crying.webp' %}" alt="Maskot ReBatik karena antrean penugasan kosong" loading="lazy" decoding="async" class="h-40 w-40 object-contain sm:h-72 sm:w-72 lg:h-[26rem] lg:w-[26rem]">
+                <h3 class="text-2xl font-bold sm:text-3xl">Tidak ada request menunggu penugasan</h3>
+                <p class="mx-auto max-w-xl text-[var(--brown-muted)]">Request baru yang belum memiliki artisan akan muncul di sini.</p>
+            </div>
+        {% endif %}
+    </main>
+</section>
+{% endblock %}

@@ -4,6 +4,8 @@ from . import views
 app_name = "upcycling"
 
 urlpatterns = [
+    path("admin-dashboard/", views.admin_dashboard, name="admin_dashboard"),
+    path("admin-dashboard/assign/<uuid:pk>/", views.admin_assign_artisan, name="admin_assign_artisan"),
     path("artisan/", views.artisan_dashboard, name="artisan_dashboard"),
     path("artisan/<uuid:pk>/update/", views.artisan_update_request, name="artisan_update_request"),
     path("", views.request_list, name="request_list"),

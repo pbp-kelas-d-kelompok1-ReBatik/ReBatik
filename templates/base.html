@@ -51,6 +51,9 @@
                 {% if can_open_artisan_dashboard %}
                 <a href="{% url 'upcycling:artisan_dashboard' %}">Dashboard Artisan</a>
                 {% endif %}
+                {% if user.is_staff %}
+                <a href="{% url 'upcycling:admin_dashboard' %}">Dashboard Admin</a>
+                {% endif %}
                 <a href="{% url 'batik_custom:show_home' %}">Custom Batik</a>
                 <a href="{% url 'impact_tracker:dashboard' %}">Impact Tracker</a>
                 <a href="#">Landing page</a>

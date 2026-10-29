@@ -3,9 +3,10 @@ from datetime import datetime, time, timedelta
 from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Q
@@ -29,6 +30,7 @@ from .models import (
     fabric_handoff_deadline,
 )
 from .security import consume_upcycling_rate_limit
+from .services import assign_artisan_to_request, eligible_artisans_for_request
 
 PENDING_REQUEST_LIMIT = 10
 REQUESTS_PER_PAGE = 10
@@ -708,6 +710,60 @@ def artisan_dashboard(request):
         "upcycling/artisan_dashboard.html",
         {"artisan": artisan, "requests": assigned_requests},
     )
+
+
+@staff_member_required(login_url="/admin/login/")
+def admin_dashboard(request):
+    pending_requests = (
+        UpcyclingRequest.objects.filter(
+            status=UpcyclingRequest.Status.PENDING_ASSIGNMENT,
+            artisan__isnull=True,
+        )
+        .select_related("user")
+        .order_by("created_at")
+    )
+    request_rows = [
+        {
+            "request": upcycling_request,
+            "candidates": eligible_artisans_for_request(upcycling_request),
+        }
+        for upcycling_request in pending_requests
+    ]
+    return render(
+        request,
+        "upcycling/admin_dashboard.html",
+        {
+            "request_rows": request_rows,
+            "pending_assignment_count": pending_requests.count(),
+            "pending_review_count": UpcyclingRequest.objects.filter(
+                status=UpcyclingRequest.Status.PENDING_REVIEW
+            ).count(),
+            "in_progress_count": UpcyclingRequest.objects.filter(
+                status=UpcyclingRequest.Status.IN_PROGRESS
+            ).count(),
+        },
+    )
+
+
+@staff_member_required(login_url="/admin/login/")
+def admin_assign_artisan(request, pk):
+    if request.method != "POST":
+        return redirect("upcycling:admin_dashboard")
+
+    artisan_id = request.POST.get("artisan", "").strip()
+    try:
+        if not artisan_id.isdecimal():
+            raise ValidationError("Pilih artisan yang valid.")
+        assign_artisan_to_request(
+            pk,
+            int(artisan_id),
+            assigned_by=request.user,
+        )
+    except ValidationError as exc:
+        messages.error(request, " ".join(exc.messages))
+    else:
+        messages.success(request, "Artisan berhasil ditugaskan. Request menunggu review artisan.")
+    return redirect("upcycling:admin_dashboard")
 
 
 @login_required
