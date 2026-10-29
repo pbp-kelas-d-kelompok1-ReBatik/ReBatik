@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.forms.models import model_to_dict
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import RequestFactory, SimpleTestCase, TestCase
@@ -243,6 +244,8 @@ class UpcyclingRequestAdminTests(TestCase):
             code="TOTE_BAG", defaults={"name": "Tote Bag"}
         )
         cls.artisan_user = User.objects.create_user(username="admin-form-artisan")
+        artisan_group, _ = Group.objects.get_or_create(name="Artisan")
+        cls.artisan_user.groups.add(artisan_group)
         cls.artisan = ArtisanProfile.objects.create(user=cls.artisan_user)
         cls.artisan.specializations.add(product_type)
 

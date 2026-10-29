@@ -416,6 +416,145 @@ class UpcyclingWorkflowTests(TestCase):
 
         self.assertContains(response, 'href="/upcycling/">Upcycling Request</a>')
         self.assertNotContains(response, "Dashboard Artisan")
+        self.assertNotContains(response, "Dashboard Admin")
+
+    def test_admin_dashboard_requires_staff_access(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("upcycling:admin_dashboard"))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/admin/login/", response.url)
+
+    def test_admin_dashboard_has_an_empty_queue_state(self):
+        staff = User.objects.create_user(username="queue-empty-admin", is_staff=True)
+        self.client.force_login(staff)
+
+        response = self.client.get(reverse("upcycling:admin_dashboard"))
+
+        self.assertContains(response, "Tidak ada request menunggu penugasan")
+        self.assertContains(response, "crying.webp")
+
+    def test_admin_dashboard_only_shows_eligible_artisans_for_unassigned_requests(self):
+        request_obj = make_request(self.user)
+        full_user = User.objects.create_user(username="admin-queue-full")
+        full_artisan = ArtisanProfile.objects.create(user=full_user, max_active_requests=1)
+        full_artisan.specializations.add(self.product_type)
+        make_request(self.user, artisan=full_artisan, status=UpcyclingRequest.Status.PENDING_REVIEW)
+
+        pouch_type, _ = ProductType.objects.get_or_create(
+            code="POUCH", defaults={"name": "Pouch"}
+        )
+        wrong_user = User.objects.create_user(username="admin-queue-wrong-skill")
+        wrong_artisan = ArtisanProfile.objects.create(user=wrong_user)
+        wrong_artisan.specializations.add(pouch_type)
+        ungrouped_user = User.objects.create_user(username="admin-queue-ungrouped")
+        ungrouped_artisan = ArtisanProfile.objects.create(user=ungrouped_user)
+        ungrouped_artisan.specializations.add(self.product_type)
+
+        staff = User.objects.create_user(username="queue-admin", is_staff=True)
+        self.client.force_login(staff)
+
+        response = self.client.get(reverse("upcycling:admin_dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, request_obj.reference_code)
+        self.assertContains(response, "Dashboard Admin")
+        self.assertContains(response, self.artisan_user.username)
+        self.assertNotContains(response, full_user.username)
+        self.assertNotContains(response, wrong_user.username)
+        self.assertNotContains(response, ungrouped_user.username)
+
+    def test_admin_dashboard_keeps_request_queued_when_no_artisan_is_eligible(self):
+        request_obj = make_request(self.user)
+        self.artisan.is_available = False
+        self.artisan.save(update_fields=("is_available",))
+        staff = User.objects.create_user(username="queue-no-candidate-admin", is_staff=True)
+        self.client.force_login(staff)
+
+        response = self.client.get(reverse("upcycling:admin_dashboard"))
+
+        self.assertContains(response, request_obj.reference_code)
+        self.assertContains(response, "Belum ada artisan yang cocok dan tersedia.")
+        self.assertNotContains(response, "Pilih artisan yang sesuai")
+
+    def test_admin_dashboard_assigns_artisan_and_records_admin_actor(self):
+        request_obj = make_request(self.user)
+        staff = User.objects.create_user(username="queue-assign-admin", is_staff=True)
+        self.client.force_login(staff)
+
+        response = self.client.post(
+            reverse("upcycling:admin_assign_artisan", args=[request_obj.pk]),
+            {"artisan": str(self.artisan.pk)},
+        )
+
+        request_obj.refresh_from_db()
+        self.assertRedirects(response, reverse("upcycling:admin_dashboard"))
+        self.assertEqual(request_obj.artisan, self.artisan)
+        self.assertEqual(request_obj.status, UpcyclingRequest.Status.PENDING_REVIEW)
+        history = request_obj.status_history.get(to_status=UpcyclingRequest.Status.PENDING_REVIEW)
+        self.assertEqual(history.from_status, UpcyclingRequest.Status.PENDING_ASSIGNMENT)
+        self.assertEqual(history.changed_by, staff)
+
+    def test_admin_dashboard_rejects_self_assignment(self):
+        request_obj = make_request(self.artisan_user)
+        staff = User.objects.create_user(username="queue-self-admin", is_staff=True)
+        self.client.force_login(staff)
+
+        response = self.client.post(
+            reverse("upcycling:admin_assign_artisan", args=[request_obj.pk]),
+            {"artisan": str(self.artisan.pk)},
+        )
+
+        request_obj.refresh_from_db()
+        self.assertRedirects(response, reverse("upcycling:admin_dashboard"))
+        self.assertIsNone(request_obj.artisan_id)
+        self.assertEqual(request_obj.status, UpcyclingRequest.Status.PENDING_ASSIGNMENT)
+
+    def test_admin_dashboard_rejects_tampered_ineligible_artisan(self):
+        request_obj = make_request(self.user)
+        pouch_type, _ = ProductType.objects.get_or_create(
+            code="POUCH", defaults={"name": "Pouch"}
+        )
+        wrong_user = User.objects.create_user(username="queue-tampered-artisan")
+        artisan_group, _ = Group.objects.get_or_create(name="Artisan")
+        wrong_user.groups.add(artisan_group)
+        wrong_artisan = ArtisanProfile.objects.create(user=wrong_user)
+        wrong_artisan.specializations.add(pouch_type)
+        staff = User.objects.create_user(username="queue-tamper-admin", is_staff=True)
+        self.client.force_login(staff)
+
+        response = self.client.post(
+            reverse("upcycling:admin_assign_artisan", args=[request_obj.pk]),
+            {"artisan": str(wrong_artisan.pk)},
+        )
+
+        request_obj.refresh_from_db()
+        self.assertRedirects(response, reverse("upcycling:admin_dashboard"))
+        self.assertIsNone(request_obj.artisan_id)
+        self.assertEqual(request_obj.status, UpcyclingRequest.Status.PENDING_ASSIGNMENT)
+
+    def test_admin_dashboard_rejects_assignment_to_full_artisan(self):
+        request_obj = make_request(self.user)
+        self.artisan.max_active_requests = 1
+        self.artisan.save(update_fields=("max_active_requests",))
+        make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.PENDING_REVIEW,
+        )
+        staff = User.objects.create_user(username="queue-capacity-admin", is_staff=True)
+        self.client.force_login(staff)
+
+        response = self.client.post(
+            reverse("upcycling:admin_assign_artisan", args=[request_obj.pk]),
+            {"artisan": str(self.artisan.pk)},
+        )
+
+        request_obj.refresh_from_db()
+        self.assertRedirects(response, reverse("upcycling:admin_dashboard"))
+        self.assertIsNone(request_obj.artisan_id)
+        self.assertEqual(request_obj.status, UpcyclingRequest.Status.PENDING_ASSIGNMENT)
 
     def test_artisan_rejection_action_has_clear_label_and_danger_gradient(self):
         request_obj = make_request(
