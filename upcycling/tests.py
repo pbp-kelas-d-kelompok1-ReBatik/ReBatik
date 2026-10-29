@@ -74,6 +74,39 @@ class UpcyclingRequestFormTests(SimpleTestCase):
             "Kain bermotif batik",
         )
 
+    def test_batik_addition_preferences_are_optional_and_cleared_when_not_requested(self):
+        data = {
+            **self.valid_data,
+            "batik_motif": "Parang",
+            "motif_placement": "Bagian depan",
+            "design_notes": "Ukuran kecil dan warna biru",
+        }
+        form = self.form(data)
+
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertFalse(form.cleaned_data["wants_batik_accent"])
+        self.assertEqual(form.cleaned_data["batik_motif"], "")
+        self.assertEqual(form.cleaned_data["motif_placement"], "")
+        self.assertEqual(form.cleaned_data["design_notes"], "")
+
+    def test_user_can_request_an_optional_batik_accent(self):
+        data = {
+            **self.valid_data,
+            "wants_batik_accent": "on",
+            "batik_motif": "Mega Mendung",
+            "motif_placement": "Bagian depan tote bag",
+            "design_notes": "Aksen kecil berwarna biru muda",
+        }
+        form = self.form(data)
+
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertTrue(form.cleaned_data["wants_batik_accent"])
+        self.assertEqual(form.cleaned_data["batik_motif"], "Mega Mendung")
+        self.assertEqual(
+            form.cleaned_data["motif_placement"],
+            "Bagian depan tote bag",
+        )
+
     def test_fabric_condition_select_uses_a_clear_optional_prompt(self):
         """Test behavior: fabric condition has no ambiguous dash option."""
         form = UpcyclingRequestForm()
@@ -397,6 +430,10 @@ class UpcyclingRequestViewTests(TestCase):
         "fabric_condition": "GOOD",
         "fabric_dimensions": "1 celana jeans",
         "fabric_composition": "Katun 95%, elastane 5%",
+        "wants_batik_accent": "on",
+        "batik_motif": "Mega Mendung",
+        "motif_placement": "Bagian depan tote bag",
+        "design_notes": "Aksen kecil berwarna biru muda",
         "category": "TAS",
         "product": "TOTE_BAG",
         "quantity": 1,
@@ -490,6 +527,31 @@ class UpcyclingRequestViewTests(TestCase):
             upcycling_request.fabric_composition,
             "Katun 95%, elastane 5%",
         )
+        self.assertTrue(upcycling_request.wants_batik_accent)
+        self.assertEqual(upcycling_request.batik_motif, "Mega Mendung")
+        self.assertEqual(
+            upcycling_request.motif_placement,
+            "Bagian depan tote bag",
+        )
+
+    def test_request_detail_shows_batik_addition_preferences(self):
+        upcycling_request = self.make_request(
+            self.user,
+            wants_batik_accent=True,
+            batik_motif="Mega Mendung",
+            motif_placement="Bagian depan tote bag",
+            design_notes="Aksen kecil berwarna biru muda",
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_detail", args=[upcycling_request.pk])
+        )
+
+        self.assertContains(response, "Tambahan batik dari ReBatik")
+        self.assertContains(response, "Mega Mendung")
+        self.assertContains(response, "Bagian depan tote bag")
+        self.assertContains(response, "Aksen kecil berwarna biru muda")
 
     def test_create_form_renders_an_expanded_fabric_photo_upload_area(self):
         self.client.force_login(self.user)
@@ -501,6 +563,22 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertContains(response, 'id="fabric-photo-preview"')
         self.assertContains(response, 'src="/static/img/mascot/pointing.webp"')
         self.assertContains(response, 'class="upcycling-photo-add"')
+
+    def test_form_keeps_batik_preferences_visible_after_validation_error(self):
+        self.client.force_login(self.user)
+        data = {
+            **self.form_data,
+            "wants_batik_accent": "on",
+            "batik_motif": "Parang",
+            "whatsapp": "nomor-tidak-valid",
+        }
+
+        response = self.post_form(reverse("upcycling:request_create"), data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="id_wants_batik_accent" checked')
+        self.assertContains(response, "class=\"grid gap-4 sm:grid-cols-2\"")
+        self.assertContains(response, "Parang")
 
     def test_create_rate_limit_returns_429_after_five_posts(self):
         """Test behavior: create rate limit returns 429 after five posts."""

@@ -99,6 +99,8 @@ class UpcyclingWorkflowTests(TestCase):
         self.assertContains(response, "Pilih kategori yang paling mendekati.")
         self.assertContains(response, "Pilih Produk")
         self.assertContains(response, 'class="grid gap-4 grid-cols-2 lg:grid-cols-3"')
+        self.assertContains(response, 'id="id_wants_batik_accent"')
+        self.assertContains(response, "Tambahkan kain bermotif batik dari ReBatik")
 
     def test_product_catalog_includes_practical_upcycling_products(self):
         options = get_product_options_by_category()
@@ -234,6 +236,9 @@ class UpcyclingWorkflowTests(TestCase):
             artisan=self.artisan,
             status=UpcyclingRequest.Status.AWAITING_FABRIC,
             fabric_composition="Katun 95%, elastane 5%",
+            wants_batik_accent=True,
+            batik_motif="Mega Mendung",
+            motif_placement="Bagian depan tote bag",
             fabric_delivery_method=UpcyclingRequest.FabricDeliveryMethod.SELF_SHIP,
             fabric_delivery_location="Jl. Melati 10, Depok",
         )
@@ -243,6 +248,8 @@ class UpcyclingWorkflowTests(TestCase):
 
         self.assertContains(response, "Rencana penyerahan kain")
         self.assertContains(response, "Katun 95%, elastane 5%")
+        self.assertContains(response, "Mega Mendung")
+        self.assertContains(response, "Bagian depan tote bag")
         self.assertContains(response, "Kirim kain sendiri")
         self.assertContains(response, "Jl. Melati 10, Depok")
 
