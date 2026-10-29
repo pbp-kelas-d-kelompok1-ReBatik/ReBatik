@@ -98,6 +98,7 @@ class UpcyclingWorkflowTests(TestCase):
         self.assertContains(response, "Jenis Kain atau Barang yang Akan Diolah")
         self.assertContains(response, "Pilih kategori yang paling mendekati.")
         self.assertContains(response, "Pilih Produk")
+        self.assertContains(response, 'class="grid gap-4 grid-cols-2 lg:grid-cols-3"')
 
     def test_product_catalog_includes_practical_upcycling_products(self):
         options = get_product_options_by_category()
