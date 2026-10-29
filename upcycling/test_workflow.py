@@ -10,7 +10,7 @@ from PIL import Image
 from rewards.models import PointTransaction
 from .admin import UpcyclingRequestAdminForm
 from .models import ArtisanProfile, ProductType, UpcyclingRequest
-from .forms import UpcyclingRequestForm
+from .forms import UpcyclingRequestForm, get_product_options_by_category
 
 
 User = get_user_model()
@@ -100,6 +100,28 @@ class UpcyclingWorkflowTests(TestCase):
         self.assertContains(response, "Jenis Kain yang Akan Diolah")
         self.assertContains(response, "Pilih produk yang ingin dibuat pada bagian berikutnya.")
         self.assertContains(response, "Pilih Produk")
+
+    def test_product_catalog_includes_practical_upcycling_products(self):
+        options = get_product_options_by_category()
+        product_codes = {
+            product["value"]
+            for category_products in options.values()
+            for product in category_products
+        }
+        expected_products = {
+            "SCRUNCHIE",
+            "BUCKET_HAT",
+            "LAPTOP_SLEEVE",
+            "SARUNG_BANTAL",
+        }
+
+        self.assertTrue(expected_products.issubset(product_codes))
+        self.assertIn("RUMAH_TANGGA", options)
+        self.assertTrue(
+            expected_products.issubset(
+                set(ProductType.objects.values_list("code", flat=True))
+            )
+        )
 
     def test_submission_starts_unassigned_and_records_history(self):
         self.client.force_login(self.user)
