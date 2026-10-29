@@ -18,6 +18,7 @@ from django.utils.dateparse import parse_date
 
 from .forms import (
     FabricHandoffForm,
+    ProductDeliveryForm,
     UpcyclingRequestForm,
     get_product_options_by_category,
 )
@@ -357,6 +358,7 @@ def request_detail(request, pk):
         UpcyclingRequest.Status.AWAITING_FABRIC,
         UpcyclingRequest.Status.INSPECTION,
         UpcyclingRequest.Status.AWAITING_APPROVAL,
+        UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS,
         UpcyclingRequest.Status.IN_PROGRESS,
         UpcyclingRequest.Status.READY,
         UpcyclingRequest.Status.COMPLETED,
@@ -392,7 +394,11 @@ def request_detail(request, pk):
         },
         UpcyclingRequest.Status.AWAITING_APPROVAL: {
             "title": "Tinjau penawaran harga",
-            "description": "Periksa harga dan catatan artisan. Produksi dimulai setelah Anda menyetujui penawaran.",
+            "description": "Periksa harga dan catatan artisan. Anda dapat menyetujui atau menolak penawaran.",
+        },
+        UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS: {
+            "title": "Atur penerimaan produk",
+            "description": "Harga sudah disetujui. Isi metode dan alamat penerimaan sebelum produksi dimulai.",
         },
         UpcyclingRequest.Status.IN_PROGRESS: {
             "title": "Produk sedang dibuat",
@@ -426,6 +432,11 @@ def request_detail(request, pk):
                 "title": "Menunggu persetujuan user",
                 "description": "Produksi hanya dapat dimulai setelah user menyetujui penawaran harga.",
             }
+        elif status == UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS:
+            next_step = {
+                "title": "Menunggu detail penerimaan produk",
+                "description": "User sedang melengkapi metode dan lokasi penerimaan sebelum produksi dimulai.",
+            }
         elif status == UpcyclingRequest.Status.READY:
             next_step = {
                 "title": "Menunggu konfirmasi user",
@@ -448,12 +459,19 @@ def request_detail(request, pk):
             "next_step": next_step,
             "is_assigned_artisan": is_assigned_artisan,
             "can_approve_quote": not is_assigned_artisan and status == UpcyclingRequest.Status.AWAITING_APPROVAL,
+            "product_delivery_form": (
+                ProductDeliveryForm(instance=upcycling_request)
+                if not is_assigned_artisan and status == UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS
+                else None
+            ),
+            "can_submit_product_delivery": not is_assigned_artisan and status == UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS,
             "can_confirm_receipt": not is_assigned_artisan and status == UpcyclingRequest.Status.READY,
             "can_cancel": not is_assigned_artisan and status in {
                 UpcyclingRequest.Status.PENDING_ASSIGNMENT,
                 UpcyclingRequest.Status.PENDING_REVIEW,
                 UpcyclingRequest.Status.AWAITING_FABRIC,
                 UpcyclingRequest.Status.INSPECTION,
+                UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS,
             },
             "fabric_handoff_form": (
                 FabricHandoffForm(instance=upcycling_request)
@@ -622,10 +640,34 @@ def approve_quote(request, pk):
         else:
             old_status = upcycling_request.status
             upcycling_request.approved_at = timezone.now()
-            upcycling_request.status = UpcyclingRequest.Status.IN_PROGRESS
+            upcycling_request.status = UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS
             upcycling_request.save(update_fields=("approved_at", "status", "updated_at"))
             _record_user_status_change(upcycling_request, request.user, old_status)
-            messages.success(request, "Harga disetujui. Request masuk ke tahap produksi.")
+            messages.success(request, "Harga disetujui. Lengkapi metode dan lokasi penerimaan produk sebelum produksi.")
+    return redirect("upcycling:request_detail", pk=pk)
+
+
+@login_required
+def submit_product_delivery(request, pk):
+    if request.method != "POST":
+        return redirect("upcycling:request_detail", pk=pk)
+    with transaction.atomic():
+        upcycling_request = get_object_or_404(
+            UpcyclingRequest.objects.select_for_update(), pk=pk, user=request.user
+        )
+        if upcycling_request.status != UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS:
+            messages.error(request, "Detail penerimaan produk belum dapat diisi pada tahap ini.")
+        else:
+            form = ProductDeliveryForm(request.POST, instance=upcycling_request)
+            if not form.is_valid():
+                messages.error(request, "Pilih metode penerimaan produk dan isi alamat atau lokasi penerimaan.")
+                return redirect("upcycling:request_detail", pk=pk)
+            old_status = upcycling_request.status
+            form.save()
+            upcycling_request.status = UpcyclingRequest.Status.IN_PROGRESS
+            upcycling_request.save(update_fields=("status", "updated_at", "delivery_method", "address"))
+            _record_user_status_change(upcycling_request, request.user, old_status)
+            messages.success(request, "Detail penerimaan tersimpan. Request mulai diproduksi.")
     return redirect("upcycling:request_detail", pk=pk)
 
 
@@ -673,6 +715,7 @@ def cancel_request(request, pk):
             UpcyclingRequest.Status.PENDING_REVIEW,
             UpcyclingRequest.Status.AWAITING_FABRIC,
             UpcyclingRequest.Status.INSPECTION,
+            UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS,
         }
         can_reject_quote = (
             reject_quote

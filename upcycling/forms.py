@@ -24,29 +24,6 @@ PRODUCTS_BY_CATEGORY = {
     "LAINNYA": ("LAINNYA",),
 }
 
-DEFAULT_ADDRESS_DETAILS = {
-    "label": "Alamat / Lokasi Penerimaan Produk",
-    "placeholder": "Alamat pengiriman atau lokasi pengambilan produk",
-    "help_text": "Pilih metode penerimaan produk untuk melihat informasi yang perlu diisi.",
-    "required_message": "Isi alamat atau lokasi penerimaan produk.",
-}
-
-ADDRESS_DETAILS_BY_METHOD = {
-    "KURIR": {
-        "label": "Alamat pengiriman",
-        "placeholder": "Masukkan alamat lengkap penerima produk",
-        "help_text": "Masukkan alamat lengkap tujuan pengiriman produk.",
-        "required_message": "Masukkan alamat pengiriman.",
-    },
-    "DROP_OFF": {
-        "label": "Rencana lokasi pengambilan produk",
-        "placeholder": "Lokasi pengambilan produk jadi",
-        "help_text": "Tuliskan lokasi tempat Anda akan menerima produk jadi.",
-        "required_message": "Masukkan lokasi pengambilan produk.",
-    },
-}
-
-
 def get_product_options_by_category():
     """Return product choices grouped for the request form's category picker."""
     product_labels = dict(UpcyclingRequest.PRODUCT_CHOICES)
@@ -61,49 +38,16 @@ def get_product_options_by_category():
 
 class UpcyclingRequestForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        """Configure model choices and delivery-specific address guidance."""
+        """Configure request choices and labels."""
         super().__init__(*args, **kwargs)
 
         choices_by_field = {
             "fabric": UpcyclingRequest.FABRIC_CHOICES,
             "category": UpcyclingRequest.CATEGORY_CHOICES,
-            "delivery_method": UpcyclingRequest.DELIVERY_CHOICES,
         }
         for field_name, choices in choices_by_field.items():
             self.fields[field_name].choices = choices
 
-        delivery_method = (
-            self.data.get("delivery_method")
-            if self.is_bound
-            else self.initial.get("delivery_method")
-            or getattr(self.instance, "delivery_method", "")
-        )
-        address_details = ADDRESS_DETAILS_BY_METHOD.get(
-            delivery_method,
-            DEFAULT_ADDRESS_DETAILS,
-        )
-        address_field = self.fields["address"]
-        address_field.label = address_details["label"]
-        address_field.help_text = address_details["help_text"]
-        address_field.error_messages["required"] = address_details[
-            "required_message"
-        ]
-        address_field.widget.attrs["placeholder"] = address_details[
-            "placeholder"
-        ]
-
-        for method, details in ADDRESS_DETAILS_BY_METHOD.items():
-            data_prefix = "kurir" if method == "KURIR" else "drop-off"
-            for detail_name, detail_value in details.items():
-                address_field.widget.attrs[
-                    f"data-{data_prefix}-{detail_name.replace('_', '-')}"
-                ] = detail_value
-
-        for detail_name, detail_value in DEFAULT_ADDRESS_DETAILS.items():
-            address_field.widget.attrs[
-                f"data-default-{detail_name.replace('_', '-')}"
-            ] = detail_value
-        address_field.widget.attrs["aria-describedby"] = "address-help"
         self.fields["fabric_photo"].label = "Foto kain"
         self.fields["fabric_photo"].required = self.instance._state.adding
         self.fields["fabric_photo"].widget.attrs.update({"accept": "image/*"})
@@ -147,8 +91,6 @@ class UpcyclingRequestForm(forms.ModelForm):
             "design_notes",
             "quantity",
             "notes",
-            "delivery_method",
-            "address",
             "whatsapp",
         ]
         labels = {
@@ -162,8 +104,6 @@ class UpcyclingRequestForm(forms.ModelForm):
             "design_notes": "Catatan desain tambahan (opsional)",
             "quantity": "Jumlah Produk",
             "notes": "Deskripsi dan Catatan Khusus (opsional)",
-            "delivery_method": "Metode Penerimaan Produk",
-            "address": "Alamat / Lokasi Penerimaan Produk",
             "whatsapp": "Nomor WhatsApp",
         }
         error_messages = {
@@ -233,18 +173,12 @@ class UpcyclingRequestForm(forms.ModelForm):
                     "class": f"{FIELD_CLASSES} upcycling-field upcycling-input",
                 }
             ),
-            "delivery_method": forms.RadioSelect(attrs={"class": "sr-only"}),
             "notes": forms.Textarea(
                 attrs={
                     "rows": 4,
                     "maxlength": NOTES_MAX_LENGTH,
                     "class": f"{FIELD_CLASSES} upcycling-field upcycling-textarea",
                     "placeholder": "Ceritakan model, warna, ukuran, atau catatan khusus...",
-                }
-            ),
-            "address": forms.TextInput(
-                attrs={
-                    "class": f"{FIELD_CLASSES} upcycling-field upcycling-input",
                 }
             ),
             "whatsapp": forms.TextInput(
@@ -339,7 +273,7 @@ class FabricHandoffForm(forms.ModelForm):
         fields = ["fabric_delivery_method", "fabric_delivery_location"]
         labels = {
             "fabric_delivery_method": "Cara menyerahkan kain",
-            "fabric_delivery_location": "Alamat atau lokasi penyerahan kain",
+            "fabric_delivery_location": "Catatan penyerahan (opsional)",
         }
         widgets = {
             "fabric_delivery_method": forms.Select(
@@ -348,7 +282,7 @@ class FabricHandoffForm(forms.ModelForm):
             "fabric_delivery_location": forms.TextInput(
                 attrs={
                     "class": f"{FIELD_CLASSES} upcycling-field upcycling-input",
-                    "placeholder": "Alamat pengiriman atau lokasi drop-off kain",
+                    "placeholder": "Contoh: waktu yang diinginkan atau catatan untuk admin",
                 }
             ),
         }
@@ -362,7 +296,38 @@ class FabricHandoffForm(forms.ModelForm):
                 *method_field.choices,
             ]
             self.initial["fabric_delivery_method"] = ""
-        self.fields["fabric_delivery_location"].required = True
+        self.fields["fabric_delivery_location"].required = False
         self.fields["fabric_delivery_location"].help_text = (
-            "Isi detail pengiriman atau lokasi drop-off kain setelah review awal disetujui."
+            "Lokasi drop-off dan alamat tujuan pengiriman akan dikoordinasikan admin. "
+            "Belum perlu mengisi alamat di sini."
+        )
+
+
+class ProductDeliveryForm(forms.ModelForm):
+    """Collect delivery details when the user approves the artisan's quote."""
+
+    class Meta:
+        model = UpcyclingRequest
+        fields = ["delivery_method", "address"]
+        labels = {
+            "delivery_method": "Metode penerimaan produk",
+            "address": "Alamat atau lokasi penerimaan produk",
+        }
+        widgets = {
+            "delivery_method": forms.RadioSelect(),
+            "address": forms.TextInput(
+                attrs={
+                    "class": f"{FIELD_CLASSES} upcycling-field upcycling-input",
+                    "placeholder": "Isi setelah memilih metode penerimaan",
+                }
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["delivery_method"].choices = UpcyclingRequest.DELIVERY_CHOICES
+        self.fields["delivery_method"].required = True
+        self.fields["address"].required = True
+        self.fields["address"].help_text = (
+            "Isi alamat pengiriman atau lokasi pengambilan sesuai metode yang dipilih."
         )

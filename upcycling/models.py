@@ -63,6 +63,7 @@ class UpcyclingRequest(models.Model):
         AWAITING_FABRIC = "AWAITING_FABRIC", "Menunggu kain diserahkan"
         INSPECTION = "INSPECTION", "Pemeriksaan kain"
         AWAITING_APPROVAL = "AWAITING_APPROVAL", "Menunggu persetujuan harga"
+        AWAITING_DELIVERY_DETAILS = "AWAITING_DELIVERY_DETAILS", "Menunggu detail penerimaan produk"
         IN_PROGRESS = "IN_PROGRESS", "Sedang diproduksi"
         READY = "READY", "Siap diserahkan"
         COMPLETED = "COMPLETED", "Selesai"
@@ -176,11 +177,16 @@ class UpcyclingRequest(models.Model):
         default=FabricDeliveryMethod.DROP_OFF,
     )
     fabric_delivery_location = models.CharField(max_length=255, blank=True)
-    delivery_method = models.CharField(max_length=20, choices=DELIVERY_CHOICES)
-    address = models.CharField(max_length=255)
+    delivery_method = models.CharField(
+        max_length=20,
+        choices=DELIVERY_CHOICES,
+        blank=True,
+        default="",
+    )
+    address = models.CharField(max_length=255, blank=True, default="")
     whatsapp = models.CharField(max_length=20)
     status = models.CharField(
-        max_length=24,
+        max_length=32,
         choices=STATUS_CHOICES,
         default=Status.PENDING_ASSIGNMENT,
     )
@@ -273,8 +279,8 @@ class UpcyclingStatusHistory(models.Model):
         on_delete=models.CASCADE,
         related_name="status_history",
     )
-    from_status = models.CharField(max_length=24, choices=UpcyclingRequest.STATUS_CHOICES, blank=True)
-    to_status = models.CharField(max_length=24, choices=UpcyclingRequest.STATUS_CHOICES)
+    from_status = models.CharField(max_length=32, choices=UpcyclingRequest.STATUS_CHOICES, blank=True)
+    to_status = models.CharField(max_length=32, choices=UpcyclingRequest.STATUS_CHOICES)
     changed_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,

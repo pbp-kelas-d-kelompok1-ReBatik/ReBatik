@@ -18,14 +18,6 @@ const initializeUpcyclingForm = () => {
         product: ["Model produk", "Pilih model produk."],
         custom_product: ["Produk yang diinginkan", "Tuliskan produk yang Anda inginkan."],
         quantity: ["Jumlah produk", "Masukkan jumlah antara 1 dan 20."],
-        delivery_method: [
-            "Metode penerimaan produk",
-            "Pilih cara menerima produk jadi.",
-        ],
-        address: [
-            "Alamat / Lokasi Penerimaan Produk",
-            "Isi alamat pengiriman atau lokasi pengambilan produk.",
-        ],
         whatsapp: ["Nomor WhatsApp", "Masukkan nomor HP Indonesia yang valid, misalnya +6281234567890."],
     };
     const validationTargets = {
@@ -38,35 +30,8 @@ const initializeUpcyclingForm = () => {
         product: "#product-options",
         custom_product: "#id_custom_product",
         quantity: "#id_quantity",
-        delivery_method: "#metode-pengiriman",
-        address: "#id_address",
         whatsapp: "#id_whatsapp",
     };
-    const deliveryMethodFields = form.querySelectorAll('[name="delivery_method"]');
-    const addressField = document.getElementById("id_address");
-    const addressLabel = document.getElementById("address-label");
-    const addressHelp = document.getElementById("address-help");
-
-    function updateAddressDetails() {
-        const selectedMethod = form.querySelector(
-            'input[name="delivery_method"]:checked'
-        )?.value;
-        const dataPrefix = selectedMethod === "KURIR"
-            ? "kurir"
-            : selectedMethod === "DROP_OFF"
-                ? "dropOff"
-                : "default";
-        const label = addressField.dataset[`${dataPrefix}Label`];
-        const placeholder = addressField.dataset[`${dataPrefix}Placeholder`];
-        const helpText = addressField.dataset[`${dataPrefix}HelpText`];
-        const requiredMessage = addressField.dataset[`${dataPrefix}RequiredMessage`];
-
-        addressLabel.textContent = label;
-        addressField.placeholder = placeholder;
-        addressHelp.textContent = helpText;
-        validationMessages.address = [label, requiredMessage];
-    }
-
     document.querySelectorAll("[data-error-field]").forEach((link) => {
         const target = validationTargets[link.dataset.errorField];
         if (target) link.href = target;
@@ -284,9 +249,6 @@ const initializeUpcyclingForm = () => {
     }
 
     fabricFields.forEach((field) => field.addEventListener("change", updateOtherFabricField));
-    deliveryMethodFields.forEach((field) => {
-        field.addEventListener("change", updateAddressDetails);
-    });
     categoryFields.forEach((field) => field.addEventListener("change", () => {
         customProductField.value = "";
         loadProducts();
@@ -303,7 +265,6 @@ const initializeUpcyclingForm = () => {
     batikPreferenceFields.forEach((field) => {
         field.addEventListener("input", updateSummary);
     });
-    updateAddressDetails();
     updateBatikAccentFields();
     updateOtherFabricField();
     loadProducts(true);

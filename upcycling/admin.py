@@ -111,9 +111,15 @@ class UpcyclingRequestAdminForm(forms.ModelForm):
             self.add_error(None, "Waktu dan aktor penerimaan kain harus dicatat bersama.")
         if status == UpcyclingRequest.Status.AWAITING_APPROVAL and cleaned.get("quoted_price") is None:
             self.add_error("quoted_price", "Harga final perlu diisi sebelum meminta persetujuan user.")
+        if status == UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS and (
+            not cleaned.get("approved_at") or cleaned.get("quoted_price") is None
+        ):
+            self.add_error(None, "Persetujuan harga wajib dicatat sebelum meminta detail penerimaan produk.")
         if status == UpcyclingRequest.Status.IN_PROGRESS:
             if not cleaned.get("approved_at"):
                 self.add_error(None, "User harus menyetujui penawaran sebelum produksi.")
+            if not cleaned.get("delivery_method") or not cleaned.get("address"):
+                self.add_error(None, "Metode dan alamat penerimaan produk wajib sebelum produksi.")
         if status == UpcyclingRequest.Status.EXPIRED:
             deadline = cleaned.get("fabric_deadline")
             if cleaned.get("fabric_received_at") or not deadline or deadline > timezone.now():
@@ -144,7 +150,8 @@ class UpcyclingRequestAdminForm(forms.ModelForm):
             UpcyclingRequest.Status.PENDING_REVIEW: {UpcyclingRequest.Status.AWAITING_FABRIC, UpcyclingRequest.Status.REJECTED, UpcyclingRequest.Status.CANCELLED},
             UpcyclingRequest.Status.AWAITING_FABRIC: {UpcyclingRequest.Status.PENDING_REVIEW, UpcyclingRequest.Status.INSPECTION, UpcyclingRequest.Status.EXPIRED, UpcyclingRequest.Status.CANCELLED},
             UpcyclingRequest.Status.INSPECTION: {UpcyclingRequest.Status.AWAITING_APPROVAL, UpcyclingRequest.Status.REJECTED, UpcyclingRequest.Status.CANCELLED},
-            UpcyclingRequest.Status.AWAITING_APPROVAL: {UpcyclingRequest.Status.IN_PROGRESS, UpcyclingRequest.Status.CANCELLED},
+            UpcyclingRequest.Status.AWAITING_APPROVAL: {UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS, UpcyclingRequest.Status.CANCELLED},
+            UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS: {UpcyclingRequest.Status.IN_PROGRESS, UpcyclingRequest.Status.CANCELLED},
             UpcyclingRequest.Status.IN_PROGRESS: {UpcyclingRequest.Status.READY, UpcyclingRequest.Status.CANCELLED},
             UpcyclingRequest.Status.READY: {UpcyclingRequest.Status.COMPLETED},
             UpcyclingRequest.Status.COMPLETED: set(),

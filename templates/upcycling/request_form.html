@@ -445,7 +445,7 @@
                 <p class="hidden text-sm italic text-[var(--brown-muted)] sm:block">Hampir selesai</p>
             </div>
             <p class="max-w-4xl text-base leading-relaxed text-[var(--brown-muted)] sm:text-lg">
-                Pilih jumlah produk dan cara menerimanya. Isi alamat atau lokasi pengambilan serta nomor&nbsp;WhatsApp.
+                Isi jumlah produk yang ingin dibuat dan nomor&nbsp;WhatsApp aktif. Metode serta alamat atau lokasi penerimaan produk akan diminta setelah Anda menyetujui harga dari artisan.
             </p>
 
             <div class="grid gap-x-6 gap-y-5 sm:grid-cols-2 sm:gap-y-6">
@@ -462,51 +462,10 @@
                     </div>
                 </div>
 
-                <fieldset id="metode-pengiriman" class="min-w-0">
-                    <legend class="mb-2 block min-h-7 text-base font-semibold leading-7 sm:text-lg">
-                        {{ form.delivery_method.label }} <span aria-hidden="true">*</span>
-                    </legend>
-                    <div class="grid grid-cols-2 gap-2 sm:gap-3">
-                        {% for radio in form.delivery_method %}
-                            <label
-                                class="upcycling-delivery-option flex min-h-14 cursor-pointer
-                                       items-center justify-center rounded-xl px-3 py-3 text-base
-                                       text-[var(--brown)] sm:text-lg
-                                       [&:has(input:checked)]:text-[var(--cream-light)]
-                                       [&:has(input:focus-visible)]:outline
-                                       [&:has(input:focus-visible)]:outline-2
-                                       [&:has(input:focus-visible)]:outline-[var(--gold)]"
-                            >
-                                {{ radio.tag }}
-                                <span>{{ radio.choice_label }}</span>
-                            </label>
-                        {% endfor %}
-                    </div>
-                    {{ form.delivery_method.errors }}
-                </fieldset>
-
-                <div class="space-y-2 sm:col-span-2 lg:col-span-1">
-                    <label
-                        id="address-label"
-                        for="{{ form.address.id_for_label }}"
-                        class="text-base font-semibold leading-snug sm:text-lg"
-                    >
-                        {{ form.address.label }} <span aria-hidden="true">*</span>
-                    </label>
-                    {{ form.address }}
-                    <p
-                        id="address-help"
-                        class="text-sm leading-relaxed text-[var(--brown-muted)] sm:text-base"
-                    >
-                        {{ form.address.help_text }}
-                    </p>
-                    {{ form.address.errors }}
-                </div>
-
-                <div class="space-y-2 sm:col-span-2 lg:col-span-1">
+                <div class="space-y-2">
                     <label
                         for="{{ form.whatsapp.id_for_label }}"
-                        class="text-base font-semibold leading-snug sm:text-lg"
+                        class="mb-2 block min-h-7 text-base font-semibold leading-7 sm:text-lg"
                     >
                         {{ form.whatsapp.label }} <span aria-hidden="true">*</span>
                     </label>
@@ -548,9 +507,9 @@
                     <span id="summary-batik">Tanpa tambahan batik</span>
                 </p>
                 <p class="mt-2 text-base text-[var(--brown-muted)]">
-                    Harga final ditentukan artisan setelah kain diterima dan diperiksa. Produksi dimulai setelah Anda menyetujui harga.
-                    Cara dan lokasi penyerahan kain akan diminta setelah artisan menyetujui review awal.
-                    Kain pribadi tidak otomatis menjadi donasi.
+                    Setelah kain diterima dan diperiksa, artisan akan mengirim penawaran harga. Jika Anda menyetujuinya,
+                    isi metode dan alamat atau lokasi penerimaan produk. Produksi dimulai setelah detail tersebut disimpan.
+                    Cara penyerahan kain akan diatur setelah artisan menyetujui review awal. Kain pribadi tidak otomatis menjadi donasi.
                 </p>
             </aside>
             <img

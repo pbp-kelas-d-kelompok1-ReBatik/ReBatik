@@ -96,7 +96,8 @@
                         {% csrf_token %}
                         <h4 class="font-bold">Rencana penyerahan kain</h4>
                         <p class="text-sm text-[var(--brown-muted)]">
-                            Artisan telah menyetujui review awal. Pilih cara dan isi lokasi penyerahan sebelum tenggat.
+                            Artisan telah menyetujui review awal. Pilih cara penyerahan sebelum tenggat. Untuk sementara,
+                            admin akan mengoordinasikan lokasi drop-off atau alamat tujuan pengiriman secara langsung.
                         </p>
                         {% for field in fabric_handoff_form %}
                             <div class="space-y-2">
@@ -244,11 +245,12 @@
                     {% if upcycling_request.delivery_proof %}<div class="border-t border-[var(--border)] pt-3"><dt class="font-semibold">Bukti penyerahan produk</dt><dd class="mt-1"><a class="underline" href="{{ upcycling_request.delivery_proof.url }}" target="_blank" rel="noopener">Lihat bukti</a></dd></div>{% endif %}
                     {% if upcycling_request.status == 'AWAITING_FABRIC' and upcycling_request.fabric_deadline %}<div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]"><dt class="font-semibold">Batas serah kain</dt><dd>{{ upcycling_request.fabric_deadline|date:'d M Y, H:i' }}</dd></div>{% endif %}
                     {% if upcycling_request.return_status == 'PENDING_RETURN' %}<div class="border-t border-[var(--border)] pt-3"><dt class="font-semibold">Pengembalian kain</dt><dd class="mt-1">Kain menunggu pengembalian oleh admin.</dd></div>{% endif %}
-                    {% if upcycling_request.fabric_delivery_location %}
+                    {% if upcycling_request.fabric_delivery_method %}
                         <div class="border-t border-[var(--border)] pt-3">
                             <dt class="font-semibold">Penyerahan kain</dt>
                             <dd class="mt-1">
-                                {{ upcycling_request.get_fabric_delivery_method_display }} · {{ upcycling_request.fabric_delivery_location }}
+                                {{ upcycling_request.get_fabric_delivery_method_display }}
+                                {% if upcycling_request.fabric_delivery_location %}· {{ upcycling_request.fabric_delivery_location }}{% else %}· Lokasi akan dikoordinasikan admin.{% endif %}
                             </dd>
                         </div>
                     {% endif %}
@@ -265,10 +267,12 @@
                         <dt class="font-semibold">Jumlah produk</dt>
                         <dd>{{ upcycling_request.quantity }} produk</dd>
                     </div>
-                    <div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
-                        <dt class="font-semibold">Penerimaan produk</dt>
-                        <dd>{{ upcycling_request.get_delivery_method_display }}</dd>
-                    </div>
+                    {% if upcycling_request.delivery_method %}
+                        <div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
+                            <dt class="font-semibold">Penerimaan produk</dt>
+                            <dd>{{ upcycling_request.get_delivery_method_display }} · {{ upcycling_request.address }}</dd>
+                        </div>
+                    {% endif %}
                     {% if upcycling_request.notes %}
                         <div class="border-t border-[var(--border)] pt-3">
                             <dt class="font-semibold">Catatan</dt>
@@ -383,6 +387,33 @@
                     </form>
                 </div>
             </div>
+        {% endif %}
+        {% if can_submit_product_delivery %}
+            <section class="mt-5 rounded-xl border border-[var(--border)] bg-[var(--upcycling-surface)] p-5" aria-labelledby="product-delivery-heading">
+                <h3 id="product-delivery-heading" class="text-lg font-bold">Metode dan lokasi penerimaan produk</h3>
+                <p class="mt-2 text-sm text-[var(--brown-muted)]">Harga sudah disetujui. Lengkapi cara menerima produk dan alamat atau lokasi pengambilan. Produksi akan dimulai setelah detail ini disimpan.</p>
+                <form method="post" action="{% url 'upcycling:submit_product_delivery' upcycling_request.pk %}" class="mt-4 space-y-4">
+                    {% csrf_token %}
+                    <fieldset>
+                        <legend class="mb-2 font-semibold">{{ product_delivery_form.delivery_method.label }} <span aria-hidden="true">*</span></legend>
+                        <div class="grid gap-2 sm:grid-cols-2">
+                            {% for radio in product_delivery_form.delivery_method %}
+                                <label class="upcycling-delivery-option flex min-h-12 cursor-pointer items-center justify-center rounded-xl px-3 py-2 text-center font-semibold [&:has(input:checked)]:text-[var(--cream-light)]">
+                                    {{ radio.tag }} <span>{{ radio.choice_label }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                        {{ product_delivery_form.delivery_method.errors }}
+                    </fieldset>
+                    <div class="space-y-2">
+                        <label for="{{ product_delivery_form.address.id_for_label }}" class="block font-semibold">{{ product_delivery_form.address.label }} <span aria-hidden="true">*</span></label>
+                        {{ product_delivery_form.address }}
+                        <p class="text-sm text-[var(--brown-muted)]">{{ product_delivery_form.address.help_text }}</p>
+                        {{ product_delivery_form.address.errors }}
+                    </div>
+                    <button class="primary-action-button min-h-12 w-full px-5 py-3 font-bold sm:w-auto">Simpan dan mulai produksi</button>
+                </form>
+            </section>
         {% endif %}
         {% if can_confirm_receipt %}
             <form method="post" action="{% url 'upcycling:confirm_completion' upcycling_request.pk %}" class="mt-5">
