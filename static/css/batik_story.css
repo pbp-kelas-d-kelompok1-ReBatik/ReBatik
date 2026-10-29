@@ -307,7 +307,7 @@ html {
 }
 
 .scroll-arrow {
-    font-family: Arial, sans-serif;
+    font-family: Garamond, sans-serif;
     font-size: 28px;
     line-height: 1;
 }
@@ -821,7 +821,7 @@ html {
     border: 1px solid var(--border);
     border-radius: 50%;
     color: var(--muted);
-    font-family: Arial, sans-serif;
+    font-family: Garamond, sans-serif;
     font-size: 26px;
     transition: .25s ease;
 }
@@ -1689,7 +1689,7 @@ input[type="file"].form-input {
     border-radius: 20px;
     background: #f3dfc6;
     color: #855329;
-    font-family: Arial, sans-serif;
+    font-family: Garamond, sans-serif;
     font-size: 10px;
 }
 

@@ -29,7 +29,7 @@
 .recommended-header h1 {
     margin: 0;
     color: var(--rb-dark);
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: Georgia, Garamond, serif;
     font-size: clamp(34px, 4.5vw, 56px);
     font-weight: 400;
     line-height: 1.2;
@@ -99,7 +99,7 @@
     place-items: center;
     background: linear-gradient(135deg, #ead7c2, #d6b59a);
     color: var(--rb-brown);
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: Georgia, Garamond, serif;
     font-size: 25px;
     letter-spacing: 3px;
 }
@@ -122,7 +122,7 @@
 .motif-card-content h3 {
     margin: 0 0 12px;
     color: var(--rb-dark);
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: Georgia, Garamond, serif;
     font-size: 24px;
     font-weight: 400;
     line-height: 1.35;
@@ -173,7 +173,7 @@
 .motif-empty h3 {
     margin: 0 0 15px;
     color: var(--rb-dark);
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: Georgia, Garamond, serif;
     font-size: 29px;
     font-weight: 400;
 }
