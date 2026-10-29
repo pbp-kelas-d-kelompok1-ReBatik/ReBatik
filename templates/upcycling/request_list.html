@@ -24,6 +24,7 @@
         <p class="text-xs uppercase tracking-[0.3em]">Upcycle · Culture · Value</p>
         <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">Permintaan Saya</h1>
         <p class="mt-3 text-base sm:text-lg">Pantau semua permintaan upcycling Anda di sini.</p>
+        {% if is_artisan %}<a href="{% url 'upcycling:artisan_dashboard' %}" class="mt-3 inline-flex rounded-full bg-white/90 px-5 py-2 font-semibold text-[var(--brown)]">Buka dashboard artisan →</a>{% endif %}
     </header>
 
     <main
@@ -305,7 +306,9 @@
                                lg:grid-cols-[11rem_minmax(0,1fr)_auto_auto] lg:gap-4"
                     >
                         <div class="aspect-[1.35] w-full overflow-hidden rounded-xl">
-                            {% if item.fabric == "PARANG" %}
+                            {% if item.fabric_photo %}
+                                <img src="{{ item.fabric_photo.url }}" alt="Foto kain" loading="lazy" decoding="async" class="h-full w-full object-cover">
+                            {% elif item.fabric == "PARANG" %}
                                 <img
                                     src="{% static 'img/catalog/batik/parang.webp' %}"
                                     alt="Motif Parang"
@@ -333,7 +336,7 @@
                             {% else %}
                                 <img
                                     src="{% static 'img/mascot/thinking.webp' %}"
-                                    alt="Kain donasi baru"
+                                    alt="Foto kain belum tersedia"
                                     loading="lazy"
                                     decoding="async"
                                     class="h-full w-full bg-[var(--upcycling-soft)] object-contain p-3"
@@ -348,10 +351,9 @@
                                 </h3>
                                 <span
                                     class="upcycling-status-badge min-h-11 w-fit shrink-0 rounded-full px-4 py-2 text-base font-bold lg:hidden
-                                           {% if item.status == 'PENDING' %}bg-[var(--upcycling-status-pending)] text-[var(--upcycling-status-pending-text)]
-                                           {% elif item.status == 'PROCESSING' %}bg-[var(--upcycling-status-processing)] text-[var(--upcycling-status-processing-text)]
-                                           {% elif item.status == 'COMPLETED' %}bg-[var(--upcycling-status-completed)] text-[var(--upcycling-status-completed-text)]
-                                           {% else %}bg-[var(--upcycling-status-cancelled)] text-[var(--upcycling-status-cancelled-text)]{% endif %}"
+                                           {% if item.status == 'COMPLETED' %}bg-[var(--upcycling-status-completed)] text-[var(--upcycling-status-completed-text)]
+                                           {% elif item.status == 'REJECTED' or item.status == 'CANCELLED' or item.status == 'EXPIRED' %}bg-[var(--upcycling-status-cancelled)] text-[var(--upcycling-status-cancelled-text)]
+                                           {% else %}bg-[var(--upcycling-status-pending)] text-[var(--upcycling-status-pending-text)]{% endif %}"
                                 >
                                     {{ item.get_status_display }}
                                 </span>
@@ -367,10 +369,9 @@
 
                         <span
                             class="upcycling-status-badge hidden min-h-11 w-fit self-center rounded-full px-4 py-2 text-base font-bold lg:inline-flex
-                                   {% if item.status == 'PENDING' %}bg-[var(--upcycling-status-pending)] text-[var(--upcycling-status-pending-text)]
-                                   {% elif item.status == 'PROCESSING' %}bg-[var(--upcycling-status-processing)] text-[var(--upcycling-status-processing-text)]
-                                   {% elif item.status == 'COMPLETED' %}bg-[var(--upcycling-status-completed)] text-[var(--upcycling-status-completed-text)]
-                                   {% else %}bg-[var(--upcycling-status-cancelled)] text-[var(--upcycling-status-cancelled-text)]{% endif %}"
+                                   {% if item.status == 'COMPLETED' %}bg-[var(--upcycling-status-completed)] text-[var(--upcycling-status-completed-text)]
+                                   {% elif item.status == 'REJECTED' or item.status == 'CANCELLED' or item.status == 'EXPIRED' %}bg-[var(--upcycling-status-cancelled)] text-[var(--upcycling-status-cancelled-text)]
+                                   {% else %}bg-[var(--upcycling-status-pending)] text-[var(--upcycling-status-pending-text)]{% endif %}"
                         >
                             {{ item.get_status_display }}
                         </span>

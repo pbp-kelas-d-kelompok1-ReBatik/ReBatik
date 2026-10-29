@@ -40,7 +40,7 @@
             {% if is_update %}Edit Upcycling Request{% else %}Upcycling Request{% endif %}
         </h1>
         <p class="mt-3 text-base sm:text-lg">
-            Ubah kain tak terpakai menjadi karya baru dalam tiga langkah sederhana.
+            Ubah kain milik Anda menjadi karya baru dalam tiga langkah sederhana.
         </p>
     </header>
 
@@ -126,9 +126,11 @@
 
     <form
         method="post"
+        enctype="multipart/form-data"
         action="{% if is_update %}{% url 'upcycling:request_update' form.instance.pk %}{% else %}{% url 'upcycling:request_create' %}{% endif %}"
         id="upcycling-form"
         hx-post="{% if is_update %}{% url 'upcycling:request_update' form.instance.pk %}{% else %}{% url 'upcycling:request_create' %}{% endif %}"
+        hx-encoding="multipart/form-data"
         hx-target="#upcycling-form"
         hx-select="#upcycling-form"
         hx-swap="outerHTML"
@@ -185,11 +187,11 @@
                     </span>
                     <h2 class="text-2xl font-bold sm:text-3xl">Pilih Kain</h2>
                 </div>
-                <p class="hidden text-base italic text-[var(--brown-muted)] sm:block">Dari donasi Anda</p>
+                <p class="hidden text-base italic text-[var(--brown-muted)] sm:block">Kain milik Anda</p>
             </div>
 
             <p class="max-w-3xl text-base leading-relaxed text-[var(--brown-muted)] sm:text-lg">
-                Pilih kain yang akan diolah menjadi produk baru.
+                Pilih jenis kain pribadi yang akan diolah menjadi produk baru. Kain untuk upcycling berbeda dari kain yang didonasikan.
             </p>
 
             <fieldset class="space-y-3">
@@ -204,7 +206,6 @@
                                    overflow-hidden rounded-xl border border-[var(--upcycling-card-border)]
                                    bg-[var(--upcycling-surface)] shadow-md transition
                                    hover:-translate-y-0.5 hover:shadow-lg
-                                   {% if radio.data.value == 'NEW_DONATION' %}border-dashed{% endif %}
                                    [&:has(input:checked)]:border-4
                                    [&:has(input:checked)]:border-[var(--brown)]
                                    [&:has(input:focus-visible)]:outline
@@ -213,57 +214,15 @@
                                    [&:has(input:focus-visible)]:outline-[var(--brown)]"
                         >
                             {{ radio.tag }}
-                            {% if radio.data.value == "PARANG" %}
-                                <img
-                                    src="{% static 'img/catalog/batik/parang.webp' %}"
-                                    alt=""
-                                    loading="lazy"
-                                    decoding="async"
-                                    class="aspect-[2] w-full object-cover"
-                                >
-                            {% elif radio.data.value == "KAWUNG" %}
-                                <img
-                                    src="{% static 'img/catalog/batik/kawung.webp' %}"
-                                    alt=""
-                                    loading="lazy"
-                                    decoding="async"
-                                    class="aspect-[2] w-full object-cover"
-                                >
-                            {% elif radio.data.value == "MEGA_MENDUNG" %}
-                                <img
-                                    src="{% static 'img/catalog/batik/megamendung.webp' %}"
-                                    alt=""
-                                    loading="lazy"
-                                    decoding="async"
-                                    class="aspect-[2] w-full object-cover"
-                                >
-                            {% else %}
-                                <div class="grid aspect-[2] place-items-center overflow-hidden bg-[var(--upcycling-soft)]">
-                                    <img
-                                        src="{% static 'img/mascot/thinking.webp' %}"
-                                        alt=""
-                                        loading="lazy"
-                                        decoding="async"
-                                        class="h-full w-auto max-h-36 scale-[1.35] object-contain
-                                               sm:max-h-36 md:max-h-40 md:scale-[1.25]
-                                               lg:max-h-48"
-                                    >
-                                </div>
-                            {% endif %}
+                            <div class="grid aspect-[2] place-items-center overflow-hidden bg-[var(--upcycling-soft)]">
+                                <img src="{% static 'img/mascot/thinking.webp' %}" alt="" loading="lazy" decoding="async" class="h-full w-auto max-h-36 scale-[1.2] object-contain sm:max-h-36 md:max-h-40 lg:max-h-48">
+                            </div>
                             <span
                                 class="flex min-h-16 items-center justify-between gap-3 px-4 py-3
                                        text-base font-bold sm:text-lg"
                             >
                                 <span class="min-w-0">
                                     <span>{{ radio.choice_label }}</span>
-                                    {% if radio.data.value == "NEW_DONATION" %}
-                                        <span
-                                            class="mt-1 block text-sm font-normal leading-snug
-                                                   text-[var(--brown-muted)] sm:text-base"
-                                        >
-                                            Belum punya kain di daftar? Donasikan dulu.
-                                        </span>
-                                    {% endif %}
                                 </span>
                                 <span
                                     class="upcycling-fabric-action shrink-0"
@@ -279,6 +238,35 @@
                 </div>
                 {{ form.fabric.errors }}
             </fieldset>
+
+            <div class="grid gap-5 sm:grid-cols-2">
+                <div class="space-y-2 sm:col-span-2">
+                    <label for="{{ form.fabric_photo.id_for_label }}" class="block text-base font-semibold sm:text-lg">Foto kain <span aria-hidden="true">*</span></label>
+                    {{ form.fabric_photo }}
+                    <p class="text-sm text-[var(--brown-muted)]">Unggah foto seluruh kain dan detail permukaannya, maksimal 5 MB.</p>
+                    {{ form.fabric_photo.errors }}
+                </div>
+                <div class="space-y-2">
+                    <label for="{{ form.fabric_condition.id_for_label }}" class="block text-base font-semibold sm:text-lg">Kondisi kain menurut Anda</label>
+                    {{ form.fabric_condition }}
+                    {{ form.fabric_condition.errors }}
+                </div>
+                <div class="space-y-2">
+                    <label for="{{ form.fabric_dimensions.id_for_label }}" class="block text-base font-semibold sm:text-lg">Perkiraan ukuran/jumlah kain</label>
+                    {{ form.fabric_dimensions }}
+                    {{ form.fabric_dimensions.errors }}
+                </div>
+                <div class="space-y-2">
+                    <label for="{{ form.fabric_delivery_method.id_for_label }}" class="block text-base font-semibold sm:text-lg">Cara menyerahkan kain</label>
+                    {{ form.fabric_delivery_method }}
+                    {{ form.fabric_delivery_method.errors }}
+                </div>
+                <div class="space-y-2">
+                    <label for="{{ form.fabric_delivery_location.id_for_label }}" class="block text-base font-semibold sm:text-lg">Rencana lokasi penyerahan</label>
+                    {{ form.fabric_delivery_location }}
+                    {{ form.fabric_delivery_location.errors }}
+                </div>
+            </div>
         </section>
 
         <section id="pilih-produk" class="scroll-mt-8 space-y-5 border-t border-[var(--border)] pt-7">
@@ -484,7 +472,7 @@
                     <span id="summary-product">Pilih model produk</span>
                 </p>
                 <p class="mt-2 text-base text-[var(--brown-muted)]">
-                    Kontribusi Anda membantu mengurangi limbah tekstil dan mendukung pengrajin batik.
+                    Harga final ditentukan artisan setelah kain diterima dan diperiksa. Produksi dimulai setelah Anda menyetujui harga dan pembayaran dikonfirmasi. Kain pribadi tidak otomatis menjadi donasi.
                 </p>
             </aside>
             <img

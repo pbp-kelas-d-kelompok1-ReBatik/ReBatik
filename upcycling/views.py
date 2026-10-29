@@ -1,5 +1,6 @@
 import json
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
+from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -15,9 +16,12 @@ from django.utils.dateparse import parse_date
 
 from .forms import UpcyclingRequestForm, get_product_options_by_category
 from .models import (
+    ArtisanProfile,
+    NOTES_MAX_LENGTH,
     UpcyclingRateLimitBucket,
     UpcyclingRequest,
     UpcyclingStatusHistory,
+    fabric_handoff_deadline,
 )
 from .security import consume_upcycling_rate_limit
 
@@ -29,8 +33,8 @@ ACTION_RATE_LIMITS = {
     UpcyclingRateLimitBucket.Action.DELETE: (10, 60),
 }
 PENDING_LIMIT_MESSAGE = (
-    "Anda sudah memiliki {limit} permintaan yang menunggu tinjauan. "
-    "Tunggu sampai permintaan diproses sebelum mengajukan lagi."
+    "Anda sudah memiliki {limit} permintaan upcycling yang masih berjalan. "
+    "Tunggu sampai ada request yang selesai sebelum mengajukan lagi."
 )
 
 
@@ -92,6 +96,7 @@ def request_list(request):
     """Show the signed-in user's requests with validated search and filters."""
     requests = UpcyclingRequest.objects.filter(user=request.user).only(
         "id",
+        "fabric_photo",
         "fabric",
         "category",
         "product",
@@ -115,12 +120,7 @@ def request_list(request):
     valid_categories = dict(UpcyclingRequest.CATEGORY_CHOICES)
 
     if selected_status == "ONGOING":
-        requests = requests.filter(
-            status__in=[
-                UpcyclingRequest.Status.PENDING,
-                UpcyclingRequest.Status.PROCESSING,
-            ]
-        )
+        requests = requests.exclude(status__in=UpcyclingRequest.TERMINAL_STATUSES)
     elif selected_status in valid_statuses:
         requests = requests.filter(status=selected_status)
     else:
@@ -203,6 +203,7 @@ def request_list(request):
             ("quantity", "Jumlah terbanyak"),
         ),
         "has_any_requests": has_any_requests,
+        "is_artisan": ArtisanProfile.objects.filter(user=request.user).exists(),
     }
     return render(request, "upcycling/request_list.html", context)
 
@@ -218,7 +219,7 @@ def request_create(request):
         if rate_limit_response:
             return rate_limit_response
 
-        form = UpcyclingRequestForm(request.POST)
+        form = UpcyclingRequestForm(request.POST, request.FILES)
         if form.is_valid():
             with transaction.atomic():
                 # Lock the user row so concurrent submissions cannot pass the
@@ -226,9 +227,8 @@ def request_create(request):
                 user = get_user_model().objects.select_for_update().get(
                     pk=request.user.pk
                 )
-                pending_count = UpcyclingRequest.objects.filter(
-                    user=user,
-                    status=UpcyclingRequest.Status.PENDING,
+                pending_count = UpcyclingRequest.objects.filter(user=user).exclude(
+                    status__in=UpcyclingRequest.TERMINAL_STATUSES
                 ).count()
 
                 if pending_count >= PENDING_REQUEST_LIMIT:
@@ -241,6 +241,7 @@ def request_create(request):
                 else:
                     upcycling_request = form.save(commit=False)
                     upcycling_request.user = user
+                    upcycling_request.status = UpcyclingRequest.Status.PENDING_ASSIGNMENT
                     upcycling_request.save()
                     UpcyclingStatusHistory.objects.create(
                         request=upcycling_request,
@@ -253,9 +254,8 @@ def request_create(request):
                         pk=upcycling_request.pk,
                     )
     else:
-        pending_count = UpcyclingRequest.objects.filter(
-            user=request.user,
-            status=UpcyclingRequest.Status.PENDING,
+        pending_count = UpcyclingRequest.objects.filter(user=request.user).exclude(
+            status__in=UpcyclingRequest.TERMINAL_STATUSES
         ).count()
         if pending_count >= PENDING_REQUEST_LIMIT:
             messages.info(
@@ -313,32 +313,26 @@ def request_detail(request, pk):
         },
     ]
 
-    if status == UpcyclingRequest.Status.PENDING:
-        timeline_steps.extend(
-            [
-                {"label": "Menunggu Tinjauan", "state": "current"},
-                {"label": "Diproses", "state": "upcoming"},
-                {"label": "Selesai", "state": "upcoming"},
-            ]
-        )
-    elif status == UpcyclingRequest.Status.PROCESSING:
-        timeline_steps.extend(
-            [
-                {"label": "Menunggu Tinjauan", "state": "done"},
-                {"label": "Diproses · sedang berjalan", "state": "current"},
-                {"label": "Selesai", "state": "upcoming"},
-            ]
-        )
-    elif status == UpcyclingRequest.Status.COMPLETED:
-        timeline_steps.extend(
-            [
-                {"label": "Menunggu Tinjauan", "state": "done"},
-                {"label": "Diproses", "state": "done"},
-                {"label": "Selesai · produk diterima", "state": "done"},
-            ]
-        )
+    progression = [
+        UpcyclingRequest.Status.PENDING_ASSIGNMENT,
+        UpcyclingRequest.Status.PENDING_REVIEW,
+        UpcyclingRequest.Status.AWAITING_FABRIC,
+        UpcyclingRequest.Status.INSPECTION,
+        UpcyclingRequest.Status.AWAITING_APPROVAL,
+        UpcyclingRequest.Status.AWAITING_PAYMENT,
+        UpcyclingRequest.Status.IN_PROGRESS,
+        UpcyclingRequest.Status.READY,
+        UpcyclingRequest.Status.COMPLETED,
+    ]
+    if status in progression:
+        current_index = progression.index(status)
+        for index, value in enumerate(progression):
+            timeline_steps.append({
+                "label": UpcyclingRequest.Status(value).label,
+                "state": "done" if index < current_index else "current" if index == current_index else "upcoming",
+            })
     else:
-        timeline_steps.append({"label": "Dibatalkan", "state": "cancelled"})
+        timeline_steps.append({"label": upcycling_request.get_status_display(), "state": "cancelled"})
 
     return render(
         request,
@@ -350,6 +344,15 @@ def request_detail(request, pk):
             "status_history": upcycling_request.status_history.select_related(
                 "changed_by"
             ),
+            "can_approve_quote": status == UpcyclingRequest.Status.AWAITING_APPROVAL,
+            "can_confirm_receipt": status == UpcyclingRequest.Status.READY,
+            "can_cancel": status in {
+                UpcyclingRequest.Status.PENDING_ASSIGNMENT,
+                UpcyclingRequest.Status.PENDING_REVIEW,
+                UpcyclingRequest.Status.AWAITING_FABRIC,
+                UpcyclingRequest.Status.INSPECTION,
+                UpcyclingRequest.Status.AWAITING_APPROVAL,
+            },
         },
     )
 
@@ -363,7 +366,7 @@ def request_update(request, pk):
         user=request.user,
     )
 
-    if upcycling_request.status != UpcyclingRequest.Status.PENDING:
+    if upcycling_request.status != UpcyclingRequest.Status.PENDING_ASSIGNMENT:
         messages.info(
             request,
             "Permintaan hanya bisa diedit saat masih menunggu tinjauan.",
@@ -384,6 +387,7 @@ def request_update(request, pk):
 
         form = UpcyclingRequestForm(
             request.POST,
+            request.FILES,
             instance=upcycling_request,
         )
         if form.is_valid():
@@ -394,7 +398,7 @@ def request_update(request, pk):
                     pk=pk,
                     user=request.user,
                 )
-                if current_request.status != UpcyclingRequest.Status.PENDING:
+                if current_request.status != UpcyclingRequest.Status.PENDING_ASSIGNMENT:
                     messages.info(
                         request,
                         "Permintaan hanya bisa diedit saat masih menunggu tinjauan.",
@@ -447,7 +451,7 @@ def request_delete(request, pk):
     )
 
     if request.method != "POST":
-        if upcycling_request.status != UpcyclingRequest.Status.PENDING:
+        if upcycling_request.status != UpcyclingRequest.Status.PENDING_ASSIGNMENT:
             messages.info(
                 request,
                 "Permintaan hanya bisa dihapus saat masih menunggu tinjauan.",
@@ -480,7 +484,7 @@ def request_delete(request, pk):
             messages.info(request, "Permintaan sudah tidak tersedia.")
             return _htmx_location_or_redirect(request, "upcycling:request_list")
 
-        if locked_request.status != UpcyclingRequest.Status.PENDING:
+        if locked_request.status != UpcyclingRequest.Status.PENDING_ASSIGNMENT:
             messages.info(
                 request,
                 "Permintaan hanya bisa dihapus saat masih menunggu tinjauan.",
@@ -499,3 +503,172 @@ def request_delete(request, pk):
         response["HX-Redirect"] = reverse("upcycling:request_list")
         return response
     return _htmx_location_or_redirect(request, "upcycling:request_list")
+
+
+def _record_user_status_change(upcycling_request, user, old_status):
+    UpcyclingStatusHistory.objects.create(
+        request=upcycling_request,
+        from_status=old_status,
+        to_status=upcycling_request.status,
+        changed_by=user,
+    )
+
+
+@login_required
+def approve_quote(request, pk):
+    if request.method != "POST":
+        return redirect("upcycling:request_detail", pk=pk)
+    with transaction.atomic():
+        upcycling_request = get_object_or_404(
+            UpcyclingRequest.objects.select_for_update(), pk=pk, user=request.user
+        )
+        if upcycling_request.status != UpcyclingRequest.Status.AWAITING_APPROVAL or upcycling_request.quoted_price is None:
+            messages.error(request, "Penawaran belum tersedia untuk disetujui.")
+        else:
+            old_status = upcycling_request.status
+            upcycling_request.approved_at = timezone.now()
+            upcycling_request.status = UpcyclingRequest.Status.AWAITING_PAYMENT
+            upcycling_request.save(update_fields=("approved_at", "status", "updated_at"))
+            _record_user_status_change(upcycling_request, request.user, old_status)
+            messages.success(request, "Harga disetujui. Admin akan mengonfirmasi pembayaran simulasi.")
+    return redirect("upcycling:request_detail", pk=pk)
+
+
+@login_required
+def confirm_completion(request, pk):
+    if request.method != "POST":
+        return redirect("upcycling:request_detail", pk=pk)
+    with transaction.atomic():
+        upcycling_request = get_object_or_404(
+            UpcyclingRequest.objects.select_for_update(), pk=pk, user=request.user
+        )
+        if (
+            upcycling_request.status != UpcyclingRequest.Status.READY
+            or upcycling_request.payment_status != UpcyclingRequest.PaymentStatus.PAID
+        ):
+            messages.error(request, "Request belum siap dikonfirmasi selesai.")
+        else:
+            old_status = upcycling_request.status
+            upcycling_request.status = UpcyclingRequest.Status.COMPLETED
+            upcycling_request.completed_by = request.user
+            upcycling_request.completed_at = timezone.now()
+            upcycling_request.save(update_fields=("status", "completed_by", "completed_at", "updated_at"))
+            _record_user_status_change(upcycling_request, request.user, old_status)
+            from rewards.services import award_upcycling_completion
+
+            award_upcycling_completion(
+                request.user,
+                request_reference=str(upcycling_request.pk),
+                upcycling_request=upcycling_request,
+            )
+            messages.success(request, "Penerimaan dikonfirmasi. Poin upcycling sudah ditambahkan.")
+    return redirect("upcycling:request_detail", pk=pk)
+
+
+@login_required
+def cancel_request(request, pk):
+    if request.method != "POST":
+        return redirect("upcycling:request_detail", pk=pk)
+    with transaction.atomic():
+        upcycling_request = get_object_or_404(
+            UpcyclingRequest.objects.select_for_update(), pk=pk, user=request.user
+        )
+        allowed = {
+            UpcyclingRequest.Status.PENDING_ASSIGNMENT,
+            UpcyclingRequest.Status.PENDING_REVIEW,
+            UpcyclingRequest.Status.AWAITING_FABRIC,
+            UpcyclingRequest.Status.INSPECTION,
+            UpcyclingRequest.Status.AWAITING_APPROVAL,
+            UpcyclingRequest.Status.AWAITING_PAYMENT,
+        }
+        if upcycling_request.status not in allowed or upcycling_request.payment_status == UpcyclingRequest.PaymentStatus.PAID:
+            messages.error(request, "Request ini tidak dapat dibatalkan mandiri. Hubungi admin untuk bantuan.")
+        else:
+            old_status = upcycling_request.status
+            upcycling_request.status = UpcyclingRequest.Status.CANCELLED
+            upcycling_request.cancellation_reason = "Dibatalkan oleh user."
+            if upcycling_request.fabric_received_at:
+                upcycling_request.return_status = UpcyclingRequest.ReturnStatus.PENDING_RETURN
+            upcycling_request.save(update_fields=("status", "cancellation_reason", "return_status", "updated_at"))
+            _record_user_status_change(upcycling_request, request.user, old_status)
+            messages.success(request, "Request dibatalkan.")
+    return redirect("upcycling:request_detail", pk=pk)
+
+
+@login_required
+def artisan_dashboard(request):
+    artisan = get_object_or_404(ArtisanProfile, user=request.user)
+    assigned_requests = UpcyclingRequest.objects.filter(artisan=artisan).select_related("user")
+    active_requests = assigned_requests.exclude(status__in=UpcyclingRequest.TERMINAL_STATUSES)
+    return render(
+        request,
+        "upcycling/artisan_dashboard.html",
+        {"artisan": artisan, "requests": active_requests},
+    )
+
+
+@login_required
+def artisan_update_request(request, pk):
+    if request.method != "POST":
+        return redirect("upcycling:artisan_dashboard")
+    artisan = get_object_or_404(ArtisanProfile, user=request.user)
+    action = request.POST.get("action", "")
+    with transaction.atomic():
+        upcycling_request = get_object_or_404(
+            UpcyclingRequest.objects.select_for_update(), pk=pk, artisan=artisan
+        )
+        old_status = upcycling_request.status
+        now = timezone.now()
+        note = request.POST.get("notes", "").strip()[:NOTES_MAX_LENGTH]
+        try:
+            if action == "review_accept" and old_status == UpcyclingRequest.Status.PENDING_REVIEW:
+                upcycling_request.review_notes = note
+                upcycling_request.review_approved_at = now
+                upcycling_request.fabric_deadline = fabric_handoff_deadline(now)
+                upcycling_request.status = UpcyclingRequest.Status.AWAITING_FABRIC
+            elif action == "review_reject" and old_status == UpcyclingRequest.Status.PENDING_REVIEW:
+                if not note:
+                    raise ValueError("Masukkan alasan penolakan.")
+                upcycling_request.rejection_stage = "INITIAL_REVIEW"
+                upcycling_request.rejection_reason = note
+                upcycling_request.status = UpcyclingRequest.Status.REJECTED
+            elif action == "receive_fabric" and old_status == UpcyclingRequest.Status.AWAITING_FABRIC:
+                if upcycling_request.fabric_deadline and upcycling_request.fabric_deadline < now:
+                    raise ValueError("Tenggat penyerahan kain sudah lewat.")
+                upcycling_request.fabric_received_at = now
+                upcycling_request.fabric_received_by = request.user
+                upcycling_request.fabric_receipt_notes = note
+                upcycling_request.status = UpcyclingRequest.Status.INSPECTION
+            elif action in {"inspection_pass", "inspection_reject"} and old_status == UpcyclingRequest.Status.INSPECTION:
+                if action == "inspection_pass":
+                    try:
+                        price = Decimal(request.POST.get("quoted_price", ""))
+                    except (InvalidOperation, TypeError, ValueError):
+                        raise ValueError("Masukkan harga final yang valid.") from None
+                    if not price.is_finite() or price <= 0:
+                        raise ValueError("Harga final harus lebih dari nol.")
+                    upcycling_request.quoted_price = price
+                    upcycling_request.quoted_at = now
+                    upcycling_request.quotation_notes = note
+                    upcycling_request.inspection_notes = note
+                    upcycling_request.status = UpcyclingRequest.Status.AWAITING_APPROVAL
+                else:
+                    if not note:
+                        raise ValueError("Masukkan alasan kain tidak layak.")
+                    upcycling_request.inspection_notes = note
+                    upcycling_request.rejection_stage = "FABRIC_INSPECTION"
+                    upcycling_request.rejection_reason = note
+                    upcycling_request.return_status = UpcyclingRequest.ReturnStatus.PENDING_RETURN
+                    upcycling_request.status = UpcyclingRequest.Status.REJECTED
+            elif action == "mark_ready" and old_status == UpcyclingRequest.Status.IN_PROGRESS:
+                upcycling_request.ready_at = now
+                upcycling_request.status = UpcyclingRequest.Status.READY
+            else:
+                raise ValueError("Aksi ini tidak berlaku untuk status request sekarang.")
+        except ValueError as exc:
+            messages.error(request, str(exc))
+        else:
+            upcycling_request.save()
+            _record_user_status_change(upcycling_request, request.user, old_status)
+            messages.success(request, "Status request berhasil diperbarui.")
+    return redirect("upcycling:artisan_dashboard")

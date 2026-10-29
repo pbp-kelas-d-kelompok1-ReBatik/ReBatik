@@ -51,10 +51,9 @@
             <div class="flex flex-wrap items-center gap-3 sm:gap-5">
                 <h2 class="text-3xl font-bold sm:text-4xl">{{ upcycling_request.get_product_name }}</h2>
                 <span class="upcycling-status-badge min-h-11 rounded-full px-5 py-2 text-base font-bold sm:text-lg
-                    {% if upcycling_request.status == 'PENDING' %}bg-[var(--upcycling-status-pending)] text-[var(--upcycling-status-pending-text)]
-                    {% elif upcycling_request.status == 'PROCESSING' %}bg-[var(--upcycling-status-processing)] text-[var(--upcycling-status-processing-text)]
-                    {% elif upcycling_request.status == 'COMPLETED' %}bg-[var(--upcycling-status-completed)] text-[var(--upcycling-status-completed-text)]
-                    {% else %}bg-[var(--upcycling-status-cancelled)] text-[var(--upcycling-status-cancelled-text)]{% endif %}">
+                    {% if upcycling_request.status == 'COMPLETED' %}bg-[var(--upcycling-status-completed)] text-[var(--upcycling-status-completed-text)]
+                    {% elif upcycling_request.status == 'REJECTED' or upcycling_request.status == 'CANCELLED' or upcycling_request.status == 'EXPIRED' %}bg-[var(--upcycling-status-cancelled)] text-[var(--upcycling-status-cancelled-text)]
+                    {% else %}bg-[var(--upcycling-status-pending)] text-[var(--upcycling-status-pending-text)]{% endif %}">
                     {{ upcycling_request.get_status_display }}
                 </span>
             </div>
@@ -161,38 +160,13 @@
                        bg-[var(--upcycling-surface)] p-5 shadow-lg sm:p-7"
             >
                 <h3 id="summary-heading" class="text-2xl font-bold">Ringkasan</h3>
-                {% if upcycling_request.fabric == 'PARANG' %}
+                {% if upcycling_request.fabric_photo %}
                     <img
-                        src="{% static 'img/catalog/batik/parang.webp' %}"
-                        alt="Motif Parang"
+                        src="{{ upcycling_request.fabric_photo.url }}"
+                        alt="Foto kain yang diajukan"
                         loading="lazy"
                         decoding="async"
-                        class="mt-5 aspect-[2.3] w-full rounded-xl object-cover"
-                    >
-                {% elif upcycling_request.fabric == 'KAWUNG' %}
-                    <img
-                        src="{% static 'img/catalog/batik/kawung.webp' %}"
-                        alt="Motif Kawung"
-                        loading="lazy"
-                        decoding="async"
-                        class="mt-5 aspect-[2.3] w-full rounded-xl object-cover"
-                    >
-                {% elif upcycling_request.fabric == 'MEGA_MENDUNG' %}
-                    <img
-                        src="{% static 'img/catalog/batik/megamendung.webp' %}"
-                        alt="Motif Mega Mendung"
-                        loading="lazy"
-                        decoding="async"
-                        class="mt-5 aspect-[2.3] w-full rounded-xl object-cover"
-                    >
-                {% else %}
-                    <img
-                        src="{% static 'img/mascot/thinking.webp' %}"
-                        alt="Kain donasi baru"
-                        loading="lazy"
-                        decoding="async"
-                        class="mt-5 aspect-[2.3] w-full rounded-xl
-                               bg-[var(--upcycling-soft)] object-contain"
+                        class="mt-5 aspect-[2.3] w-full rounded-xl bg-[var(--upcycling-soft)] object-cover"
                     >
                 {% endif %}
 
@@ -201,6 +175,14 @@
                         <dt class="font-semibold">Kain</dt>
                         <dd>{{ upcycling_request.get_fabric_display }}</dd>
                     </div>
+                    {% if upcycling_request.fabric_dimensions %}<div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]"><dt class="font-semibold">Ukuran kain</dt><dd>{{ upcycling_request.fabric_dimensions }}</dd></div>{% endif %}
+                    {% if upcycling_request.quoted_price %}<div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]"><dt class="font-semibold">Harga final</dt><dd>Rp{{ upcycling_request.quoted_price|floatformat:0 }}</dd></div>{% endif %}
+                    {% if upcycling_request.quotation_notes %}<div class="border-t border-[var(--border)] pt-3"><dt class="font-semibold">Catatan penawaran</dt><dd class="mt-1 whitespace-pre-line text-[var(--brown-muted)]">{{ upcycling_request.quotation_notes }}</dd></div>{% endif %}
+                    {% if upcycling_request.review_notes %}<div class="border-t border-[var(--border)] pt-3"><dt class="font-semibold">Catatan review artisan</dt><dd class="mt-1 whitespace-pre-line text-[var(--brown-muted)]">{{ upcycling_request.review_notes }}</dd></div>{% endif %}
+                    {% if upcycling_request.approved_at %}<div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]"><dt class="font-semibold">Pembayaran</dt><dd>{{ upcycling_request.get_payment_status_display }}</dd></div>{% endif %}
+                    {% if upcycling_request.delivery_proof %}<div class="border-t border-[var(--border)] pt-3"><dt class="font-semibold">Bukti penyerahan produk</dt><dd class="mt-1"><a class="underline" href="{{ upcycling_request.delivery_proof.url }}" target="_blank" rel="noopener">Lihat bukti</a></dd></div>{% endif %}
+                    {% if upcycling_request.status == 'AWAITING_FABRIC' and upcycling_request.fabric_deadline %}<div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]"><dt class="font-semibold">Batas serah kain</dt><dd>{{ upcycling_request.fabric_deadline|date:'d M Y, H:i' }}</dd></div>{% endif %}
+                    {% if upcycling_request.return_status == 'PENDING_RETURN' %}<div class="border-t border-[var(--border)] pt-3"><dt class="font-semibold">Pengembalian kain</dt><dd class="mt-1">Kain menunggu pengembalian oleh admin.</dd></div>{% endif %}
                     <div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
                         <dt class="font-semibold">Kategori produk</dt>
                         <dd>{{ upcycling_request.get_category_display }}</dd>
@@ -225,6 +207,7 @@
                             </dd>
                         </div>
                     {% endif %}
+                    {% if upcycling_request.rejection_reason %}<div class="border-t border-[var(--border)] pt-3"><dt class="font-semibold">Alasan penolakan</dt><dd class="mt-1 whitespace-pre-line text-[var(--brown-muted)]">{{ upcycling_request.rejection_reason }}</dd></div>{% endif %}
                 </dl>
             </section>
         </div>
@@ -234,7 +217,7 @@
                    sm:flex-row sm:items-center sm:justify-between"
         >
             <p class="text-sm text-[var(--brown-muted)]">
-                {% if upcycling_request.status == 'PENDING' %}
+                {% if upcycling_request.status == 'PENDING_ASSIGNMENT' %}
                     Permintaan bisa diedit atau dihapus selama masih menunggu tinjauan.
                 {% else %}
                     Permintaan tidak bisa diedit atau dihapus setelah mulai diproses.
@@ -252,7 +235,30 @@
             </button>
         </div>
 
-        {% if upcycling_request.status == 'PENDING' %}
+        {% if can_approve_quote %}
+            <div class="mt-5 rounded-xl border border-[var(--border)] bg-[var(--upcycling-surface)] p-5">
+                <p class="font-semibold">Penawaran artisan: Rp{{ upcycling_request.quoted_price|floatformat:0 }}</p>
+                {% if upcycling_request.quotation_notes %}<p class="mt-2 whitespace-pre-line">{{ upcycling_request.quotation_notes }}</p>{% endif %}
+                <form method="post" action="{% url 'upcycling:approve_quote' upcycling_request.pk %}" class="mt-4">
+                    {% csrf_token %}
+                    <button class="primary-action-button min-h-12 px-5 py-3 font-bold">Setujui harga</button>
+                </form>
+            </div>
+        {% endif %}
+        {% if can_confirm_receipt %}
+            <form method="post" action="{% url 'upcycling:confirm_completion' upcycling_request.pk %}" class="mt-5">
+                {% csrf_token %}
+                <button class="primary-action-button min-h-12 px-5 py-3 font-bold">Konfirmasi produk diterima</button>
+            </form>
+        {% endif %}
+        {% if can_cancel %}
+            <form method="post" action="{% url 'upcycling:cancel_request' upcycling_request.pk %}" class="mt-5" onsubmit="return confirm('Batalkan request upcycling ini?')">
+                {% csrf_token %}
+                <button class="min-h-12 rounded-xl border-2 border-[var(--danger)] px-5 py-3 font-bold text-[var(--danger)]">Batalkan request</button>
+            </form>
+        {% endif %}
+
+        {% if upcycling_request.status == 'PENDING_ASSIGNMENT' %}
             <div class="mt-5 flex flex-col gap-3 sm:flex-row">
                 <a
                     href="{% url 'upcycling:request_update' upcycling_request.pk %}"

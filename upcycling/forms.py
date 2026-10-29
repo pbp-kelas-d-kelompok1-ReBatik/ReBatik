@@ -31,9 +31,9 @@ ADDRESS_DETAILS_BY_METHOD = {
         "required_message": "Masukkan alamat pengiriman.",
     },
     "DROP_OFF": {
-        "label": "Lokasi pengambilan",
-        "placeholder": "Masukkan nama atau alamat lokasi Drop-off",
-        "help_text": "Tuliskan lokasi Drop-off tempat Anda akan mengambil produk.",
+        "label": "Rencana lokasi pengambilan produk",
+        "placeholder": "Lokasi pengambilan produk jadi",
+        "help_text": "Tuliskan lokasi tempat Anda akan menerima produk jadi.",
         "required_message": "Masukkan lokasi pengambilan produk.",
     },
 }
@@ -60,6 +60,7 @@ class UpcyclingRequestForm(forms.ModelForm):
             "fabric": UpcyclingRequest.FABRIC_CHOICES,
             "category": UpcyclingRequest.CATEGORY_CHOICES,
             "delivery_method": UpcyclingRequest.DELIVERY_CHOICES,
+            "fabric_delivery_method": UpcyclingRequest.FABRIC_DELIVERY_CHOICES,
         }
         for field_name, choices in choices_by_field.items():
             self.fields[field_name].choices = choices
@@ -96,11 +97,24 @@ class UpcyclingRequestForm(forms.ModelForm):
                 f"data-default-{detail_name.replace('_', '-')}"
             ] = detail_value
         address_field.widget.attrs["aria-describedby"] = "address-help"
+        self.fields["fabric_photo"].label = "Foto kain"
+        self.fields["fabric_photo"].required = self.instance._state.adding
+        self.fields["fabric_photo"].widget.attrs.update({"accept": "image/*"})
+        self.fields["fabric_condition"].label = "Kondisi kain menurut Anda"
+        self.fields["fabric_dimensions"].label = "Perkiraan ukuran atau jumlah kain"
+        self.fields["fabric_delivery_method"].label = "Cara menyerahkan kain"
+        self.fields["fabric_delivery_location"].label = "Lokasi/rencana penyerahan kain"
+        self.fields["fabric_delivery_location"].required = False
 
     class Meta:
         model = UpcyclingRequest
         fields = [
             "fabric",
+            "fabric_photo",
+            "fabric_condition",
+            "fabric_dimensions",
+            "fabric_delivery_method",
+            "fabric_delivery_location",
             "category",
             "product",
             "custom_product",
@@ -128,6 +142,11 @@ class UpcyclingRequestForm(forms.ModelForm):
         }
         widgets = {
             "fabric": forms.RadioSelect(attrs={"class": "sr-only"}),
+            "fabric_photo": forms.ClearableFileInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "accept": "image/*"}),
+            "fabric_dimensions": forms.TextInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "placeholder": "Contoh: 1 celana jeans atau kain 1 × 2 m"}),
+            "fabric_delivery_location": forms.TextInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "placeholder": "Lokasi/rencana penyerahan kain"}),
+            "fabric_condition": forms.Select(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input"}),
+            "fabric_delivery_method": forms.Select(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input"}),
             "category": forms.RadioSelect(attrs={"class": "sr-only"}),
             # The product chips are rendered in the template; retain this
             # select as the submitted form value.
@@ -177,6 +196,12 @@ class UpcyclingRequestForm(forms.ModelForm):
                 "Jumlah produk harus antara 1 dan 20."
             )
         return quantity
+
+    def clean_fabric_photo(self):
+        photo = self.cleaned_data.get("fabric_photo")
+        if photo and photo.size > 5 * 1024 * 1024:
+            raise forms.ValidationError("Ukuran foto kain maksimal 5 MB.")
+        return photo
 
     def clean_whatsapp(self):
         """Validate and normalize an Indonesian mobile number."""

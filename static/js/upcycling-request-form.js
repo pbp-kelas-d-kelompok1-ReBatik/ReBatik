@@ -10,6 +10,9 @@ const initializeUpcyclingForm = () => {
     const errorList = document.getElementById("form-error-list");
     const validationMessages = {
         fabric: ["Kain", "Pilih kain yang ingin digunakan."],
+        fabric_photo: ["Foto kain", "Unggah foto kain yang akan diolah."],
+        fabric_condition: ["Kondisi kain", "Pilih kondisi kain jika diketahui."],
+        fabric_dimensions: ["Ukuran kain", "Isi perkiraan ukuran atau jumlah kain."],
         category: ["Kategori produk", "Pilih kategori produk."],
         product: ["Model produk", "Pilih model produk."],
         custom_product: ["Produk yang diinginkan", "Tuliskan produk yang Anda inginkan."],
@@ -26,6 +29,9 @@ const initializeUpcyclingForm = () => {
     };
     const validationTargets = {
         fabric: "#pilih-kain",
+        fabric_photo: "#id_fabric_photo",
+        fabric_condition: "#id_fabric_condition",
+        fabric_dimensions: "#id_fabric_dimensions",
         category: "#pilih-produk",
         product: "#product-options",
         custom_product: "#id_custom_product",

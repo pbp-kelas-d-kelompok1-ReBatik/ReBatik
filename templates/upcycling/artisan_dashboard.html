@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+<main class="mx-auto max-w-6xl px-4 py-10 text-[var(--brown)]">
+    <header class="mb-7">
+        <p class="text-sm font-semibold uppercase tracking-widest">Area Artisan</p>
+        <h1 class="mt-2 text-3xl font-bold">Request yang Ditugaskan</h1>
+        <p class="mt-2">Kapasitas aktif: {{ artisan.active_request_count }}/{{ artisan.max_active_requests }}</p>
+    </header>
+    {% if messages %}<div class="mb-5 space-y-2">{% for message in messages %}<p class="rounded-lg border bg-white p-3" role="status">{{ message }}</p>{% endfor %}</div>{% endif %}
+    <div class="space-y-4">
+        {% for item in requests %}
+            <article class="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm">
+                <div class="grid gap-5 md:grid-cols-[10rem_minmax(0,1fr)]">
+                    {% if item.fabric_photo %}<img src="{{ item.fabric_photo.url }}" alt="Foto kain {{ item.get_fabric_display }}" class="aspect-square w-full rounded-xl object-cover">{% endif %}
+                    <div>
+                        <div class="flex flex-wrap items-start justify-between gap-3">
+                            <div><h2 class="text-xl font-bold">{{ item.get_product_name }}</h2><p>{{ item.reference_code }} · {{ item.user }}</p></div>
+                            <span class="rounded-full bg-[var(--upcycling-soft)] px-3 py-1 font-semibold">{{ item.get_status_display }}</span>
+                        </div>
+                        <dl class="mt-4 grid gap-2 sm:grid-cols-2">
+                            <div><dt class="font-semibold">Kain</dt><dd>{{ item.get_fabric_display }}{% if item.fabric_dimensions %} · {{ item.fabric_dimensions }}{% endif %}</dd></div>
+                            <div><dt class="font-semibold">Kondisi menurut user</dt><dd>{{ item.get_fabric_condition_display|default:"Belum diisi" }}</dd></div>
+                            <div><dt class="font-semibold">Jumlah produk</dt><dd>{{ item.quantity }}</dd></div>
+                            <div><dt class="font-semibold">Catatan user</dt><dd>{{ item.notes|default:"—" }}</dd></div>
+                            {% if item.fabric_deadline %}<div><dt class="font-semibold">Tenggat kain</dt><dd>{{ item.fabric_deadline|date:"d M Y, H:i" }}</dd></div>{% endif %}
+                        </dl>
+
+                        {% if item.status == "PENDING_REVIEW" %}
+                            <form method="post" action="{% url 'upcycling:artisan_update_request' item.pk %}" class="mt-5 space-y-3">
+                                {% csrf_token %}
+                                <label class="block font-semibold" for="review-{{ item.pk }}">Catatan review</label>
+                                <textarea id="review-{{ item.pk }}" name="notes" rows="2" class="w-full rounded-lg border p-3" placeholder="Catatan atau alasan bila ditolak"></textarea>
+                                <div class="flex flex-wrap gap-3">
+                                    <button name="action" value="review_accept" class="primary-action-button px-4 py-2 font-bold">Terima review</button>
+                                    <button name="action" value="review_reject" class="rounded-lg border border-red-700 px-4 py-2 font-bold text-red-800">Tolak</button>
+                                </div>
+                            </form>
+                        {% elif item.status == "AWAITING_FABRIC" %}
+                            <form method="post" action="{% url 'upcycling:artisan_update_request' item.pk %}" class="mt-5 space-y-3">
+                                {% csrf_token %}<input type="hidden" name="action" value="receive_fabric">
+                                <label class="block font-semibold" for="receipt-{{ item.pk }}">Catatan penerimaan kain (opsional)</label>
+                                <textarea id="receipt-{{ item.pk }}" name="notes" rows="2" class="w-full rounded-lg border p-3"></textarea>
+                                <button class="primary-action-button px-4 py-2 font-bold">Konfirmasi kain diterima</button>
+                            </form>
+                        {% elif item.status == "INSPECTION" %}
+                            <form method="post" action="{% url 'upcycling:artisan_update_request' item.pk %}" class="mt-5 space-y-3">
+                                {% csrf_token %}
+                                <label class="block font-semibold" for="inspection-{{ item.pk }}">Catatan inspeksi / alasan penolakan</label>
+                                <textarea id="inspection-{{ item.pk }}" name="notes" rows="2" class="w-full rounded-lg border p-3" placeholder="Jelaskan kondisi aktual kain"></textarea>
+                                <label class="block font-semibold" for="price-{{ item.pk }}">Harga final (Rp)</label>
+                                <input id="price-{{ item.pk }}" name="quoted_price" type="number" min="1" step="1000" class="w-full rounded-lg border p-3">
+                                <div class="flex flex-wrap gap-3">
+                                    <button name="action" value="inspection_pass" class="primary-action-button px-4 py-2 font-bold">Kain layak · kirim penawaran</button>
+                                    <button name="action" value="inspection_reject" class="rounded-lg border border-red-700 px-4 py-2 font-bold text-red-800">Kain tidak layak</button>
+                                </div>
+                            </form>
+                        {% elif item.status == "IN_PROGRESS" %}
+                            <form method="post" action="{% url 'upcycling:artisan_update_request' item.pk %}" class="mt-5">
+                                {% csrf_token %}<input type="hidden" name="action" value="mark_ready">
+                                <button class="primary-action-button px-4 py-2 font-bold">Tandai siap diserahkan</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+        {% empty %}
+            <p class="rounded-xl border bg-white p-6">Belum ada request aktif yang ditugaskan kepada Anda.</p>
+        {% endfor %}
+    </div>
+</main>
+{% endblock %}
