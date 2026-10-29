@@ -10,7 +10,7 @@ from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.urls import reverse
 
 from .admin import UpcyclingRequestAdminForm
-from .forms import UpcyclingRequestForm
+from .forms import FabricHandoffForm, UpcyclingRequestForm
 from .models import (
     ArtisanProfile,
     ProductType,
@@ -39,7 +39,6 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         "whatsapp": "081234567890",
         "fabric_condition": "GOOD",
         "fabric_dimensions": "1 celana",
-        "fabric_delivery_method": "DROP_OFF",
     }
 
     def form(self, data):
@@ -52,6 +51,22 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         """Test behavior: valid request form."""
         form = self.form(self.valid_data)
         self.assertTrue(form.is_valid(), form.errors)
+
+    def test_request_form_defers_fabric_handoff_details_until_review_approval(self):
+        """Test behavior: initial request asks for fabric details, not handoff logistics."""
+        form = self.form(self.valid_data)
+
+        self.assertNotIn("fabric_delivery_method", form.fields)
+        self.assertNotIn("fabric_delivery_location", form.fields)
+
+        handoff_form = FabricHandoffForm(instance=UpcyclingRequest())
+        self.assertIn("fabric_delivery_method", handoff_form.fields)
+        self.assertIn("fabric_delivery_location", handoff_form.fields)
+        self.assertTrue(handoff_form.fields["fabric_delivery_location"].required)
+        self.assertEqual(
+            handoff_form["fabric_delivery_method"].value(),
+            "",
+        )
 
     def test_normalizes_supported_indonesian_whatsapp_formats(self):
         """Test behavior: normalizes supported indonesian whatsapp formats."""
@@ -350,8 +365,6 @@ class UpcyclingRequestViewTests(TestCase):
         "fabric": "DENIM",
         "fabric_condition": "GOOD",
         "fabric_dimensions": "1 celana jeans",
-        "fabric_delivery_method": "DROP_OFF",
-        "fabric_delivery_location": "Depok",
         "category": "TAS",
         "product": "TOTE_BAG",
         "quantity": 1,
@@ -929,6 +942,48 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(next_step["deadline"], deadline)
         self.assertContains(response, "Menunggu kain diserahkan")
         self.assertContains(response, "05 Nov 2026")
+
+    def test_user_submits_fabric_handoff_details_after_review_approval(self):
+        """Test behavior: approved requests collect handoff logistics from the owner."""
+        upcycling_request = self.make_request(
+            self.user,
+            status=UpcyclingRequest.Status.AWAITING_FABRIC,
+            fabric_deadline=datetime(2026, 11, 5, 12, tzinfo=datetime_timezone.utc),
+        )
+        self.client.force_login(self.user)
+
+        detail_response = self.client.get(
+            reverse("upcycling:request_detail", args=[upcycling_request.pk])
+        )
+        self.assertIsNotNone(detail_response.context["fabric_handoff_form"])
+        self.assertContains(detail_response, "Cara menyerahkan kain")
+        self.assertContains(detail_response, "Alamat atau lokasi penyerahan kain")
+        self.assertEqual(
+            detail_response.context["fabric_handoff_form"][
+                "fabric_delivery_method"
+            ].value(),
+            "",
+        )
+
+        response = self.client.post(
+            reverse("upcycling:submit_fabric_handoff", args=[upcycling_request.pk]),
+            {
+                "fabric_delivery_method": UpcyclingRequest.FabricDeliveryMethod.SELF_SHIP,
+                "fabric_delivery_location": "Jl. Melati 10, Depok",
+            },
+            follow=True,
+        )
+
+        upcycling_request.refresh_from_db()
+        self.assertEqual(
+            upcycling_request.fabric_delivery_method,
+            UpcyclingRequest.FabricDeliveryMethod.SELF_SHIP,
+        )
+        self.assertEqual(
+            upcycling_request.fabric_delivery_location,
+            "Jl. Melati 10, Depok",
+        )
+        self.assertContains(response, "Rencana penyerahan kain berhasil disimpan.")
 
     def test_detail_timeline_shows_when_completed_steps_changed(self):
         """Test behavior: completed timeline steps show their status dates."""

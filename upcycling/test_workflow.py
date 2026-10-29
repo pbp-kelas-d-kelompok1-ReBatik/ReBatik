@@ -52,7 +52,6 @@ class UpcyclingWorkflowTests(TestCase):
         data = {
             "fabric": "DENIM",
             "fabric_condition": "GOOD",
-            "fabric_delivery_method": "DROP_OFF",
             "category": "TAS",
             "product": "TOTE_BAG",
             "quantity": "1",
@@ -70,7 +69,6 @@ class UpcyclingWorkflowTests(TestCase):
         data = {
             "fabric": "OTHER",
             "fabric_condition": "GOOD",
-            "fabric_delivery_method": "DROP_OFF",
             "category": "TAS",
             "product": "TOTE_BAG",
             "quantity": "1",
@@ -151,8 +149,6 @@ class UpcyclingWorkflowTests(TestCase):
                 "fabric": "DENIM",
                 "fabric_condition": "GOOD",
                 "fabric_dimensions": "1 celana jeans",
-                "fabric_delivery_method": "DROP_OFF",
-                "fabric_delivery_location": "Depok",
                 "category": "TAS",
                 "product": "TOTE_BAG",
                 "quantity": "1",
@@ -230,6 +226,22 @@ class UpcyclingWorkflowTests(TestCase):
         request_obj.refresh_from_db()
         self.assertEqual(request_obj.status, UpcyclingRequest.Status.AWAITING_APPROVAL)
         self.assertEqual(str(request_obj.quoted_price), "75000.00")
+
+    def test_artisan_dashboard_shows_user_fabric_handoff_plan(self):
+        request_obj = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.AWAITING_FABRIC,
+            fabric_delivery_method=UpcyclingRequest.FabricDeliveryMethod.SELF_SHIP,
+            fabric_delivery_location="Jl. Melati 10, Depok",
+        )
+        self.client.force_login(self.artisan_user)
+
+        response = self.client.get(reverse("upcycling:artisan_dashboard"))
+
+        self.assertContains(response, "Rencana penyerahan kain")
+        self.assertContains(response, "Kirim kain sendiri")
+        self.assertContains(response, "Jl. Melati 10, Depok")
 
     def test_rejection_stages_match_workflow_and_set_return_obligation(self):
         self.client.force_login(self.artisan_user)
