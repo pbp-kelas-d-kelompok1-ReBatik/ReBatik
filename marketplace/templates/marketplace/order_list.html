@@ -6,47 +6,37 @@
 {% endblock css %}
 
 {% block content %}
-<section class="relative isolate overflow-hidden px-4 pb-12 pt-10 sm:px-6 sm:pt-12">
-    <img
-        src="{% static 'img/upcycling/cloud-left.webp' %}"
-        alt=""
-        aria-hidden="true"
-        class="pointer-events-none absolute left-0 top-20 -z-10 w-24 -translate-x-1/3 sm:w-36"
-    >
-    <img
-        src="{% static 'img/upcycling/cloud-right.webp' %}"
-        alt=""
-        aria-hidden="true"
-        class="pointer-events-none absolute right-0 top-16 -z-10 w-24 translate-x-1/4 sm:w-36"
-    >
+<section class="mp-page-shell home-hero relative isolate overflow-hidden">
+    <div class="batik-decoration decoration-top" aria-hidden="true">❁</div>
+    <div class="batik-decoration decoration-bottom" aria-hidden="true">❁</div>
 
-    <header class="relative mx-auto mb-10 max-w-4xl text-center text-[var(--cream-light)]">
-        <p class="text-xs uppercase tracking-[0.3em]">Marketplace · Riwayat Pembelian</p>
+    <header class="mp-hero-header relative mx-auto mb-8 max-w-4xl text-center text-[var(--brown)] sm:mb-10">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--brown-muted)]">Marketplace · Riwayat Pembelian</p>
         <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">Pesanan Saya</h1>
-        <p class="mt-3 text-base sm:text-lg">Pantau perkembangan semua pembelian karya upcycling Anda.</p>
+        <p class="mt-3 text-base text-[var(--brown-dark)] sm:text-lg">Pantau perkembangan semua pembelian karya upcycling Anda.</p>
     </header>
 
     <div
         id="marketplace-page-content"
         hx-push-url="true"
         hx-indicator="#order-list-loading"
-        class="mx-auto max-w-6xl rounded-2xl border border-[var(--mp-card-border)]
+        class="mp-panel-box mx-auto max-w-6xl rounded-2xl border border-[var(--mp-card-border)]
                bg-[var(--mp-panel)] p-5 text-[var(--brown)] shadow-2xl
                sm:rounded-3xl sm:p-8 lg:p-10"
     >
         {% include "marketplace/_messages.html" %}
 
         {% if has_any_orders %}
-            <div class="mb-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div class="mp-toolbar-head mb-6 flex flex-col gap-4 sm:mb-7 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h2 class="text-2xl font-bold sm:text-3xl">Daftar Pesanan</h2>
-                    <p class="mt-1 text-[var(--brown-dark)]">
+                    <p class="mt-1 text-sm text-[var(--brown-dark)] sm:text-base">
                         Semua pesanan produk upcycling yang pernah Anda buat di Marketplace.
                     </p>
                 </div>
                 <a
                     href="{% url 'marketplace:home' %}"
-                    class="primary-action-button min-h-12 px-6 py-3 font-semibold"
+                    class="primary-action-button mp-top-btn min-h-11 w-fit px-5 py-2.5 text-sm font-semibold sm:px-6"
                 >
                     ← Jelajahi Katalog
                 </a>
@@ -54,8 +44,7 @@
 
             <nav
                 aria-label="Filter status pesanan"
-                class="inline-flex w-fit max-w-full flex-wrap items-center gap-1 rounded-full
-                       border border-[var(--border)] bg-[var(--card)] p-1.5 shadow-sm"
+                class="mp-chip-scroll rounded-full border border-[var(--border)] bg-[var(--card)] p-1.5 shadow-sm"
             >
                 <a
                     href="{% querystring status='' page=None %}"
@@ -64,7 +53,7 @@
                     hx-select="#marketplace-page-content"
                     hx-swap="outerHTML"
                     aria-current="{% if not selected_status %}page{% else %}false{% endif %}"
-                    class="rounded-full px-5 py-2 text-sm transition sm:px-6 sm:text-base
+                    class="mp-chip rounded-full px-4 py-2 text-sm transition sm:px-6 sm:text-base
                            {% if not selected_status %}
                                bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]
                            {% else %}
@@ -78,7 +67,7 @@
                     hx-select="#marketplace-page-content"
                     hx-swap="outerHTML"
                     aria-current="{% if selected_status == 'ONGOING' %}page{% else %}false{% endif %}"
-                    class="rounded-full px-5 py-2 text-sm transition sm:px-6 sm:text-base
+                    class="mp-chip rounded-full px-4 py-2 text-sm transition sm:px-6 sm:text-base
                            {% if selected_status == 'ONGOING' %}
                                bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]
                            {% else %}
@@ -92,7 +81,7 @@
                     hx-select="#marketplace-page-content"
                     hx-swap="outerHTML"
                     aria-current="{% if selected_status == 'COMPLETED' %}page{% else %}false{% endif %}"
-                    class="rounded-full px-5 py-2 text-sm transition sm:px-6 sm:text-base
+                    class="mp-chip rounded-full px-4 py-2 text-sm transition sm:px-6 sm:text-base
                            {% if selected_status == 'COMPLETED' %}
                                bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]
                            {% else %}
@@ -106,7 +95,7 @@
                     hx-select="#marketplace-page-content"
                     hx-swap="outerHTML"
                     aria-current="{% if selected_status == 'CANCELLED' %}page{% else %}false{% endif %}"
-                    class="rounded-full px-5 py-2 text-sm transition sm:px-6 sm:text-base
+                    class="mp-chip rounded-full px-4 py-2 text-sm transition sm:px-6 sm:text-base
                            {% if selected_status == 'CANCELLED' %}
                                bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]
                            {% else %}
@@ -117,74 +106,66 @@
 
             <div id="order-results" class="mt-6">
                 {% if orders %}
-                    <div class="space-y-4">
+                    <div class="mp-order-list">
                         {% for item in orders %}
-                            <article
-                                class="grid grid-cols-[5.5rem_minmax(0,1fr)] items-start gap-x-4 gap-y-3
-                                       rounded-2xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-3
-                                       text-[var(--brown)] shadow-md transition hover:shadow-lg
-                                       sm:grid-cols-[7rem_minmax(0,1fr)] sm:gap-x-5 sm:p-4
-                                       lg:grid-cols-[9rem_minmax(0,1fr)_auto_auto] lg:items-center lg:gap-4"
-                            >
-                                <div class="aspect-[1.35] w-full overflow-hidden rounded-xl mp-img-placeholder">
-                                    {% if item.product.image_url %}
-                                        <img
-                                            src="{{ item.product.image_url }}"
-                                            alt="{{ item.product_name }}"
-                                            loading="lazy"
-                                            decoding="async"
-                                            class="h-full w-full object-cover"
-                                        >
-                                    {% else %}
-                                        <div class="grid h-full w-full place-items-center text-3xl">🧶</div>
-                                    {% endif %}
+                            <article class="mp-order-card">
+                                <div class="mp-order-card-head">
+                                    <div class="mp-order-meta">
+                                        <span class="mp-order-ref">#{{ item.reference_code }}</span>
+                                        <span aria-hidden="true">·</span>
+                                        <span>{{ item.created_at|date:"d M Y" }}</span>
+                                        <span aria-hidden="true">·</span>
+                                        <span>{{ item.get_delivery_method_display }}</span>
+                                    </div>
+                                    <span
+                                        class="mp-order-badge
+                                               {% if item.status == 'PENDING' %}bg-[var(--mp-status-pending)] text-[var(--mp-status-pending-text)]
+                                               {% elif item.status == 'PROCESSING' %}bg-[var(--mp-status-processing)] text-[var(--mp-status-processing-text)]
+                                               {% elif item.status == 'READY' %}bg-[var(--mp-status-ready)] text-[var(--mp-status-ready-text)]
+                                               {% elif item.status == 'COMPLETED' %}bg-[var(--mp-status-completed)] text-[var(--mp-status-completed-text)]
+                                               {% else %}bg-[var(--mp-status-cancelled)] text-[var(--mp-status-cancelled-text)]{% endif %}"
+                                    >
+                                        {{ item.get_status_display }}
+                                    </span>
                                 </div>
 
-                                <div class="min-w-0">
-                                    <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
-                                        <h3 class="break-words text-xl font-bold leading-tight sm:text-2xl">
+                                <div class="mp-order-card-body">
+                                    <div class="mp-order-thumb mp-img-placeholder">
+                                        {% if item.product.image_url %}
+                                            <img
+                                                src="{{ item.product.image_url }}"
+                                                alt="{{ item.product_name }}"
+                                                loading="lazy"
+                                                decoding="async"
+                                                class="h-full w-full object-cover"
+                                            >
+                                        {% else %}
+                                            <div class="grid h-full w-full place-items-center text-2xl">🧶</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="mp-order-info">
+                                        <h3 class="mp-order-title">
                                             {{ item.product_name }}
                                         </h3>
-                                        <span
-                                            class="mp-status-badge min-h-10 w-fit shrink-0 rounded-full px-4 py-1.5 text-sm font-bold lg:hidden
-                                                   {% if item.status == 'PENDING' %}bg-[var(--mp-status-pending)] text-[var(--mp-status-pending-text)]
-                                                   {% elif item.status == 'PROCESSING' %}bg-[var(--mp-status-processing)] text-[var(--mp-status-processing-text)]
-                                                   {% elif item.status == 'READY' %}bg-[var(--mp-status-ready)] text-[var(--mp-status-ready-text)]
-                                                   {% elif item.status == 'COMPLETED' %}bg-[var(--mp-status-completed)] text-[var(--mp-status-completed-text)]
-                                                   {% else %}bg-[var(--mp-status-cancelled)] text-[var(--mp-status-cancelled-text)]{% endif %}"
-                                        >
-                                            {{ item.get_status_display }}
-                                        </span>
+                                        <p class="mp-order-qty">
+                                            {{ item.quantity }} × {{ item.unit_price|rupiah }}
+                                        </p>
                                     </div>
-                                    <p class="mt-1 text-base text-[var(--brown-muted)]">
-                                        {{ item.quantity }} × {{ item.unit_price|rupiah }}
-                                        <span aria-hidden="true">·</span>
-                                        <strong class="text-[var(--brown)]">{{ item.total_price|rupiah }}</strong>
-                                    </p>
-                                    <p class="mt-1 text-sm text-[var(--brown-muted)]">
-                                        #{{ item.reference_code }}
-                                        <span aria-hidden="true"> · </span>{{ item.created_at|date:"d M Y" }}
-                                        <span aria-hidden="true"> · </span>{{ item.get_delivery_method_display }}
-                                    </p>
+
+                                    <div class="mp-order-foot">
+                                        <div class="mp-order-total-wrap">
+                                            <span class="mp-order-total-label">Total Pesanan</span>
+                                            <strong class="mp-order-total-price">{{ item.total_price|rupiah }}</strong>
+                                        </div>
+                                        <a
+                                            href="{% url 'marketplace:order_detail' item.pk %}"
+                                            class="primary-action-button mp-order-cta font-bold"
+                                        >
+                                            Detail →
+                                        </a>
+                                    </div>
                                 </div>
-
-                                <span
-                                    class="mp-status-badge hidden min-h-11 w-fit self-center rounded-full px-4 py-2 text-base font-bold lg:inline-flex
-                                           {% if item.status == 'PENDING' %}bg-[var(--mp-status-pending)] text-[var(--mp-status-pending-text)]
-                                           {% elif item.status == 'PROCESSING' %}bg-[var(--mp-status-processing)] text-[var(--mp-status-processing-text)]
-                                           {% elif item.status == 'READY' %}bg-[var(--mp-status-ready)] text-[var(--mp-status-ready-text)]
-                                           {% elif item.status == 'COMPLETED' %}bg-[var(--mp-status-completed)] text-[var(--mp-status-completed-text)]
-                                           {% else %}bg-[var(--mp-status-cancelled)] text-[var(--mp-status-cancelled-text)]{% endif %}"
-                                >
-                                    {{ item.get_status_display }}
-                                </span>
-
-                                <a
-                                    href="{% url 'marketplace:order_detail' item.pk %}"
-                                    class="primary-action-button col-span-2 min-h-11 w-full justify-center px-5 py-2.5 text-base font-bold lg:col-span-1 lg:w-auto lg:self-center"
-                                >
-                                    Detail →
-                                </a>
                             </article>
                         {% endfor %}
                     </div>

@@ -6,60 +6,55 @@
 {% endblock css %}
 
 {% block content %}
-<section class="relative isolate overflow-hidden px-4 pb-12 pt-10 sm:px-6 sm:pt-12">
-    <img
-        src="{% static 'img/upcycling/cloud-left.webp' %}"
-        alt=""
-        aria-hidden="true"
-        class="pointer-events-none absolute left-0 top-20 -z-10 w-24 -translate-x-1/3 sm:w-36"
-    >
-    <img
-        src="{% static 'img/upcycling/cloud-right.webp' %}"
-        alt=""
-        aria-hidden="true"
-        class="pointer-events-none absolute right-0 top-16 -z-10 w-24 translate-x-1/4 sm:w-36"
-    >
+<section class="mp-page-shell home-hero relative isolate overflow-hidden">
+    <div class="batik-decoration decoration-top" aria-hidden="true">❁</div>
+    <div class="batik-decoration decoration-bottom" aria-hidden="true">❁</div>
 
-    <header class="relative mx-auto mb-10 max-w-4xl text-center text-[var(--cream-light)]">
-        <p class="text-xs uppercase tracking-[0.3em]">Karya Pengrajin · Upcycled · Nusantara</p>
+    <header class="mp-hero-header relative mx-auto mb-8 max-w-4xl text-center text-[var(--brown)] sm:mb-10">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--brown-muted)]">Karya Pengrajin · Upcycled · Nusantara</p>
         <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">Marketplace</h1>
-        <p class="mt-3 text-base sm:text-lg">
+        <p class="mt-3 text-base text-[var(--brown-dark)] sm:text-lg">
             Semua produk dibuat ulang dari kain batik sisa dan pakaian bekas yang dikumpulkan lewat Drop-off Point kami.
         </p>
+        <div class="hero-bottom-decoration" aria-hidden="true">
+            <span>✦</span>
+            <span>❖</span>
+            <span>✦</span>
+        </div>
     </header>
 
     <div
         id="marketplace-page-content"
         hx-push-url="true"
         hx-indicator="#mp-list-loading"
-        class="mx-auto max-w-6xl rounded-2xl border border-[var(--mp-card-border)]
+        class="mp-panel-box mx-auto max-w-6xl rounded-2xl border border-[var(--mp-card-border)]
                bg-[var(--mp-panel)] p-5 text-[var(--brown)] shadow-2xl
                sm:rounded-3xl sm:p-8 lg:p-10"
     >
         {% include "marketplace/_messages.html" %}
 
-        <div class="mb-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="mp-toolbar-head mb-6 flex flex-col gap-4 sm:mb-7 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h2 class="text-2xl font-bold sm:text-3xl">Katalog Karya Upcycling</h2>
-                <p class="mt-1 text-[var(--brown-dark)]">
+                <p class="mt-1 text-sm text-[var(--brown-dark)] sm:text-base">
                     Setiap pembelian mendukung pengrajin lokal dan mengurangi limbah tekstil.
                 </p>
             </div>
-            <div class="flex flex-wrap items-center gap-3">
+            <div class="mp-action-group flex flex-wrap items-center gap-3">
                 <a
                     href="{% url 'marketplace:dropoff' %}"
-                    class="inline-flex min-h-11 items-center justify-center rounded-full border-2
-                           border-[var(--brown)] bg-[var(--mp-surface)] px-5 py-2.5 text-sm font-bold
-                           text-[var(--brown)] transition hover:bg-[var(--mp-soft)]"
+                    class="mp-top-btn inline-flex min-h-11 items-center justify-center rounded-full border-2
+                           border-[var(--brown)] bg-[var(--mp-surface)] px-4 py-2 text-sm font-bold
+                           text-[var(--brown)] transition hover:bg-[var(--mp-soft)] sm:px-5"
                 >
                     📍 Drop-off Point
                 </a>
                 {% if user.is_authenticated %}
                     <a
                         href="{% url 'marketplace:order_list' %}"
-                        class="inline-flex min-h-11 items-center justify-center rounded-full border-2
-                               border-[var(--brown)] bg-[var(--mp-surface)] px-5 py-2.5 text-sm font-bold
-                               text-[var(--brown)] transition hover:bg-[var(--mp-soft)]"
+                        class="mp-top-btn inline-flex min-h-11 items-center justify-center rounded-full border-2
+                               border-[var(--brown)] bg-[var(--mp-surface)] px-4 py-2 text-sm font-bold
+                               text-[var(--brown)] transition hover:bg-[var(--mp-soft)] sm:px-5"
                     >
                         Pesanan Saya
                     </a>
@@ -67,7 +62,7 @@
                 {% if user.is_staff %}
                     <a
                         href="{% url 'marketplace:manage_product_list' %}"
-                        class="primary-action-button min-h-11 px-5 py-2.5 text-sm font-semibold"
+                        class="primary-action-button mp-top-btn min-h-11 px-4 py-2 text-sm font-semibold sm:px-5"
                     >
                         Kelola Produk
                     </a>
@@ -75,11 +70,10 @@
             </div>
         </div>
 
-        <div class="grid gap-4 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-center">
+        <div class="mp-filter-bar grid gap-4 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-center">
             <nav
                 aria-label="Filter kategori produk"
-                class="inline-flex w-fit max-w-full flex-wrap items-center gap-1 rounded-full
-                       border border-[var(--border)] bg-[var(--card)] p-1.5 shadow-sm"
+                class="mp-chip-scroll rounded-full border border-[var(--border)] bg-[var(--card)] p-1.5 shadow-sm"
             >
                 <a
                     href="{% querystring category='' page=None %}"
@@ -88,7 +82,7 @@
                     hx-select="#marketplace-page-content"
                     hx-swap="outerHTML"
                     aria-current="{% if not selected_category %}page{% else %}false{% endif %}"
-                    class="rounded-full px-4 py-2 text-sm transition sm:px-5 sm:text-base
+                    class="mp-chip rounded-full px-4 py-2 text-sm transition sm:px-5 sm:text-base
                            {% if not selected_category %}
                                bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]
                            {% else %}
@@ -103,7 +97,7 @@
                         hx-select="#marketplace-page-content"
                         hx-swap="outerHTML"
                         aria-current="{% if selected_category == value %}page{% else %}false{% endif %}"
-                        class="rounded-full px-4 py-2 text-sm transition sm:px-5 sm:text-base
+                        class="mp-chip rounded-full px-4 py-2 text-sm transition sm:px-5 sm:text-base
                                {% if selected_category == value %}
                                    bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]
                                {% else %}
@@ -121,7 +115,7 @@
                 hx-target="#mp-results"
                 hx-select="#mp-results"
                 hx-swap="outerHTML"
-                class="flex flex-col gap-3 sm:flex-row lg:justify-end"
+                class="mp-search-sort-form flex flex-col gap-3 sm:flex-row lg:justify-end"
             >
                 {% if selected_category %}
                     <input type="hidden" name="category" value="{{ selected_category }}">
@@ -142,17 +136,17 @@
                         hx-swap="outerHTML"
                         hx-include="closest form"
                         class="block min-h-11 w-full rounded-full border border-[var(--border)]
-                               bg-white px-4 py-2.5 text-[var(--brown)]
+                               bg-white px-4 py-2.5 text-sm text-[var(--brown)]
                                focus:border-[var(--gold)] focus:outline-none focus:ring-2 focus:ring-[var(--gold)]"
                     >
                 </div>
-                <div class="flex items-center gap-2">
-                    <label for="mp-sort" class="text-sm font-semibold text-[var(--brown-dark)]">Urutkan:</label>
+                <div class="mp-sort-row flex items-center gap-2">
+                    <label for="mp-sort" class="shrink-0 text-sm font-semibold text-[var(--brown-dark)]">Urutkan:</label>
                     <select
                         id="mp-sort"
                         name="sort"
-                        class="min-h-11 rounded-full border border-[var(--border)] bg-white px-4 py-2.5
-                               text-[var(--brown)] focus:border-[var(--gold)]
+                        class="min-h-11 flex-1 rounded-full border border-[var(--border)] bg-white px-4 py-2.5
+                               text-sm text-[var(--brown)] focus:border-[var(--gold)]
                                focus:outline-none focus:ring-2 focus:ring-[var(--gold)]"
                     >
                         {% for value, label in sort_options %}
@@ -161,13 +155,6 @@
                             </option>
                         {% endfor %}
                     </select>
-                    <button
-                        type="submit"
-                        class="min-h-11 rounded-full bg-[var(--brown)] px-4 py-2 text-sm font-semibold
-                               text-[var(--cream-light)] hover:bg-[var(--button-hover)] sm:hidden"
-                    >
-                        Cari
-                    </button>
                 </div>
             </form>
         </div>
@@ -194,13 +181,9 @@
             </div>
 
             {% if products %}
-                <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                <div class="mp-catalog-grid">
                     {% for product in products %}
-                        <article
-                            class="group flex flex-col overflow-hidden rounded-2xl border
-                                   border-[var(--mp-card-border)] bg-[var(--mp-surface)]
-                                   text-[var(--brown)] shadow-md transition hover:-translate-y-0.5 hover:shadow-lg"
-                        >
+                        <article class="mp-card group">
                             <a
                                 href="{% url 'marketplace:product_detail' product.pk %}"
                                 class="relative block aspect-square w-full overflow-hidden mp-img-placeholder"
@@ -214,25 +197,24 @@
                                         class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                                     >
                                 {% else %}
-                                    <div class="grid h-full w-full place-items-center p-6 text-center text-[var(--brown-muted)]">
+                                    <div class="grid h-full w-full place-items-center p-4 text-center text-[var(--brown-muted)]">
                                         <div>
-                                            <span class="block text-4xl" aria-hidden="true">🧶</span>
-                                            <span class="mt-2 block text-sm font-semibold">{{ product.motif }}</span>
+                                            <span class="block text-3xl sm:text-4xl" aria-hidden="true">🧶</span>
+                                            <span class="mt-1.5 block text-xs font-semibold sm:text-sm">{{ product.motif }}</span>
                                         </div>
                                     </div>
                                 {% endif %}
 
                                 <span
-                                    class="absolute left-3 top-3 rounded-full border border-[var(--mp-card-border)]
-                                           bg-[var(--cream-light)]/95 px-3 py-1 text-xs font-bold text-[var(--brown)]"
+                                    class="mp-card-badge-left border border-[var(--mp-card-border)]
+                                           bg-[var(--cream-light)]/95 text-[var(--brown)]"
                                 >
                                     ♻ Upcycled
                                 </span>
 
                                 {% if product.badge_status %}
                                     <span
-                                        class="absolute right-3 top-3 rounded-full bg-[var(--brown)] px-3 py-1
-                                               text-xs font-bold text-[var(--cream-light)]"
+                                        class="mp-card-badge-right bg-[var(--brown)] text-[var(--cream-light)]"
                                     >
                                         {{ product.badge_status }}
                                     </span>
@@ -241,8 +223,8 @@
                                 {% if product.stock == 0 %}
                                     <div class="absolute inset-0 grid place-items-center bg-[var(--brown)]/60">
                                         <span
-                                            class="rounded-full bg-[var(--mp-status-cancelled)] px-4 py-1.5
-                                                   text-sm font-bold text-[var(--mp-status-cancelled-text)]"
+                                            class="rounded-full bg-[var(--mp-status-cancelled)] px-3 py-1
+                                                   text-xs font-bold text-[var(--mp-status-cancelled-text)] sm:px-4 sm:py-1.5 sm:text-sm"
                                         >
                                             Stok Habis
                                         </span>
@@ -250,13 +232,13 @@
                                 {% endif %}
                             </a>
 
-                            <div class="flex flex-1 flex-col p-4 sm:p-5">
-                                <div class="flex items-center justify-between gap-2 text-xs uppercase tracking-[0.18em] text-[var(--brown-muted)]">
+                            <div class="mp-card-body">
+                                <div class="mp-card-eyebrow">
                                     <span>{{ product.motif }}</span>
                                     <span>{{ product.get_category_display }}</span>
                                 </div>
 
-                                <h3 class="mt-1.5 text-xl font-bold leading-snug sm:text-2xl">
+                                <h3 class="mp-card-title">
                                     <a
                                         href="{% url 'marketplace:product_detail' product.pk %}"
                                         class="hover:underline"
@@ -265,25 +247,25 @@
                                     </a>
                                 </h3>
 
-                                <p class="mt-2 text-sm text-[var(--brown-muted)]">
+                                <p class="mp-card-meta">
                                     🧵 {{ product.material_source }}
                                 </p>
-                                <p class="mt-1 text-sm text-[var(--brown-muted)]">
+                                <p class="mp-card-meta">
                                     👐 {{ product.artisan_origin }}
                                 </p>
 
-                                <div class="mt-4 flex items-center justify-between gap-3 border-t border-[var(--mp-card-border)] pt-3">
-                                    <div>
-                                        <span class="block text-lg font-bold text-[var(--brown-dark)] sm:text-xl">
+                                <div class="mp-card-footer">
+                                    <div class="mp-card-price-row">
+                                        <span class="mp-card-price">
                                             {{ product.price|rupiah }}
                                         </span>
-                                        <span class="text-xs text-[var(--brown-muted)]">
-                                            {% if product.stock > 0 %}Stok: {{ product.stock }}{% else %}Stok habis{% endif %}
+                                        <span class="mp-card-stock">
+                                            {% if product.stock > 0 %}Stok: {{ product.stock }}{% else %}Habis{% endif %}
                                         </span>
                                     </div>
                                     <a
                                         href="{% url 'marketplace:product_detail' product.pk %}"
-                                        class="primary-action-button min-h-10 px-4 py-2 text-sm font-semibold"
+                                        class="primary-action-button mp-card-cta font-semibold"
                                     >
                                         {% if product.stock > 0 %}Beli →{% else %}Detail →{% endif %}
                                     </a>

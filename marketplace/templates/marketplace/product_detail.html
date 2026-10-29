@@ -6,27 +6,28 @@
 {% endblock css %}
 
 {% block content %}
-<section id="marketplace-page-content" class="relative overflow-hidden px-4 pb-12 pt-8 sm:px-6 sm:pt-10">
+<section id="marketplace-page-content" class="mp-page-shell mp-detail-shell relative overflow-hidden">
     <div
-        class="mx-auto max-w-6xl rounded-3xl border-2 border-[var(--mp-accent)]/60
-               bg-[var(--mp-panel)] p-5 text-[var(--brown)] shadow-2xl sm:p-8 lg:p-10"
+        class="mp-panel-box mx-auto max-w-6xl rounded-2xl border-2 border-[var(--mp-accent)]/60
+               bg-[var(--mp-panel)] p-5 text-[var(--brown)] shadow-2xl
+               sm:rounded-3xl sm:p-8 lg:p-10"
     >
         {% include "marketplace/_messages.html" %}
 
-        <nav aria-label="Breadcrumb" class="mb-6 flex flex-wrap items-center gap-2 text-sm text-[var(--brown-muted)]">
+        <nav aria-label="Breadcrumb" class="mb-4 flex flex-wrap items-center gap-2 text-xs text-[var(--brown-muted)] sm:text-sm">
             <a
                 href="{% url 'marketplace:home' %}"
                 class="font-semibold text-[var(--brown)] underline decoration-[var(--mp-accent)] underline-offset-4 hover:text-[var(--button-hover)]"
             >
-                ← Katalog Marketplace
+                ← Katalog
             </a>
             <span aria-hidden="true">/</span>
             <span>{{ product.get_category_display }}</span>
             <span aria-hidden="true">/</span>
-            <span class="font-semibold text-[var(--brown)]">{{ product.name }}</span>
+            <span class="truncate font-semibold text-[var(--brown)]">{{ product.name }}</span>
         </nav>
 
-        <div class="grid gap-8 lg:grid-cols-2">
+        <div class="grid gap-6 lg:grid-cols-2 lg:gap-7">
             <div
                 class="relative aspect-square w-full overflow-hidden rounded-2xl border
                        border-[var(--mp-card-border)] shadow-md mp-img-placeholder"
@@ -103,92 +104,45 @@
                         </p>
                     {% endif %}
 
-                    <dl class="mt-6 grid gap-3 sm:grid-cols-2">
-                        <div class="rounded-xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-4">
+                    <dl class="mp-spec-grid mt-6">
+                        <div class="rounded-xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-3 sm:p-4">
                             <dt class="text-xs font-bold uppercase tracking-wider text-[var(--brown-muted)]">Sumber Kain</dt>
-                            <dd class="mt-1 font-bold text-[var(--brown)]">{{ product.material_source }}</dd>
+                            <dd class="mt-1 text-sm font-bold text-[var(--brown)] sm:text-base">{{ product.material_source }}</dd>
                         </div>
-                        <div class="rounded-xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-4">
+                        <div class="rounded-xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-3 sm:p-4">
                             <dt class="text-xs font-bold uppercase tracking-wider text-[var(--brown-muted)]">Pengrajin</dt>
-                            <dd class="mt-1 font-bold text-[var(--brown)]">{{ product.artisan_origin }}</dd>
+                            <dd class="mt-1 text-sm font-bold text-[var(--brown)] sm:text-base">{{ product.artisan_origin }}</dd>
                         </div>
-                        <div class="rounded-xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-4">
+                        <div class="rounded-xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-3 sm:p-4">
                             <dt class="text-xs font-bold uppercase tracking-wider text-[var(--brown-muted)]">Kategori</dt>
-                            <dd class="mt-1 font-bold text-[var(--brown)]">{{ product.get_category_display }}</dd>
+                            <dd class="mt-1 text-sm font-bold text-[var(--brown)] sm:text-base">{{ product.get_category_display }}</dd>
                         </div>
-                        <div class="rounded-xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-4">
+                        <div class="rounded-xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-3 sm:p-4">
                             <dt class="text-xs font-bold uppercase tracking-wider text-[var(--brown-muted)]">Penerimaan</dt>
-                            <dd class="mt-1 font-bold text-[var(--brown)]">Drop-off Point / Kurir</dd>
+                            <dd class="mt-1 text-sm font-bold text-[var(--brown)] sm:text-base">Drop-off / Kurir</dd>
                         </div>
                     </dl>
                 </div>
 
-                <div class="mt-7 border-t border-[var(--border)] pt-6">
-                    {% if product.stock > 0 %}
-                        <form
-                            method="get"
-                            action="{% url 'marketplace:checkout' product.pk %}"
-                            class="flex flex-col gap-3 sm:flex-row sm:items-center"
-                        >
-                            <div class="inline-flex items-center rounded-full border border-[var(--border)] bg-white p-1">
-                                <button
-                                    type="button"
-                                    onclick="const i=this.nextElementSibling;i.value=Math.max(1,parseInt(i.value||1)-1)"
-                                    class="grid size-10 place-items-center rounded-full text-lg font-bold text-[var(--brown)] hover:bg-[var(--mp-soft)]"
-                                    aria-label="Kurangi jumlah"
-                                >−</button>
-                                <input
-                                    type="number"
-                                    name="qty"
-                                    value="1"
-                                    min="1"
-                                    max="{{ max_order_qty }}"
-                                    aria-label="Jumlah pembelian"
-                                    class="w-14 border-0 bg-transparent text-center text-lg font-bold text-[var(--brown)] focus:outline-none"
-                                >
-                                <button
-                                    type="button"
-                                    onclick="const i=this.previousElementSibling;i.value=Math.min({{ max_order_qty }},parseInt(i.value||1)+1)"
-                                    class="grid size-10 place-items-center rounded-full text-lg font-bold text-[var(--brown)] hover:bg-[var(--mp-soft)]"
-                                    aria-label="Tambah jumlah"
-                                >+</button>
-                            </div>
-
-                            <button
-                                type="submit"
-                                class="primary-action-button min-h-12 flex-1 px-8 py-3 text-base font-bold sm:text-lg"
-                            >
-                                Beli Sekarang →
-                            </button>
-                        </form>
-                        {% if not user.is_authenticated %}
-                            <p class="mt-3 text-sm text-[var(--brown-muted)]">
+                {% if not user.is_authenticated or user.is_staff %}
+                    <div class="mt-5 border-t border-[var(--border)] pt-4">
+                        {% if not user.is_authenticated and product.stock > 0 %}
+                            <p class="text-sm text-[var(--brown-muted)]">
                                 Anda akan diminta masuk ke akun ReBatik sebelum menyelesaikan pesanan.
                             </p>
                         {% endif %}
-                    {% else %}
-                        <button
-                            type="button"
-                            disabled
-                            class="inline-flex min-h-12 w-full cursor-not-allowed items-center justify-center
-                                   rounded-full border border-[var(--border)] bg-[var(--mp-soft)] px-8 py-3
-                                   font-bold text-[var(--brown-muted)] opacity-70"
-                        >
-                            Stok Sedang Habis
-                        </button>
-                    {% endif %}
-
-                    {% if user.is_staff %}
-                        <div class="mt-4 flex flex-wrap items-center gap-3">
-                            <a
-                                href="{% url 'marketplace:manage_product_update' product.pk %}"
-                                class="text-sm font-semibold text-[var(--brown)] underline underline-offset-4"
-                            >
-                                Edit produk ini (Staff)
-                            </a>
-                        </div>
-                    {% endif %}
-                </div>
+                        {% if user.is_staff %}
+                            <div class="mt-2 flex flex-wrap items-center gap-3">
+                                <a
+                                    href="{% url 'marketplace:manage_product_update' product.pk %}"
+                                    class="text-sm font-semibold text-[var(--brown)] underline underline-offset-4"
+                                >
+                                    Edit produk ini (Staff)
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
             </div>
         </div>
 
@@ -219,6 +173,62 @@
                 </div>
             </section>
         {% endif %}
+    </div>
+
+    <div class="mp-fixed-buy-bar" role="region" aria-label="Panel pembelian produk">
+        <div class="mp-fixed-buy-inner">
+            <div class="mp-fixed-buy-summary">
+                <p class="mp-fixed-buy-name">{{ product.name }}</p>
+                <p class="mp-fixed-buy-price">{{ product.price|rupiah }}</p>
+            </div>
+
+            {% if product.stock > 0 %}
+                <form
+                    method="get"
+                    action="{% url 'marketplace:checkout' product.pk %}"
+                    class="mp-fixed-buy-form"
+                >
+                    <div class="mp-qty-stepper">
+                        <button
+                            type="button"
+                            onclick="const i=this.nextElementSibling;i.value=Math.max(1,parseInt(i.value||1)-1)"
+                            class="mp-qty-btn"
+                            aria-label="Kurangi jumlah"
+                        >−</button>
+                        <input
+                            type="number"
+                            name="qty"
+                            value="1"
+                            min="1"
+                            max="{{ max_order_qty }}"
+                            aria-label="Jumlah pembelian"
+                            class="mp-qty-input"
+                        >
+                        <button
+                            type="button"
+                            onclick="const i=this.previousElementSibling;i.value=Math.min({{ max_order_qty }},parseInt(i.value||1)+1)"
+                            class="mp-qty-btn"
+                            aria-label="Tambah jumlah"
+                        >+</button>
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="primary-action-button mp-buy-now-btn"
+                    >
+                        Beli Sekarang →
+                    </button>
+                </form>
+            {% else %}
+                <button
+                    type="button"
+                    disabled
+                    class="mp-buy-disabled-btn"
+                >
+                    Stok Sedang Habis
+                </button>
+            {% endif %}
+        </div>
     </div>
 </section>
 {% endblock content %}
