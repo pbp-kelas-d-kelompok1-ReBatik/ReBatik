@@ -285,6 +285,29 @@ class UpcyclingRequestAdminTests(TestCase):
 
         self.assertTrue(form.is_valid(), form.errors)
 
+    def test_admin_form_prevents_artisan_from_handling_own_request(self):
+        upcycling_request = UpcyclingRequest.objects.create(
+            user=self.artisan_user,
+            fabric="DENIM",
+            category="TAS",
+            product="TOTE_BAG",
+            quantity=1,
+            delivery_method="DROP_OFF",
+            address="Depok",
+            whatsapp="081234567890",
+        )
+        form_data = model_to_dict(upcycling_request)
+        form_data["status"] = UpcyclingRequest.Status.PENDING_REVIEW
+        form_data["artisan"] = self.artisan.pk
+
+        form = UpcyclingRequestAdminForm(
+            data=form_data,
+            instance=upcycling_request,
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("artisan", form.errors)
+
     def test_admin_form_rejects_skipping_ready_before_completed(self):
         """Completion must follow READY and include handoff evidence."""
         form = self.make_form(

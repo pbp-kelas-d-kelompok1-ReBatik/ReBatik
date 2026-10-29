@@ -1,6 +1,7 @@
 from io import BytesIO
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
@@ -42,6 +43,8 @@ class UpcyclingWorkflowTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="member", password="pw")
         self.artisan_user = User.objects.create_user(username="artisan", password="pw")
+        artisan_group, _ = Group.objects.get_or_create(name="Artisan")
+        self.artisan_user.groups.add(artisan_group)
         self.product_type, _ = ProductType.objects.get_or_create(
             code="TOTE_BAG", defaults={"name": "Tote Bag"}
         )
@@ -195,6 +198,17 @@ class UpcyclingWorkflowTests(TestCase):
         self.assertNotIn(wrong_skill.pk, candidate_ids)
         self.assertNotIn(unavailable.pk, candidate_ids)
 
+    def test_admin_candidate_filter_excludes_requesting_artisan(self):
+        request_obj = make_request(self.artisan_user)
+
+        candidate_ids = set(
+            UpcyclingRequestAdminForm(instance=request_obj)
+            .fields["artisan"]
+            .queryset.values_list("pk", flat=True)
+        )
+
+        self.assertNotIn(self.artisan.pk, candidate_ids)
+
     def test_artisan_review_receipt_and_inspection_set_expected_statuses(self):
         request_obj = make_request(
             self.user,
@@ -230,7 +244,7 @@ class UpcyclingWorkflowTests(TestCase):
         self.assertEqual(request_obj.status, UpcyclingRequest.Status.AWAITING_APPROVAL)
         self.assertEqual(str(request_obj.quoted_price), "75000.00")
 
-    def test_artisan_dashboard_shows_user_fabric_handoff_plan(self):
+    def test_assigned_artisan_detail_shows_user_fabric_handoff_plan(self):
         request_obj = make_request(
             self.user,
             artisan=self.artisan,
@@ -244,14 +258,239 @@ class UpcyclingWorkflowTests(TestCase):
         )
         self.client.force_login(self.artisan_user)
 
-        response = self.client.get(reverse("upcycling:artisan_dashboard"))
+        response = self.client.get(reverse("upcycling:request_detail", args=[request_obj.pk]))
 
-        self.assertContains(response, "Rencana penyerahan kain")
+        self.assertContains(response, "bg-[var(--upcycling-panel)]")
+        self.assertContains(response, "bg-[var(--upcycling-surface)]")
+        self.assertContains(response, "cloud-left.webp")
+        self.assertContains(response, "Penyerahan kain")
         self.assertContains(response, "Katun 95%, elastane 5%")
         self.assertContains(response, "Mega Mendung")
         self.assertContains(response, "Bagian depan tote bag")
         self.assertContains(response, "Kirim kain sendiri")
         self.assertContains(response, "Jl. Melati 10, Depok")
+
+    def test_artisan_dashboard_keeps_completed_assignments_in_history(self):
+        request_obj = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.COMPLETED,
+        )
+        self.client.force_login(self.artisan_user)
+
+        response = self.client.get(reverse("upcycling:artisan_dashboard"))
+
+        self.assertContains(response, request_obj.reference_code)
+        self.assertContains(response, "Selesai")
+        self.assertNotContains(response, "Tandai siap diserahkan")
+
+    def test_each_assigned_request_has_a_detail_link(self):
+        request_obj = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.PENDING_REVIEW,
+        )
+        self.client.force_login(self.artisan_user)
+
+        response = self.client.get(reverse("upcycling:artisan_dashboard"))
+
+        self.assertContains(response, "Lihat Detail →")
+        self.assertContains(response, reverse("upcycling:request_detail", args=[request_obj.pk]))
+
+    def test_artisan_dashboard_request_card_is_compact(self):
+        request_obj = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.INSPECTION,
+            notes="Catatan hanya ditampilkan di detail.",
+            wants_batik_accent=True,
+            batik_motif="Mega Mendung",
+        )
+        self.client.force_login(self.artisan_user)
+
+        response = self.client.get(reverse("upcycling:artisan_dashboard"))
+
+        self.assertContains(response, request_obj.get_product_name())
+        self.assertContains(response, request_obj.get_fabric_display())
+        self.assertContains(response, request_obj.reference_code)
+        self.assertContains(response, "Lihat Detail →")
+        self.assertNotContains(response, "Catatan hanya ditampilkan di detail.")
+        self.assertNotContains(response, "quoted_price")
+
+    def test_artisan_detail_contains_status_specific_review_actions(self):
+        request_obj = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.PENDING_REVIEW,
+        )
+        self.client.force_login(self.artisan_user)
+
+        response = self.client.get(reverse("upcycling:request_detail", args=[request_obj.pk]))
+
+        self.assertContains(response, "Tindakan Artisan")
+        self.assertContains(response, "Terima review")
+        self.assertContains(response, "Tolak Permintaan")
+
+    def test_assigned_artisan_can_view_detail_without_member_actions(self):
+        request_obj = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.AWAITING_APPROVAL,
+            quoted_price="75555",
+        )
+        self.client.force_login(self.artisan_user)
+
+        response = self.client.get(reverse("upcycling:request_detail", args=[request_obj.pk]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Dashboard Artisan")
+        self.assertContains(response, "Rp75555")
+        self.assertNotContains(response, "Setujui harga")
+        self.assertNotContains(response, "Tolak penawaran")
+        self.assertNotContains(response, "Batalkan permintaan")
+
+    def test_artisan_cannot_view_request_assigned_to_another_artisan(self):
+        request_obj = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.PENDING_REVIEW,
+        )
+        other_artisan_user = User.objects.create_user(username="other-artisan", password="pw")
+        artisan_group, _ = Group.objects.get_or_create(name="Artisan")
+        other_artisan_user.groups.add(artisan_group)
+        ArtisanProfile.objects.create(user=other_artisan_user)
+        self.client.force_login(other_artisan_user)
+
+        response = self.client.get(reverse("upcycling:request_detail", args=[request_obj.pk]))
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_empty_artisan_dashboard_uses_member_request_empty_state_style(self):
+        self.client.force_login(self.artisan_user)
+
+        response = self.client.get(reverse("upcycling:artisan_dashboard"))
+
+        self.assertContains(response, "crying.webp")
+        self.assertContains(response, "Belum ada permintaan")
+        self.assertContains(response, "Request yang ditugaskan oleh admin akan muncul di sini.")
+
+    def test_artisan_dashboard_has_return_link_to_member_request_list(self):
+        self.client.force_login(self.artisan_user)
+
+        response = self.client.get(reverse("upcycling:artisan_dashboard"))
+
+        self.assertContains(response, "Kembali ke Permintaan Saya")
+        self.assertContains(response, 'href="/upcycling/"')
+
+    def test_non_artisan_cannot_open_artisan_dashboard(self):
+        ArtisanProfile.objects.create(user=self.user)
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("upcycling:artisan_dashboard"))
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_artisan_group_without_upcycling_profile_cannot_open_dashboard(self):
+        artisan_group, _ = Group.objects.get_or_create(name="Artisan")
+        self.user.groups.add(artisan_group)
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("upcycling:artisan_dashboard"))
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_hamburger_nav_shows_upcycling_and_dashboard_links_for_artisans(self):
+        self.client.force_login(self.artisan_user)
+
+        response = self.client.get(reverse("upcycling:request_list"))
+
+        self.assertContains(response, 'href="/upcycling/">Upcycling Request</a>')
+        self.assertContains(response, 'href="/upcycling/artisan/">Dashboard Artisan</a>')
+        self.assertContains(response, "Buka dashboard artisan")
+        self.assertContains(response, "primary-action-button mt-5 min-h-11 px-5 py-2 text-sm")
+
+    def test_hamburger_nav_hides_artisan_dashboard_from_members(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("upcycling:request_list"))
+
+        self.assertContains(response, 'href="/upcycling/">Upcycling Request</a>')
+        self.assertNotContains(response, "Dashboard Artisan")
+
+    def test_artisan_rejection_action_has_clear_label_and_danger_gradient(self):
+        request_obj = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.PENDING_REVIEW,
+        )
+        self.client.force_login(self.artisan_user)
+
+        response = self.client.get(reverse("upcycling:request_detail", args=[request_obj.pk]))
+
+        self.assertContains(response, "Tolak Permintaan")
+        self.assertContains(response, "upcycling-danger-action-button")
+
+    def test_artisan_can_quote_any_positive_whole_rupiah_amount(self):
+        request_obj = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.INSPECTION,
+            fabric_received_at=timezone.now(),
+            fabric_received_by=self.artisan_user,
+        )
+        self.client.force_login(self.artisan_user)
+
+        response = self.client.get(reverse("upcycling:request_detail", args=[request_obj.pk]))
+
+        self.assertContains(response, 'name="quoted_price" type="number" min="1" max="99999999" step="1"')
+        response = self.client.post(
+            reverse("upcycling:artisan_update_request", args=[request_obj.pk]),
+            {"action": "inspection_pass", "quoted_price": "75555", "notes": "Layak."},
+        )
+
+        request_obj.refresh_from_db()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(request_obj.status, UpcyclingRequest.Status.AWAITING_APPROVAL)
+        self.assertEqual(str(request_obj.quoted_price), "75555.00")
+
+    def test_artisan_cannot_quote_fractional_or_overflowing_rupiah_amount(self):
+        self.client.force_login(self.artisan_user)
+        for price in ("75555.50", "100000000"):
+            with self.subTest(price=price):
+                request_obj = make_request(
+                    self.user,
+                    artisan=self.artisan,
+                    status=UpcyclingRequest.Status.INSPECTION,
+                    fabric_received_at=timezone.now(),
+                    fabric_received_by=self.artisan_user,
+                )
+
+                self.client.post(
+                    reverse("upcycling:artisan_update_request", args=[request_obj.pk]),
+                    {"action": "inspection_pass", "quoted_price": price, "notes": "Layak."},
+                )
+
+                request_obj.refresh_from_db()
+                self.assertEqual(request_obj.status, UpcyclingRequest.Status.INSPECTION)
+                self.assertIsNone(request_obj.quoted_price)
+
+    def test_non_artisan_cannot_submit_artisan_actions(self):
+        ArtisanProfile.objects.create(user=self.user)
+        request_obj = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.PENDING_REVIEW,
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("upcycling:artisan_update_request", args=[request_obj.pk]),
+            {"action": "review_accept", "notes": "Bisa dibuat."},
+        )
+
+        self.assertEqual(response.status_code, 403)
+        request_obj.refresh_from_db()
+        self.assertEqual(request_obj.status, UpcyclingRequest.Status.PENDING_REVIEW)
 
     def test_rejection_stages_match_workflow_and_set_return_obligation(self):
         self.client.force_login(self.artisan_user)
