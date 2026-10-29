@@ -6,16 +6,17 @@
 {% endblock css %}
 
 {% block content %}
-<section id="marketplace-page-content" class="relative overflow-hidden px-4 pb-12 pt-10 sm:px-6 sm:pt-12">
-    <header class="relative mx-auto mb-8 max-w-3xl text-center text-[var(--cream-light)]">
-        <p class="text-xs uppercase tracking-[0.3em]">Marketplace · Pembatalan</p>
+<section id="marketplace-page-content" class="mp-page-shell relative overflow-hidden">
+    <header class="mp-hero-header relative mx-auto mb-8 max-w-3xl text-center text-[var(--brown)]">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--brown-muted)]">Marketplace · Pembatalan</p>
         <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">Batalkan Pesanan</h1>
-        <p class="mt-3 text-base sm:text-lg">Periksa kembali pesanan yang ingin Anda batalkan.</p>
+        <p class="mt-3 text-base text-[var(--brown-dark)] sm:text-lg">Periksa kembali pesanan yang ingin Anda batalkan.</p>
     </header>
 
     <div
-        class="mx-auto max-w-2xl rounded-3xl border-2 border-[var(--mp-accent)]
-               bg-[var(--mp-panel)] p-5 text-[var(--brown)] shadow-2xl sm:p-8"
+        class="mp-panel-box mx-auto max-w-2xl rounded-2xl border-2 border-[var(--mp-accent)]
+               bg-[var(--mp-panel)] p-5 text-[var(--brown)] shadow-2xl
+               sm:rounded-3xl sm:p-8"
     >
         <div class="rounded-2xl border border-[var(--mp-accent)] bg-[var(--mp-surface)] p-5 sm:p-7">
             <p class="text-sm font-bold uppercase tracking-[0.18em] text-[var(--brown-muted)]">
@@ -41,6 +42,11 @@
         <form
             method="post"
             action="{% url 'marketplace:order_cancel' order.pk %}"
+            hx-post="{% url 'marketplace:order_cancel' order.pk %}"
+            hx-target="#marketplace-page-content"
+            hx-select="#marketplace-page-content"
+            hx-swap="outerHTML"
+            hx-disabled-elt="button[type='submit']"
             class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center"
         >
             {% csrf_token %}

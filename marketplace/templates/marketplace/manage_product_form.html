@@ -6,17 +6,18 @@
 {% endblock css %}
 
 {% block content %}
-<section id="marketplace-page-content" class="relative overflow-hidden px-4 pb-12 pt-10 sm:px-6 sm:pt-12">
-    <header class="relative mx-auto mb-8 max-w-3xl text-center text-[var(--cream-light)]">
-        <p class="text-xs uppercase tracking-[0.3em]">Khusus Staff · Marketplace</p>
+<section id="marketplace-page-content" class="mp-page-shell relative overflow-hidden">
+    <header class="mp-hero-header relative mx-auto mb-8 max-w-3xl text-center text-[var(--brown)]">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--brown-muted)]">Khusus Staff · Marketplace</p>
         <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">
             {% if is_update %}Edit Produk{% else %}Tambah Produk{% endif %}
         </h1>
     </header>
 
     <div
-        class="mx-auto max-w-3xl rounded-3xl border border-[var(--mp-card-border)]
-               bg-[var(--mp-panel)] p-5 text-[var(--brown)] shadow-2xl sm:p-8 lg:p-10"
+        class="mp-panel-box mx-auto max-w-3xl rounded-2xl border border-[var(--mp-card-border)]
+               bg-[var(--mp-panel)] p-5 text-[var(--brown)] shadow-2xl
+               sm:rounded-3xl sm:p-8 lg:p-10"
     >
         <a
             href="{% url 'marketplace:manage_product_list' %}"
@@ -31,7 +32,14 @@
             </div>
         {% endif %}
 
-        <form method="post" novalidate class="mt-6 grid gap-5 sm:grid-cols-2">
+        <form method="post" 
+            hx-post= "{{ request.path }}"
+            hx-target = "#marketplace-page-content"
+            hx-select = "#marketplace-page-content"
+            hx-swap = "outerHTML"
+            hx-disabled-elt="button[type='submit']"    
+            novalidate 
+            class="mt-6 grid gap-5 sm:grid-cols-2">
             {% csrf_token %}
 
             <div class="space-y-1 sm:col-span-2">

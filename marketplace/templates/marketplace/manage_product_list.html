@@ -6,45 +6,46 @@
 {% endblock css %}
 
 {% block content %}
-<section id="marketplace-page-content" class="relative overflow-hidden px-4 pb-12 pt-10 sm:px-6 sm:pt-12">
-    <header class="relative mx-auto mb-8 max-w-4xl text-center text-[var(--cream-light)]">
-        <p class="text-xs uppercase tracking-[0.3em]">Khusus Staff · Marketplace</p>
+<section id="marketplace-page-content" class="mp-page-shell relative overflow-hidden">
+    <header class="mp-hero-header relative mx-auto mb-8 max-w-4xl text-center text-[var(--brown)]">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--brown-muted)]">Khusus Staff · Marketplace</p>
         <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">Kelola Produk</h1>
-        <p class="mt-3 text-base sm:text-lg">Tambah, perbarui stok, atau sembunyikan karya upcycling di katalog.</p>
+        <p class="mt-3 text-base text-[var(--brown-dark)] sm:text-lg">Tambah, perbarui stok, atau sembunyikan karya upcycling di katalog.</p>
     </header>
 
     <div
-        class="mx-auto max-w-6xl rounded-3xl border border-[var(--mp-card-border)]
-               bg-[var(--mp-panel)] p-5 text-[var(--brown)] shadow-2xl sm:p-8 lg:p-10"
+        class="mp-panel-box mx-auto max-w-6xl rounded-2xl border border-[var(--mp-card-border)]
+               bg-[var(--mp-panel)] p-5 text-[var(--brown)] shadow-2xl
+               sm:rounded-3xl sm:p-8 lg:p-10"
     >
         {% include "marketplace/_messages.html" %}
 
-        <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="mp-toolbar-head mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <a
                 href="{% url 'marketplace:home' %}"
-                class="inline-flex items-center font-semibold text-[var(--brown)] underline decoration-[var(--mp-accent)] underline-offset-4"
+                class="inline-flex items-center text-sm font-semibold text-[var(--brown)] underline decoration-[var(--mp-accent)] underline-offset-4 sm:text-base"
             >
                 ← Kembali ke Katalog Publik
             </a>
             <a
                 href="{% url 'marketplace:manage_product_create' %}"
-                class="primary-action-button min-h-12 px-6 py-3 font-semibold"
+                class="primary-action-button mp-top-btn min-h-11 justify-center px-5 py-2.5 text-sm font-semibold sm:px-6"
             >
                 + Tambah Produk Baru
             </a>
         </div>
 
-        <div class="grid gap-3 sm:grid-cols-3">
-            <div class="rounded-2xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-4 text-center">
-                <p class="text-2xl font-bold text-[var(--brown)]">{{ visible_count }}</p>
-                <p class="text-xs font-semibold uppercase tracking-wider text-[var(--brown-muted)]">Tampil di Katalog</p>
+        <div class="mp-stats-grid">
+            <div class="rounded-xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-3 text-center sm:p-4">
+                <p class="text-xl font-bold text-[var(--brown)] sm:text-2xl">{{ visible_count }}</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-[var(--brown-muted)]">Tampil</p>
             </div>
-            <div class="rounded-2xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-4 text-center">
-                <p class="text-2xl font-bold text-[var(--danger)]">{{ out_of_stock_count }}</p>
+            <div class="rounded-xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-3 text-center sm:p-4">
+                <p class="text-xl font-bold text-[var(--danger)] sm:text-2xl">{{ out_of_stock_count }}</p>
                 <p class="text-xs font-semibold uppercase tracking-wider text-[var(--brown-muted)]">Stok Habis</p>
             </div>
-            <div class="rounded-2xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-4 text-center">
-                <p class="text-2xl font-bold text-[var(--brown-muted)]">{{ hidden_count }}</p>
+            <div class="rounded-xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-3 text-center sm:p-4">
+                <p class="text-xl font-bold text-[var(--brown-muted)] sm:text-2xl">{{ hidden_count }}</p>
                 <p class="text-xs font-semibold uppercase tracking-wider text-[var(--brown-muted)]">Tersembunyi</p>
             </div>
         </div>
@@ -52,31 +53,60 @@
         <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <nav
                 aria-label="Filter visibilitas produk"
-                class="inline-flex w-fit flex-wrap items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--card)] p-1.5"
+                class="mp-chip-scroll rounded-full border border-[var(--border)] bg-[var(--card)] p-1.5"
             >
                 <a
                     href="{% querystring visibility='' page=None %}"
+                    hx-get="{% url 'marketplace:manage_product_list' %}{% querystring visibility='' page=None %}"
+                    hx-target="#marketplace-page-content"
+                    hx-select="#marketplace-page-content"
+                    hx-swap="outerHTML"
+                    hx-push-url="true"
                     class="rounded-full px-4 py-1.5 text-sm
                            {% if not selected_visibility %}bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]{% else %}text-[var(--brown)] hover:bg-[var(--mp-soft)]{% endif %}"
                 >Semua</a>
                 <a
                     href="{% querystring visibility='visible' page=None %}"
+                    hx-get="{% url 'marketplace:manage_product_list' %}{% querystring visibility='visible' page=None %}"
+                    hx-target="#marketplace-page-content"
+                    hx-select="#marketplace-page-content"
+                    hx-swap="outerHTML"
+                    hx-push-url="true"
                     class="rounded-full px-4 py-1.5 text-sm
                            {% if selected_visibility == 'visible' %}bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]{% else %}text-[var(--brown)] hover:bg-[var(--mp-soft)]{% endif %}"
                 >Tampil</a>
                 <a
                     href="{% querystring visibility='out_of_stock' page=None %}"
+                    hx-get="{% url 'marketplace:manage_product_list' %}{% querystring visibility='out_of_stock' page=None %}"
+                    hx-target="#marketplace-page-content"
+                    hx-select="#marketplace-page-content"
+                    hx-swap="outerHTML"
+                    hx-push-url="true"
                     class="rounded-full px-4 py-1.5 text-sm
                            {% if selected_visibility == 'out_of_stock' %}bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]{% else %}text-[var(--brown)] hover:bg-[var(--mp-soft)]{% endif %}"
                 >Stok Habis</a>
                 <a
                     href="{% querystring visibility='hidden' page=None %}"
+                    hx-get="{% url 'marketplace:manage_product_list' %}{% querystring visibility='hidden' page=None %}"
+                    hx-target="#marketplace-page-content"
+                    hx-select="#marketplace-page-content"
+                    hx-swap="outerHTML"
+                    hx-push-url="true"
                     class="rounded-full px-4 py-1.5 text-sm
                            {% if selected_visibility == 'hidden' %}bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]{% else %}text-[var(--brown)] hover:bg-[var(--mp-soft)]{% endif %}"
                 >Tersembunyi</a>
             </nav>
 
-            <form method="get" action="{% url 'marketplace:manage_product_list' %}" class="flex gap-2">
+            <form
+                method="get"
+                action="{% url 'marketplace:manage_product_list' %}"
+                hx-get="{% url 'marketplace:manage_product_list' %}"
+                hx-target="#marketplace-page-content"
+                hx-select="#marketplace-page-content"
+                hx-swap="outerHTML"
+                hx-push-url="true"
+                class="flex gap-2"
+            >
                 {% if selected_visibility %}
                     <input type="hidden" name="visibility" value="{{ selected_visibility }}">
                 {% endif %}
@@ -85,11 +115,17 @@
                     name="q"
                     value="{{ selected_query }}"
                     placeholder="Cari nama / motif…"
-                    class="min-h-11 rounded-full border border-[var(--border)] bg-white px-4 py-2 text-sm text-[var(--brown)] focus:outline-none focus:ring-2 focus:ring-[var(--gold)]"
+                    hx-get="{% url 'marketplace:manage_product_list' %}"
+                    hx-trigger="input changed delay:400ms, search"
+                    hx-target="#marketplace-page-content"
+                    hx-select="#marketplace-page-content"
+                    hx-swap="outerHTML"
+                    hx-include="closest form"
+                    class="min-h-10 min-w-0 flex-1 rounded-full border border-[var(--border)] bg-white px-4 py-2 text-sm text-[var(--brown)] focus:outline-none focus:ring-2 focus:ring-[var(--gold)] sm:min-h-11"
                 >
                 <button
                     type="submit"
-                    class="min-h-11 rounded-full bg-[var(--brown)] px-5 py-2 text-sm font-semibold text-[var(--cream-light)] hover:bg-[var(--button-hover)]"
+                    class="min-h-10 shrink-0 rounded-full bg-[var(--brown)] px-4 py-2 text-sm font-semibold text-[var(--cream-light)] hover:bg-[var(--button-hover)] sm:min-h-11 sm:px-5"
                 >
                     Cari
                 </button>
@@ -97,7 +133,74 @@
         </div>
 
         {% if products %}
-            <div class="mt-6 overflow-x-auto rounded-2xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)]">
+            <div class="mp-manage-mobile-cards mt-6">
+                {% for item in products %}
+                    <article
+                        data-manage-card
+                        class="rounded-2xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-4 shadow-sm {% if item.is_deleted %}opacity-60{% endif %}"
+                    >
+                        <div class="flex items-start gap-3">
+                            <div class="size-12 shrink-0 overflow-hidden rounded-xl mp-img-placeholder">
+                                {% if item.image_url %}
+                                    <img src="{{ item.image_url }}" alt="{{ item.name }}" class="h-full w-full object-cover">
+                                {% else %}
+                                    <div class="grid h-full w-full place-items-center text-xl">🧶</div>
+                                {% endif %}
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-start justify-between gap-2">
+                                    <h3 class="truncate font-bold text-[var(--brown)]">{{ item.name }}</h3>
+                                    {% if item.is_deleted %}
+                                        <span class="shrink-0 rounded-full bg-[var(--mp-soft)] px-3 py-1 text-xs font-bold text-[var(--brown-muted)]">Tersembunyi</span>
+                                    {% else %}
+                                        <span class="shrink-0 rounded-full bg-[var(--mp-status-completed)] px-3 py-1 text-xs font-bold text-[var(--mp-status-completed-text)]">Tampil</span>
+                                    {% endif %}
+                                </div>
+                                <p class="text-xs text-[var(--brown-muted)]">{{ item.get_category_display }} · {{ item.motif }}</p>
+                                <div class="mt-1.5 flex items-center justify-between text-sm">
+                                    <span class="font-bold text-[var(--brown-dark)]">{{ item.price|rupiah }}</span>
+                                    <span class="text-xs font-bold {% if item.stock == 0 %}text-[var(--danger)]{% else %}text-[var(--brown-muted)]{% endif %}">
+                                        {% if item.stock == 0 %}Stok Habis{% else %}Stok: {{ item.stock }}{% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3 flex items-center justify-end gap-2 border-t border-[var(--mp-card-border)] pt-3 text-xs font-bold">
+                            <a
+                                href="{% url 'marketplace:manage_product_update' item.pk %}"
+                                class="inline-flex min-h-10 items-center rounded-full border border-[var(--border)] bg-white px-3.5 py-1.5 text-[var(--brown)]"
+                            >Edit</a>
+                            {% if item.is_deleted %}
+                                <form
+                                    method="post"
+                                    action="{% url 'marketplace:manage_product_restore' item.pk %}"
+                                    hx-post="{% url 'marketplace:manage_product_restore' item.pk %}"
+                                    hx-target="#marketplace-page-content"
+                                    hx-select="#marketplace-page-content"
+                                    hx-swap="outerHTML"
+                                    hx-disabled-elt="find button"
+                                    data-optimistic-row
+                                    class="inline"
+                                >
+                                    {% csrf_token %}
+                                    <button
+                                        type="submit"
+                                        data-optimistic-label="Menampilkan…"
+                                        class="inline-flex min-h-10 items-center rounded-full bg-[var(--mp-status-completed)] px-3.5 py-1.5 text-[var(--mp-status-completed-text)]"
+                                    >Tampilkan</button>
+                                </form>
+                            {% else %}
+                                <a
+                                    href="{% url 'marketplace:manage_product_delete' item.pk %}"
+                                    class="inline-flex min-h-10 items-center rounded-full bg-[var(--mp-status-cancelled)] px-3.5 py-1.5 text-[var(--danger)]"
+                                >Sembunyikan</a>
+                            {% endif %}
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+
+            <div class="mp-manage-desktop-table mt-6 overflow-x-auto rounded-2xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)]">
                 <table class="w-full min-w-[720px] text-left text-sm sm:text-base">
                     <thead class="bg-[var(--mp-summary)] text-xs font-bold uppercase tracking-wider text-[var(--brown-dark)]">
                         <tr>
@@ -154,11 +257,18 @@
                                         <form
                                             method="post"
                                             action="{% url 'marketplace:manage_product_restore' item.pk %}"
+                                            hx-post="{% url 'marketplace:manage_product_restore' item.pk %}"
+                                            hx-target="#marketplace-page-content"
+                                            hx-select="#marketplace-page-content"
+                                            hx-swap="outerHTML"
+                                            hx-disabled-elt="find button"
+                                            data-optimistic-row
                                             class="inline"
                                         >
                                             {% csrf_token %}
                                             <button
                                                 type="submit"
+                                                data-optimistic-label="Menampilkan…"
                                                 class="inline-flex min-h-10 items-center rounded-full px-3 py-1.5 text-[var(--mp-status-completed-text)] hover:bg-[var(--mp-soft)]"
                                             >
                                                 Tampilkan
@@ -191,12 +301,22 @@
                         {% if page_obj.has_previous %}
                             <a
                                 href="{% querystring page=page_obj.previous_page_number %}"
+                                hx-get="{% url 'marketplace:manage_product_list' %}{% querystring page=page_obj.previous_page_number %}"
+                                hx-target="#marketplace-page-content"
+                                hx-select="#marketplace-page-content"
+                                hx-swap="outerHTML"
+                                hx-push-url="true"
                                 class="inline-flex min-h-11 items-center rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-sm font-semibold"
                             >← Sebelumnya</a>
                         {% endif %}
                         {% if page_obj.has_next %}
                             <a
                                 href="{% querystring page=page_obj.next_page_number %}"
+                                hx-get="{% url 'marketplace:manage_product_list' %}{% querystring page=page_obj.next_page_number %}"
+                                hx-target="#marketplace-page-content"
+                                hx-select="#marketplace-page-content"
+                                hx-swap="outerHTML"
+                                hx-push-url="true"
                                 class="inline-flex min-h-11 items-center rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-sm font-semibold"
                             >Berikutnya →</a>
                         {% endif %}
@@ -210,5 +330,16 @@
         {% endif %}
     </div>
 </section>
+
+<script>
+document.addEventListener("submit", (e) => {
+    const form = e.target.closest("form[data-optimistic-row]");
+    if (!form) return;
+    const row = form.closest("tr, [data-manage-card]");
+    const btn = form.querySelector("button[data-optimistic-label]");
+    if (row) row.classList.remove("opacity-60");
+    if (btn) btn.textContent = btn.dataset.optimisticLabel;
+});
+</script>
 {% endblock content %}
 
