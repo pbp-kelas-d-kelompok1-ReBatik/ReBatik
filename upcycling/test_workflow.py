@@ -189,6 +189,42 @@ class UpcyclingWorkflowTests(TestCase):
         self.assertEqual(request_obj.status, UpcyclingRequest.Status.AWAITING_APPROVAL)
         self.assertEqual(str(request_obj.quoted_price), "75000.00")
 
+    def test_rejection_stages_match_workflow_and_set_return_obligation(self):
+        self.client.force_login(self.artisan_user)
+        preliminary = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.PENDING_REVIEW,
+        )
+        self.client.post(
+            reverse("upcycling:artisan_update_request", args=[preliminary.pk]),
+            {"action": "review_reject", "notes": "Tidak sesuai kemampuan artisan."},
+        )
+        preliminary.refresh_from_db()
+        self.assertEqual(preliminary.rejection_stage, "PRELIMINARY_REVIEW")
+        self.assertEqual(
+            preliminary.return_status,
+            UpcyclingRequest.ReturnStatus.NOT_REQUIRED,
+        )
+
+        inspection = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.INSPECTION,
+            fabric_received_at=timezone.now(),
+            fabric_received_by=self.artisan_user,
+        )
+        self.client.post(
+            reverse("upcycling:artisan_update_request", args=[inspection.pk]),
+            {"action": "inspection_reject", "notes": "Kain terlalu rusak."},
+        )
+        inspection.refresh_from_db()
+        self.assertEqual(inspection.rejection_stage, "PHYSICAL_INSPECTION")
+        self.assertEqual(
+            inspection.return_status,
+            UpcyclingRequest.ReturnStatus.PENDING_RETURN,
+        )
+
     def test_approving_quote_starts_production_without_payment_step(self):
         request_obj = make_request(
             self.user,
