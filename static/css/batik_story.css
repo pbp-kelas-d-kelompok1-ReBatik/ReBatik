@@ -1828,3 +1828,109 @@ input[type="file"].form-input {
     background: #c99b45;
     color: white;
 }
+
+
+/* Tombol aksi admin pada card */
+.card-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.admin-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.card-action-btn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.action-label {
+    padding: 3px 9px;
+    border-radius: 5px;
+    background: #624A38;
+    color: #FFF8ED;
+    font-family: "Garamond", Georgia, serif;
+    font-size: 13px;
+    line-height: 1.2;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.card-action-btn:hover .action-label,
+.card-action-btn:focus-visible .action-label {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.action-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border: 1px solid #E5CBA9;
+    border-radius: 50%;
+    background: #FFF3DF;
+    color: #68452F;
+    font-family: Arial, sans-serif;
+    font-size: 25px;
+    line-height: 1;
+    box-shadow: 0 3px 8px rgba(90, 55, 30, 0.10);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-action-btn:hover .action-icon {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(90, 55, 30, 0.16);
+}
+
+/* Edit: krem dan emas */
+.card-action-edit .action-icon {
+    background: #FFF3DF;
+    border-color: #E7C99F;
+    color: #80532F;
+}
+
+/* Hapus: merah muda lembut */
+.card-action-delete .action-icon {
+    background: #FBE0D5;
+    border-color: #E9A997;
+    color: #A33D2F;
+}
+
+.card-action-delete:hover .action-icon {
+    background: #F5C9BA;
+}
+
+/* Tombol aksi tetap ringkas di layar kecil */
+@media (max-width: 600px) {
+    .admin-card-actions {
+        gap: 6px;
+    }
+
+    .action-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 21px;
+    }
+
+    .action-label {
+        font-size: 11px;
+    }
+}
