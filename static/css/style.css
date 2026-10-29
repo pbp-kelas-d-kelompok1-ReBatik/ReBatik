@@ -2374,3 +2374,64 @@ body {
         transition: none;
     }
 }
+
+.navbar {
+    width: 100%;
+    height: 76px;
+    min-height: 76px;
+    max-height: 76px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar .logo {
+    font-size: 28px;
+    line-height: 1;
+}
+
+.navbar .nav-links {
+    display: flex;
+    align-items: center;
+}
+
+.navbar .nav-menu {
+    top: 100%;
+}
+
+@media (max-width: 850px) {
+    .navbar {
+        padding: 0 20px;
+    }
+
+    .navbar .nav-links {
+        display: none;
+    }
+}
+
+html body .navbar .logo {
+    font-family: "Garamond", Georgia, serif !important;
+    font-size: 28px !important;
+    font-style: italic !important;
+    font-weight: 400 !important;
+}
+html body .navbar .nav-links a,
+html body .navbar .nav-user-label,
+html body .navbar .nav-logout-button {
+    font-family: "Garamond", Georgia, serif !important;
+    font-size: 20px !important;
+    font-weight: 400 !important;
+    letter-spacing: normal !important;
+}
+html body .navbar .nav-links {
+    gap: 32px !important;
+}
+html body .navbar .nav-menu a,
+html body .navbar .nav-menu-logout-button {
+    font-family: "Garamond", Georgia, serif !important;
+    font-size: 18px !important;
+    font-weight: 400 !important;
+}
