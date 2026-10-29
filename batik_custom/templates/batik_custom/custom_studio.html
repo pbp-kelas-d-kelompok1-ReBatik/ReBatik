@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<meta name="description" content="Buat desain batik personal di ReBatik.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{% endblock meta %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/custom/custom_studio.css' %}">
+{% endblock css %}
+
+{% block content %}
+<main class="custom-studio-page" id="motif-app"
+    data-motif-image="{% if motif.static_image_path %}{% static motif.static_image_path %}{% elif motif.image %}{{ motif.image.url }}{% else %}{% static 'img/catalog/recommended_motifs/flora_nusantara.jpg' %}{% endif %}"
+    data-motif-name="{{ motif.name|default:'Batik Nusantara' }}"
+    data-motif-description="{{ motif.description|default:'Motif batik pilihanmu.'|striptags }}"
+    data-motif-id="{{ motif.pk|default:'' }}"
+    data-palette-id="{{ selected_palette.pk|default:'' }}"
+    data-order-url="{% url 'batik_custom:batik_order_create' %}"
+    data-user-name="{{ request.user.first_name|default:request.user.username }}"
+    data-style-name="{{ selected_style.name|default:'Personal Style' }}"
+    data-palette-name="{{ selected_palette.name|default:'My Palette' }}"
+    data-palette-colors="{% if selected_palette and selected_palette.colors %}{{ selected_palette.colors|join:',' }}{% endif %}">
+    <header class="cs-header">
+        <div>
+            <p class="cs-eyebrow">REBatik · CREATIVE LAB</p>
+            <h1 class="cs-title">Custom Studio</h1>
+            <p class="cs-description">
+                Explore your creativity and transform traditional batik motifs into a pattern that feels uniquely yours.
+            </p>
+        </div>
+        <nav class="cs-breadcrumb" aria-label="Breadcrumb">
+            <a href="{% url 'batik_custom:recommended_motifs' %}">Recommended Motifs</a>
+            <span>› Custom Studio</span>
+        </nav>
+    </header>
+
+    <div class="cs-workspace">
+        <aside class="cs-panel cs-sidebar">
+            <h2 class="cs-panel-title">Design Settings</h2>
+            <p class="cs-panel-description">
+                Adjust the elements below to create your own batik pattern.
+            </p>
+
+            <div class="cs-motif-card">
+                <img id="selected-motif-image"
+                    src="{% if motif.static_image_path %}{% static motif.static_image_path %}{% elif motif.image %}{{ motif.image.url }}{% else %}{% static 'img/catalog/recommended_motifs/flora_nusantara.jpg' %}{% endif %}"
+                    alt="{{ motif.name|default:'Batik Nusantara' }}" onerror="this.style.display='none'">
+                <div class="cs-motif-info">
+                    <p>Selected Motif</p>
+                    <h3 id="selected-motif-name">{{ motif.name|default:"Batik Nusantara" }}</h3>
+                    <p class="cs-motif-description">
+                        {% if motif.description %}
+                        {{ motif.description|striptags }}
+                        {% else %}
+                        Motif batik pilihanmu untuk desain yang lebih personal.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="cs-control">
+                <div class="cs-control-heading">
+                    <span>Color Palette</span>
+                    <span id="selected-color-label">{{ selected_palette.name|default:"My Palette" }}</span>
+                </div>
+                <div class="cs-swatches" id="swatches">
+                    {% if selected_palette and selected_palette.colors %}
+                    {% for color in selected_palette.colors %}
+                    <button type="button" class="cs-swatch{% if forloop.first %} active{% endif %}"
+                        style="background-color: {{ color }};" data-color="{{ color }}"
+                        aria-label="Select color {{ color }}"
+                        aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"></button>
+                    {% endfor %}
+                    {% else %}
+                    <p class="cs-palette-empty">No palette selected. Please choose your colors first.</p>
+                    <a href="{% url 'batik_custom:explore_colors' %}">Choose a palette</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="cs-control">
+                <label class="cs-control-heading" for="ctl-gap">
+                    <span>Pattern Density</span>
+                    <span id="gap-value">50%</span>
+                </label>
+                <input id="ctl-gap" type="range" min="0" max="100" value="50">
+                <div class="cs-range-labels">
+                    <span>Sparse</span>
+                    <span>Dense</span>
+                </div>
+            </div>
+
+            <div class="cs-control">
+                <label class="cs-control-heading" for="ctl-scale">
+                    <span>Pattern Size</span>
+                    <span id="scale-value">100%</span>
+                </label>
+                <input id="ctl-scale" type="range" min="50" max="150" value="100">
+                <div class="cs-range-labels">
+                    <span>Smaller</span>
+                    <span>Larger</span>
+                </div>
+            </div>
+
+            <div class="cs-control">
+                <label class="cs-control-heading" for="ctl-layout">
+                    <span>Pattern Layout</span>
+                </label>
+                <select id="ctl-layout">
+                    <option value="single">Single Motif</option>
+                    <option value="grid">Grid</option>
+                    <option value="brick">Brick</option>
+                    <option value="half_drop">Half Drop</option>
+                    <option value="mirror">Mirror</option>
+                </select>
+            </div>
+
+            <div class="cs-control">
+                <label class="cs-control-heading" for="ctl-tint">
+                    <span>Background Style</span>
+                </label>
+                <select id="ctl-tint">
+                    <option value="plain">Plain</option>
+                    <option value="cream" selected>Warm Cream</option>
+                    <option value="paper">Textured Paper</option>
+                </select>
+            </div>
+
+            <div class="cs-control">
+                <label class="cs-control-heading" for="ctl-rotation">
+                    <span>Rotation</span>
+                    <span id="rotation-value">0°</span>
+                </label>
+                <input id="ctl-rotation" type="range" min="-180" max="180" value="0">
+                <div class="cs-range-labels">
+                    <span>-180°</span>
+                    <span>180°</span>
+                </div>
+            </div>
+
+            <button type="button" id="btn-reset" class="cs-action-btn">Reset Settings</button>
+            <button type="button" id="btn-generate" class="cs-generate-btn">✦ Generate Pattern</button>
+            <p id="md-status" role="status" aria-live="polite"></p>
+        </aside>
+
+        <section class="cs-panel cs-preview">
+            <div class="cs-preview-header">
+                <div>
+                    <h2 class="cs-panel-title">Pattern Preview</h2>
+                    <p class="cs-panel-description">Your selected batik motif will appear here.</p>
+                </div>
+                <span class="cs-live-badge">✦ Live Preview</span>
+            </div>
+
+            <div class="cs-canvas-wrap">
+                <canvas id="pattern-canvas" width="1200" height="780">
+                    Your browser does not support canvas.
+                </canvas>
+            </div>
+
+            <div class="cs-preview-actions">
+                <button type="button" id="btn-download" class="cs-action-btn">↓ Download Design</button>
+                <button type="button" id="btn-share" class="cs-action-btn">↗ Share</button>
+                <button type="button" id="btn-save" class="cs-action-btn cs-action-primary">▣ Save to Gallery</button>
+            </div>
+            <div class="cs-order-cta"><div><h3>Suka dengan desain ini?</h3><p>Jadikan motif pilihanmu sebagai kain batik, kemeja, atau outer.</p></div><button type="button" id="btn-order-batik" class="cs-order-button">🛍 Pesan Batik Ini <span aria-hidden="true">→</span></button></div>
+        </section>
+    </div>
+</main>
+
+<div id="share-modal" class="cs-share-modal" hidden aria-hidden="true">
+    <div class="cs-share-backdrop" data-close-share></div>
+    <section class="cs-share-dialog" role="dialog" aria-modal="true" aria-labelledby="share-modal-title">
+        <div class="cs-share-dialog-header">
+            <div>
+                <p class="cs-eyebrow">REBatik · CREATIVE STUDIO</p>
+                <h2 id="share-modal-title">Karya Batikmu, Cerita Gayamu</h2>
+                <p>Pratinjau desain personalmu sebelum dibagikan.</p>
+            </div>
+            <button type="button" id="btn-close-share" class="cs-modal-close" aria-label="Close preview">×</button>
+        </div>
+
+        <div class="cs-share-card-preview">
+            <canvas id="share-card-canvas" width="1100" height="1350">
+                Your browser does not support canvas.
+            </canvas>
+        </div>
+
+        <p id="share-status" class="cs-share-status" role="status" aria-live="polite"></p>
+
+        <div class="cs-share-dialog-actions">
+            <button type="button" id="btn-share-download" class="cs-action-btn">↓ Download Card</button>
+            <button type="button" id="btn-share-confirm" class="cs-action-btn cs-action-primary">↗ Share Card</button>
+        </div>
+    </section>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<script src="{% static 'js/custom_studio.js' %}" defer></script>
+{% endblock extra_js %}

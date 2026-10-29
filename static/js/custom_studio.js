@@ -36,6 +36,24 @@ document.addEventListener("DOMContentLoaded", function () {
         .filter(Boolean);
 
     let selectedColor = swatches[0]?.dataset.color || "#874a29";
+
+    const orderButton = get("btn-order-batik");
+    if (orderButton) {
+        orderButton.addEventListener("click", function () {
+            const params = new URLSearchParams({
+                motif: app.dataset.motifId || "",
+                palette: app.dataset.paletteId || "",
+                layout: layout?.value || "single",
+                scale: scale?.value || "100",
+                gap: gap?.value || "50",
+                rotation: rotation?.value || "0",
+                background: tint?.value || "cream",
+                color: selectedColor || "#874a29",
+            });
+            window.location.href = `${app.dataset.orderUrl}?${params.toString()}`;
+        });
+    }
+
     let imageReady = false;
 
     function message(text) {

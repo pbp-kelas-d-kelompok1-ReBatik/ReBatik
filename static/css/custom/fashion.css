@@ -121,15 +121,11 @@
     line-height: 1.5;
 }
 
-/* GRID CARD
-   Ubah max-width untuk mengatur ukuran card:
-   makin kecil angkanya, makin kecil card-nya. */
+/* GRID CARD BESAR */
 .fashion-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
-    max-width: 960px;
-    margin: 0 auto;
+    gap: 18px;
 }
 
 .fashion-option {
@@ -151,7 +147,7 @@
 .fashion-card {
     position: relative;
     height: 100%;
-    padding: 10px;
+    padding: 12px;
     overflow: hidden;
     border: 1.5px solid var(--fashion-border);
     border-radius: 17px;
@@ -167,7 +163,7 @@
 
 .fashion-option input[type="radio"]:checked + .fashion-card {
     border: 2px solid #b95e26;
-    padding: 9.5px;
+    padding: 11.5px;
     background: #fff8ed;
     box-shadow: 0 0 0 3px rgba(185, 94, 38, .1);
 }
@@ -177,14 +173,12 @@
     outline-offset: 4px;
 }
 
-/* GAMBAR
-   Tinggi mengikuti lebar card lewat aspect-ratio.
-   Rasio 4/5 = agak ringkas, 3/4 = lebih tinggi, 1/1 = persegi. */
+/* GAMBAR BESAR */
 .fashion-image {
     position: relative;
     width: 100%;
-    aspect-ratio: 4 / 5;
-    margin: 0 0 12px;
+    height: clamp(240px, 25vw, 340px);
+    margin: 0 0 16px;
     overflow: hidden;
     border-radius: 12px;
     background: #ead6bf;
@@ -195,7 +189,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center top;
+    object-position: center;
 }
 
 /* CENTANG SAAT DIPILIH */
@@ -205,15 +199,15 @@
     top: 10px;
     right: 10px;
     display: grid;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     place-items: center;
     border: 1px solid white;
     border-radius: 50%;
     color: white;
     background: rgba(110, 72, 45, .55);
     font-family: Arial, sans-serif;
-    font-size: 18px;
+    font-size: 20px;
     opacity: 0;
     transform: scale(.8);
     transition: opacity .2s ease, transform .2s ease;
@@ -227,13 +221,13 @@
 
 /* TEKS CARD */
 .fashion-card-content {
-    padding: 0 4px 6px;
+    padding: 0 5px 8px;
 }
 
 .fashion-card-content h2 {
-    margin: 0 0 6px;
+    margin: 0 0 10px;
     color: #593621;
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 500;
     line-height: 1.2;
 }
@@ -241,7 +235,7 @@
 .fashion-card-content p {
     margin: 0;
     color: #805d45;
-    font-size: 16px;
+    font-size: 17px;
     line-height: 1.5;
 }
 
@@ -305,8 +299,16 @@
 
     .fashion-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        max-width: 640px;
         gap: 16px;
+    }
+
+    .fashion-image {
+        height: 400px;
+        width: 600px;
+    }
+
+    .fashion-card-content h2 {
+        font-size: 24px;
     }
 }
 
@@ -340,12 +342,23 @@
 
     .fashion-grid {
         grid-template-columns: 1fr;
-        max-width: 340px;
         gap: 14px;
     }
 
+    .fashion-card {
+        padding: 10px;
+    }
+
+    .fashion-option input[type="radio"]:checked + .fashion-card {
+        padding: 9.5px;
+    }
+
+    .fashion-image {
+        height: 280px;
+    }
+
     .fashion-card-content h2 {
-        font-size: 22px;
+        font-size: 24px;
     }
 
     .fashion-card-content p {

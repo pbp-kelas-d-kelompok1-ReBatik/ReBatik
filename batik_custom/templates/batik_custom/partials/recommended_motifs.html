@@ -1,0 +1,85 @@
+{% load static %}
+
+<section class="recommended-section">
+    <div class="recommended-heading">
+        <p class="recommended-eyebrow">REBatik COLLECTION</p>
+        <h2>Recommended Batik Motifs</h2>
+        <p>Temukan motif batik yang sesuai dengan gaya dan warna favoritmu.</p>
+    </div>
+
+    {% if motifs %}
+    <div class="motif-grid">
+        {% for motif in motifs %}
+        <article class="motif-card">
+            <div class="motif-image-wrapper">
+                {% if motif.static_image_path %}
+                <img src="{% static motif.static_image_path %}" alt="{{ motif.name }}" loading="lazy">
+                {% elif motif.image %}
+                <img src="{{ motif.image.url }}" alt="{{ motif.name }}" loading="lazy">
+                {% else %}
+                <div class="motif-placeholder">ReBatik</div>
+                {% endif %}
+            </div>
+
+            <div class="motif-card-content">
+                <div class="motif-tags">
+                    {% for preference in motif.fashion_preference.all %}
+                    <span class="motif-tag">{{ preference.name }}</span>
+                    {% endfor %}
+                </div>
+
+                <h3>{{ motif.name }}</h3>
+                <p class="motif-description">{{ motif.description }}</p>
+
+                <button type="button" class="motif-select" data-id="{{ motif.id }}" data-name="{{ motif.name }}"
+                    data-description="{{ motif.description }}" {% if motif.static_image_path %}
+                    data-image="{% static motif.static_image_path %}" {% elif motif.image %}
+                    data-image="{{ motif.image.url }}" {% else %} data-image="" {% endif %}>
+                    Pilih Motif <span aria-hidden="true">→</span>
+                </button>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="motif-empty">
+        <h3>Belum ada rekomendasi motif</h3>
+        <p>Coba pilih gaya dan warna lainnya, atau periksa koleksi motif di admin.</p>
+    </div>
+    {% endif %}
+</section>
+
+<div class="motif-modal" id="motif-modal" data-studio-url="{% url 'batik_custom:custom_studio' %}" aria-hidden="true">
+
+    <div class="motif-modal-backdrop" data-close-modal></div>
+
+    <section class="motif-modal-card" role="dialog" aria-modal="true" aria-labelledby="motif-modal-title">
+
+        <button type="button" class="motif-modal-close" data-close-modal aria-label="Tutup">×</button>
+
+        <div class="motif-modal-visual">
+            <img class="motif-modal-mascot" src="{% static 'img/mascot/thinking.webp' %}" alt="Maskot ReBatik">
+
+            <div class="motif-modal-image-wrap">
+                <img id="motif-modal-image" src="" alt="Preview motif batik">
+            </div>
+        </div>
+
+        <div class="motif-modal-content">
+            <p class="motif-modal-eyebrow">REBatik COLLECTION</p>
+            <h2 id="motif-modal-title">
+                Apakah Anda yakin untuk memilih desain ini?
+            </h2>
+            <div class="motif-modal-flower">✿</div>
+            <h3 id="motif-modal-name"></h3>
+            <p id="motif-modal-description"></p>
+
+            <div class="motif-modal-actions">
+                <button type="button" class="motif-modal-cancel" data-close-modal>Batal</button>
+                <button type="button" class="motif-modal-confirm" id="confirm-motif">
+                    Ya, Pilih Motif <span>→</span>
+                </button>
+            </div>
+        </div>
+    </section>
+</div>

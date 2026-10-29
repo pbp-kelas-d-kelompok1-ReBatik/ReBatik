@@ -2435,3 +2435,328 @@ html body .navbar .nav-menu-logout-button {
     font-size: 18px !important;
     font-weight: 400 !important;
 }
+
+/* Global ReBatik Toast notification */
+#toast-component.toast-component {
+    position: fixed;
+    inset: 20px 20px auto auto;
+    margin: 0;
+    width: min(390px, calc(100vw - 32px));
+    max-width: calc(100vw - 32px);
+    padding: 0;
+    border: 1px solid #e9ddcc;
+    border-radius: 18px;
+    background: #fffdf8;
+    color: #492b1c;
+    box-shadow: 0 14px 38px rgba(73, 43, 28, 0.22);
+    z-index: 2147483000;
+    overflow: hidden;
+    font-family: Garamond, Georgia, serif;
+}
+#toast-component .toast-content {
+    display: grid;
+    grid-template-columns: 68px minmax(0, 1fr);
+    align-items: center;
+    gap: 13px;
+    padding: 14px 17px;
+}
+#toast-component #toast-mascot {
+    width: 68px;
+    height: 68px;
+    object-fit: contain;
+}
+#toast-component .toast-copy { min-width: 0; }
+#toast-component .toast-title {
+    margin: 0 0 5px;
+    color: #492b1c;
+    font-size: 20px;
+    line-height: 1.15;
+}
+#toast-component .toast-message {
+    margin: 0;
+    color: #79685b;
+    font-size: 16px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+#toast-component.toast-success { border-left: 5px solid #26834a; }
+#toast-component.toast-error { border-left: 5px solid #dc2626; }
+#toast-component.toast-normal { border-left: 5px solid #c49a62; }
+#toast-component.toast-hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    pointer-events: none;
+}
+#toast-component.toast-show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition: opacity .25s ease, transform .25s ease;
+}
+
+
+/* ================================
+   REBATIK LOGOUT CONFIRMATION
+================================ */
+
+.logout-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.logout-modal.is-open {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.logout-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(35, 27, 22, 0.64);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.logout-modal-dialog {
+    position: relative;
+    width: min(770px, 100%);
+    min-height: 410px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 38px;
+    border: 2px solid #c99a70;
+    border-radius: 30px;
+    background:
+        radial-gradient(ellipse at center, #fffaf3 0%, #f8eddf 100%);
+    box-shadow:
+        0 20px 65px rgba(43, 28, 18, 0.25),
+        inset 0 0 0 5px rgba(255, 255, 255, 0.7);
+    transform: translateY(15px) scale(0.97);
+    transition: transform 0.25s ease;
+}
+
+.logout-modal.is-open .logout-modal-dialog {
+    transform: translateY(0) scale(1);
+}
+
+.logout-modal-content {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 210px minmax(0, 1fr);
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+    max-width: 680px;
+}
+
+.logout-mascot {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logout-mascot img {
+    display: block;
+    width: 100%;
+    max-width: 185px;
+    height: auto;
+    object-fit: contain;
+}
+
+.logout-modal-text h2 {
+    margin: 0 0 12px;
+    color: #58351f;
+    font-family: "Garamond", Georgia, serif;
+    font-size: clamp(27px, 3.2vw, 42px);
+    font-weight: 700;
+    line-height: 1.15;
+}
+
+.logout-modal-text p {
+    margin: 0 0 30px;
+    color: #796253;
+    font-family: "Garamond", Georgia, serif;
+    font-size: 22px;
+    line-height: 1.5;
+}
+
+.logout-modal-actions {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.logout-btn {
+    min-height: 58px;
+    flex: 1;
+    padding: 12px 20px;
+    border: 2px solid #b37c50;
+    border-radius: 25px;
+    font-family: "Garamond", Georgia, serif;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.logout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(100, 61, 34, 0.15);
+}
+
+.logout-btn:focus-visible {
+    outline: 3px solid #70492e;
+    outline-offset: 4px;
+}
+
+.logout-btn-cancel {
+    background: rgba(255, 255, 255, 0.65);
+    color: #58351f;
+}
+
+.logout-btn-cancel:hover {
+    background: #ead7c3;
+}
+
+.logout-btn-confirm {
+    border-color: #a8734c;
+    background: #a8734c;
+    color: #fffaf3;
+}
+
+.logout-btn-confirm:hover {
+    border-color: #815331;
+    background: #815331;
+}
+
+/* Dekorasi sudut bernuansa batik */
+
+.logout-batik-decoration {
+    position: absolute;
+    z-index: 1;
+    width: 145px;
+    height: 105px;
+    pointer-events: none;
+    opacity: 0.72;
+    background-image:
+        repeating-radial-gradient(
+            ellipse at 50% 100%,
+            transparent 0 7px,
+            #c99a70 8px 9px,
+            transparent 10px 14px
+        );
+    background-size: 34px 30px;
+}
+
+.logout-batik-top-left {
+    top: 0;
+    left: 0;
+    border-radius: 25px 0 70% 0;
+    background-color: rgba(205, 157, 112, 0.12);
+}
+
+.logout-batik-top-right {
+    top: 0;
+    right: 0;
+    transform: rotate(90deg);
+    opacity: 0.25;
+}
+
+.logout-batik-bottom-left {
+    bottom: 0;
+    left: 0;
+    transform: rotate(-90deg);
+    opacity: 0.25;
+}
+
+.logout-batik-bottom-right {
+    right: 0;
+    bottom: 0;
+    transform: rotate(180deg);
+    border-radius: 0 0 25px 0;
+    background-color: rgba(205, 157, 112, 0.12);
+}
+
+/* Tampilan mobile */
+
+@media (max-width: 600px) {
+    .logout-modal {
+        padding: 18px;
+    }
+
+    .logout-modal-dialog {
+        min-height: auto;
+        padding: 32px 22px;
+        border-radius: 24px;
+    }
+
+    .logout-modal-content {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .logout-mascot img {
+        width: 115px;
+        max-width: 100%;
+        max-height: 145px;
+    }
+
+    .logout-modal-text h2 {
+        font-size: 29px;
+    }
+
+    .logout-modal-text p {
+        margin-bottom: 22px;
+        font-size: 18px;
+    }
+
+    .logout-modal-actions {
+        gap: 10px;
+    }
+
+    .logout-btn {
+        min-height: 49px;
+        padding: 10px 12px;
+        font-size: 17px;
+    }
+
+    .logout-batik-decoration {
+        width: 85px;
+        height: 65px;
+    }
+}
+
+/* Hormati preferensi reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+    .logout-modal,
+    .logout-modal-dialog,
+    .logout-btn {
+        transition: none;
+    }
+}
+
+body.logout-modal-active {
+    overflow: hidden;
+}
+

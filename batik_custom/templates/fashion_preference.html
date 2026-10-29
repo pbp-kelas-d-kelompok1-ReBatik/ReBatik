@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/custom/fashion.css' %}">
+{% endblock css %}
+
+{% block content %}
+<main class="fashion-page">
+    <section class="fashion-panel">
+        <header class="fashion-header">
+            <p class="fashion-eyebrow">LANGKAH 1 DARI 3</p>
+            <div class="fashion-divider"><span></span><b>✿</b><span></span></div>
+            <h1>Pilih Kategori Fashion</h1>
+            <div class="fashion-title-underline"></div>
+            <p class="fashion-subtitle">Pilih kategori outfit yang ingin kamu eksplorasi.</p>
+        </header>
+
+        <form method="POST" action="{% url 'batik_custom:fashion_preference' %}">
+            {% csrf_token %}
+            <div class="fashion-grid">
+                <label class="fashion-option">
+                    <input type="radio" name="fashion_preference" value="women" required>
+                    <div class="fashion-card">
+                        <div class="fashion-image">
+                            <img src="{% static 'img/wanitabatik.jpe' %}" alt="Fashion batik wanita">
+                            <span class="fashion-check">✓</span>
+                        </div>
+                        <div class="fashion-card-content">
+                            <h2>Women</h2>
+                            <p>Fashion perempuan</p>
+                        </div>
+                    </div>
+                </label>
+
+                <label class="fashion-option">
+                    <input type="radio" name="fashion_preference" value="men" required>
+                    <div class="fashion-card">
+                        <div class="fashion-image">
+                            <img src="{% static 'img/priabatik.jpe' %}" alt="Fashion batik pria">
+                            <span class="fashion-check">✓</span>
+                        </div>
+                        <div class="fashion-card-content">
+                            <h2>Men</h2>
+                            <p>Fashion laki-laki</p>
+                        </div>
+                    </div>
+                </label>
+
+                <label class="fashion-option">
+                    <input type="radio" name="fashion_preference" value="unisex" required>
+                    <div class="fashion-card">
+                        <div class="fashion-image">
+                            <img src="{% static 'img/batik2.png' %}" alt="Fashion batik unisex">
+                            <span class="fashion-check">✓</span>
+                        </div>
+                        <div class="fashion-card-content">
+                            <h2>Unisex</h2>
+                            <p>Fashion untuk semua</p>
+                        </div>
+                    </div>
+                </label>
+            </div>
+
+            <div class="fashion-actions">
+                <button type="submit" class="fashion-next">Lanjutkan <span>→</span></button>
+            </div>
+        </form>
+
+        <footer class="fashion-footer">
+            <span>THE BEAUTY OF HERITAGE</span>
+            <span>Est. ReBatik Project</span>
+        </footer>
+    </section>
+</main>
+{% endblock content %}
