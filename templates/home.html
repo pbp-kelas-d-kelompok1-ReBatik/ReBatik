@@ -5,67 +5,91 @@
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link
+    href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap"
+    rel="stylesheet">
 {% endblock %}
-
 
 {% block content %}
+<section class="home-hero">
+    <div class="batik-decoration decoration-top" aria-hidden="true">❀</div>
+    <div class="batik-decoration decoration-bottom" aria-hidden="true">❀</div>
 
-<main class="hero">
+    <div class="home-layout">
+        <div class="home-copy">
+            <p class="eyebrow">
+                <span></span>
+                WARISAN BUDAYA, KREASI MASA KINI
+                <span></span>
+            </p>
 
-    <h1 class="title">
-        Selamat Datang di ReBatik
-    </h1>
+            <p class="welcome-text">Selamat Datang di</p>
 
-    <section class="intro">
+            <h1 class="brand-title">ReBatik<span>.</span></h1>
 
-        <img
-            class="mascot"
-            src="{% static 'img/mascot/pointing.webp' %}"
-            alt="Kapy, maskot beruang berbaju batik"
-        >
-
-        <div class="intro-content">
-
-            <div class="bubble">
-                <p>Hai perkenalkan aku kapy &gt;-&lt;</p>
-                <p>Aku akan menemani kalian selama berada di website ini</p>
+            <div class="title-ornament" aria-hidden="true">
+                <span></span>
+                <span class="ornament-flower">✿</span>
+                <span></span>
             </div>
 
-            <div class="actions">
+            <p class="hero-description">
+                Jelajahi keindahan motif batik Nusantara,
+                temukan ceritanya, dan ciptakan gaya batik
+                versimu sendiri.
+            </p>
 
-                <a
-                    href="{% url 'main:login' %}"
-                    class="btn"
-                >
-                    Sign-in
+            <div class="hero-actions">
+                <a href="{% url 'main:login' %}" class="hero-button button-primary">
+                    <span class="button-flower" aria-hidden="true">✿</span>
+                    <span>Sign-in</span>
+                    <span class="button-arrow" aria-hidden="true">→</span>
                 </a>
 
-                <a
-                    href="{% url 'main:signup' %}"
-                    class="btn"
-                >
-                    Sign-Up
+                <a href="{% url 'main:signup' %}" class="hero-button button-secondary">
+                    <span class="button-flower" aria-hidden="true">✿</span>
+                    <span>Sign-Up</span>
+                    <span class="button-arrow" aria-hidden="true">→</span>
                 </a>
-
             </div>
 
+            <p class="hero-note">
+                <span>✦</span>
+                Kenali motifnya, ceritakan maknanya, ciptakan gayamu.
+            </p>
         </div>
 
-    </section>
+        <div class="home-visual">
+            <div class="sparkle sparkle-one" aria-hidden="true">✧</div>
+            <div class="sparkle sparkle-two" aria-hidden="true">✦</div>
+            <div class="sparkle sparkle-three" aria-hidden="true">✧</div>
 
-</main>
+            <div class="speech-bubble">
+                <span class="bubble-flower" aria-hidden="true">✿</span>
+                <p>Hai, kenalan yuk!</p>
+                <p>Aku Kapy, temanmu menjelajahi dunia batik.</p>
+                <span class="bubble-heart" aria-hidden="true">♡</span>
+            </div>
 
-{% endblock %}
+            <div class="mascot-stage">
+                <div class="mascot-halo"></div>
 
+                <img class="mascot" src="{% static 'img/mascot/pointing.webp' %}"
+                    alt="Kapy, maskot ReBatik yang mengenakan pakaian bermotif batik">
 
-{% block footer %}
+                <div class="mascot-caption">
+                    <span>✿</span>
+                    <span>Kenali. Lestarikan. Kreasikan.</span>
+                    <span>✿</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<footer class="footer">
-    <p>
-        &copy; 2026 ReBatik.
-        Fakultas Ilmu Komputer, Universitas Indonesia.
-    </p>
-</footer>
-
+    <div class="hero-bottom-decoration" aria-hidden="true">
+        <span>✿</span>
+        <span>✧</span>
+        <span>✿</span>
+    </div>
+</section>
 {% endblock %}
