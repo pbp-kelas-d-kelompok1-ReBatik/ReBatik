@@ -6,18 +6,19 @@
 {% endblock css %}
 
 {% block content %}
-<section id="marketplace-page-content" class="relative overflow-hidden px-4 pb-12 pt-8 sm:px-6 sm:pt-10">
-    <header class="relative mx-auto mb-8 max-w-3xl text-center text-[var(--cream-light)]">
-        <p class="text-xs uppercase tracking-[0.3em]">Marketplace · Pemesanan</p>
+<section id="marketplace-page-content" class="mp-page-shell relative overflow-hidden">
+    <header class="mp-hero-header relative mx-auto mb-8 max-w-3xl text-center text-[var(--brown)]">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--brown-muted)]">Marketplace · Pemesanan</p>
         <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">Checkout Karya</h1>
-        <p class="mt-3 text-base sm:text-lg">
+        <p class="mt-3 text-base text-[var(--brown-dark)] sm:text-lg">
             Lengkapi metode penerimaan dan nomor WhatsApp untuk konfirmasi pesanan.
         </p>
     </header>
 
     <div
-        class="mx-auto max-w-6xl rounded-3xl border-2 border-[var(--mp-accent)]/60
-               bg-[var(--mp-panel)] p-5 text-[var(--brown)] shadow-2xl sm:p-8 lg:p-10"
+        class="mp-panel-box mx-auto max-w-6xl rounded-2xl border-2 border-[var(--mp-accent)]/60
+               bg-[var(--mp-panel)] p-5 text-[var(--brown)] shadow-2xl
+               sm:rounded-3xl sm:p-8 lg:p-10"
     >
         <a
             href="{% url 'marketplace:product_detail' product.pk %}"
@@ -41,6 +42,11 @@
         <form
             method="post"
             action="{% url 'marketplace:checkout' product.pk %}"
+            hx-post="{% url 'marketplace:checkout' product.pk %}"
+            hx-target="#marketplace-page-content"
+            hx-select="#marketplace-page-content"
+            hx-swap="outerHTML"
+            hx-disabled-elt="button[type='submit']"
             novalidate
             class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]"
         >
@@ -106,17 +112,34 @@
                         {% endif %}
                     </div>
 
-                    <div id="mp-address-field" class="mt-5 space-y-1">
-                        <label for="{{ form.address.id_for_label }}" class="font-semibold">
-                            {{ form.address.label }}
-                        </label>
-                        {{ form.address }}
-                        <p class="text-sm text-[var(--brown-muted)]">
-                            Tuliskan jalan, nomor rumah, kecamatan, kota, dan kode pos.
-                        </p>
-                        {% if form.address.errors %}
-                            <p class="text-sm font-semibold text-[var(--danger)]">{{ form.address.errors|striptags }}</p>
-                        {% endif %}
+                    <div id="mp-address-field" class="mt-5 space-y-3">
+                        <div class="grid gap-3 sm:grid-cols-2">
+                            <div>
+                                <label for="mp-prov-select" class="text-sm font-semibold">Provinsi</label>
+                                <select id="mp-prov-select" class="mt-1 block min-h-11 w-full rounded-xl border border-[var(--border)] bg-white px-3 py-2 text-sm text-[var(--brown)]">
+                                    <option value="">-- Pilih Provinsi --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="mp-city-select" class="text-sm font-semibold">Kota / Kabupaten</label>
+                                <select id="mp-city-select" disabled class="mt-1 block min-h-11 w-full rounded-xl border border-[var(--border)] bg-white px-3 py-2 text-sm text-[var(--brown)] disabled:opacity-50">
+                                    <option value="">-- Pilih Kota/Kabupaten --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label for="{{ form.address.id_for_label }}" class="font-semibold">
+                                {{ form.address.label }}
+                            </label>
+                            {{ form.address }}
+                            <p class="text-sm text-[var(--brown-muted)]">
+                                Tuliskan jalan, nomor rumah, kecamatan, kota, dan kode pos.
+                            </p>
+                            {% if form.address.errors %}
+                                <p class="text-sm font-semibold text-[var(--danger)]">{{ form.address.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
                     </div>
                 </section>
 
@@ -232,6 +255,50 @@
     document.querySelectorAll("input[name='delivery_method']").forEach((el) => {
         el.addEventListener("change", updateDeliveryFields);
     });
+
+    const provSelect = document.getElementById("mp-prov-select");
+    const citySelect = document.getElementById("mp-city-select");
+    const addrInput = document.getElementById("{{ form.address.id_for_label }}");
+    const regionsEndpoint = "{% url 'marketplace:regions_api' %}";
+
+    if (provSelect && citySelect) {
+        fetch(regionsEndpoint)
+            .then((res) => (res.ok ? res.json() : { items: [] }))
+            .then((payload) => {
+                (payload.items || []).forEach((p) => {
+                    provSelect.add(new Option(p.name, p.id));
+                });
+            })
+            .catch(() => {});
+
+        provSelect.addEventListener("change", () => {
+            citySelect.innerHTML = '<option value="">-- Pilih Kota/Kabupaten --</option>';
+            citySelect.disabled = true;
+            if (!provSelect.value) return;
+            fetch(`${regionsEndpoint}?province_id=${encodeURIComponent(provSelect.value)}`)
+                .then((res) => (res.ok ? res.json() : { items: [] }))
+                .then((payload) => {
+                    (payload.items || []).forEach((c) => citySelect.add(new Option(c.name, c.name)));
+                    citySelect.disabled = false;
+                })
+                .catch(() => {});
+        });
+
+        citySelect.addEventListener("change", () => {
+            const provName = provSelect.options[provSelect.selectedIndex]?.text || "";
+            if (citySelect.value && addrInput && !addrInput.value.includes(citySelect.value)) {
+                const prefix = addrInput.value.trim() ? addrInput.value.trim() + ", " : "";
+                addrInput.value = `${prefix}${citySelect.value}, ${provName}`;
+            }
+        });
+    }
+
+    const checkoutForm = qtyInput?.closest("form");
+    checkoutForm?.addEventListener("submit", () => {
+        const submitBtn = checkoutForm.querySelector("button[type='submit']");
+        if (submitBtn) submitBtn.textContent = "Memproses Pesanan…";
+    });
+
     updateSummary();
     updateDeliveryFields();
 })();

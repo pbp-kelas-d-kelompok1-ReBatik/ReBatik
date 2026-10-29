@@ -6,87 +6,85 @@
 {% endblock css %}
 
 {% block content %}
-<section class="relative isolate overflow-hidden px-4 pb-12 pt-10 sm:px-6 sm:pt-12">
-    <img
-        src="{% static 'img/upcycling/cloud-left.webp' %}"
-        alt=""
-        aria-hidden="true"
-        class="pointer-events-none absolute left-0 top-20 -z-10 w-24 -translate-x-1/3 sm:w-36"
-    >
-    <img
-        src="{% static 'img/upcycling/cloud-right.webp' %}"
-        alt=""
-        aria-hidden="true"
-        class="pointer-events-none absolute right-0 top-16 -z-10 w-24 translate-x-1/4 sm:w-36"
-    >
+<section class="mp-page-shell home-hero relative isolate overflow-hidden">
+    <div class="batik-decoration decoration-top" aria-hidden="true">❁</div>
+    <div class="batik-decoration decoration-bottom" aria-hidden="true">❁</div>
 
-    <header class="relative mx-auto mb-10 max-w-4xl text-center text-[var(--cream-light)]">
-        <p class="text-xs uppercase tracking-[0.3em]">Titik Pengumpulan Kain · ReBatik</p>
+    <header class="mp-hero-header relative mx-auto mb-8 max-w-4xl text-center text-[var(--brown)] sm:mb-10">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--brown-muted)]">Titik Pengumpulan Kain · ReBatik</p>
         <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">Drop-off Point</h1>
-        <p class="mt-3 text-base sm:text-lg">
+        <p class="mt-3 text-base leading-relaxed text-[var(--brown-dark)] sm:text-lg">
             Setorkan pakaian batik bekas atau ambil pesanan upcycling Anda di titik mitra terdekat.
         </p>
+        <div class="hero-bottom-decoration" aria-hidden="true">
+            <span>✦</span>
+            <span>❖</span>
+            <span>✦</span>
+        </div>
     </header>
 
     <div
         id="marketplace-page-content"
         hx-push-url="true"
-        class="mx-auto max-w-6xl rounded-2xl border border-[var(--mp-card-border)]
+        class="mp-panel-box mx-auto max-w-6xl rounded-2xl border border-[var(--mp-card-border)]
                bg-[var(--mp-panel)] p-5 text-[var(--brown)] shadow-2xl
                sm:rounded-3xl sm:p-8 lg:p-10"
     >
-        <div class="mb-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="mp-toolbar-head mb-6 flex flex-col gap-4 sm:mb-7 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h2 class="text-2xl font-bold sm:text-3xl">Lokasi Titik Pengumpulan</h2>
-                <p class="mt-1 text-[var(--brown-dark)]">
+                <p class="mt-1 text-sm text-[var(--brown-dark)] sm:text-base">
                     Pilih kota untuk menemukan titik penerimaan kain dan pengambilan produk upcycling.
                 </p>
             </div>
             <a
                 href="{% url 'marketplace:home' %}"
-                class="primary-action-button min-h-11 px-5 py-2.5 text-sm font-semibold"
+                class="primary-action-button mp-top-btn min-h-11 w-fit px-4 py-2 text-sm font-semibold sm:px-5"
             >
                 ← Kembali ke Marketplace
             </a>
         </div>
 
-        <div class="grid gap-4 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-center">
-            <nav
-                aria-label="Filter kota drop-off"
-                class="inline-flex w-fit max-w-full flex-wrap items-center gap-1 rounded-full
-                       border border-[var(--border)] bg-[var(--card)] p-1.5 shadow-sm"
-            >
-                <a
-                    href="{% querystring city='' %}"
-                    hx-get="{% url 'marketplace:dropoff' %}{% querystring city='' %}"
-                    hx-target="#marketplace-page-content"
-                    hx-select="#marketplace-page-content"
-                    hx-swap="outerHTML"
-                    aria-current="{% if not selected_city %}page{% else %}false{% endif %}"
-                    class="rounded-full px-4 py-2 text-sm transition sm:px-5
-                           {% if not selected_city %}
-                               bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]
-                           {% else %}
-                               text-[var(--brown)] hover:bg-[var(--mp-soft)]
-                           {% endif %}"
-                >Semua Kota</a>
-                {% for city in cities %}
+        <div class="mp-filter-bar grid gap-4 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-center">
+            {% if cities %}
+                <nav
+                    aria-label="Filter kota drop-off"
+                    class="mp-chip-scroll rounded-full border border-[var(--border)] bg-[var(--card)] p-1.5 shadow-sm"
+                >
                     <a
-                        href="{% querystring city=city %}"
-                        hx-get="{% url 'marketplace:dropoff' %}{% querystring city=city %}"
+                        href="{% url 'marketplace:dropoff' %}"
+                        hx-get="{% url 'marketplace:dropoff' %}"
                         hx-target="#marketplace-page-content"
                         hx-select="#marketplace-page-content"
                         hx-swap="outerHTML"
-                        aria-current="{% if selected_city == city %}page{% else %}false{% endif %}"
-                        class="rounded-full px-4 py-2 text-sm transition sm:px-5
-                               {% if selected_city == city %}
+                        aria-current="{% if not selected_city and not selected_query %}page{% else %}false{% endif %}"
+                        class="mp-chip rounded-full px-4 py-2 text-sm transition sm:px-5
+                               {% if not selected_city and not selected_query %}
                                    bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]
                                {% else %}
                                    text-[var(--brown)] hover:bg-[var(--mp-soft)]
                                {% endif %}"
-                    >{{ city }}</a>
-                {% endfor %}
-            </nav>
+                    >Semua Kota</a>
+                    {% for city in cities %}
+                        <a
+                            href="{% querystring city=city q=None %}"
+                            hx-get="{% url 'marketplace:dropoff' %}{% querystring city=city q=None %}"
+                            hx-target="#marketplace-page-content"
+                            hx-select="#marketplace-page-content"
+                            hx-swap="outerHTML"
+                            aria-current="{% if selected_city == city %}page{% else %}false{% endif %}"
+                            class="mp-chip rounded-full px-4 py-2 text-sm transition sm:px-5
+                                   {% if selected_city == city %}
+                                       bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]
+                                   {% else %}
+                                       text-[var(--brown)] hover:bg-[var(--mp-soft)]
+                                   {% endif %}"
+                        >{{ city }}</a>
+                    {% endfor %}
+                </nav>
+            {% else %}
+                <div></div>
+            {% endif %}
 
             <form
                 method="get"
@@ -118,6 +116,32 @@
                            focus:border-[var(--gold)] focus:outline-none focus:ring-2 focus:ring-[var(--gold)]"
                 >
             </form>
+        </div>
+
+        <div class="mt-4 grid gap-3 rounded-2xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-4 sm:grid-cols-2">
+            <div>
+                <label for="mp-drop-prov" class="text-xs font-bold uppercase tracking-wider text-[var(--brown-muted)]">
+                    Cek Wilayah Provinsi (API Emsifa)
+                </label>
+                <select
+                    id="mp-drop-prov"
+                    class="mt-1 block min-h-10 w-full rounded-xl border border-[var(--border)] bg-white px-3 py-2 text-sm text-[var(--brown)]"
+                >
+                    <option value="">-- Pilih Provinsi --</option>
+                </select>
+            </div>
+            <div>
+                <label for="mp-drop-regency" class="text-xs font-bold uppercase tracking-wider text-[var(--brown-muted)]">
+                    Kota / Kabupaten
+                </label>
+                <select
+                    id="mp-drop-regency"
+                    disabled
+                    class="mt-1 block min-h-10 w-full rounded-xl border border-[var(--border)] bg-white px-3 py-2 text-sm text-[var(--brown)] disabled:opacity-50"
+                >
+                    <option value="">-- Pilih Kota/Kabupaten --</option>
+                </select>
+            </div>
         </div>
 
         <div id="dropoff-results" class="mt-6">
@@ -177,4 +201,57 @@
         </div>
     </div>
 </section>
+
+<script>
+(() => {
+    const regionsEndpoint = "{% url 'marketplace:regions_api' %}";
+
+    const initDropoffRegions = () => {
+        const provSelect = document.getElementById("mp-drop-prov");
+        const regSelect = document.getElementById("mp-drop-regency");
+        const searchInput = document.getElementById("mp-drop-search");
+        if (!provSelect || !regSelect || provSelect.dataset.bound === "true") return;
+        provSelect.dataset.bound = "true";
+
+        fetch(regionsEndpoint)
+            .then((res) => (res.ok ? res.json() : { items: [] }))
+            .then((payload) => {
+                (payload.items || []).forEach((p) => provSelect.add(new Option(p.name, p.id)));
+            })
+            .catch(() => {});
+
+        provSelect.addEventListener("change", () => {
+            regSelect.innerHTML = '<option value="">-- Pilih Kota/Kabupaten --</option>';
+            regSelect.disabled = true;
+            if (!provSelect.value) {
+                if (searchInput && searchInput.value) {
+                    searchInput.value = "";
+                    searchInput.dispatchEvent(new Event("search", { bubbles: true }));
+                }
+                return;
+            }
+            fetch(`${regionsEndpoint}?province_id=${encodeURIComponent(provSelect.value)}`)
+                .then((res) => (res.ok ? res.json() : { items: [] }))
+                .then((payload) => {
+                    (payload.items || []).forEach((c) => regSelect.add(new Option(c.name, c.name)));
+                    regSelect.disabled = false;
+                })
+                .catch(() => {});
+        });
+
+        regSelect.addEventListener("change", () => {
+            if (!searchInput) return;
+            const cleaned = regSelect.value
+                .replace(/^(KOTA|KABUPATEN)\s+/i, "")
+                .replace(/^SURAKARTA$/i, "Solo")
+                .trim();
+            searchInput.value = cleaned;
+            searchInput.dispatchEvent(new Event("search", { bubbles: true }));
+        });
+    };
+
+    initDropoffRegions();
+    document.body.addEventListener("htmx:afterSwap", initDropoffRegions);
+})();
+</script>
 {% endblock content %}
