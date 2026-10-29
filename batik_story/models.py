@@ -1,5 +1,6 @@
 import uuid
 
+from django.conf import settings
 from django.db import models
 
 # Create your models here.
@@ -95,7 +96,9 @@ class BatikMotif(models.Model):
     asal=models.CharField(choices=ASAL_CHOICES,max_length=300, null=False, blank=False)
     filosofi=models.TextField()
     deskripsi=models.TextField()
-    gambar=models.ImageField(upload_to='batik/',blank=True, null=True)
+    gambar = models.ImageField(upload_to='batik/', blank=True, null=True)
+
+    favorited_by = models.ManyToManyField(settings.AUTH_USER_MODEL,related_name="favorite_batik_motifs",blank=True)
 
     @property
     def static_gambar_path(self):

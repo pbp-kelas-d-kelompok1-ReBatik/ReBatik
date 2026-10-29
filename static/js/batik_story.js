@@ -210,3 +210,84 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const loveButtons = document.querySelectorAll(".love");
+
+    loveButtons.forEach(function (button) {
+        button.addEventListener("click", async function () {
+
+            // Cegah klik jika tombol dinonaktifkan
+            if (button.disabled) {
+                return;
+            }
+
+            // Periksa apakah pengguna sudah login
+            if (!window.BATIK_USER_AUTHENTICATED) {
+                const loginURL = window.BATIK_LOGIN_URL || "/accounts/login/";
+                window.location.href =
+                    loginURL + "?next=" +
+                    encodeURIComponent(window.location.pathname);
+                return;
+            }
+
+            const url = button.dataset.url;
+            const csrfInput = document.querySelector(
+                "#csrf-form [name=csrfmiddlewaretoken]"
+            );
+
+            if (!url || !csrfInput) {
+                console.error("URL favorit atau token CSRF tidak ditemukan.");
+                alert("Terjadi kesalahan. Periksa template Batik Story.");
+                return;
+            }
+
+            button.disabled = true;
+
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfInput.value,
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    credentials: "same-origin"
+                });
+
+                if (!response.ok) {
+                    throw new Error("Permintaan favorit gagal: " + response.status);
+                }
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error("Favorit tidak berhasil diperbarui.");
+                }
+
+                // Perbarui tampilan hati
+                const loveIcon = button.querySelector(".love-icon");
+                const favoriteCount = button.querySelector(".favorite-count");
+
+                if (data.is_favorited) {
+                    button.classList.add("is-favorited");
+                    button.setAttribute("aria-pressed", "true");
+                    loveIcon.textContent = "♥";
+                } else {
+                    button.classList.remove("is-favorited");
+                    button.setAttribute("aria-pressed", "false");
+                    loveIcon.textContent = "♡";
+                }
+
+                // Perbarui jumlah favorit
+                favoriteCount.textContent = data.favorite_count;
+
+            } catch (error) {
+                console.error("Error favorit:", error);
+                alert("Favorit gagal diperbarui. Silakan coba lagi.");
+            } finally {
+                button.disabled = false;
+            }
+        });
+    });
+});

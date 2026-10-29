@@ -1934,3 +1934,54 @@ input[type="file"].form-input {
         font-size: 11px;
     }
 }
+
+
+/* LOVE BUTTON */
+.card-actions .love {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-width: 90px;
+    min-height: 45px;
+    padding: 7px 12px;
+    border: 1px solid #d7c5b2;
+    border-radius: 30px;
+    background: transparent;
+    color: #80583e;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.card-actions .love-icon {
+    font-size: 25px;
+    line-height: 1;
+    transition: transform 0.25s ease;
+}
+
+.card-actions .favorite-count {
+    font-family: Georgia, serif;
+    font-size: 19px;
+    line-height: 1;
+}
+
+.card-actions .love:hover {
+    border-color: #bd7565;
+    background: #fff4ed;
+    color: #bd493d;
+}
+
+.card-actions .love:hover .love-icon {
+    transform: scale(1.15);
+}
+
+.card-actions .love.is-favorited {
+    border-color: #e1aaa0;
+    background: #fff0ed;
+    color: #c44747;
+}
+
+.card-actions .love:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
