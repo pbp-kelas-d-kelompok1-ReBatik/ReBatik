@@ -4,11 +4,19 @@ from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Sum
 from django.shortcuts import render
 
-from .models import PointTransaction
-from .services import get_available_points, get_lifetime_points
+from .models import PointTransaction, Reward, RewardRedemption
+from .services import (
+    InsufficientPoints,
+    RewardUnavailable,
+    get_available_points,
+    get_lifetime_points,
+    redeem_reward,
+)
 
 
 def _level_progress(lifetime_points):
@@ -93,3 +101,40 @@ def transaction_history(request):
         else "rewards/history.html"
     )
     return render(request, template_name, context)
+
+
+@login_required
+def reward_catalog(request):
+    redemptions = RewardRedemption.objects.filter(user=request.user).select_related("reward")[:5]
+    return render(
+        request,
+        "rewards/catalog.html",
+        {
+            "rewards": Reward.objects.filter(is_active=True, stock__gt=0),
+            "available_points": get_available_points(request.user),
+            "recent_redemptions": redemptions,
+        },
+    )
+
+
+@login_required
+def redeem_reward_view(request, reward_id):
+    if request.method != "POST":
+        return redirect("rewards:catalog")
+    shipping_address = request.POST.get("shipping_address", "")
+    try:
+        redemption = redeem_reward(
+            request.user,
+            reward_id,
+            shipping_address=shipping_address,
+        )
+    except Reward.DoesNotExist:
+        messages.error(request, "Reward tidak tersedia.")
+    except (InsufficientPoints, RewardUnavailable, ValueError) as exc:
+        messages.error(request, str(exc))
+    else:
+        if redemption.voucher_code:
+            messages.success(request, f"Penukaran berhasil. Kode voucher Anda: {redemption.voucher_code}")
+        else:
+            messages.success(request, "Penukaran berhasil. Reward fisik menunggu diproses admin.")
+    return redirect("rewards:catalog")
