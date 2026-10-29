@@ -1090,6 +1090,40 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertContains(delete_response, "Permintaan yang sudah diajukan tidak dapat dihapus")
         self.assertContains(delete_response, "Batalkan permintaan")
 
+    def test_user_can_reject_quote_and_start_fabric_return(self):
+        """Test behavior: quote rejection is explicit and schedules fabric return."""
+        upcycling_request = self.make_request(
+            self.user,
+            status=UpcyclingRequest.Status.AWAITING_APPROVAL,
+            quoted_price=25000,
+            fabric_received_at=datetime.now(datetime_timezone.utc),
+        )
+        self.client.force_login(self.user)
+
+        detail_response = self.client.get(
+            reverse("upcycling:request_detail", args=[upcycling_request.pk])
+        )
+        self.assertContains(detail_response, "Tolak penawaran")
+        self.assertNotContains(detail_response, "Batalkan permintaan")
+
+        response = self.client.post(
+            reverse("upcycling:cancel_request", args=[upcycling_request.pk]),
+            {"action": "reject_quote"},
+            follow=True,
+        )
+
+        upcycling_request.refresh_from_db()
+        self.assertEqual(upcycling_request.status, UpcyclingRequest.Status.CANCELLED)
+        self.assertEqual(
+            upcycling_request.cancellation_reason,
+            "Penawaran harga ditolak oleh user.",
+        )
+        self.assertEqual(
+            upcycling_request.return_status,
+            UpcyclingRequest.ReturnStatus.PENDING_RETURN,
+        )
+        self.assertContains(response, "Penawaran ditolak. Kain akan dikembalikan.")
+
     def test_legacy_delete_confirmation_redirects_to_request_detail(self):
         """Test behavior: old delete links explain cancellation instead."""
         upcycling_request = self.make_request(self.user)
