@@ -1075,6 +1075,27 @@ class UpcyclingRequestViewTests(TestCase):
         )
         self.assertContains(response, "Permintaan berhasil dihapus.")
 
+    def test_submitted_request_uses_cancellation_instead_of_deletion(self):
+        """Test behavior: submitted requests remain auditable and can be cancelled."""
+        upcycling_request = self.make_request(self.user)
+        self.client.force_login(self.user)
+
+        detail_response = self.client.get(
+            reverse("upcycling:request_detail", args=[upcycling_request.pk])
+        )
+        delete_response = self.client.post(
+            reverse("upcycling:request_delete", args=[upcycling_request.pk]),
+            follow=True,
+        )
+
+        self.assertContains(detail_response, "Batalkan request")
+        self.assertNotContains(detail_response, "Hapus permintaan")
+        self.assertTrue(
+            UpcyclingRequest.objects.filter(pk=upcycling_request.pk).exists()
+        )
+        self.assertContains(delete_response, "Request yang sudah diajukan tidak dapat dihapus")
+        self.assertContains(delete_response, "Batalkan request")
+
     def test_user_can_open_delete_confirmation_for_own_pending_request(self):
         """Test behavior: user can open delete confirmation for own pending request."""
         upcycling_request = self.make_request(self.user)
