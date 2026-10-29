@@ -129,9 +129,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    
+
     // KARTU PERSONAL REBATIK
-    
+
 
     function makeCard() {
         const card = document.createElement("canvas");
@@ -408,7 +408,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         return card;
     }
-    
+
     // DOWNLOAD KARTU
     function downloadCard() {
         if (!imageReady) {
@@ -434,7 +434,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    
+
     // POPUP SHARE
     function openSharePopup() {
         if (!imageReady) {
@@ -828,9 +828,9 @@ document.addEventListener("DOMContentLoaded", function () {
             "Kartu ReBatik siap dibagikan.";
     }
 
-    
+
     // EVENT LISTENERS
-    
+
 
     swatches.forEach(button => {
         button.addEventListener("click", () => {
