@@ -239,6 +239,13 @@
                 {{ form.fabric.errors }}
             </fieldset>
 
+            <div id="other-fabric-field" class="hidden space-y-2">
+                <label for="{{ form.fabric_other_description.id_for_label }}" class="block text-base font-semibold sm:text-lg">{{ form.fabric_other_description.label }} <span aria-hidden="true">*</span></label>
+                {{ form.fabric_other_description }}
+                <p class="text-sm text-[var(--brown-muted)]">Sebutkan bahan kain yang tidak ada di pilihan.</p>
+                {{ form.fabric_other_description.errors }}
+            </div>
+
             <div class="grid gap-5 sm:grid-cols-2">
                 <div class="space-y-2 sm:col-span-2">
                     <label for="{{ form.fabric_photo.id_for_label }}" class="block text-base font-semibold sm:text-lg">Foto kain <span aria-hidden="true">*</span></label>

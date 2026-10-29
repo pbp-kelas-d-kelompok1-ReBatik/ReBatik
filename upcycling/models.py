@@ -146,6 +146,7 @@ class UpcyclingRequest(models.Model):
         related_name="upcycling_requests",
     )
     fabric = models.CharField(max_length=20, choices=FABRIC_CHOICES)
+    fabric_other_description = models.CharField(max_length=100, blank=True)
     fabric_photo = models.ImageField(upload_to="upcycling/fabric/", blank=True, null=True)
     fabric_condition = models.CharField(
         max_length=20,

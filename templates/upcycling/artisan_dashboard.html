@@ -18,7 +18,7 @@
                             <span class="rounded-full bg-[var(--upcycling-soft)] px-3 py-1 font-semibold">{{ item.get_status_display }}</span>
                         </div>
                         <dl class="mt-4 grid gap-2 sm:grid-cols-2">
-                            <div><dt class="font-semibold">Kain</dt><dd>{{ item.get_fabric_display }}{% if item.fabric_dimensions %} · {{ item.fabric_dimensions }}{% endif %}</dd></div>
+                            <div><dt class="font-semibold">Kain</dt><dd>{{ item.get_fabric_display }}{% if item.fabric_other_description %} · {{ item.fabric_other_description }}{% endif %}{% if item.fabric_dimensions %} · {{ item.fabric_dimensions }}{% endif %}</dd></div>
                             <div><dt class="font-semibold">Kondisi menurut user</dt><dd>{{ item.get_fabric_condition_display|default:"Belum diisi" }}</dd></div>
                             <div><dt class="font-semibold">Jumlah produk</dt><dd>{{ item.quantity }}</dd></div>
                             <div><dt class="font-semibold">Catatan user</dt><dd>{{ item.notes|default:"—" }}</dd></div>

@@ -185,7 +185,7 @@ class UpcyclingRequestAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at", "updated_at", "review_approved_at", "fabric_deadline", "quoted_at", "approved_at", "paid_at", "payment_confirmed_by", "return_confirmed_by", "return_confirmed_at", "ready_at", "delivery_proof_received_at", "completed_at")
     date_hierarchy = "created_at"
     fieldsets = (
-        ("Request", {"fields": ("user", "artisan", "fabric", "fabric_photo", "fabric_condition", "fabric_dimensions", "category", "product", "custom_product", "quantity", "notes", "status")} ),
+        ("Request", {"fields": ("user", "artisan", "fabric", "fabric_other_description", "fabric_photo", "fabric_condition", "fabric_dimensions", "category", "product", "custom_product", "quantity", "notes", "status")} ),
         ("Penyerahan dan inspeksi kain", {"fields": ("fabric_delivery_method", "fabric_delivery_location", "review_notes", "review_approved_at", "fabric_deadline", "fabric_received_at", "fabric_received_by", "fabric_receipt_notes", "inspection_notes", "rejection_stage", "rejection_reason")} ),
         ("Harga dan pembayaran", {"fields": ("quoted_price", "quotation_notes", "quoted_at", "approved_at", "payment_status", "paid_at", "payment_confirmed_by", "payment_resolution_status", "payment_resolution_notes")} ),
         ("Pengembalian kain", {"fields": ("return_status", "return_method", "return_cost_bearer", "return_confirmed_by", "return_confirmed_at", "return_notes", "cancellation_reason")} ),

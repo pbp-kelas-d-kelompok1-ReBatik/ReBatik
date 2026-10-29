@@ -10,6 +10,7 @@ const initializeUpcyclingForm = () => {
     const errorList = document.getElementById("form-error-list");
     const validationMessages = {
         fabric: ["Kain", "Pilih kain yang ingin digunakan."],
+        fabric_other_description: ["Jenis kain lainnya", "Tuliskan jenis kain yang akan digunakan."],
         fabric_photo: ["Foto kain", "Unggah foto kain yang akan diolah."],
         fabric_condition: ["Kondisi kain", "Pilih kondisi kain jika diketahui."],
         fabric_dimensions: ["Ukuran kain", "Isi perkiraan ukuran atau jumlah kain."],
@@ -29,6 +30,7 @@ const initializeUpcyclingForm = () => {
     };
     const validationTargets = {
         fabric: "#pilih-kain",
+        fabric_other_description: "#id_fabric_other_description",
         fabric_photo: "#id_fabric_photo",
         fabric_condition: "#id_fabric_condition",
         fabric_dimensions: "#id_fabric_dimensions",
@@ -109,6 +111,8 @@ const initializeUpcyclingForm = () => {
 
     const categoryFields = form.querySelectorAll('[name="category"]');
     const fabricFields = form.querySelectorAll('[name="fabric"]');
+    const otherFabricField = document.getElementById("id_fabric_other_description");
+    const otherFabricContainer = document.getElementById("other-fabric-field");
     const productField = document.getElementById("id_product");
     const productOptions = document.getElementById("product-options");
     const standardProductOptions = document.getElementById("standard-product-options");
@@ -128,7 +132,11 @@ const initializeUpcyclingForm = () => {
     }
 
     function updateSummary() {
-        fabricSummary.textContent = getRadioLabel("fabric", "Pilih kain");
+        const selectedFabric = form.querySelector('input[name="fabric"]:checked')?.value;
+        const selectedFabricLabel = getRadioLabel("fabric", "Pilih kain");
+        fabricSummary.textContent = selectedFabric === "OTHER" && otherFabricField.value.trim()
+            ? `${selectedFabricLabel}: ${otherFabricField.value.trim()}`
+            : selectedFabricLabel;
         categorySummary.textContent = getRadioLabel("category", "Pilih kategori produk");
         const selectedProduct = productField.selectedOptions[0];
         if (productField.value === "LAINNYA") {
@@ -138,6 +146,15 @@ const initializeUpcyclingForm = () => {
                 ? selectedProduct.textContent
                 : "Pilih model produk";
         }
+    }
+
+    function updateOtherFabricField() {
+        const isOtherFabric = form.querySelector('input[name="fabric"]:checked')?.value === "OTHER";
+        otherFabricContainer.classList.toggle("hidden", !isOtherFabric);
+        otherFabricField.required = isOtherFabric;
+        otherFabricField.setAttribute("aria-required", String(isOtherFabric));
+        if (!isOtherFabric) otherFabricField.value = "";
+        updateSummary();
     }
 
     function getSelectedCategory() {
@@ -220,7 +237,7 @@ const initializeUpcyclingForm = () => {
         updateCustomProductField();
     }
 
-    fabricFields.forEach((field) => field.addEventListener("change", updateSummary));
+    fabricFields.forEach((field) => field.addEventListener("change", updateOtherFabricField));
     deliveryMethodFields.forEach((field) => {
         field.addEventListener("change", updateAddressDetails);
     });
@@ -235,7 +252,9 @@ const initializeUpcyclingForm = () => {
         updateCustomProductField();
     });
     customProductField.addEventListener("input", updateSummary);
+    otherFabricField.addEventListener("input", updateSummary);
     updateAddressDetails();
+    updateOtherFabricField();
     loadProducts(true);
 
 };

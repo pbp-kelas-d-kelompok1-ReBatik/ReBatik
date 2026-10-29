@@ -105,11 +105,16 @@ class UpcyclingRequestForm(forms.ModelForm):
         self.fields["fabric_delivery_method"].label = "Cara menyerahkan kain"
         self.fields["fabric_delivery_location"].label = "Lokasi/rencana penyerahan kain"
         self.fields["fabric_delivery_location"].required = False
+        self.fields["fabric_other_description"].label = "Jenis kain lainnya"
+        self.fields["fabric_other_description"].widget.attrs.update(
+            {"placeholder": "Contoh: kanvas, corduroy, atau linen"}
+        )
 
     class Meta:
         model = UpcyclingRequest
         fields = [
             "fabric",
+            "fabric_other_description",
             "fabric_photo",
             "fabric_condition",
             "fabric_dimensions",
@@ -142,6 +147,7 @@ class UpcyclingRequestForm(forms.ModelForm):
         }
         widgets = {
             "fabric": forms.RadioSelect(attrs={"class": "sr-only"}),
+            "fabric_other_description": forms.TextInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "maxlength": 100}),
             "fabric_photo": forms.ClearableFileInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "accept": "image/*"}),
             "fabric_dimensions": forms.TextInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "placeholder": "Contoh: 1 celana jeans atau kain 1 × 2 m"}),
             "fabric_delivery_location": forms.TextInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "placeholder": "Lokasi/rencana penyerahan kain"}),
@@ -222,9 +228,21 @@ class UpcyclingRequestForm(forms.ModelForm):
     def clean(self):
         """Validate product/category compatibility and custom product names."""
         cleaned_data = super().clean()
+        fabric = cleaned_data.get("fabric")
+        other_fabric = cleaned_data.get("fabric_other_description", "").strip()
         category = cleaned_data.get("category")
         product = cleaned_data.get("product")
         custom_product = cleaned_data.get("custom_product", "").strip()
+
+        if fabric == UpcyclingRequest.FabricType.OTHER and not other_fabric:
+            self.add_error(
+                "fabric_other_description",
+                "Tuliskan jenis kain yang akan digunakan.",
+            )
+        elif fabric != UpcyclingRequest.FabricType.OTHER:
+            cleaned_data["fabric_other_description"] = ""
+        else:
+            cleaned_data["fabric_other_description"] = other_fabric
 
         if product == "LAINNYA" and not custom_product:
             self.add_error(
