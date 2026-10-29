@@ -191,25 +191,23 @@ class UpcyclingWorkflowTests(TestCase):
         self.assertEqual(request_obj.status, UpcyclingRequest.Status.AWAITING_APPROVAL)
         self.assertEqual(str(request_obj.quoted_price), "75000.00")
 
-    def test_admin_payment_confirmation_starts_production(self):
+    def test_approving_quote_starts_production_without_payment_step(self):
         request_obj = make_request(
             self.user,
             artisan=self.artisan,
-            status=UpcyclingRequest.Status.AWAITING_PAYMENT,
+            status=UpcyclingRequest.Status.AWAITING_APPROVAL,
             quoted_price="75000",
-            approved_at=timezone.now(),
         )
-        admin_user = User.objects.create_superuser("admin", "admin@example.com", "pw")
-        admin_request = RequestFactory().post("/admin/upcycling/upcyclingrequest/")
-        admin_request.user = admin_user
-        request_obj.payment_status = UpcyclingRequest.PaymentStatus.PAID
-        UpcyclingRequestAdmin(UpcyclingRequest, admin.site).save_model(
-            admin_request, request_obj, form=Mock(), change=True
-        )
+        self.client.force_login(self.user)
+        self.client.post(reverse("upcycling:approve_quote", args=[request_obj.pk]))
         request_obj.refresh_from_db()
         self.assertEqual(request_obj.status, UpcyclingRequest.Status.IN_PROGRESS)
-        self.assertEqual(request_obj.payment_confirmed_by, admin_user)
-        self.assertIsNotNone(request_obj.paid_at)
+        self.assertIsNotNone(request_obj.approved_at)
+        self.assertNotIn("AWAITING_PAYMENT", dict(UpcyclingRequest.Status.choices))
+        self.assertNotIn(
+            "payment_status",
+            {field.name for field in UpcyclingRequest._meta.get_fields()},
+        )
 
     def test_user_completion_awards_points_only_once(self):
         request_obj = make_request(
@@ -217,7 +215,6 @@ class UpcyclingWorkflowTests(TestCase):
             artisan=self.artisan,
             status=UpcyclingRequest.Status.READY,
             quoted_price="75000",
-            payment_status=UpcyclingRequest.PaymentStatus.PAID,
             approved_at=timezone.now(),
         )
         self.client.force_login(self.user)
