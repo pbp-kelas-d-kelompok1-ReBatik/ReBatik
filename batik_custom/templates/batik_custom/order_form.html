@@ -1,0 +1,300 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/custom/custom_studio.css' %}">
+<link rel="stylesheet" href="{% static 'css/custom/batik_order.css' %}">
+{% endblock css %}
+
+{% block content %}
+<main class="order-page">
+
+    <header class="order-header">
+        <p class="order-eyebrow">REBatik · PEMESANAN</p>
+        <h1>Wujudkan Batik Pilihanmu</h1>
+        <p>Pilih model produk, tentukan detail custom, lalu lengkapi pengiriman.</p>
+    </header>
+
+    <div class="order-layout">
+
+        <!-- RINGKASAN DESAIN -->
+        <section class="order-card order-design">
+            <h2>Detail Desain</h2>
+
+            <div class="order-motif">
+                {% if motif.static_image_path %}
+                    <img src="{% static motif.static_image_path %}" alt="{{ motif.name }}">
+                {% elif motif.image %}
+                    <img src="{{ motif.image.url }}" alt="{{ motif.name }}">
+                {% else %}
+                    <div class="order-image-placeholder">ReBatik</div>
+                {% endif %}
+
+                <div>
+                    <p class="muted">Motif pilihan</p>
+                    <h3>{{ motif.name }}</h3>
+                    <p><span class="muted">Palet warna:</span> {{ palette.name|default:"Palet pilihan" }}</p>
+                    <p><span class="muted">Style:</span> {{ selected_style.name|default:"Personal Style" }}</p>
+                    <p><span class="muted">Tata letak:</span> {{ design_settings.layout|default:"single" }}</p>
+                </div>
+            </div>
+
+            <a class="order-back" href="{% url 'batik_custom:custom_studio' %}?motif={{ motif.pk }}">
+                ← Kembali ke desain
+            </a>
+        </section>
+
+        <!-- FORM PEMESANAN -->
+        <form
+            class="order-card order-form"
+            method="post"
+            novalidate
+            data-has-server-errors="{% if form.errors %}true{% else %}false{% endif %}"
+        >
+            {% csrf_token %}
+
+            <input type="hidden" name="motif_id" value="{{ motif.pk }}">
+            <input type="hidden" name="palette_id" value="{{ palette.pk|default:'' }}">
+
+            {% for key, value in design_settings.items %}
+                <input type="hidden" name="{{ key }}" value="{{ value }}">
+            {% endfor %}
+
+            <h2>Form Pemesanan</h2>
+
+            {% if form.non_field_errors %}
+                <div class="order-errors">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            {% if form.errors %}
+                <div class="order-errors">
+                    Periksa kembali kolom yang ditandai.
+                </div>
+            {% endif %}
+
+            <!-- 01. PILIH PRODUK -->
+            <section class="order-section">
+                <h3>01. Pilih Produk</h3>
+
+                <div class="order-field-grid">
+                    {% for field in form %}
+                        {% if field.name == "product_type" or field.name == "design_option" or field.name == "material" or field.name == "quantity" or field.name == "unit" %}
+                            <div class="order-field-wrap">
+                                <label for="{{ field.id_for_label }}">
+                                    {{ field.label }}{% if field.field.required %} *{% endif %}
+                                </label>
+
+                                {{ field }}
+
+                                {% for error in field.errors %}
+                                    <small class="field-error">{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <p class="order-note">
+                    Pilih jenis produk terlebih dahulu, lalu tentukan model yang tersedia.
+                </p>
+            </section>
+
+            <!-- 02. DETAIL CUSTOM -->
+            <section class="order-section">
+                <h3>02. Detail Custom</h3>
+
+                <div class="order-field-grid">
+                    {% for field in form %}
+                        {% if field.name == "size" or field.name == "sleeve_type" or field.name == "fit_type" or field.name == "motif_placement" %}
+                            <div class="order-field-wrap">
+                                <label for="{{ field.id_for_label }}">
+                                    {{ field.label }}{% if field.field.required %} *{% endif %}
+                                </label>
+
+                                {{ field }}
+
+                                {% for error in field.errors %}
+                                    <small class="field-error">{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        {% if field.name == "custom_requirements" %}
+                            <div class="order-field-wrap full">
+                                <label for="{{ field.id_for_label }}">
+                                    {{ field.label }}{% if field.field.required %} *{% endif %}
+                                </label>
+
+                                {{ field }}
+
+                                {% for error in field.errors %}
+                                    <small class="field-error">{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- 03. CATATAN -->
+            <section class="order-section">
+                <h3>03. Catatan Tambahan</h3>
+
+                {% for field in form %}
+                    {% if field.name == "notes" %}
+                        <div class="order-field-wrap full">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+
+                            {% for error in field.errors %}
+                                <small class="field-error">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </section>
+
+            <!-- 04. ALAMAT PENGIRIMAN -->
+            <section class="order-section">
+                <h3>04. Alamat Pengiriman</h3>
+
+                <div class="order-field-grid">
+                    {% for field in form %}
+                        {% if field.name == "recipient_name" or field.name == "phone" or field.name == "province" or field.name == "city" or field.name == "district" or field.name == "postal_code" %}
+                            <div class="order-field-wrap">
+                                <label for="{{ field.id_for_label }}">
+                                    {{ field.label }}{% if field.field.required %} *{% endif %}
+                                </label>
+
+                                {{ field }}
+
+                                {% for error in field.errors %}
+                                    <small class="field-error">{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        {% if field.name == "address" %}
+                            <div class="order-field-wrap full">
+                                <label for="{{ field.id_for_label }}">
+                                    {{ field.label }}{% if field.field.required %} *{% endif %}
+                                </label>
+
+                                {{ field }}
+
+                                {% for error in field.errors %}
+                                    <small class="field-error">{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- 05. METODE PEMBAYARAN -->
+            <section class="order-section">
+                <h3>05. Metode Pembayaran</h3>
+
+                {% for field in form %}
+                    {% if field.name == "payment_method" %}
+                        <div class="order-field-wrap">
+                            <label for="{{ field.id_for_label }}">
+                                {{ field.label }}{% if field.field.required %} *{% endif %}
+                            </label>
+
+                            {{ field }}
+
+                            {% for error in field.errors %}
+                                <small class="field-error">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+                <p class="order-note">
+                    Metode pembayaran dicatat pada pesanan. Pembayaran otomatis belum diaktifkan.
+                </p>
+            </section>
+
+            <!-- TOMBOL FORM -->
+            <div class="order-submit-row">
+                <a class="order-back" href="{% url 'batik_custom:custom_studio' %}?motif={{ motif.pk }}">
+                    Kembali
+                </a>
+
+                <button type="submit" class="order-submit">
+                    Lanjut ke Konfirmasi →
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<!-- POPUP KONFIRMASI PESANAN -->
+<div id="orderConfirmModal" class="order-confirm-modal" aria-hidden="true">
+
+    <div class="order-confirm-backdrop"></div>
+
+    <div
+        class="order-confirm-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="orderConfirmTitle"
+        aria-describedby="orderConfirmDescription"
+    >
+        <button
+            type="button"
+            class="order-confirm-close"
+            id="closeOrderModal"
+            aria-label="Tutup popup"
+        >
+            &times;
+        </button>
+
+        <div class="order-confirm-mascot">
+            <img
+                src="{% static 'img/mascot/happy.webp' %}"
+                alt="Maskot ReBatik mengenakan batik"
+            >
+        </div>
+
+        <h2 id="orderConfirmTitle">Konfirmasi Pesanan</h2>
+
+        <p class="order-confirm-question">
+            Apakah Anda sudah yakin ingin membeli?
+        </p>
+
+        <p class="order-confirm-description" id="orderConfirmDescription">
+            Silakan cek kembali desain batik, model produk, jumlah,
+            alamat pengiriman, dan estimasi total pesanan Anda
+            sebelum melanjutkan.
+        </p>
+
+        <div class="order-confirm-checklist">
+            <p><span>✓</span> Desain batik dan model produk sudah sesuai</p>
+            <p><span>✓</span> Jumlah dan spesifikasi sudah benar</p>
+            <p><span>✓</span> Alamat pengiriman sudah lengkap</p>
+        </div>
+
+        <div class="order-confirm-actions">
+            <button type="button" id="confirmOrderBtn" class="order-confirm-yes">
+                Ya, Lanjutkan Pesanan →
+            </button>
+
+            <button type="button" id="cancelOrderBtn" class="order-confirm-no">
+                Periksa Kembali
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+<!-- JavaScript dipisahkan ke file eksternal -->
+{% block extra_js %}
+<script src="{% static 'js/order-confirm.js' %}" defer></script>
+{% endblock extra_js %}

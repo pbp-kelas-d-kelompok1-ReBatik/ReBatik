@@ -1,0 +1,664 @@
+@font-face {
+    font-family: Garamond;
+    src: url("/static/font/Garamond.ttf") format("truetype");
+    font-display: swap;
+}
+
+.order-page {
+    min-height: 100vh;
+    padding: 34px clamp(16px, 4vw, 60px) 60px;
+    background: radial-gradient(ellipse at top right, #ead7bc 0, transparent 35%), #f8f3e9;
+    color: #492b1c;
+    font-family: Garamond, Georgia, serif;
+}
+
+.order-page * {
+    box-sizing: border-box;
+}
+
+.order-header {
+    max-width: 900px;
+    margin: 0 auto 26px;
+}
+
+.order-eyebrow {
+    margin: 0 0 7px;
+    color: #874a29;
+    font-size: 14px;
+    letter-spacing: 2px;
+    font-weight: bold;
+}
+
+.order-header h1 {
+    margin: 0;
+    font-size: clamp(34px, 4vw, 52px);
+    line-height: 1.1;
+}
+
+.order-header > p:last-child {
+    margin: 10px 0;
+    color: #79685b;
+    font-size: 18px;
+}
+
+.order-layout {
+    display: grid;
+    grid-template-columns: minmax(260px, 0.7fr) minmax(0, 1.5fr);
+    gap: 20px;
+    max-width: 1200px;
+    margin: auto;
+    align-items: start;
+}
+
+.order-card {
+    padding: 24px;
+    border: 1px solid #e9ddcc;
+    border-radius: 20px;
+    background: #fffdf8;
+    box-shadow: 0 8px 28px #5939210d;
+    min-width: 0;
+}
+
+.order-card h2 {
+    font-size: 28px;
+    margin: 0 0 18px;
+}
+
+.order-card h3 {
+    font-size: 20px;
+    margin: 0 0 12px;
+}
+
+.order-motif {
+    display: grid;
+    grid-template-columns: 105px minmax(0, 1fr);
+    gap: 15px;
+    align-items: center;
+    padding: 14px;
+    background: #f7efe3;
+    border-radius: 14px;
+}
+
+.order-motif img {
+    width: 105px;
+    height: 125px;
+    object-fit: cover;
+    border-radius: 9px;
+}
+
+.order-motif h3 {
+    overflow-wrap: anywhere;
+}
+
+.order-motif p {
+    margin: 4px 0;
+    font-size: 16px;
+}
+
+.muted,
+.order-note {
+    color: #79685b;
+}
+
+.order-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #874a29;
+    background: #f8eee0;
+    border-radius: 30px;
+    padding: 12px 17px;
+    margin-top: 18px;
+}
+
+.order-section {
+    padding: 18px 0;
+    border-top: 1px solid #eee2d2;
+}
+
+.order-section:first-of-type {
+    border-top: 0;
+}
+
+.order-field-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.order-field-wrap {
+    min-width: 0;
+}
+
+.order-field-wrap.full {
+    grid-column: 1 / -1;
+}
+
+.order-field-wrap label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 16px;
+}
+
+.order-field {
+    width: 100%;
+    min-height: 43px;
+    padding: 10px 12px;
+    border: 1px solid #e2d3c0;
+    border-radius: 9px;
+    background: #fffefa;
+    color: #492b1c;
+    font: 16px Garamond, Georgia, serif;
+}
+
+.order-field:focus {
+    outline: 2px solid #c49a62;
+    outline-offset: 1px;
+}
+
+.order-field-wrap textarea {
+    width: 100%;
+    min-height: 90px;
+    padding: 10px 12px;
+    border: 1px solid #e2d3c0;
+    border-radius: 9px;
+    font: 16px Garamond, Georgia, serif;
+    resize: vertical;
+}
+
+.payment-choice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px;
+    border: 1px solid #e9ddcc;
+    border-radius: 10px;
+}
+
+.payment-choice select {
+    max-width: 65%;
+}
+
+.order-note {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 0;
+}
+
+.order-errors {
+    padding: 12px 14px;
+    border: 1px solid #fecaca;
+    border-radius: 9px;
+    background: #fff7f7;
+    color: #b91c1c;
+    margin: 12px 0 16px;
+    font-size: 0.92rem;
+}
+
+.field-error {
+    display: block;
+    color: #b42318;
+    margin-top: 6px;
+    font-size: 0.82rem;
+}
+
+/* Penanda kolom yang belum valid */
+.order-field-wrap.has-error input,
+.order-field-wrap.has-error select,
+.order-field-wrap.has-error textarea,
+.order-field-wrap input:invalid,
+.order-field-wrap select:invalid,
+.order-field-wrap textarea:invalid {
+    border: 1.5px solid #dc2626;
+    background-color: #fffafa;
+}
+
+.order-submit-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.order-submit {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 30px;
+    padding: 14px 24px;
+    background: #874a29;
+    color: white;
+    text-decoration: none;
+    font: bold 17px Garamond, Georgia, serif;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.order-submit:hover {
+    background: #492b1c;
+    transform: translateY(-1px);
+}
+
+.confirmation-card {
+    max-width: 850px;
+    margin: auto;
+}
+
+.confirmation-mark {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #e5f3e6;
+    color: #26723c;
+    font-size: 32px;
+    margin-bottom: 14px;
+}
+
+.order-status {
+    display: inline-block;
+    padding: 7px 12px;
+    border-radius: 20px;
+    background: #f8ead4;
+    color: #874a29;
+}
+
+.confirmation-card hr {
+    border: 0;
+    border-top: 1px solid #e9ddcc;
+    margin: 22px 0;
+}
+
+.confirmation-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+}
+
+.confirmation-grid p {
+    margin: 6px 0;
+    overflow-wrap: anywhere;
+}
+
+.order-total {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    margin-top: 22px;
+    padding: 18px;
+    background: #f8efe3;
+    border-radius: 12px;
+}
+
+.order-total strong {
+    font-size: 25px;
+    color: #874a29;
+}
+
+.confirmation-link {
+    margin-top: 22px;
+}
+
+@media (max-width: 850px) {
+    .order-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .order-page {
+        padding: 22px 12px 35px;
+    }
+
+    .order-card {
+        padding: 17px;
+        border-radius: 15px;
+    }
+
+    .order-field-grid,
+    .confirmation-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .order-submit-row {
+        align-items: stretch;
+        flex-direction: column-reverse;
+    }
+
+    .order-submit-row > * {
+        width: 100%;
+        margin-top: 8px;
+    }
+
+    .order-motif {
+        grid-template-columns: 82px minmax(0, 1fr);
+    }
+
+    .order-motif img {
+        width: 82px;
+        height: 100px;
+    }
+}
+
+
+#toast-component.toast-component {
+    position: fixed;
+    inset: 20px 20px auto auto;
+    margin: 0;
+    width: min(360px, calc(100vw - 32px));
+    padding: 16px 18px;
+    border: 1px solid #e9ddcc;
+    border-radius: 14px;
+    background: #fffdf8;
+    color: #492b1c;
+    box-shadow: 0 10px 30px #492b1c24;
+    z-index: 9999;
+    font-family: Garamond, Georgia, serif;
+}
+
+#toast-component .toast-title {
+    margin: 0 0 6px;
+    font-size: 20px;
+}
+
+#toast-component .toast-message {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+#toast-component.toast-success {
+    border-left: 5px solid #26834a;
+}
+
+#toast-component.toast-error {
+    border-left: 5px solid #dc2626;
+}
+
+#toast-component.toast-normal {
+    border-left: 5px solid #c49a62;
+}
+
+#toast-component.toast-hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    pointer-events: none;
+}
+
+#toast-component.toast-show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+
+/* ===== REBATIK CONFIRMATION POPUP ===== */
+.order-confirm-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.order-confirm-modal.is-open {
+    display: flex;
+}
+
+.order-confirm-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(42, 29, 22, 0.62);
+    backdrop-filter: blur(5px);
+}
+
+.order-confirm-dialog {
+    position: relative;
+    width: min(100%, 620px);
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 32px;
+    border: 1px solid #ead8c3;
+    border-radius: 28px;
+    background: #fffaf2;
+    box-shadow: 0 24px 70px rgba(45, 29, 20, 0.25);
+    text-align: center;
+    color: #714329;
+    animation: rebatikPopupIn 0.25s ease-out;
+}
+
+.order-confirm-close {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #79472b;
+    font-size: 32px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.order-confirm-close:hover {
+    background: #f6e8d5;
+}
+
+.order-confirm-mascot {
+    width: 190px;
+    height: 190px;
+    margin: 0 auto 12px;
+}
+
+.order-confirm-mascot img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.order-confirm-dialog h2 {
+    margin: 8px 0 14px;
+    color: #713d24;
+    font-size: clamp(26px, 4vw, 38px);
+}
+
+.order-confirm-question {
+    margin: 0 0 12px;
+    font-size: clamp(17px, 2.5vw, 23px);
+    font-weight: 600;
+}
+
+.order-confirm-description {
+    max-width: 480px;
+    margin: 0 auto 22px;
+    color: #795e4b;
+    font-size: 16px;
+    line-height: 1.65;
+}
+
+.order-confirm-checklist {
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    border-radius: 18px;
+    background: #f8ecdd;
+    text-align: left;
+}
+
+.order-confirm-checklist p {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 8px 0;
+    color: #87502f;
+    line-height: 1.5;
+}
+
+.order-confirm-checklist p span {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #95502e;
+    color: white;
+    font-weight: bold;
+}
+
+.order-confirm-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.order-confirm-actions button {
+    width: 100%;
+    padding: 17px 20px;
+    border: 0;
+    border-radius: 999px;
+    font: inherit;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.order-confirm-actions button:hover {
+    transform: translateY(-2px);
+}
+
+.order-confirm-yes {
+    background: #914b2a;
+    color: #fffaf2;
+}
+
+.order-confirm-yes:hover {
+    background: #74391f;
+}
+
+.order-confirm-no {
+    background: #f7e7d3;
+    color: #754329;
+}
+
+.order-confirm-no:hover {
+    background: #efd7bc;
+}
+
+.order-confirm-actions button:disabled {
+    opacity: 0.65;
+    cursor: wait;
+    transform: none;
+}
+
+@keyframes rebatikPopupIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 520px) {
+    .order-confirm-modal {
+        padding: 12px;
+    }
+
+    .order-confirm-dialog {
+        padding: 28px 18px 22px;
+        border-radius: 22px;
+    }
+
+    .order-confirm-mascot {
+        width: 135px;
+        height: 135px;
+    }
+
+    .order-confirm-checklist {
+        padding: 14px;
+    }
+
+    .order-confirm-actions button {
+        padding: 15px;
+        font-size: 15px;
+    }
+}
+
+.order-confirm-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+}
+
+.order-confirm-modal.is-open {
+    display: flex;
+}
+
+
+/* FIX: Styling untuk field Django yang belum memiliki class order-field */
+.order-form .order-field-wrap input:not([type="checkbox"]):not([type="radio"]),
+.order-form .order-field-wrap select,
+.order-form .order-field-wrap textarea {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-height: 44px;
+    padding: 10px 13px;
+    border: 1px solid #e2d3c0;
+    border-radius: 9px;
+    background-color: #fffefa;
+    color: #492b1c;
+    font-family: Garamond, Georgia, serif;
+    font-size: 17px;
+    box-sizing: border-box;
+}
+
+.order-form .order-field-wrap textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.order-form .order-field-wrap input:focus,
+.order-form .order-field-wrap select:focus,
+.order-form .order-field-wrap textarea:focus {
+    outline: 2px solid #c49a62;
+    outline-offset: 1px;
+    border-color: #c49a62;
+}
+
+/* Penanda validasi */
+.order-form .order-field-wrap input:invalid,
+.order-form .order-field-wrap select:invalid,
+.order-form .order-field-wrap textarea:invalid {
+    border-color: #dc2626;
+    background-color: #fffafa;
+}
+
+/* Field error dari Django */
+.order-form .order-field-wrap.has-error input,
+.order-form .order-field-wrap.has-error select,
+.order-form .order-field-wrap.has-error textarea {
+    border-color: #dc2626;
+}
