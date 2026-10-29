@@ -944,8 +944,8 @@ class UpcyclingRequestViewTests(TestCase):
         changed_at = datetime(2026, 10, 20, 8, 30, tzinfo=datetime_timezone.utc)
         UpcyclingStatusHistory.objects.create(
             request=upcycling_request,
-            from_status=UpcyclingRequest.Status.PENDING_ASSIGNMENT,
-            to_status=UpcyclingRequest.Status.PENDING_REVIEW,
+            from_status="",
+            to_status=UpcyclingRequest.Status.PENDING_ASSIGNMENT,
         )
         UpcyclingStatusHistory.objects.filter(request=upcycling_request).update(
             changed_at=changed_at

@@ -71,6 +71,20 @@
                        p-5 shadow-lg sm:p-7"
             >
                 <h3 id="status-heading" class="text-2xl font-bold">Status</h3>
+                <aside
+                    aria-live="polite"
+                    class="mt-4 rounded-xl border border-[var(--upcycling-accent)] bg-[var(--upcycling-soft)] p-4"
+                >
+                    <p class="text-xs font-bold uppercase tracking-wide text-[var(--brown-muted)]">Langkah berikutnya</p>
+                    <h4 class="mt-1 text-lg font-bold">{{ next_step.title }}</h4>
+                    <p class="mt-1 text-sm text-[var(--brown-muted)]">{{ next_step.description }}</p>
+                    {% if next_step.deadline %}
+                        <p class="mt-2 text-sm font-semibold">
+                            Tenggat penyerahan kain:
+                            <time datetime="{{ next_step.deadline|date:'c' }}">{{ next_step.deadline|date:"d M Y, H:i" }} WIB</time>
+                        </p>
+                    {% endif %}
+                </aside>
                 <ol class="mt-6 space-y-5 pb-36 sm:space-y-6 sm:pb-48">
                     {% for step in timeline_steps %}
                         <li class="flex items-center gap-4">
@@ -84,7 +98,9 @@
                                 <span class="text-base text-[var(--brown)] sm:text-lg">
                                     {{ step.label }}
                                     {% if step.created_at %}
-                                        · {{ step.created_at|date:"d/m/Y" }}
+                                        <span class="block text-sm text-[var(--brown-muted)]">
+                                            {{ step.created_at|date:"d/m/Y, H:i" }} WIB
+                                        </span>
                                     {% endif %}
                                 </span>
                             {% elif step.state == 'current' %}
@@ -93,7 +109,14 @@
                                            bg-[var(--upcycling-accent)]"
                                     aria-hidden="true"
                                 ></span>
-                                <span class="text-base font-bold text-[var(--brown)] sm:text-lg">{{ step.label }}</span>
+                                <span class="text-base font-bold text-[var(--brown)] sm:text-lg">
+                                    {{ step.label }}
+                                    {% if step.created_at %}
+                                        <span class="block text-sm font-normal text-[var(--brown-muted)]">
+                                            {{ step.created_at|date:"d/m/Y, H:i" }} WIB
+                                        </span>
+                                    {% endif %}
+                                </span>
                             {% elif step.state == 'cancelled' %}
                                 <span
                                     class="size-10 shrink-0 rounded-full border-2 border-[#a34235] bg-[#a34235]"

@@ -305,6 +305,13 @@ def request_detail(request, pk):
     )
 
     status = upcycling_request.status
+    status_history = list(
+        upcycling_request.status_history.select_related("changed_by")
+    )
+    status_dates = {
+        item.to_status: item.changed_at
+        for item in status_history
+    }
     timeline_steps = [
         {
             "label": "Diajukan",
@@ -329,9 +336,59 @@ def request_detail(request, pk):
             timeline_steps.append({
                 "label": UpcyclingRequest.Status(value).label,
                 "state": "done" if index < current_index else "current" if index == current_index else "upcoming",
+                    "created_at": status_dates.get(value),
             })
     else:
         timeline_steps.append({"label": upcycling_request.get_status_display(), "state": "cancelled"})
+
+    next_steps = {
+        UpcyclingRequest.Status.PENDING_ASSIGNMENT: {
+            "title": "Menunggu penugasan artisan",
+            "description": "Admin sedang mencocokkan permintaan dengan keahlian dan kapasitas artisan.",
+        },
+        UpcyclingRequest.Status.PENDING_REVIEW: {
+            "title": "Menunggu review awal",
+            "description": "Artisan meninjau model produk dan informasi kain yang Anda kirim.",
+        },
+        UpcyclingRequest.Status.AWAITING_FABRIC: {
+            "title": "Serahkan kain",
+            "description": "Serahkan kain dengan metode yang dipilih sebelum tenggat agar request tidak kedaluwarsa.",
+            "deadline": upcycling_request.fabric_deadline,
+        },
+        UpcyclingRequest.Status.INSPECTION: {
+            "title": "Menunggu hasil inspeksi",
+            "description": "Artisan sedang memeriksa kondisi fisik kain dan menyiapkan penawaran final.",
+        },
+        UpcyclingRequest.Status.AWAITING_APPROVAL: {
+            "title": "Tinjau penawaran harga",
+            "description": "Periksa harga dan catatan artisan. Produksi dimulai setelah Anda menyetujui penawaran.",
+        },
+        UpcyclingRequest.Status.IN_PROGRESS: {
+            "title": "Produk sedang dibuat",
+            "description": "Artisan sedang mengerjakan produk. Tunggu pembaruan saat produk siap diserahkan.",
+        },
+        UpcyclingRequest.Status.READY: {
+            "title": "Konfirmasi penerimaan produk",
+            "description": "Setelah produk diterima, konfirmasikan penerimaannya untuk menyelesaikan request.",
+        },
+        UpcyclingRequest.Status.COMPLETED: {
+            "title": "Request selesai",
+            "description": "Produk telah diterima dan poin upcycling sudah tercatat.",
+        },
+        UpcyclingRequest.Status.REJECTED: {
+            "title": "Request ditolak",
+            "description": "Periksa alasan penolakan dan status pengembalian kain pada ringkasan request.",
+        },
+        UpcyclingRequest.Status.CANCELLED: {
+            "title": "Request dibatalkan",
+            "description": "Periksa status pengembalian kain pada ringkasan request jika kain sudah diterima.",
+        },
+        UpcyclingRequest.Status.EXPIRED: {
+            "title": "Batas penyerahan kain terlewati",
+            "description": "Request kedaluwarsa karena kain belum diserahkan sebelum tenggat.",
+        },
+    }
+    next_step = next_steps[status]
 
     return render(
         request,
@@ -340,9 +397,8 @@ def request_detail(request, pk):
             "upcycling_request": upcycling_request,
             "reference_code": upcycling_request.reference_code,
             "timeline_steps": timeline_steps,
-            "status_history": upcycling_request.status_history.select_related(
-                "changed_by"
-            ),
+            "status_history": status_history,
+            "next_step": next_step,
             "can_approve_quote": status == UpcyclingRequest.Status.AWAITING_APPROVAL,
             "can_confirm_receipt": status == UpcyclingRequest.Status.READY,
             "can_cancel": status in {
