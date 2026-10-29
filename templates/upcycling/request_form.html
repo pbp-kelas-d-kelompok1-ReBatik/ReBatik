@@ -249,7 +249,39 @@
             <div class="grid gap-5 sm:grid-cols-2">
                 <div class="space-y-2 sm:col-span-2">
                     <label for="{{ form.fabric_photo.id_for_label }}" class="block text-base font-semibold sm:text-lg">Foto kain <span aria-hidden="true">*</span></label>
-                    {{ form.fabric_photo }}
+                    <div id="fabric-photo-upload" class="upcycling-photo-upload">
+                        {{ form.fabric_photo }}
+                        <div
+                            id="fabric-photo-placeholder"
+                            class="upcycling-photo-placeholder{% if form.instance.fabric_photo %} hidden{% endif %}"
+                            aria-hidden="true"
+                        >
+                            <span class="upcycling-photo-add"></span>
+                            <span class="font-bold">Tambah foto kain</span>
+                            <span>Unggah foto seluruh kain dan detail permukaannya</span>
+                            <span class="text-sm">JPG atau PNG · maksimal 5 MB</span>
+                        </div>
+                        <img
+                            id="fabric-photo-mascot"
+                            class="upcycling-photo-mascot{% if form.instance.fabric_photo %} hidden{% endif %}"
+                            src="{% static 'img/mascot/pointing.webp' %}"
+                            alt=""
+                            aria-hidden="true"
+                        >
+                        <img
+                            id="fabric-photo-preview"
+                            class="upcycling-photo-preview{% if not form.instance.fabric_photo %} hidden{% endif %}"
+                            {% if form.instance.fabric_photo %}src="{{ form.instance.fabric_photo.url }}"{% endif %}
+                            alt="Pratinjau foto kain"
+                        >
+                        <span
+                            id="fabric-photo-change-label"
+                            class="upcycling-photo-change{% if not form.instance.fabric_photo %} hidden{% endif %}"
+                            aria-hidden="true"
+                        >
+                            + Ganti foto
+                        </span>
+                    </div>
                     <p class="text-sm text-[var(--brown-muted)]">Unggah foto seluruh kain dan detail permukaannya, maksimal 5 MB.</p>
                     {{ form.fabric_photo.errors }}
                 </div>

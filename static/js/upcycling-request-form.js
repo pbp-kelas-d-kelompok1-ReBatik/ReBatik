@@ -109,6 +109,25 @@ const initializeUpcyclingForm = () => {
         window.requestAnimationFrame(showClientValidationErrors);
     }, true);
 
+    const fabricPhotoField = document.getElementById("id_fabric_photo");
+    const fabricPhotoPreview = document.getElementById("fabric-photo-preview");
+    const fabricPhotoPlaceholder = document.getElementById("fabric-photo-placeholder");
+    const fabricPhotoMascot = document.getElementById("fabric-photo-mascot");
+    const fabricPhotoChangeLabel = document.getElementById("fabric-photo-change-label");
+    let fabricPhotoPreviewUrl = null;
+    fabricPhotoField?.addEventListener("change", () => {
+        const photo = fabricPhotoField.files[0];
+        if (!photo || !photo.type.startsWith("image/")) return;
+
+        if (fabricPhotoPreviewUrl) URL.revokeObjectURL(fabricPhotoPreviewUrl);
+        fabricPhotoPreviewUrl = URL.createObjectURL(photo);
+        fabricPhotoPreview.src = fabricPhotoPreviewUrl;
+        fabricPhotoPreview.classList.remove("hidden");
+        fabricPhotoPlaceholder.classList.add("hidden");
+        fabricPhotoMascot.classList.add("hidden");
+        fabricPhotoChangeLabel.classList.remove("hidden");
+    });
+
     const categoryFields = form.querySelectorAll('[name="category"]');
     const fabricFields = form.querySelectorAll('[name="fabric"]');
     const otherFabricField = document.getElementById("id_fabric_other_description");

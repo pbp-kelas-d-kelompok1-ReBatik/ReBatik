@@ -108,6 +108,10 @@ class UpcyclingRequestForm(forms.ModelForm):
         self.fields["fabric_photo"].required = self.instance._state.adding
         self.fields["fabric_photo"].widget.attrs.update({"accept": "image/*"})
         self.fields["fabric_condition"].label = "Kondisi kain menurut Anda"
+        self.fields["fabric_condition"].choices = [
+            ("", "Pilih kondisi kain (opsional)"),
+            *UpcyclingRequest.FabricCondition.choices,
+        ]
         self.fields["fabric_dimensions"].label = "Perkiraan ukuran atau jumlah kain"
         self.fields["fabric_other_description"].label = "Jenis kain lainnya"
         self.fields["fabric_other_description"].widget.attrs.update(
@@ -150,7 +154,13 @@ class UpcyclingRequestForm(forms.ModelForm):
         widgets = {
             "fabric": forms.RadioSelect(attrs={"class": "sr-only"}),
             "fabric_other_description": forms.TextInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "maxlength": 100}),
-            "fabric_photo": forms.ClearableFileInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "accept": "image/*"}),
+            "fabric_photo": forms.FileInput(
+                attrs={
+                    "class": "upcycling-photo-input",
+                    "accept": "image/*",
+                    "aria-label": "Tambah foto kain",
+                }
+            ),
             "fabric_dimensions": forms.TextInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "placeholder": "Contoh: 1 celana jeans atau kain 1 × 2 m"}),
             "fabric_condition": forms.Select(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input"}),
             "category": forms.RadioSelect(attrs={"class": "sr-only"}),
