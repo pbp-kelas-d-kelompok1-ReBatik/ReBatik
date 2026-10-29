@@ -386,6 +386,43 @@
                     {{ form.custom_product.errors }}
                 </div>
             </fieldset>
+
+            <fieldset class="space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--upcycling-surface)] p-4 sm:p-5">
+                <legend class="sr-only">Tambahan motif batik (opsional)</legend>
+                <label for="{{ form.wants_batik_accent.id_for_label }}" class="flex cursor-pointer items-start gap-3">
+                    {{ form.wants_batik_accent }}
+                    <span class="font-semibold">{{ form.wants_batik_accent.label }}</span>
+                </label>
+                <p class="text-sm leading-relaxed text-[var(--brown-muted)]">
+                    Opsional. Artisan akan mengecek ketersediaan bahan dan memasukkan biaya tambahannya ke penawaran.
+                </p>
+                <div
+                    id="batik-accent-fields"
+                    class="{% if not form.wants_batik_accent.value %}hidden {% endif %}grid gap-4 sm:grid-cols-2"
+                >
+                    <div class="space-y-2">
+                        <label for="{{ form.batik_motif.id_for_label }}" class="block font-semibold">
+                            {{ form.batik_motif.label }}
+                        </label>
+                        {{ form.batik_motif }}
+                        {{ form.batik_motif.errors }}
+                    </div>
+                    <div class="space-y-2">
+                        <label for="{{ form.motif_placement.id_for_label }}" class="block font-semibold">
+                            {{ form.motif_placement.label }}
+                        </label>
+                        {{ form.motif_placement }}
+                        {{ form.motif_placement.errors }}
+                    </div>
+                    <div class="space-y-2 sm:col-span-2">
+                        <label for="{{ form.design_notes.id_for_label }}" class="block font-semibold">
+                            {{ form.design_notes.label }}
+                        </label>
+                        {{ form.design_notes }}
+                        {{ form.design_notes.errors }}
+                    </div>
+                </div>
+            </fieldset>
         </section>
 
         <section id="detail-permintaan" class="scroll-mt-8 space-y-5 border-t border-[var(--border)] pt-7">
@@ -507,6 +544,8 @@
                     <span id="summary-category">Pilih kategori produk</span>
                     <span aria-hidden="true">·</span>
                     <span id="summary-product">Pilih model produk</span>
+                    <span aria-hidden="true">·</span>
+                    <span id="summary-batik">Tanpa tambahan batik</span>
                 </p>
                 <p class="mt-2 text-base text-[var(--brown-muted)]">
                     Harga final ditentukan artisan setelah kain diterima dan diperiksa. Produksi dimulai setelah Anda menyetujui harga.

@@ -20,6 +20,17 @@
                         <dl class="mt-4 grid gap-2 sm:grid-cols-2">
                             <div><dt class="font-semibold">Kain</dt><dd>{{ item.get_fabric_display }}{% if item.fabric_other_description %} · {{ item.fabric_other_description }}{% endif %}{% if item.fabric_dimensions %} · {{ item.fabric_dimensions }}{% endif %}</dd></div>
                             {% if item.fabric_composition %}<div><dt class="font-semibold">Komposisi bahan (menurut user)</dt><dd>{{ item.fabric_composition }}</dd></div>{% endif %}
+                            {% if item.wants_batik_accent %}
+                                <div class="sm:col-span-2">
+                                    <dt class="font-semibold">Tambahan batik diminta user</dt>
+                                    <dd>
+                                        {% if item.batik_motif %}Motif: {{ item.batik_motif }}{% endif %}
+                                        {% if item.motif_placement %} · Penempatan: {{ item.motif_placement }}{% endif %}
+                                        {% if item.design_notes %}<span class="block">Catatan: {{ item.design_notes }}</span>{% endif %}
+                                        {% if not item.batik_motif and not item.motif_placement and not item.design_notes %}User meminta tambahan batik dan artisan perlu mengonfirmasi preferensinya.{% endif %}
+                                    </dd>
+                                </div>
+                            {% endif %}
                             <div><dt class="font-semibold">Kondisi menurut user</dt><dd>{{ item.get_fabric_condition_display|default:"Belum diisi" }}</dd></div>
                             <div><dt class="font-semibold">Jumlah produk</dt><dd>{{ item.quantity }}</dd></div>
                             <div><dt class="font-semibold">Catatan user</dt><dd>{{ item.notes|default:"—" }}</dd></div>

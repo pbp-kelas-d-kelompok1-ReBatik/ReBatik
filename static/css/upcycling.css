@@ -46,6 +46,13 @@
         background-color: var(--upcycling-surface);
     }
 
+    .upcycling-checkbox {
+        width: 1.25rem;
+        height: 1.25rem;
+        flex: 0 0 auto;
+        accent-color: var(--brown);
+    }
+
     .upcycling-photo-upload {
         position: relative;
         min-height: 17rem;

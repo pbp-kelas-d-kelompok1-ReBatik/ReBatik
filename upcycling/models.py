@@ -152,6 +152,10 @@ class UpcyclingRequest(models.Model):
     fabric_other_description = models.CharField(max_length=100, blank=True)
     fabric_photo = models.ImageField(upload_to="upcycling/fabric/", blank=True, null=True)
     fabric_composition = models.CharField(max_length=120, blank=True)
+    wants_batik_accent = models.BooleanField(default=False)
+    batik_motif = models.CharField(max_length=150, blank=True)
+    motif_placement = models.CharField(max_length=150, blank=True)
+    design_notes = models.TextField(max_length=NOTES_MAX_LENGTH, blank=True)
     fabric_condition = models.CharField(
         max_length=20,
         choices=FabricCondition.choices,

@@ -118,6 +118,12 @@ class UpcyclingRequestForm(forms.ModelForm):
         self.fields["fabric_composition"].help_text = (
             "Jika diketahui, tulis serat penyusun kain, misalnya katun 95% dan elastane 5%."
         )
+        self.fields["wants_batik_accent"].label = (
+            "Tambahkan kain bermotif batik dari ReBatik"
+        )
+        self.fields["batik_motif"].label = "Motif batik yang diinginkan (opsional)"
+        self.fields["motif_placement"].label = "Penempatan motif (opsional)"
+        self.fields["design_notes"].label = "Catatan desain tambahan (opsional)"
         self.fields["fabric_other_description"].label = "Jenis kain lainnya"
         self.fields["fabric_other_description"].widget.attrs.update(
             {"placeholder": "Contoh: kanvas, corduroy, atau linen"}
@@ -135,6 +141,10 @@ class UpcyclingRequestForm(forms.ModelForm):
             "category",
             "product",
             "custom_product",
+            "wants_batik_accent",
+            "batik_motif",
+            "motif_placement",
+            "design_notes",
             "quantity",
             "notes",
             "delivery_method",
@@ -146,6 +156,10 @@ class UpcyclingRequestForm(forms.ModelForm):
             "category": "Kategori Produk",
             "product": "Model Produk",
             "custom_product": "Produk yang diinginkan",
+            "wants_batik_accent": "Tambahkan kain bermotif batik dari ReBatik",
+            "batik_motif": "Motif batik yang diinginkan (opsional)",
+            "motif_placement": "Penempatan motif (opsional)",
+            "design_notes": "Catatan desain tambahan (opsional)",
             "quantity": "Jumlah Produk",
             "notes": "Deskripsi dan Catatan Khusus (opsional)",
             "delivery_method": "Metode Penerimaan Produk",
@@ -176,6 +190,31 @@ class UpcyclingRequestForm(forms.ModelForm):
                 }
             ),
             "fabric_condition": forms.Select(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input"}),
+            "wants_batik_accent": forms.CheckboxInput(
+                attrs={"class": "upcycling-checkbox"}
+            ),
+            "batik_motif": forms.TextInput(
+                attrs={
+                    "class": f"{FIELD_CLASSES} upcycling-field upcycling-input",
+                    "maxlength": 150,
+                    "placeholder": "Contoh: Mega Mendung, Parang, atau Kawung",
+                }
+            ),
+            "motif_placement": forms.TextInput(
+                attrs={
+                    "class": f"{FIELD_CLASSES} upcycling-field upcycling-input",
+                    "maxlength": 150,
+                    "placeholder": "Contoh: bagian depan tote bag",
+                }
+            ),
+            "design_notes": forms.Textarea(
+                attrs={
+                    "rows": 3,
+                    "maxlength": NOTES_MAX_LENGTH,
+                    "class": f"{FIELD_CLASSES} upcycling-field upcycling-textarea",
+                    "placeholder": "Warna, ukuran aksen, atau detail desain lainnya",
+                }
+            ),
             "category": forms.RadioSelect(attrs={"class": "sr-only"}),
             # The product chips are rendered in the template; retain this
             # select as the submitted form value.
@@ -283,6 +322,11 @@ class UpcyclingRequestForm(forms.ModelForm):
                     "product",
                     "Model produk tidak sesuai dengan kategori yang dipilih.",
                 )
+
+        if not cleaned_data.get("wants_batik_accent"):
+            cleaned_data["batik_motif"] = ""
+            cleaned_data["motif_placement"] = ""
+            cleaned_data["design_notes"] = ""
 
         return cleaned_data
 

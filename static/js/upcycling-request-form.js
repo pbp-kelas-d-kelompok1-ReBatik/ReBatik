@@ -144,6 +144,14 @@ const initializeUpcyclingForm = () => {
     const fabricSummary = document.getElementById("summary-fabric");
     const categorySummary = document.getElementById("summary-category");
     const productSummary = document.getElementById("summary-product");
+    const batikSummary = document.getElementById("summary-batik");
+    const batikAccentToggle = document.getElementById("id_wants_batik_accent");
+    const batikAccentFields = document.getElementById("batik-accent-fields");
+    const batikPreferenceFields = [
+        document.getElementById("id_batik_motif"),
+        document.getElementById("id_motif_placement"),
+        document.getElementById("id_design_notes"),
+    ];
     function getRadioLabel(name, fallback) {
         const selectedRadio = form.querySelector(`input[name="${name}"]:checked`);
         const label = selectedRadio?.closest("label");
@@ -165,6 +173,25 @@ const initializeUpcyclingForm = () => {
                 ? selectedProduct.textContent
                 : "Pilih model produk";
         }
+        if (batikAccentToggle.checked) {
+            const motif = batikPreferenceFields[0].value.trim();
+            batikSummary.textContent = motif
+                ? `Tambahan batik: ${motif}`
+                : "Tambahan batik diminta";
+        } else {
+            batikSummary.textContent = "Tanpa tambahan batik";
+        }
+    }
+
+    function updateBatikAccentFields() {
+        const isRequested = batikAccentToggle.checked;
+        batikAccentFields.classList.toggle("hidden", !isRequested);
+        if (!isRequested) {
+            batikPreferenceFields.forEach((field) => {
+                field.value = "";
+            });
+        }
+        updateSummary();
     }
 
     function updateOtherFabricField() {
@@ -272,7 +299,12 @@ const initializeUpcyclingForm = () => {
     });
     customProductField.addEventListener("input", updateSummary);
     otherFabricField.addEventListener("input", updateSummary);
+    batikAccentToggle.addEventListener("change", updateBatikAccentFields);
+    batikPreferenceFields.forEach((field) => {
+        field.addEventListener("input", updateSummary);
+    });
     updateAddressDetails();
+    updateBatikAccentFields();
     updateOtherFabricField();
     loadProducts(true);
 
