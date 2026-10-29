@@ -516,25 +516,19 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(limited_response.status_code, 429)
         self.assertEqual(limited_response["Retry-After"], "60")
 
-    def test_delete_rate_limit_returns_429_after_ten_posts(self):
-        """Test behavior: delete rate limit returns 429 after ten posts."""
-        requests = [self.make_request(self.user) for _ in range(11)]
+    def test_legacy_delete_endpoint_never_removes_submitted_requests(self):
+        """Test behavior: repeated legacy delete attempts preserve requests."""
+        upcycling_request = self.make_request(self.user)
         self.client.force_login(self.user)
 
-        for upcycling_request in requests[:10]:
+        for _ in range(11):
             response = self.client.post(
-                reverse("upcycling:request_delete", args=[upcycling_request.pk])
+                reverse("upcycling:request_delete", args=[upcycling_request.pk]),
+                follow=True,
             )
-            self.assertEqual(response.status_code, 302)
-
-        limited_response = self.client.post(
-            reverse("upcycling:request_delete", args=[requests[10].pk])
-        )
-
-        self.assertEqual(limited_response.status_code, 429)
-        self.assertEqual(limited_response["Retry-After"], "60")
+            self.assertContains(response, "Request yang sudah diajukan tidak dapat dihapus")
         self.assertTrue(
-            UpcyclingRequest.objects.filter(pk=requests[10].pk).exists()
+            UpcyclingRequest.objects.filter(pk=upcycling_request.pk).exists()
         )
 
     def test_create_ignores_posted_user_and_status(self):
@@ -1060,8 +1054,8 @@ class UpcyclingRequestViewTests(TestCase):
 
         self.assertEqual(response.status_code, 404)
 
-    def test_user_can_delete_own_pending_request_and_sees_toast(self):
-        """Test behavior: user can delete own pending request and sees toast."""
+    def test_user_cannot_delete_own_submitted_request(self):
+        """Test behavior: deleting a submitted request leaves its record intact."""
         upcycling_request = self.make_request(self.user)
         self.client.force_login(self.user)
 
@@ -1070,10 +1064,10 @@ class UpcyclingRequestViewTests(TestCase):
             follow=True,
         )
 
-        self.assertFalse(
+        self.assertTrue(
             UpcyclingRequest.objects.filter(pk=upcycling_request.pk).exists()
         )
-        self.assertContains(response, "Permintaan berhasil dihapus.")
+        self.assertContains(response, "Request yang sudah diajukan tidak dapat dihapus")
 
     def test_submitted_request_uses_cancellation_instead_of_deletion(self):
         """Test behavior: submitted requests remain auditable and can be cancelled."""
@@ -1096,8 +1090,8 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertContains(delete_response, "Request yang sudah diajukan tidak dapat dihapus")
         self.assertContains(delete_response, "Batalkan request")
 
-    def test_user_can_open_delete_confirmation_for_own_pending_request(self):
-        """Test behavior: user can open delete confirmation for own pending request."""
+    def test_legacy_delete_confirmation_redirects_to_request_detail(self):
+        """Test behavior: old delete links explain cancellation instead."""
         upcycling_request = self.make_request(self.user)
         self.client.force_login(self.user)
 
@@ -1105,8 +1099,10 @@ class UpcyclingRequestViewTests(TestCase):
             reverse("upcycling:request_delete", args=[upcycling_request.pk])
         )
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["upcycling_request"], upcycling_request)
+        self.assertRedirects(
+            response,
+            reverse("upcycling:request_detail", args=[upcycling_request.pk]),
+        )
 
     def test_user_cannot_delete_request_after_review_begins(self):
         """Test behavior: user cannot delete request after review begins."""
@@ -1123,46 +1119,7 @@ class UpcyclingRequestViewTests(TestCase):
         )
         self.assertContains(
             response,
-            "Permintaan hanya bisa dihapus saat masih menunggu tinjauan.",
-        )
-
-    def test_delete_rechecks_status_after_rate_limit_processing(self):
-        """Test behavior: delete rechecks status after rate limit processing."""
-        upcycling_request = self.make_request(self.user)
-        history = UpcyclingStatusHistory.objects.create(
-            request=upcycling_request,
-            from_status=UpcyclingRequest.Status.PENDING_ASSIGNMENT,
-            to_status=UpcyclingRequest.Status.IN_PROGRESS,
-            changed_by=self.other_user,
-        )
-        self.client.force_login(self.user)
-
-        def promote_request(*_args, **_kwargs):
-            UpcyclingRequest.objects.filter(pk=upcycling_request.pk).update(
-                status=UpcyclingRequest.Status.IN_PROGRESS
-            )
-            return None
-
-        with patch(
-            "upcycling.views._rate_limit_response",
-            side_effect=promote_request,
-        ):
-            response = self.client.post(
-                reverse("upcycling:request_delete", args=[upcycling_request.pk]),
-                follow=True,
-            )
-
-        upcycling_request.refresh_from_db()
-        self.assertEqual(
-            upcycling_request.status,
-            UpcyclingRequest.Status.IN_PROGRESS,
-        )
-        self.assertTrue(
-            UpcyclingStatusHistory.objects.filter(pk=history.pk).exists()
-        )
-        self.assertContains(
-            response,
-            "Permintaan hanya bisa dihapus saat masih menunggu tinjauan.",
+            "Request yang sudah diajukan tidak dapat dihapus",
         )
 
     def test_user_cannot_delete_another_users_request(self):
@@ -1176,8 +1133,8 @@ class UpcyclingRequestViewTests(TestCase):
 
         self.assertEqual(response.status_code, 404)
 
-    def test_htmx_delete_returns_to_list_and_other_request_details_still_work(self):
-        """Test behavior: htmx delete returns to list and other request details still work."""
+    def test_htmx_legacy_delete_redirects_to_detail_without_removing_request(self):
+        """Test behavior: legacy HTMX delete keeps the request and returns to detail."""
         upcycling_request = self.make_request(self.user)
         remaining_request = self.make_request(self.user, product="SLING_BAG")
         self.client.force_login(self.user)
@@ -1188,43 +1145,40 @@ class UpcyclingRequestViewTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 204)
-        self.assertFalse(
+        self.assertTrue(
             UpcyclingRequest.objects.filter(pk=upcycling_request.pk).exists()
         )
-        self.assertEqual(
-            response["HX-Redirect"],
-            reverse("upcycling:request_list"),
+        self.assertIn(
+            reverse("upcycling:request_detail", args=[upcycling_request.pk]),
+            response["HX-Location"],
         )
-        self.assertNotIn("HX-Location", response)
         remaining_detail = self.client.get(
             reverse("upcycling:request_detail", args=[remaining_request.pk])
         )
         self.assertEqual(remaining_detail.status_code, 200)
 
-    def test_delete_action_stays_on_detail_and_confirmation_page(self):
-        """Test behavior: delete action stays on detail and confirmation page."""
+    def test_submitted_request_detail_offers_cancel_but_not_delete(self):
+        """Test behavior: submitted request detail exposes cancellation only."""
         upcycling_request = self.make_request(self.user)
         self.client.force_login(self.user)
 
-        response = self.client.get(reverse("upcycling:request_list"))
         delete_url = reverse("upcycling:request_delete", args=[upcycling_request.pk])
-
-        self.assertNotContains(response, f'hx-post="{delete_url}"')
 
         detail_response = self.client.get(
             reverse("upcycling:request_detail", args=[upcycling_request.pk])
         )
-        self.assertContains(detail_response, f'href="{delete_url}"')
-        self.assertContains(detail_response, 'id="delete-request-dialog"')
-        self.assertContains(detail_response, "data-open-delete-dialog")
-        self.assertContains(detail_response, f'hx-post="{delete_url}"')
+        self.assertNotContains(detail_response, delete_url)
+        self.assertNotContains(detail_response, "Hapus permintaan")
+        self.assertContains(detail_response, "Batalkan request")
 
         confirmation_response = self.client.get(delete_url)
-        self.assertContains(confirmation_response, f'hx-post="{delete_url}"')
-        self.assertContains(confirmation_response, 'hx-swap="outerHTML"')
+        self.assertRedirects(
+            confirmation_response,
+            reverse("upcycling:request_detail", args=[upcycling_request.pk]),
+        )
 
-    def test_delete_dialog_has_optimistic_pending_feedback(self):
-        """Test behavior: delete dialog has optimistic pending feedback."""
+    def test_detail_explains_cancel_preserves_request_history(self):
+        """Test behavior: cancellation wording clarifies the request remains recorded."""
         upcycling_request = self.make_request(self.user)
         self.client.force_login(self.user)
 
@@ -1232,9 +1186,7 @@ class UpcyclingRequestViewTests(TestCase):
             reverse("upcycling:request_detail", args=[upcycling_request.pk])
         )
 
-        self.assertContains(response, "data-optimistic-delete-form")
-        self.assertContains(response, "data-delete-pending")
-        self.assertContains(response, "Permintaan sedang dihapus")
+        self.assertContains(response, "tetap tersimpan di riwayat")
 
     def test_request_form_embeds_product_options_for_each_category(self):
         """Test behavior: request form embeds product options for each category."""

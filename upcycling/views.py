@@ -30,7 +30,6 @@ REQUESTS_PER_PAGE = 10
 ACTION_RATE_LIMITS = {
     UpcyclingRateLimitBucket.Action.CREATE: (5, 60),
     UpcyclingRateLimitBucket.Action.UPDATE: (10, 60),
-    UpcyclingRateLimitBucket.Action.DELETE: (10, 60),
 }
 PENDING_LIMIT_MESSAGE = (
     "Anda sudah memiliki {limit} permintaan upcycling yang masih berjalan. "
@@ -498,66 +497,21 @@ def request_update(request, pk):
 
 @login_required
 def request_delete(request, pk):
-    """Delete an owned pending request after an authenticated POST."""
+    """Keep submitted requests auditable and direct users to cancellation."""
     upcycling_request = get_object_or_404(
         UpcyclingRequest,
         pk=pk,
         user=request.user,
     )
-
-    if request.method != "POST":
-        if upcycling_request.status != UpcyclingRequest.Status.PENDING_ASSIGNMENT:
-            messages.info(
-                request,
-                "Permintaan hanya bisa dihapus saat masih menunggu tinjauan.",
-            )
-            return _htmx_location_or_redirect(
-                request,
-                "upcycling:request_detail",
-                pk=upcycling_request.pk,
-            )
-        return render(
-            request,
-            "upcycling/request_confirm_delete.html",
-            {"upcycling_request": upcycling_request},
-        )
-
-    rate_limit_response = _rate_limit_response(
+    messages.info(
         request,
-        UpcyclingRateLimitBucket.Action.DELETE,
+        "Request yang sudah diajukan tidak dapat dihapus. Gunakan Batalkan request untuk menghentikan proses.",
     )
-    if rate_limit_response:
-        return rate_limit_response
-
-    with transaction.atomic():
-        try:
-            locked_request = UpcyclingRequest.objects.select_for_update().get(
-                pk=pk,
-                user=request.user,
-            )
-        except UpcyclingRequest.DoesNotExist:
-            messages.info(request, "Permintaan sudah tidak tersedia.")
-            return _htmx_location_or_redirect(request, "upcycling:request_list")
-
-        if locked_request.status != UpcyclingRequest.Status.PENDING_ASSIGNMENT:
-            messages.info(
-                request,
-                "Permintaan hanya bisa dihapus saat masih menunggu tinjauan.",
-            )
-            return _htmx_location_or_redirect(
-                request,
-                "upcycling:request_detail",
-                pk=locked_request.pk,
-            )
-
-        locked_request.delete()
-
-    messages.success(request, "Permintaan berhasil dihapus.")
-    if request.headers.get("HX-Request") == "true":
-        response = HttpResponse(status=204)
-        response["HX-Redirect"] = reverse("upcycling:request_list")
-        return response
-    return _htmx_location_or_redirect(request, "upcycling:request_list")
+    return _htmx_location_or_redirect(
+        request,
+        "upcycling:request_detail",
+        pk=upcycling_request.pk,
+    )
 
 
 def _record_user_status_change(upcycling_request, user, old_status):

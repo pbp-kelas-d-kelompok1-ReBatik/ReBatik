@@ -292,7 +292,6 @@ class UpcyclingRateLimitBucket(models.Model):
     class Action(models.TextChoices):
         CREATE = "CREATE", "Buat permintaan"
         UPDATE = "UPDATE", "Edit permintaan"
-        DELETE = "DELETE", "Hapus permintaan"
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
