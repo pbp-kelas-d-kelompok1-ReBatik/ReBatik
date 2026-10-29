@@ -185,13 +185,13 @@
                         >
                         <span class="relative">1</span>
                     </span>
-                    <h2 class="text-2xl font-bold sm:text-3xl">Jenis Kain yang Akan Diolah</h2>
+                    <h2 class="text-2xl font-bold sm:text-3xl">Jenis Kain atau Barang yang Akan Diolah</h2>
                 </div>
                 <p class="hidden text-base italic text-[var(--brown-muted)] sm:block">Kain milik Anda</p>
             </div>
 
             <p class="max-w-3xl text-base leading-relaxed text-[var(--brown-muted)] sm:text-lg">
-                Pilih jenis kain milik Anda yang akan diolah. Pilih produk yang ingin dibuat pada bagian berikutnya.
+                Pilih kategori yang paling mendekati.
             </p>
 
             <fieldset class="space-y-3">
@@ -294,6 +294,14 @@
                     <label for="{{ form.fabric_dimensions.id_for_label }}" class="block text-base font-semibold sm:text-lg">Perkiraan ukuran/jumlah kain</label>
                     {{ form.fabric_dimensions }}
                     {{ form.fabric_dimensions.errors }}
+                </div>
+                <div class="space-y-2 sm:col-span-2">
+                    <label for="{{ form.fabric_composition.id_for_label }}" class="block text-base font-semibold sm:text-lg">
+                        {{ form.fabric_composition.label }}
+                    </label>
+                    {{ form.fabric_composition }}
+                    <p class="text-sm text-[var(--brown-muted)]">{{ form.fabric_composition.help_text }}</p>
+                    {{ form.fabric_composition.errors }}
                 </div>
             </div>
         </section>

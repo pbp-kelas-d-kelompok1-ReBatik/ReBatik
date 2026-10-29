@@ -222,6 +222,7 @@
                         <dt class="font-semibold">Kain</dt>
                         <dd>{{ upcycling_request.get_fabric_display }}{% if upcycling_request.fabric_other_description %} · {{ upcycling_request.fabric_other_description }}{% endif %}</dd>
                     </div>
+                    {% if upcycling_request.fabric_composition %}<div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]"><dt class="font-semibold">Komposisi bahan</dt><dd>{{ upcycling_request.fabric_composition }}</dd></div>{% endif %}
                     {% if upcycling_request.fabric_dimensions %}<div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]"><dt class="font-semibold">Ukuran kain</dt><dd>{{ upcycling_request.fabric_dimensions }}</dd></div>{% endif %}
                     {% if upcycling_request.quoted_price %}<div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]"><dt class="font-semibold">Harga final</dt><dd>Rp{{ upcycling_request.quoted_price|floatformat:0 }}</dd></div>{% endif %}
                     {% if upcycling_request.quotation_notes %}<div class="border-t border-[var(--border)] pt-3"><dt class="font-semibold">Catatan penawaran</dt><dd class="mt-1 whitespace-pre-line text-[var(--brown-muted)]">{{ upcycling_request.quotation_notes }}</dd></div>{% endif %}

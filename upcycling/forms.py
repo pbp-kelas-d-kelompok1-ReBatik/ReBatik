@@ -107,12 +107,17 @@ class UpcyclingRequestForm(forms.ModelForm):
         self.fields["fabric_photo"].label = "Foto kain"
         self.fields["fabric_photo"].required = self.instance._state.adding
         self.fields["fabric_photo"].widget.attrs.update({"accept": "image/*"})
+        self.fields["fabric"].label = "Jenis kain atau barang yang akan diolah"
         self.fields["fabric_condition"].label = "Kondisi kain menurut Anda"
         self.fields["fabric_condition"].choices = [
             ("", "Pilih kondisi kain (opsional)"),
             *UpcyclingRequest.FabricCondition.choices,
         ]
         self.fields["fabric_dimensions"].label = "Perkiraan ukuran atau jumlah kain"
+        self.fields["fabric_composition"].label = "Komposisi bahan (opsional)"
+        self.fields["fabric_composition"].help_text = (
+            "Jika diketahui, tulis serat penyusun kain, misalnya katun 95% dan elastane 5%."
+        )
         self.fields["fabric_other_description"].label = "Jenis kain lainnya"
         self.fields["fabric_other_description"].widget.attrs.update(
             {"placeholder": "Contoh: kanvas, corduroy, atau linen"}
@@ -126,6 +131,7 @@ class UpcyclingRequestForm(forms.ModelForm):
             "fabric_photo",
             "fabric_condition",
             "fabric_dimensions",
+            "fabric_composition",
             "category",
             "product",
             "custom_product",
@@ -136,7 +142,7 @@ class UpcyclingRequestForm(forms.ModelForm):
             "whatsapp",
         ]
         labels = {
-            "fabric": "Kain",
+            "fabric": "Jenis kain atau barang yang akan diolah",
             "category": "Kategori Produk",
             "product": "Model Produk",
             "custom_product": "Produk yang diinginkan",
@@ -162,6 +168,13 @@ class UpcyclingRequestForm(forms.ModelForm):
                 }
             ),
             "fabric_dimensions": forms.TextInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "placeholder": "Contoh: 1 celana jeans atau kain 1 × 2 m"}),
+            "fabric_composition": forms.TextInput(
+                attrs={
+                    "class": f"{FIELD_CLASSES} upcycling-field upcycling-input",
+                    "maxlength": 120,
+                    "placeholder": "Contoh: katun 95%, elastane 5%",
+                }
+            ),
             "fabric_condition": forms.Select(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input"}),
             "category": forms.RadioSelect(attrs={"class": "sr-only"}),
             # The product chips are rendered in the template; retain this

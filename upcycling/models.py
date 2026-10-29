@@ -76,10 +76,10 @@ class UpcyclingRequest(models.Model):
         RETURNED = "RETURNED", "Kain sudah dikembalikan"
 
     class FabricType(models.TextChoices):
-        DENIM = "DENIM", "Denim"
-        COTTON = "COTTON", "Katun"
-        BATIK = "BATIK", "Batik"
-        MIXED = "MIXED", "Campuran"
+        DENIM = "DENIM", "Jeans/denim"
+        COTTON = "COTTON", "Katun (misalnya kaos)"
+        BATIK = "BATIK", "Kain bermotif batik"
+        MIXED = "MIXED", "Bahan campuran"
         OTHER = "OTHER", "Lainnya"
 
     class FabricCondition(models.TextChoices):
@@ -151,6 +151,7 @@ class UpcyclingRequest(models.Model):
     fabric = models.CharField(max_length=20, choices=FABRIC_CHOICES)
     fabric_other_description = models.CharField(max_length=100, blank=True)
     fabric_photo = models.ImageField(upload_to="upcycling/fabric/", blank=True, null=True)
+    fabric_composition = models.CharField(max_length=120, blank=True)
     fabric_condition = models.CharField(
         max_length=20,
         choices=FabricCondition.choices,
