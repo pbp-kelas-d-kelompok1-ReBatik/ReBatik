@@ -68,6 +68,33 @@ class UpcyclingWorkflowTests(TestCase):
         form = UpcyclingRequestForm(data=data, files={"fabric_photo": make_png()})
         self.assertTrue(form.is_valid(), form.errors)
 
+    def test_other_fabric_requires_a_description(self):
+        data = {
+            "fabric": "OTHER",
+            "fabric_condition": "GOOD",
+            "fabric_delivery_method": "DROP_OFF",
+            "category": "TAS",
+            "product": "TOTE_BAG",
+            "quantity": "1",
+            "notes": "",
+            "delivery_method": "DROP_OFF",
+            "address": "Depok",
+            "whatsapp": "081234567890",
+        }
+        form = UpcyclingRequestForm(data=data, files={"fabric_photo": make_png()})
+        self.assertFalse(form.is_valid())
+        self.assertIn("fabric_other_description", form.errors)
+
+        data["fabric_other_description"] = "Kain kanvas"
+        form = UpcyclingRequestForm(data=data, files={"fabric_photo": make_png()})
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["fabric_other_description"], "Kain kanvas")
+
+        data.update(fabric="DENIM", fabric_other_description="Keterangan lama")
+        form = UpcyclingRequestForm(data=data, files={"fabric_photo": make_png()})
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["fabric_other_description"], "")
+
     def test_submission_starts_unassigned_and_records_history(self):
         self.client.force_login(self.user)
         response = self.client.post(
