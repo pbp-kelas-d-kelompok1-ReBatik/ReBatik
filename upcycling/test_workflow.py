@@ -95,6 +95,14 @@ class UpcyclingWorkflowTests(TestCase):
         self.assertTrue(form.is_valid(), form.errors)
         self.assertEqual(form.cleaned_data["fabric_other_description"], "")
 
+    def test_form_distinguishes_user_fabric_from_output_product(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("upcycling:request_create"))
+
+        self.assertContains(response, "Jenis Kain yang Akan Diolah")
+        self.assertContains(response, "Pilih produk yang ingin dibuat pada bagian berikutnya.")
+        self.assertContains(response, "Pilih Produk")
+
     def test_submission_starts_unassigned_and_records_history(self):
         self.client.force_login(self.user)
         response = self.client.post(
