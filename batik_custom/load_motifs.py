@@ -156,7 +156,7 @@ try:
             obj = Motif(name=name, description=description, is_active=entry.get("is_active", True))
             image_key = str(entry["image"])
             image_path = images[image_key]
-            obj.image = f"recommended_motifs/{image_path.name}"
+            obj.image = f"img/catalog/recommended_motifs/{image_path.name}"
             obj.save()
             style_objects = [style_map[normalize(get_base_style(style))] for style in entry["styles"]]
             getattr(obj, f_styles.name).set(style_objects)

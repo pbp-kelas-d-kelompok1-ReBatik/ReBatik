@@ -1,3 +1,73 @@
+.recommended-page .recommended-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 48px 24px;
+}
+
+.recommended-page .recommended-heading {
+    margin-bottom: 32px;
+}
+
+.recommended-page .recommended-heading h2 {
+    margin: 0 0 10px;
+    color: #30271f;
+    font-size: clamp(26px, 3vw, 36px);
+    line-height: 1.2;
+}
+
+.recommended-page .recommended-heading > p:last-child {
+    color: #756b61;
+    line-height: 1.7;
+}
+
+.recommended-page .motif-image-wrapper {
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    background: #f2ede5;
+}
+
+.recommended-page .motif-image-wrapper img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.recommended-page .motif-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.recommended-page .motif-tag {
+    display: inline-block;
+    padding: 5px 10px;
+    color: #6e512e;
+    background: #f2e8d8;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+@media (max-width: 900px) {
+    .recommended-page .motif-image-wrapper {
+        height: 200px;
+    }
+}
+
+@media (max-width: 560px) {
+    .recommended-page .recommended-section {
+        padding: 32px 16px;
+    }
+
+    .recommended-page .motif-image-wrapper {
+        height: 230px;
+    }
+}
+
 .recommended-page {
     --rb-brown: #654a38;
     --rb-dark: #4d3629;
@@ -102,10 +172,12 @@
     font-family: Georgia, "Times New Roman", serif;
     font-size: 25px;
     letter-spacing: 3px;
+    font-weight: 600;
 }
 /* CARD CONTENT */
 .motif-card-content {
     display: flex;
+    flex: 1;
     flex-direction: column;
     align-items: flex-start;
     padding: 23px;
@@ -144,9 +216,11 @@
     margin-top: 22px;
     padding: 13px 16px;
     border: 1px solid var(--rb-brown);
+    border-radius: 8px;
     background: var(--rb-brown);
     color: #fff7eb;
     font-size: 12px;
+    font-weight: 600;
     letter-spacing: .3px;
     text-decoration: none;
     transition: background .2s ease, color .2s ease;
@@ -161,6 +235,7 @@
     margin: 0 auto;
     padding: 55px 30px;
     border: 1px solid #e5d7c5;
+    border-radius: 12px;
     background: var(--rb-card);
     text-align: center;
 }
@@ -267,6 +342,10 @@
 .motif-card > div,
 .recommended-motif-card > div {
     padding: 16px;
+}
+
+.recommended-page .motif-card > .motif-image-wrapper {
+    padding: 0;
 }
 
 /* Responsif */
