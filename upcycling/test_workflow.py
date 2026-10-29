@@ -113,10 +113,30 @@ class UpcyclingWorkflowTests(TestCase):
             "BUCKET_HAT",
             "LAPTOP_SLEEVE",
             "SARUNG_BANTAL",
+            "BACKPACK",
+            "SHOULDER_BAG",
+            "PENCIL_CASE",
+            "MAKEUP_POUCH",
+            "OUTER",
+            "ROK",
+            "HEADBAND",
+            "KEYCHAIN",
         }
 
         self.assertTrue(expected_products.issubset(product_codes))
         self.assertIn("RUMAH_TANGGA", options)
+        expected_by_category = {
+            "TAS": {"BACKPACK", "SHOULDER_BAG"},
+            "POUCH": {"PENCIL_CASE", "MAKEUP_POUCH"},
+            "PAKAIAN": {"OUTER", "ROK"},
+            "AKSESORIS": {"HEADBAND", "KEYCHAIN"},
+        }
+        for category, expected in expected_by_category.items():
+            self.assertTrue(
+                expected.issubset(
+                    {product["value"] for product in options[category]}
+                )
+            )
         self.assertTrue(
             expected_products.issubset(
                 set(ProductType.objects.values_list("code", flat=True))
