@@ -405,7 +405,6 @@ def request_detail(request, pk):
                 UpcyclingRequest.Status.PENDING_REVIEW,
                 UpcyclingRequest.Status.AWAITING_FABRIC,
                 UpcyclingRequest.Status.INSPECTION,
-                UpcyclingRequest.Status.AWAITING_APPROVAL,
             },
         },
     )
@@ -581,24 +580,37 @@ def cancel_request(request, pk):
         upcycling_request = get_object_or_404(
             UpcyclingRequest.objects.select_for_update(), pk=pk, user=request.user
         )
-        allowed = {
+        reject_quote = request.POST.get("action") == "reject_quote"
+        cancellable_statuses = {
             UpcyclingRequest.Status.PENDING_ASSIGNMENT,
             UpcyclingRequest.Status.PENDING_REVIEW,
             UpcyclingRequest.Status.AWAITING_FABRIC,
             UpcyclingRequest.Status.INSPECTION,
-            UpcyclingRequest.Status.AWAITING_APPROVAL,
         }
-        if upcycling_request.status not in allowed:
+        can_reject_quote = (
+            reject_quote
+            and upcycling_request.status == UpcyclingRequest.Status.AWAITING_APPROVAL
+        )
+        invalid_quote_rejection = reject_quote and not can_reject_quote
+        if invalid_quote_rejection or (
+            not reject_quote and upcycling_request.status not in cancellable_statuses
+        ):
             messages.error(request, "Request ini tidak dapat dibatalkan mandiri. Hubungi admin untuk bantuan.")
         else:
             old_status = upcycling_request.status
             upcycling_request.status = UpcyclingRequest.Status.CANCELLED
-            upcycling_request.cancellation_reason = "Dibatalkan oleh user."
+            if can_reject_quote:
+                upcycling_request.cancellation_reason = "Penawaran harga ditolak oleh user."
+            else:
+                upcycling_request.cancellation_reason = "Dibatalkan oleh user."
             if upcycling_request.fabric_received_at:
                 upcycling_request.return_status = UpcyclingRequest.ReturnStatus.PENDING_RETURN
             upcycling_request.save(update_fields=("status", "cancellation_reason", "return_status", "updated_at"))
             _record_user_status_change(upcycling_request, request.user, old_status)
-            messages.success(request, "Request dibatalkan.")
+            if can_reject_quote:
+                messages.success(request, "Penawaran ditolak. Kain akan dikembalikan.")
+            else:
+                messages.success(request, "Request dibatalkan.")
     return redirect("upcycling:request_detail", pk=pk)
 
 

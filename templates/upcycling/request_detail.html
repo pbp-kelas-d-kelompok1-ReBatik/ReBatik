@@ -205,6 +205,7 @@
                     {% if upcycling_request.delivery_proof %}<div class="border-t border-[var(--border)] pt-3"><dt class="font-semibold">Bukti penyerahan produk</dt><dd class="mt-1"><a class="underline" href="{{ upcycling_request.delivery_proof.url }}" target="_blank" rel="noopener">Lihat bukti</a></dd></div>{% endif %}
                     {% if upcycling_request.status == 'AWAITING_FABRIC' and upcycling_request.fabric_deadline %}<div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]"><dt class="font-semibold">Batas serah kain</dt><dd>{{ upcycling_request.fabric_deadline|date:'d M Y, H:i' }}</dd></div>{% endif %}
                     {% if upcycling_request.return_status == 'PENDING_RETURN' %}<div class="border-t border-[var(--border)] pt-3"><dt class="font-semibold">Pengembalian kain</dt><dd class="mt-1">Kain menunggu pengembalian oleh admin.</dd></div>{% endif %}
+                    {% if upcycling_request.cancellation_reason %}<div class="border-t border-[var(--border)] pt-3"><dt class="font-semibold">Alasan pembatalan</dt><dd class="mt-1 whitespace-pre-line text-[var(--brown-muted)]">{{ upcycling_request.cancellation_reason }}</dd></div>{% endif %}
                     <div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
                         <dt class="font-semibold">Kategori produk</dt>
                         <dd>{{ upcycling_request.get_category_display }}</dd>
@@ -265,10 +266,23 @@
             <div class="mt-5 rounded-xl border border-[var(--border)] bg-[var(--upcycling-surface)] p-5">
                 <p class="font-semibold">Penawaran artisan: Rp{{ upcycling_request.quoted_price|floatformat:0 }}</p>
                 {% if upcycling_request.quotation_notes %}<p class="mt-2 whitespace-pre-line">{{ upcycling_request.quotation_notes }}</p>{% endif %}
-                <form method="post" action="{% url 'upcycling:approve_quote' upcycling_request.pk %}" class="mt-4">
-                    {% csrf_token %}
-                    <button class="primary-action-button min-h-12 px-5 py-3 font-bold">Setujui harga</button>
-                </form>
+                <div class="mt-4 flex flex-col gap-3 sm:flex-row">
+                    <form method="post" action="{% url 'upcycling:approve_quote' upcycling_request.pk %}">
+                        {% csrf_token %}
+                        <button class="primary-action-button min-h-12 w-full px-5 py-3 font-bold sm:w-auto">Setujui harga</button>
+                    </form>
+                    <form
+                        method="post"
+                        action="{% url 'upcycling:cancel_request' upcycling_request.pk %}"
+                        onsubmit="return confirm('Penawaran ditolak dan permintaan dibatalkan. Kain yang sudah diterima akan dikembalikan. Lanjutkan?')"
+                    >
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="reject_quote">
+                        <button class="inline-flex min-h-12 w-full items-center justify-center rounded-xl border-2 border-[var(--danger)] bg-[var(--upcycling-surface)] px-5 py-3 font-bold text-[var(--danger)] hover:bg-[var(--danger)] hover:text-white sm:w-auto">
+                            Tolak penawaran
+                        </button>
+                    </form>
+                </div>
             </div>
         {% endif %}
         {% if can_confirm_receipt %}
