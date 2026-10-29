@@ -116,8 +116,6 @@ class UpcyclingRequestAdminForm(forms.ModelForm):
         if status == UpcyclingRequest.Status.IN_PROGRESS:
             if not cleaned.get("approved_at"):
                 self.add_error(None, "User harus menyetujui penawaran sebelum produksi.")
-            if cleaned.get("payment_status") != UpcyclingRequest.PaymentStatus.PAID:
-                self.add_error("payment_status", "Pembayaran harus dikonfirmasi sebelum produksi.")
         if status == UpcyclingRequest.Status.EXPIRED:
             deadline = cleaned.get("fabric_deadline")
             if cleaned.get("fabric_received_at") or not deadline or deadline > timezone.now():
@@ -129,8 +127,6 @@ class UpcyclingRequestAdminForm(forms.ModelForm):
         if cleaned.get("return_status") == UpcyclingRequest.ReturnStatus.RETURNED:
             if not cleaned.get("fabric_received_at"):
                 self.add_error("return_status", "Tidak ada kain yang perlu ditandai telah dikembalikan.")
-        if cleaned.get("payment_resolution_status") == UpcyclingRequest.PaymentResolutionStatus.RESOLVED and not cleaned.get("payment_resolution_notes"):
-            self.add_error("payment_resolution_notes", "Catat hasil penanganan pembayaran.")
         if status == UpcyclingRequest.Status.COMPLETED and request_obj.pk and request_obj.status == UpcyclingRequest.Status.READY:
             proof_received_at = cleaned.get("delivery_proof_received_at")
             if not cleaned.get("delivery_proof"):
@@ -150,8 +146,7 @@ class UpcyclingRequestAdminForm(forms.ModelForm):
             UpcyclingRequest.Status.PENDING_REVIEW: {UpcyclingRequest.Status.AWAITING_FABRIC, UpcyclingRequest.Status.REJECTED, UpcyclingRequest.Status.CANCELLED},
             UpcyclingRequest.Status.AWAITING_FABRIC: {UpcyclingRequest.Status.PENDING_REVIEW, UpcyclingRequest.Status.INSPECTION, UpcyclingRequest.Status.EXPIRED, UpcyclingRequest.Status.CANCELLED},
             UpcyclingRequest.Status.INSPECTION: {UpcyclingRequest.Status.AWAITING_APPROVAL, UpcyclingRequest.Status.REJECTED, UpcyclingRequest.Status.CANCELLED},
-            UpcyclingRequest.Status.AWAITING_APPROVAL: {UpcyclingRequest.Status.AWAITING_PAYMENT, UpcyclingRequest.Status.CANCELLED},
-            UpcyclingRequest.Status.AWAITING_PAYMENT: {UpcyclingRequest.Status.IN_PROGRESS, UpcyclingRequest.Status.CANCELLED},
+            UpcyclingRequest.Status.AWAITING_APPROVAL: {UpcyclingRequest.Status.IN_PROGRESS, UpcyclingRequest.Status.CANCELLED},
             UpcyclingRequest.Status.IN_PROGRESS: {UpcyclingRequest.Status.READY, UpcyclingRequest.Status.CANCELLED},
             UpcyclingRequest.Status.READY: {UpcyclingRequest.Status.COMPLETED},
             UpcyclingRequest.Status.COMPLETED: set(),
@@ -179,15 +174,15 @@ class UpcyclingStatusHistoryInline(admin.TabularInline):
 class UpcyclingRequestAdmin(admin.ModelAdmin):
     form = UpcyclingRequestAdminForm
     inlines = (UpcyclingStatusHistoryInline,)
-    list_display = ("reference_code", "product", "user", "artisan", "status", "return_status", "payment_resolution_status", "created_at")
-    list_filter = ("status", "return_status", "payment_resolution_status", "payment_status", "fabric", "category", "delivery_method")
+    list_display = ("reference_code", "product", "user", "artisan", "status", "return_status", "created_at")
+    list_filter = ("status", "return_status", "fabric", "category", "delivery_method")
     search_fields = ("user__username", "user__email", "custom_product", "whatsapp", "address")
-    readonly_fields = ("created_at", "updated_at", "review_approved_at", "fabric_deadline", "quoted_at", "approved_at", "paid_at", "payment_confirmed_by", "return_confirmed_by", "return_confirmed_at", "ready_at", "delivery_proof_received_at", "completed_at")
+    readonly_fields = ("created_at", "updated_at", "review_approved_at", "fabric_deadline", "quoted_at", "approved_at", "return_confirmed_by", "return_confirmed_at", "ready_at", "delivery_proof_received_at", "completed_at")
     date_hierarchy = "created_at"
     fieldsets = (
         ("Request", {"fields": ("user", "artisan", "fabric", "fabric_other_description", "fabric_photo", "fabric_condition", "fabric_dimensions", "category", "product", "custom_product", "quantity", "notes", "status")} ),
         ("Penyerahan dan inspeksi kain", {"fields": ("fabric_delivery_method", "fabric_delivery_location", "review_notes", "review_approved_at", "fabric_deadline", "fabric_received_at", "fabric_received_by", "fabric_receipt_notes", "inspection_notes", "rejection_stage", "rejection_reason")} ),
-        ("Harga dan pembayaran", {"fields": ("quoted_price", "quotation_notes", "quoted_at", "approved_at", "payment_status", "paid_at", "payment_confirmed_by", "payment_resolution_status", "payment_resolution_notes")} ),
+        ("Penawaran harga", {"fields": ("quoted_price", "quotation_notes", "quoted_at", "approved_at")} ),
         ("Pengembalian kain", {"fields": ("return_status", "return_method", "return_cost_bearer", "return_confirmed_by", "return_confirmed_at", "return_notes", "cancellation_reason")} ),
         ("Penyerahan produk", {"fields": ("delivery_method", "address", "whatsapp", "ready_at", "delivery_proof", "delivery_proof_received_at", "completed_by", "completed_at", "completion_notes")} ),
         ("Waktu", {"fields": ("created_at", "updated_at")} ),
@@ -220,13 +215,6 @@ class UpcyclingRequestAdmin(admin.ModelAdmin):
             obj.fabric_deadline = fabric_handoff_deadline(now)
         if obj.status == UpcyclingRequest.Status.AWAITING_APPROVAL and not obj.quoted_at:
             obj.quoted_at = now
-        if obj.payment_status == UpcyclingRequest.PaymentStatus.PAID and not obj.paid_at:
-            obj.paid_at = now
-            obj.payment_confirmed_by = request.user
-        if obj.payment_status == UpcyclingRequest.PaymentStatus.PAID:
-            obj.payment_confirmed_by = request.user
-        if obj.status == UpcyclingRequest.Status.AWAITING_PAYMENT and obj.payment_status == UpcyclingRequest.PaymentStatus.PAID:
-            obj.status = UpcyclingRequest.Status.IN_PROGRESS
         if obj.status == UpcyclingRequest.Status.READY and not obj.ready_at:
             obj.ready_at = now
         if obj.status in (UpcyclingRequest.Status.REJECTED, UpcyclingRequest.Status.CANCELLED) and obj.fabric_received_at:
@@ -234,8 +222,6 @@ class UpcyclingRequestAdmin(admin.ModelAdmin):
         if obj.return_status == UpcyclingRequest.ReturnStatus.RETURNED:
             obj.return_confirmed_by = request.user
             obj.return_confirmed_at = obj.return_confirmed_at or now
-        if obj.status == UpcyclingRequest.Status.CANCELLED and obj.payment_status == UpcyclingRequest.PaymentStatus.PAID:
-            obj.payment_resolution_status = UpcyclingRequest.PaymentResolutionStatus.PENDING
 
         super().save_model(request, obj, form, change)
         if old is None or old.status != obj.status:

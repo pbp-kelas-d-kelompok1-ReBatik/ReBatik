@@ -1,16 +1,14 @@
 from io import BytesIO
-from unittest.mock import Mock
-
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import RequestFactory, TestCase
+from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 from PIL import Image
 
 from rewards.models import PointTransaction
-from .admin import UpcyclingRequestAdmin, UpcyclingRequestAdminForm
+from .admin import UpcyclingRequestAdminForm
 from .models import ArtisanProfile, ProductType, UpcyclingRequest
 from .forms import UpcyclingRequestForm
 

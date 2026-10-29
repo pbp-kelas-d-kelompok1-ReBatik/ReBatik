@@ -63,7 +63,6 @@ class UpcyclingRequest(models.Model):
         AWAITING_FABRIC = "AWAITING_FABRIC", "Menunggu kain diserahkan"
         INSPECTION = "INSPECTION", "Pemeriksaan kain"
         AWAITING_APPROVAL = "AWAITING_APPROVAL", "Menunggu persetujuan harga"
-        AWAITING_PAYMENT = "AWAITING_PAYMENT", "Menunggu konfirmasi pembayaran"
         IN_PROGRESS = "IN_PROGRESS", "Sedang diproduksi"
         READY = "READY", "Siap diserahkan"
         COMPLETED = "COMPLETED", "Selesai"
@@ -75,15 +74,6 @@ class UpcyclingRequest(models.Model):
         NOT_REQUIRED = "NOT_REQUIRED", "Tidak perlu dikembalikan"
         PENDING_RETURN = "PENDING_RETURN", "Menunggu pengembalian kain"
         RETURNED = "RETURNED", "Kain sudah dikembalikan"
-
-    class PaymentStatus(models.TextChoices):
-        UNPAID = "UNPAID", "Belum dibayar"
-        PAID = "PAID", "Pembayaran dikonfirmasi"
-
-    class PaymentResolutionStatus(models.TextChoices):
-        NOT_REQUIRED = "NOT_REQUIRED", "Tidak diperlukan"
-        PENDING = "PENDING", "Perlu ditangani admin"
-        RESOLVED = "RESOLVED", "Penanganan selesai"
 
     class FabricType(models.TextChoices):
         DENIM = "DENIM", "Denim"
@@ -199,25 +189,6 @@ class UpcyclingRequest(models.Model):
     quotation_notes = models.TextField(blank=True)
     quoted_at = models.DateTimeField(null=True, blank=True)
     approved_at = models.DateTimeField(null=True, blank=True)
-    payment_status = models.CharField(
-        max_length=10,
-        choices=PaymentStatus.choices,
-        default=PaymentStatus.UNPAID,
-    )
-    paid_at = models.DateTimeField(null=True, blank=True)
-    payment_confirmed_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name="upcycling_payments_confirmed",
-    )
-    payment_resolution_status = models.CharField(
-        max_length=12,
-        choices=PaymentResolutionStatus.choices,
-        default=PaymentResolutionStatus.NOT_REQUIRED,
-    )
-    payment_resolution_notes = models.TextField(blank=True)
     rejection_stage = models.CharField(max_length=30, blank=True)
     rejection_reason = models.TextField(blank=True)
     cancellation_reason = models.TextField(blank=True)

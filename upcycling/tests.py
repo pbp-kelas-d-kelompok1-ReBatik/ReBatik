@@ -899,9 +899,9 @@ class UpcyclingRequestViewTests(TestCase):
         """Test behavior: detail timeline matches each request status."""
         self.client.force_login(self.user)
         expected_states = {
-            "PENDING_ASSIGNMENT": ["done", "current"] + ["upcoming"] * 8,
-            "IN_PROGRESS": ["done"] * 7 + ["current", "upcoming", "upcoming"],
-            "COMPLETED": ["done"] * 9 + ["current"],
+            "PENDING_ASSIGNMENT": ["done", "current"] + ["upcoming"] * 7,
+            "IN_PROGRESS": ["done"] * 6 + ["current", "upcoming", "upcoming"],
+            "COMPLETED": ["done"] * 8 + ["current"],
             "CANCELLED": ["done", "cancelled"],
         }
 

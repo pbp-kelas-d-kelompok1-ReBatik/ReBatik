@@ -319,7 +319,6 @@ def request_detail(request, pk):
         UpcyclingRequest.Status.AWAITING_FABRIC,
         UpcyclingRequest.Status.INSPECTION,
         UpcyclingRequest.Status.AWAITING_APPROVAL,
-        UpcyclingRequest.Status.AWAITING_PAYMENT,
         UpcyclingRequest.Status.IN_PROGRESS,
         UpcyclingRequest.Status.READY,
         UpcyclingRequest.Status.COMPLETED,
@@ -527,10 +526,10 @@ def approve_quote(request, pk):
         else:
             old_status = upcycling_request.status
             upcycling_request.approved_at = timezone.now()
-            upcycling_request.status = UpcyclingRequest.Status.AWAITING_PAYMENT
+            upcycling_request.status = UpcyclingRequest.Status.IN_PROGRESS
             upcycling_request.save(update_fields=("approved_at", "status", "updated_at"))
             _record_user_status_change(upcycling_request, request.user, old_status)
-            messages.success(request, "Harga disetujui. Admin akan mengonfirmasi pembayaran simulasi.")
+            messages.success(request, "Harga disetujui. Request masuk ke tahap produksi.")
     return redirect("upcycling:request_detail", pk=pk)
 
 
@@ -544,7 +543,6 @@ def confirm_completion(request, pk):
         )
         if (
             upcycling_request.status != UpcyclingRequest.Status.READY
-            or upcycling_request.payment_status != UpcyclingRequest.PaymentStatus.PAID
         ):
             messages.error(request, "Request belum siap dikonfirmasi selesai.")
         else:
@@ -579,9 +577,8 @@ def cancel_request(request, pk):
             UpcyclingRequest.Status.AWAITING_FABRIC,
             UpcyclingRequest.Status.INSPECTION,
             UpcyclingRequest.Status.AWAITING_APPROVAL,
-            UpcyclingRequest.Status.AWAITING_PAYMENT,
         }
-        if upcycling_request.status not in allowed or upcycling_request.payment_status == UpcyclingRequest.PaymentStatus.PAID:
+        if upcycling_request.status not in allowed:
             messages.error(request, "Request ini tidak dapat dibatalkan mandiri. Hubungi admin untuk bantuan.")
         else:
             old_status = upcycling_request.status
