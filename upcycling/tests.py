@@ -52,6 +52,15 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         form = self.form(self.valid_data)
         self.assertTrue(form.is_valid(), form.errors)
 
+    def test_fabric_condition_select_uses_a_clear_optional_prompt(self):
+        """Test behavior: fabric condition has no ambiguous dash option."""
+        form = UpcyclingRequestForm()
+
+        self.assertEqual(
+            form.fields["fabric_condition"].choices[0],
+            ("", "Pilih kondisi kain (opsional)"),
+        )
+
     def test_request_form_defers_fabric_handoff_details_until_review_approval(self):
         """Test behavior: initial request asks for fabric details, not handoff logistics."""
         form = self.form(self.valid_data)
@@ -454,6 +463,17 @@ class UpcyclingRequestViewTests(TestCase):
             reverse("upcycling:request_success", args=[upcycling_request.pk]),
         )
         self.assertEqual(upcycling_request.status, "PENDING_ASSIGNMENT")
+
+    def test_create_form_renders_an_expanded_fabric_photo_upload_area(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("upcycling:request_create"))
+
+        self.assertContains(response, 'id="fabric-photo-upload"')
+        self.assertContains(response, "Tambah foto kain")
+        self.assertContains(response, 'id="fabric-photo-preview"')
+        self.assertContains(response, 'src="/static/img/mascot/pointing.webp"')
+        self.assertContains(response, 'class="upcycling-photo-add"')
 
     def test_create_rate_limit_returns_429_after_five_posts(self):
         """Test behavior: create rate limit returns 429 after five posts."""
