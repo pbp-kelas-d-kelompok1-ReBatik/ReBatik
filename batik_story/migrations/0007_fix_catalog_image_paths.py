@@ -1,3 +1,6 @@
+from pathlib import Path
+
+from django.conf import settings
 from django.db import migrations
 
 
@@ -17,6 +20,11 @@ def fix_image_paths(apps, schema_editor):
     BatikMotif = apps.get_model("batik_story", "BatikMotif")
     queryset = BatikMotif.objects.using(schema_editor.connection.alias)
     for old_path, new_path in IMAGE_PATHS.items():
+        # Keep a user's upload when it occupies a legacy catalog filename.
+        if not old_path.startswith("img/catalog/") and (
+            Path(settings.MEDIA_ROOT) / old_path
+        ).is_file():
+            continue
         queryset.filter(gambar=old_path).update(gambar=new_path)
 
 
