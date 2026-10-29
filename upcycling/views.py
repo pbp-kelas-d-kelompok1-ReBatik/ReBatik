@@ -505,7 +505,7 @@ def request_delete(request, pk):
     )
     messages.info(
         request,
-        "Request yang sudah diajukan tidak dapat dihapus. Gunakan Batalkan request untuk menghentikan proses.",
+        "Permintaan yang sudah diajukan tidak dapat dihapus. Gunakan tombol Batalkan permintaan untuk menghentikan proses.",
     )
     return _htmx_location_or_redirect(
         request,
