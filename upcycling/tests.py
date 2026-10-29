@@ -526,7 +526,7 @@ class UpcyclingRequestViewTests(TestCase):
                 reverse("upcycling:request_delete", args=[upcycling_request.pk]),
                 follow=True,
             )
-            self.assertContains(response, "Request yang sudah diajukan tidak dapat dihapus")
+            self.assertContains(response, "Permintaan yang sudah diajukan tidak dapat dihapus")
         self.assertTrue(
             UpcyclingRequest.objects.filter(pk=upcycling_request.pk).exists()
         )
@@ -1067,7 +1067,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertTrue(
             UpcyclingRequest.objects.filter(pk=upcycling_request.pk).exists()
         )
-        self.assertContains(response, "Request yang sudah diajukan tidak dapat dihapus")
+        self.assertContains(response, "Permintaan yang sudah diajukan tidak dapat dihapus")
 
     def test_submitted_request_uses_cancellation_instead_of_deletion(self):
         """Test behavior: submitted requests remain auditable and can be cancelled."""
@@ -1082,13 +1082,13 @@ class UpcyclingRequestViewTests(TestCase):
             follow=True,
         )
 
-        self.assertContains(detail_response, "Batalkan request")
+        self.assertContains(detail_response, "Batalkan permintaan")
         self.assertNotContains(detail_response, "Hapus permintaan")
         self.assertTrue(
             UpcyclingRequest.objects.filter(pk=upcycling_request.pk).exists()
         )
-        self.assertContains(delete_response, "Request yang sudah diajukan tidak dapat dihapus")
-        self.assertContains(delete_response, "Batalkan request")
+        self.assertContains(delete_response, "Permintaan yang sudah diajukan tidak dapat dihapus")
+        self.assertContains(delete_response, "Batalkan permintaan")
 
     def test_legacy_delete_confirmation_redirects_to_request_detail(self):
         """Test behavior: old delete links explain cancellation instead."""
@@ -1119,7 +1119,7 @@ class UpcyclingRequestViewTests(TestCase):
         )
         self.assertContains(
             response,
-            "Request yang sudah diajukan tidak dapat dihapus",
+            "Permintaan yang sudah diajukan tidak dapat dihapus",
         )
 
     def test_user_cannot_delete_another_users_request(self):
@@ -1169,7 +1169,31 @@ class UpcyclingRequestViewTests(TestCase):
         )
         self.assertNotContains(detail_response, delete_url)
         self.assertNotContains(detail_response, "Hapus permintaan")
-        self.assertContains(detail_response, "Batalkan request")
+        self.assertContains(detail_response, 'id="request-actions"')
+        self.assertContains(detail_response, "sm:flex-row")
+        self.assertContains(detail_response, "w-full sm:w-auto", count=3)
+        self.assertContains(detail_response, "Edit permintaan")
+        self.assertContains(detail_response, "Batalkan permintaan")
+        rendered = detail_response.content.decode()
+        actions_start = rendered.index('id="request-actions"')
+        actions_end = rendered.index("</div>", actions_start)
+        actions_markup = rendered[actions_start:actions_end]
+        self.assertIn("Edit permintaan", actions_markup)
+        self.assertIn("Batalkan permintaan", actions_markup)
+        self.assertNotIn("Hubungi Tim via WhatsApp", actions_markup)
+        contact_actions_start = rendered.index('id="contact-team-actions"')
+        self.assertLess(contact_actions_start, actions_start)
+        contact_actions_end = rendered.index("</div>", contact_actions_start)
+        contact_actions_markup = rendered[contact_actions_start:contact_actions_end]
+        self.assertIn("sm:justify-between", contact_actions_markup)
+        self.assertIn("Permintaan bisa diedit selama masih menunggu tinjauan.", contact_actions_markup)
+        self.assertIn("Hubungi Tim via WhatsApp", contact_actions_markup)
+        self.assertContains(
+            detail_response,
+            "Permintaan bisa diedit selama masih menunggu tinjauan.",
+        )
+        self.assertNotContains(detail_response, "bisa diedit atau dihapus")
+        self.assertContains(detail_response, "hover:bg-[var(--danger)]")
 
         confirmation_response = self.client.get(delete_url)
         self.assertRedirects(
@@ -1186,7 +1210,15 @@ class UpcyclingRequestViewTests(TestCase):
             reverse("upcycling:request_detail", args=[upcycling_request.pk])
         )
 
-        self.assertContains(response, "tetap tersimpan di riwayat")
+        self.assertContains(
+            response,
+            "Jika dibatalkan, permintaan tetap tersimpan di riwayat.",
+        )
+        rendered = response.content.decode()
+        self.assertLess(
+            rendered.index("Permintaan bisa diedit selama masih menunggu tinjauan."),
+            rendered.index("Batalkan permintaan"),
+        )
 
     def test_request_form_embeds_product_options_for_each_category(self):
         """Test behavior: request form embeds product options for each category."""

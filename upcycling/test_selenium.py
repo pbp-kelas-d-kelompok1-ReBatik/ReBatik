@@ -186,7 +186,7 @@ class UpcyclingBrowserTests(StaticLiveServerTestCase):
             reverse("upcycling:request_detail", args=[upcycling_request.pk])
         )
 
-        self.assertIn("Batalkan request", self.browser.find_element(By.TAG_NAME, "body").text)
+        self.assertIn("Batalkan permintaan", self.browser.find_element(By.TAG_NAME, "body").text)
         self.assertNotIn("Hapus permintaan", self.browser.find_element(By.TAG_NAME, "body").text)
         self.assertEqual(
             self.browser.find_elements(By.ID, "delete-request-dialog"),
