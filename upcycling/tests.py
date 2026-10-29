@@ -916,6 +916,48 @@ class UpcyclingRequestViewTests(TestCase):
                 self.assertEqual(response.status_code, 200)
                 self.assertEqual(states, expected)
 
+    def test_detail_explains_next_action_and_fabric_handoff_deadline(self):
+        """Test behavior: detail tells the user what to do and by when."""
+        deadline = datetime(2026, 11, 5, 12, 0, tzinfo=datetime_timezone.utc)
+        upcycling_request = self.make_request(
+            self.user,
+            status=UpcyclingRequest.Status.AWAITING_FABRIC,
+            fabric_deadline=deadline,
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_detail", args=[upcycling_request.pk])
+        )
+
+        next_step = response.context["next_step"]
+        self.assertEqual(next_step["title"], "Serahkan kain")
+        self.assertEqual(next_step["deadline"], deadline)
+        self.assertContains(response, "Menunggu kain diserahkan")
+        self.assertContains(response, "05 Nov 2026")
+
+    def test_detail_timeline_shows_when_completed_steps_changed(self):
+        """Test behavior: completed timeline steps show their status dates."""
+        upcycling_request = self.make_request(
+            self.user, status=UpcyclingRequest.Status.PENDING_REVIEW
+        )
+        changed_at = datetime(2026, 10, 20, 8, 30, tzinfo=datetime_timezone.utc)
+        UpcyclingStatusHistory.objects.create(
+            request=upcycling_request,
+            from_status=UpcyclingRequest.Status.PENDING_ASSIGNMENT,
+            to_status=UpcyclingRequest.Status.PENDING_REVIEW,
+        )
+        UpcyclingStatusHistory.objects.filter(request=upcycling_request).update(
+            changed_at=changed_at
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_detail", args=[upcycling_request.pk])
+        )
+
+        self.assertEqual(response.context["timeline_steps"][1]["created_at"], changed_at)
+
     def test_detail_formats_submission_date_in_jakarta_timezone(self):
         """Test behavior: detail formats submission date in jakarta timezone."""
         upcycling_request = self.make_request(self.user)
