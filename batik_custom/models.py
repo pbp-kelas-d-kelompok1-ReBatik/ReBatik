@@ -123,3 +123,53 @@ class RecommendedMotif(models.Model):
     def __str__(self):
         return self.name
 
+
+class SavedDesign(models.Model):
+    LAYOUT_CHOICES = [
+        ("single", "Single Motif"),
+        ("grid", "Grid"),
+        ("brick", "Brick"),
+        ("half_drop", "Half Drop"),
+        ("mirror", "Mirror"),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="saved_batik_designs",
+    )
+    title = models.CharField(max_length=150)
+    motif = models.ForeignKey(
+        RecommendedMotif,
+        on_delete=models.PROTECT,
+        related_name="saved_designs",
+    )
+    palette = models.ForeignKey(
+        ColorPalette,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="saved_designs",
+    )
+    layout = models.CharField(
+        max_length=20,
+        choices=LAYOUT_CHOICES,
+        default="grid",
+    )
+    scale = models.PositiveSmallIntegerField(default=100)
+    rotation = models.SmallIntegerField(default=0)
+    gap = models.PositiveSmallIntegerField(default=50)
+    color = models.CharField(max_length=7, default="#874a29")
+    tint = models.PositiveSmallIntegerField(default=0)
+    is_public = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Saved design"
+        verbose_name_plural = "Saved designs"
+
+    def __str__(self):
+        return f"{self.title} - {self.user}"
+

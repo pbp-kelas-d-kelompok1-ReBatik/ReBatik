@@ -1436,3 +1436,31 @@ body.modal-open {
         grid-template-columns: 1fr;
     }
 }
+
+.cs-sidebar {
+    overflow: visible;
+}
+
+.cs-workspace {
+    overflow: visible;
+}
+
+.cs-control {
+    position: relative;
+    overflow: visible;
+}
+
+.cs-control select {
+    position: relative;
+    z-index: 5;
+    width: 100%;
+    max-width: 100%;
+}
+
+.cs-control select:focus {
+    z-index: 20;
+}
+
+.cs-control:has(select:focus) {
+    z-index: 20;
+}
