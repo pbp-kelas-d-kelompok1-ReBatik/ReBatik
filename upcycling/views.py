@@ -626,7 +626,7 @@ def artisan_update_request(request, pk):
             elif action == "review_reject" and old_status == UpcyclingRequest.Status.PENDING_REVIEW:
                 if not note:
                     raise ValueError("Masukkan alasan penolakan.")
-                upcycling_request.rejection_stage = "INITIAL_REVIEW"
+                upcycling_request.rejection_stage = "PRELIMINARY_REVIEW"
                 upcycling_request.rejection_reason = note
                 upcycling_request.status = UpcyclingRequest.Status.REJECTED
             elif action == "receive_fabric" and old_status == UpcyclingRequest.Status.AWAITING_FABRIC:
@@ -653,7 +653,7 @@ def artisan_update_request(request, pk):
                     if not note:
                         raise ValueError("Masukkan alasan kain tidak layak.")
                     upcycling_request.inspection_notes = note
-                    upcycling_request.rejection_stage = "FABRIC_INSPECTION"
+                    upcycling_request.rejection_stage = "PHYSICAL_INSPECTION"
                     upcycling_request.rejection_reason = note
                     upcycling_request.return_status = UpcyclingRequest.ReturnStatus.PENDING_RETURN
                     upcycling_request.status = UpcyclingRequest.Status.REJECTED
