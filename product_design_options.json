@@ -1,0 +1,288 @@
+[
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 1,
+    "fields": {
+      "product_type": "fabric",
+      "name": "Kain Batik Premium",
+      "description": "Kain batik premium untuk busana dan kerajinan.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 2,
+    "fields": {
+      "product_type": "fabric",
+      "name": "Kain Batik Klasik",
+      "description": "Kain batik dengan pilihan motif klasik.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 3,
+    "fields": {
+      "product_type": "fabric",
+      "name": "Kain Batik Custom",
+      "description": "Kain batik dengan desain sesuai pilihan pelanggan.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 4,
+    "fields": {
+      "product_type": "shirt",
+      "name": "Kemeja Batik Slim Fit",
+      "description": "Kemeja batik dengan potongan slim fit.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 5,
+    "fields": {
+      "product_type": "shirt",
+      "name": "Kemeja Batik Regular",
+      "description": "Kemeja batik dengan potongan regular yang nyaman.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 6,
+    "fields": {
+      "product_type": "shirt",
+      "name": "Kemeja Batik Oversized",
+      "description": "Kemeja batik dengan potongan oversized.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 7,
+    "fields": {
+      "product_type": "outer",
+      "name": "Outer Batik Modern",
+      "description": "Outer batik bergaya modern.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 8,
+    "fields": {
+      "product_type": "outer",
+      "name": "Outer Batik Kimono",
+      "description": "Outer batik dengan model kimono.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 9,
+    "fields": {
+      "product_type": "dress",
+      "name": "Dress Batik Elegan",
+      "description": "Dress batik untuk tampilan elegan.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 10,
+    "fields": {
+      "product_type": "dress",
+      "name": "Dress Batik Casual",
+      "description": "Dress batik untuk aktivitas kasual.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 11,
+    "fields": {
+      "product_type": "skirt",
+      "name": "Rok Batik A-Line",
+      "description": "Rok batik dengan potongan A-line.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 12,
+    "fields": {
+      "product_type": "skirt",
+      "name": "Rok Batik Lilit",
+      "description": "Rok batik model lilit.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 13,
+    "fields": {
+      "product_type": "pants",
+      "name": "Celana Batik Casual",
+      "description": "Celana batik untuk gaya kasual.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 14,
+    "fields": {
+      "product_type": "pants",
+      "name": "Celana Batik Palazzo",
+      "description": "Celana batik model palazzo.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 15,
+    "fields": {
+      "product_type": "hijab",
+      "name": "Hijab Batik Segi Empat",
+      "description": "Hijab batik berbentuk segi empat.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 16,
+    "fields": {
+      "product_type": "hijab",
+      "name": "Hijab Batik Pashmina",
+      "description": "Hijab batik model pashmina.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 17,
+    "fields": {
+      "product_type": "tote_bag",
+      "name": "Tote Bag Batik Premium",
+      "description": "Tote bag batik dengan tampilan premium.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 18,
+    "fields": {
+      "product_type": "tote_bag",
+      "name": "Tote Bag Batik Minimalis",
+      "description": "Tote bag batik dengan desain minimalis.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 19,
+    "fields": {
+      "product_type": "pouch",
+      "name": "Pouch Batik Kecil",
+      "description": "Pouch batik berukuran kecil.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 20,
+    "fields": {
+      "product_type": "pouch",
+      "name": "Pouch Batik Premium",
+      "description": "Pouch batik dengan tampilan premium.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 21,
+    "fields": {
+      "product_type": "sling_bag",
+      "name": "Tas Selempang Batik Premium",
+      "description": "Tas selempang batik dengan tampilan premium.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 22,
+    "fields": {
+      "product_type": "sling_bag",
+      "name": "Tas Selempang Batik Minimalis",
+      "description": "Tas selempang batik dengan desain minimalis.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 23,
+    "fields": {
+      "product_type": "accessories",
+      "name": "Aksesori Batik Custom",
+      "description": "Aksesori batik dengan desain sesuai pilihan.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 24,
+    "fields": {
+      "product_type": "accessories",
+      "name": "Aksesori Batik Premium",
+      "description": "Aksesori batik dengan tampilan premium.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 25,
+    "fields": {
+      "product_type": "home_decor",
+      "name": "Sarung Bantal Batik",
+      "description": "Sarung bantal dengan motif batik.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  },
+  {
+    "model": "batik_custom.productdesignoption",
+    "pk": 26,
+    "fields": {
+      "product_type": "home_decor",
+      "name": "Taplak Meja Batik",
+      "description": "Taplak meja dengan motif batik.",
+      "image": "product_designs/placeholder.webp",
+      "is_active": true
+    }
+  }
+]
