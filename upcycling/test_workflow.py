@@ -667,23 +667,86 @@ class UpcyclingWorkflowTests(TestCase):
             UpcyclingRequest.ReturnStatus.PENDING_RETURN,
         )
 
-    def test_approving_quote_starts_production_without_payment_step(self):
+    def test_approving_quote_requests_delivery_details_before_production(self):
         request_obj = make_request(
             self.user,
             artisan=self.artisan,
             status=UpcyclingRequest.Status.AWAITING_APPROVAL,
             quoted_price="75000",
         )
+        request_obj.delivery_method = ""
+        request_obj.address = ""
+        request_obj.save(update_fields=("delivery_method", "address"))
         self.client.force_login(self.user)
-        self.client.post(reverse("upcycling:approve_quote", args=[request_obj.pk]))
+        response = self.client.post(
+            reverse("upcycling:approve_quote", args=[request_obj.pk]),
+            {},
+        )
+        self.assertRedirects(response, reverse("upcycling:request_detail", args=[request_obj.pk]))
         request_obj.refresh_from_db()
-        self.assertEqual(request_obj.status, UpcyclingRequest.Status.IN_PROGRESS)
+        self.assertEqual(request_obj.status, UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS)
         self.assertIsNotNone(request_obj.approved_at)
+        self.assertEqual(request_obj.delivery_method, "")
+        self.assertEqual(request_obj.address, "")
         self.assertNotIn("AWAITING_PAYMENT", dict(UpcyclingRequest.Status.choices))
         self.assertNotIn(
             "payment_status",
             {field.name for field in UpcyclingRequest._meta.get_fields()},
         )
+
+        response = self.client.post(
+            reverse("upcycling:submit_product_delivery", args=[request_obj.pk]),
+            {"delivery_method": "DROP_OFF", "address": "Depok"},
+        )
+        self.assertRedirects(response, reverse("upcycling:request_detail", args=[request_obj.pk]))
+        request_obj.refresh_from_db()
+        self.assertEqual(request_obj.status, UpcyclingRequest.Status.IN_PROGRESS)
+        self.assertEqual(request_obj.delivery_method, "DROP_OFF")
+        self.assertEqual(request_obj.address, "Depok")
+
+    def test_user_cannot_start_production_without_delivery_details(self):
+        request_obj = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.AWAITING_APPROVAL,
+            quoted_price="75000",
+        )
+        request_obj.delivery_method = ""
+        request_obj.address = ""
+        request_obj.save(update_fields=("delivery_method", "address"))
+        self.client.force_login(self.user)
+        self.client.post(reverse("upcycling:approve_quote", args=[request_obj.pk]))
+        request_obj.refresh_from_db()
+        self.assertEqual(request_obj.status, UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS)
+        response = self.client.post(
+            reverse("upcycling:submit_product_delivery", args=[request_obj.pk]),
+            {},
+            follow=True,
+        )
+        request_obj.refresh_from_db()
+
+        self.assertEqual(request_obj.status, UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS)
+        self.assertIsNotNone(request_obj.approved_at)
+        self.assertContains(response, "Pilih metode penerimaan produk dan isi alamat")
+
+    def test_user_can_cancel_after_quote_approval_before_production(self):
+        request_obj = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS,
+            quoted_price="75000",
+            approved_at=timezone.now(),
+            fabric_received_at=timezone.now(),
+            fabric_received_by=self.artisan_user,
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(reverse("upcycling:cancel_request", args=[request_obj.pk]))
+
+        request_obj.refresh_from_db()
+        self.assertRedirects(response, reverse("upcycling:request_detail", args=[request_obj.pk]))
+        self.assertEqual(request_obj.status, UpcyclingRequest.Status.CANCELLED)
+        self.assertEqual(request_obj.return_status, UpcyclingRequest.ReturnStatus.PENDING_RETURN)
 
     def test_user_completion_awards_points_only_once(self):
         request_obj = make_request(

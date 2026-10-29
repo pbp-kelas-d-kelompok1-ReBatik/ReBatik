@@ -12,6 +12,7 @@ from django.urls import reverse
 
 from .admin import UpcyclingRequestAdminForm
 from .forms import FabricHandoffForm, UpcyclingRequestForm
+from .forms import ProductDeliveryForm
 from .models import (
     ArtisanProfile,
     ProductType,
@@ -35,8 +36,6 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         "product": "TOTE_BAG",
         "quantity": 1,
         "notes": "",
-        "delivery_method": "DROP_OFF",
-        "address": "Depok",
         "whatsapp": "081234567890",
         "fabric_condition": "GOOD",
         "fabric_dimensions": "1 celana",
@@ -123,15 +122,29 @@ class UpcyclingRequestFormTests(SimpleTestCase):
 
         self.assertNotIn("fabric_delivery_method", form.fields)
         self.assertNotIn("fabric_delivery_location", form.fields)
+        self.assertNotIn("delivery_method", form.fields)
+        self.assertNotIn("address", form.fields)
 
         handoff_form = FabricHandoffForm(instance=UpcyclingRequest())
         self.assertIn("fabric_delivery_method", handoff_form.fields)
         self.assertIn("fabric_delivery_location", handoff_form.fields)
-        self.assertTrue(handoff_form.fields["fabric_delivery_location"].required)
+        self.assertFalse(handoff_form.fields["fabric_delivery_location"].required)
+        self.assertEqual(
+            handoff_form.fields["fabric_delivery_location"].label,
+            "Catatan penyerahan (opsional)",
+        )
         self.assertEqual(
             handoff_form["fabric_delivery_method"].value(),
             "",
         )
+
+    def test_product_delivery_form_requires_method_and_address_after_quote(self):
+        form = ProductDeliveryForm()
+
+        self.assertTrue(form.fields["delivery_method"].required)
+        self.assertTrue(form.fields["address"].required)
+        self.assertIn("delivery_method", form.fields)
+        self.assertIn("address", form.fields)
 
     def test_normalizes_supported_indonesian_whatsapp_formats(self):
         """Test behavior: normalizes supported indonesian whatsapp formats."""
@@ -1057,9 +1070,10 @@ class UpcyclingRequestViewTests(TestCase):
         """Test behavior: detail timeline matches each request status."""
         self.client.force_login(self.user)
         expected_states = {
-            "PENDING_ASSIGNMENT": ["done", "current"] + ["upcoming"] * 7,
-            "IN_PROGRESS": ["done"] * 6 + ["current", "upcoming", "upcoming"],
-            "COMPLETED": ["done"] * 8 + ["current"],
+            "PENDING_ASSIGNMENT": ["done", "current"] + ["upcoming"] * 8,
+            "AWAITING_DELIVERY_DETAILS": ["done"] * 6 + ["current", "upcoming", "upcoming", "upcoming"],
+            "IN_PROGRESS": ["done"] * 7 + ["current", "upcoming", "upcoming"],
+            "COMPLETED": ["done"] * 9 + ["current"],
             "CANCELLED": ["done", "cancelled"],
         }
 
@@ -1108,7 +1122,8 @@ class UpcyclingRequestViewTests(TestCase):
         )
         self.assertIsNotNone(detail_response.context["fabric_handoff_form"])
         self.assertContains(detail_response, "Cara menyerahkan kain")
-        self.assertContains(detail_response, "Alamat atau lokasi penyerahan kain")
+        self.assertContains(detail_response, "Catatan penyerahan (opsional)")
+        self.assertContains(detail_response, "admin akan mengoordinasikan lokasi drop-off")
         self.assertEqual(
             detail_response.context["fabric_handoff_form"][
                 "fabric_delivery_method"
@@ -1134,6 +1149,28 @@ class UpcyclingRequestViewTests(TestCase):
             upcycling_request.fabric_delivery_location,
             "Jl. Melati 10, Depok",
         )
+        self.assertContains(response, "Rencana penyerahan kain berhasil disimpan.")
+
+    def test_user_can_save_handoff_method_before_dropoff_module_is_ready(self):
+        """Drop-off handoff can be recorded while admin coordinates location manually."""
+        upcycling_request = self.make_request(
+            self.user,
+            status=UpcyclingRequest.Status.AWAITING_FABRIC,
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("upcycling:submit_fabric_handoff", args=[upcycling_request.pk]),
+            {"fabric_delivery_method": UpcyclingRequest.FabricDeliveryMethod.DROP_OFF},
+            follow=True,
+        )
+
+        upcycling_request.refresh_from_db()
+        self.assertEqual(
+            upcycling_request.fabric_delivery_method,
+            UpcyclingRequest.FabricDeliveryMethod.DROP_OFF,
+        )
+        self.assertEqual(upcycling_request.fabric_delivery_location, "")
         self.assertContains(response, "Rencana penyerahan kain berhasil disimpan.")
 
     def test_request_detail_shows_optional_fabric_composition(self):
