@@ -59,7 +59,7 @@
                         Pesanan Saya
                     </a>
                 {% endif %}
-                {% if user.is_staff %}
+                {% if user.is_staff or can_manage_products %}
                     <a
                         href="{% url 'marketplace:manage_product_list' %}"
                         class="primary-action-button mp-top-btn min-h-11 px-4 py-2 text-sm font-semibold sm:px-5"

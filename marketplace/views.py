@@ -36,21 +36,32 @@ MANAGE_PRODUCTS_PER_PAGE = 15
 DROPOFF_PER_PAGE = 9
 
 
-def staff_required(view_func):
-    """Require an authenticated staff user; redirect guests and return styled 403 for non-staff."""
+def is_artisan_or_staff(user):
+    """Return True if user is staff/admin or belongs to the Artisan group."""
+    if not user or not user.is_authenticated:
+        return False
+    return (
+        user.is_staff
+        or user.is_superuser
+        or user.groups.filter(name__in=["Admin", "Artisan"]).exists()
+    )
+
+
+def artisan_or_staff_required(view_func):
+    """Require an authenticated staff or artisan user; redirect guests and return styled 403 for eco-members."""
 
     @wraps(view_func)
     def _wrapped(request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect_to_login(request.get_full_path())
-        if not request.user.is_staff:
+        if not is_artisan_or_staff(request.user):
             return render(
                 request,
                 "marketplace/forbidden.html",
                 {
                     "message": (
-                        "Halaman ini hanya untuk tim pengelola (Staff) ReBatik. "
-                        "Anda tidak memiliki izin untuk memanipulasi data katalog."
+                        "Akses Terbatas (403 Forbidden). Halaman ini khusus untuk Pengrajin (Artisan) "
+                        "dan Pengelola (Admin) ReBatik untuk mengunggah dan mengelola produk upcycling."
                     ),
                 },
                 status=403,
@@ -58,6 +69,9 @@ def staff_required(view_func):
         return view_func(request, *args, **kwargs)
 
     return _wrapped
+
+
+staff_required = artisan_or_staff_required
 
 
 def rate_limit_post(action_key, action_label, *, limit=8, window_seconds=60):
@@ -166,6 +180,7 @@ def product_list(request):
         "selected_query": selected_query,
         "selected_sort": selected_sort,
         "has_any_products": has_any_products,
+        "can_manage_products": is_artisan_or_staff(request.user),
     }
     return render(request, "marketplace/index.html", context)
 

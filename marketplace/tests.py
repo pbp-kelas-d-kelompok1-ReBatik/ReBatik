@@ -451,6 +451,22 @@ class StaffProductManagementViewTests(TestCase):
         self.assertContains(member_resp, "Akses Terbatas", status_code=403)
         self.assertContains(member_resp, "403 Forbidden", status_code=403)
 
+    def test_artisan_user_can_access_manage_product_views(self):
+        from django.contrib.auth.models import Group
+
+        artisan_group, _ = Group.objects.get_or_create(name="Artisan")
+        artisan_user = User.objects.create_user(
+            username="artisan_user",
+            password="password123",
+        )
+        artisan_user.groups.add(artisan_group)
+        self.client.force_login(artisan_user)
+
+        manage_url = reverse("marketplace:manage_product_list")
+        resp = self.client.get(manage_url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "Kelola Produk")
+
     def test_rate_limit_blocks_excessive_sensitive_post_requests(self):
         self.client.force_login(self.member)
         checkout_url = reverse(
