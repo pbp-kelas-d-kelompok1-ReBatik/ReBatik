@@ -1,0 +1,48 @@
+{% if query %}
+<section class="search-suggestions" role="region" aria-label="Saran pencarian" aria-live="polite">
+  <div class="search-columns">
+    <div class="search-suggestion-column">
+      <h3>Saran Pencarian</h3>
+      {% for item in suggestions %}
+        <a class="search-suggestion" href="{% url 'batik_story:show_batik_story' %}?q={{ item.label|urlencode }}">
+          <span class="search-suggestion-icon" aria-hidden="true">⌕</span>
+          <span>{{ item.label }}</span>
+          <small>{{ item.kind }}</small>
+        </a>
+      {% empty %}
+        <div class="search-no-results">
+          <strong>Tidak ada hasil ditemukan</strong>
+          <p>Coba kata kunci lain, seperti nama motif, kategori, atau produk.</p>
+        </div>
+      {% endfor %}
+      <a class="search-all" href="{% url 'batik_story:show_batik_story' %}?q={{ query|urlencode }}">
+        Lihat hasil untuk <b>{{ query }}</b> di ReBatik <span aria-hidden="true">→</span>
+      </a>
+    </div>
+    {% if products %}
+    <aside class="search-popular-column">
+      <h3>Produk Populer</h3>
+      {% for product in products %}
+        <a class="search-product" href="{% url 'marketplace:home' %}?q={{ product.name|urlencode }}">
+          {% if product.image_url %}<img src="{{ product.image_url }}" alt="" loading="lazy">{% else %}<span class="search-product-placeholder">✿</span>{% endif %}
+          <span><strong>{{ product.name }}</strong><small>Rp {{ product.price|floatformat:0 }}</small></span>
+        </a>
+      {% endfor %}
+      <a class="search-all search-products-all" href="{% url 'marketplace:home' %}?q={{ query|urlencode }}">Lihat semua produk <span aria-hidden="true">→</span></a>
+    </aside>
+    {% endif %}
+  </div>
+</section>
+{% else %}
+<section class="search-suggestions search-history-panel" role="region" aria-label="Riwayat pencarian">
+  <h3>Pencarian Terakhir</h3>
+  {% for item in recent_searches %}
+    <a class="search-suggestion" href="{% url 'batik_story:show_batik_story' %}?q={{ item|urlencode }}"><span class="search-suggestion-icon" aria-hidden="true">◷</span><span>{{ item }}</span></a>
+  {% empty %}
+    <p class="search-empty">Pencarian terakhir akan muncul di sini.</p>
+  {% endfor %}
+  {% if recent_searches %}
+    <a class="search-all" href="{% url 'main:clear_search_history' %}" hx-get="{% url 'main:clear_search_history' %}" hx-target="#rbSearchResults" hx-swap="innerHTML">♧ Hapus riwayat pencarian</a>
+  {% endif %}
+</section>
+{% endif %}
