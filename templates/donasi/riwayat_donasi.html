@@ -1,0 +1,190 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<title>Riwayat Donasi | ReBatik</title>
+{% endblock meta %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/donasi.css' %}">
+{% endblock css %}
+
+{% block content %}
+
+<div class="riwayat-donasi-page">
+
+    <section class="riwayat-donasi-header">
+        <p class="donasi-eyebrow">JEJAK KEBAIKANMU</p>
+        <h1>Riwayat Donasi</h1>
+        <p>
+            Lihat kembali barang yang telah kamu ajukan
+            untuk didonasikan melalui ReBatik.
+        </p>
+    </section>
+
+
+    <section class="riwayat-donasi-container">
+
+        <!-- PENCARIAN BARANG -->
+        <form
+            method="get"
+            action="{% url 'donasi:history' %}"
+            class="riwayat-search"
+        >
+            <input
+                type="search"
+                name="q"
+                value="{{ query }}"
+                placeholder="Cari nama barang atau kota..."
+                aria-label="Cari donasi"
+            >
+
+            <button type="submit" class="donasi-button">
+                Cari
+            </button>
+        </form>
+
+
+        <!-- PESAN SUKSES -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="donasi-alert {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+
+        <!-- DAFTAR DONASI -->
+        <div class="riwayat-donasi-list">
+
+            {% for donation in donations %}
+
+                <article class="riwayat-donasi-card">
+
+                    <div class="riwayat-donasi-photo">
+
+                        {% if donation.photo %}
+                            <img
+                                src="{{ donation.photo.url }}"
+                                alt="{{ donation.item_name }}"
+                                loading="lazy"
+                            >
+                        {% else %}
+                            <div class="donasi-no-photo">
+                                <span>Foto belum tersedia</span>
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="riwayat-donasi-detail">
+
+                        <div class="riwayat-donasi-title">
+                            <h2>{{ donation.item_name }}</h2>
+
+                            <span class="donasi-status status-{{ donation.status|lower }}">
+                                {{ donation.get_status_display }}
+                            </span>
+                        </div>
+
+                        <p class="riwayat-donasi-category">
+                            {{ donation.get_donation_type_display }}
+                            {% if donation.clothing_category %}
+                                · {{ donation.get_clothing_category_display }}
+                            {% endif %}
+                        </p>
+
+                        <div class="riwayat-donasi-information">
+                            <p>
+                                <strong>Jumlah Barang:</strong>
+                                {{ donation.quantity }} pcs
+                            </p>
+
+                            <p>
+                                <strong>Kondisi Barang:</strong>
+                                {{ donation.get_condition_display }}
+                            </p>
+
+                            <p>
+                                <strong>Kota/Kabupaten:</strong>
+                                {{ donation.city }}
+                            </p>
+
+                            <p>
+                                <strong>Tanggal Pengajuan:</strong>
+                                {{ donation.created_at|date:"d M Y" }}
+                            </p>
+                        </div>
+
+                        <div class="riwayat-donasi-description">
+                            <p>{{ donation.description|default:"Tidak ada deskripsi."|linebreaksbr }}</p>
+                        </div>
+
+                    </div>
+
+                </article>
+
+            {% empty %}
+
+                <div class="riwayat-donasi-empty">
+
+                    <h2>
+                        {% if query %}
+                            Donasi Tidak Ditemukan
+                        {% else %}
+                            Belum Ada Donasi
+                        {% endif %}
+                    </h2>
+
+                    <p>
+                        {% if query %}
+                            Tidak ada barang yang cocok dengan pencarianmu.
+                            Coba gunakan kata kunci lain.
+                        {% else %}
+                            Kamu belum memiliki barang yang diajukan.
+                            Yuk, mulai berdonasi dan beri kehidupan baru
+                            pada pakaian yang tidak terpakai.
+                        {% endif %}
+                    </p>
+
+                    {% if query %}
+                        <a
+                            href="{% url 'donasi:history' %}"
+                            class="donasi-button donasi-button-outline"
+                        >
+                            Hapus Pencarian
+                        </a>
+                    {% else %}
+                        <a
+                            href="{% url 'donasi:create' %}"
+                            class="donasi-button"
+                        >
+                            Mulai Berdonasi
+                        </a>
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- TOMBOL TAMBAH DONASI -->
+        <div class="riwayat-donasi-footer">
+            <a
+                href="{% url 'donasi:create' %}"
+                class="donasi-button"
+            >
+                + Unggah/Donasikan Kain Baru
+            </a>
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock content %}

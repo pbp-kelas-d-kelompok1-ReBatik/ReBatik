@@ -1810,3 +1810,316 @@ input[type="file"].form-input {
         animation: none;
     }
 }
+
+.edit_story-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    border: 1px solid #c99b45;
+    border-radius: 6px;
+    color: #8b6537;
+    text-decoration: none;
+    font-size: 14px;
+    background: transparent;
+}
+
+.edit_story-btn:hover {
+    background: #c99b45;
+    color: white;
+}
+
+
+/* Tombol aksi admin pada card */
+.card-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.admin-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.card-action-btn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.action-label {
+    padding: 3px 9px;
+    border-radius: 5px;
+    background: #624A38;
+    color: #FFF8ED;
+    font-family: "Garamond", Georgia, serif;
+    font-size: 13px;
+    line-height: 1.2;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.card-action-btn:hover .action-label,
+.card-action-btn:focus-visible .action-label {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.action-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border: 1px solid #E5CBA9;
+    border-radius: 50%;
+    background: #FFF3DF;
+    color: #68452F;
+    font-family: Arial, sans-serif;
+    font-size: 25px;
+    line-height: 1;
+    box-shadow: 0 3px 8px rgba(90, 55, 30, 0.10);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-action-btn:hover .action-icon {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(90, 55, 30, 0.16);
+}
+
+/* Edit: krem dan emas */
+.card-action-edit .action-icon {
+    background: #FFF3DF;
+    border-color: #E7C99F;
+    color: #80532F;
+}
+
+/* Hapus: merah muda lembut */
+.card-action-delete .action-icon {
+    background: #FBE0D5;
+    border-color: #E9A997;
+    color: #A33D2F;
+}
+
+.card-action-delete:hover .action-icon {
+    background: #F5C9BA;
+}
+
+/* Tombol aksi tetap ringkas di layar kecil */
+@media (max-width: 600px) {
+    .admin-card-actions {
+        gap: 6px;
+    }
+
+    .action-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 21px;
+    }
+
+    .action-label {
+        font-size: 11px;
+    }
+}
+
+
+/* LOVE BUTTON */
+.card-actions .love {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-width: 90px;
+    min-height: 45px;
+    padding: 7px 12px;
+    border: 1px solid #d7c5b2;
+    border-radius: 30px;
+    background: transparent;
+    color: #80583e;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.card-actions .love-icon {
+    font-size: 25px;
+    line-height: 1;
+    transition: transform 0.25s ease;
+}
+
+.card-actions .favorite-count {
+    font-family: Georgia, serif;
+    font-size: 19px;
+    line-height: 1;
+}
+
+.card-actions .love:hover {
+    border-color: #bd7565;
+    background: #fff4ed;
+    color: #bd493d;
+}
+
+.card-actions .love:hover .love-icon {
+    transform: scale(1.15);
+}
+
+.card-actions .love.is-favorited {
+    border-color: #e1aaa0;
+    background: #fff0ed;
+    color: #c44747;
+}
+
+.card-actions .love:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* ===== REFINEMENT: BATIK STORY SEARCH ===== */
+
+.story-search {
+    width: min(100%, 930px);
+    min-height: 76px;
+    margin: 24px auto 12px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    background: rgba(255, 251, 244, 0.96);
+    border: 1px solid #e4d1b8;
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(91, 60, 35, 0.06);
+    box-sizing: border-box;
+}
+
+.story-search .story-search-icon {
+    flex: 0 0 auto;
+    color: #a87837;
+    font-size: 27px;
+    line-height: 1;
+}
+
+.story-search input[type="search"] {
+    flex: 1 1 220px;
+    min-width: 100px;
+    width: 100%;
+    height: 44px;
+    padding: 8px 4px;
+
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #573822;
+    font: 18px Garamond, Georgia, serif;
+    box-shadow: none;
+}
+
+.story-search input[type="search"]::placeholder {
+    color: #aa9076;
+    opacity: 1;
+}
+
+.story-search select {
+    flex: 0 1 auto;
+    width: auto;
+    max-width: 190px;
+    min-width: 115px;
+    height: 42px;
+    padding: 8px 28px 8px 12px;
+
+    border: 1px solid #e2d1bc;
+    border-radius: 12px;
+    background-color: #fffaf2;
+    color: #68452d;
+    font: 16px Garamond, Georgia, serif;
+    cursor: pointer;
+}
+
+.story-search .story-search-submit {
+    flex: 0 0 auto;
+    min-height: 42px;
+    padding: 9px 18px;
+
+    border: 1px solid #8c6039;
+    border-radius: 999px;
+    background: #8c6039;
+    color: #fffaf2;
+    font: 16px Garamond, Georgia, serif;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.story-search .story-search-submit:hover {
+    background: #68452d;
+}
+
+.story-search .story-search-reset {
+    flex: 0 0 auto;
+    padding: 8px 2px;
+    color: #8c6039;
+    font: 17px Garamond, Georgia, serif;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.story-search .story-search-reset:hover {
+    color: #573822;
+    text-decoration: underline;
+}
+
+.story-search-status {
+    width: min(100%, 930px);
+    margin: 10px auto 24px;
+    color: #967653;
+    font: 17px Garamond, Georgia, serif;
+    text-align: center;
+    line-height: 1.5;
+}
+
+/* Tampilan tablet dan HP */
+@media (max-width: 760px) {
+    .story-search {
+        width: 100%;
+        padding: 16px;
+        border-radius: 22px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .story-search input[type="search"] {
+        flex: 1 1 calc(100% - 45px);
+    }
+
+    .story-search select {
+        flex: 1 1 calc(50% - 10px);
+        width: 100%;
+        max-width: none;
+        min-width: 0;
+    }
+
+    .story-search .story-search-submit {
+        flex: 1 1 100px;
+    }
+
+    .story-search .story-search-reset {
+        flex: 0 0 auto;
+    }
+
+    .story-search-status {
+        margin-bottom: 20px;
+        font-size: 16px;
+    }
+}

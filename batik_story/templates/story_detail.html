@@ -1,6 +1,10 @@
+{% load static %}
+
 <div class="story-detail">
     <div class="story-detail-image">
-        {% if story.gambar %}
+        {% if story.static_gambar_path %}
+        <img src="{% static story.static_gambar_path %}" alt="{{ story.nama }}">
+        {% elif story.gambar %}
         <img src="{{ story.gambar.url }}" alt="{{ story.nama }}">
         {% endif %}
     </div>

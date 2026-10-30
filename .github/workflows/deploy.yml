@@ -132,4 +132,19 @@ jobs:
             -m "chore(deploy): include generated Tailwind CSS" \
             -m "GitHub source commit: $GITHUB_SHA")"
 
-          git push "$PWS_URL" "$deployment_commit:main"
+          max_attempts=3
+          attempt=1
+          while [ "$attempt" -le "$max_attempts" ]; do
+            if git push "$PWS_URL" "$deployment_commit:main"; then
+              break
+            fi
+
+            if [ "$attempt" -eq "$max_attempts" ]; then
+              echo "Deployment push failed after $max_attempts attempts."
+              exit 1
+            fi
+
+            echo "Push attempt $attempt failed. Retrying..."
+            sleep $((attempt * 10))
+            attempt=$((attempt + 1))
+          done

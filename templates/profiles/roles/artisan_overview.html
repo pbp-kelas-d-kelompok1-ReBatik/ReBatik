@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<title>Artisan Dashboard | ReBatik</title>
+{% endblock meta %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+{% endblock css %}
+
+{% block content %}
+
+<div class="profile-page">
+
+    <header class="profile-heading">
+        <p class="profile-eyebrow">REBATIK PARTNER</p>
+        <h1>Artisan Workspace</h1>
+        <p>
+            Selamat datang, {{ user.username }}.
+            Kelola perjalananmu sebagai Artisan ReBatik.
+        </p>
+    </header>
+
+    <div class="profile-shell">
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="profile-message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if profile %}
+
+            {% include "profiles/partials/profile_card.html" %}
+
+        {% else %}
+
+            <section class="profile-card profile-empty">
+                <h2>Lengkapi Profil Pengrajin</h2>
+
+                <p>
+                    Tambahkan informasi pribadi dan kontakmu.
+                </p>
+
+                <a
+                    href="{% url 'profiles:create' %}"
+                    class="profile-button"
+                >
+                    Buat Profil
+                </a>
+            </section>
+
+        {% endif %}
+
+
+        <section class="profile-card">
+
+            <div class="profile-section-heading">
+                <h2>Artisan Workspace</h2>
+            </div>
+
+            <p>
+                Gunakan menu berikut untuk mengakses modul
+                ReBatik yang relevan dengan kegiatan pengrajin.
+            </p>
+
+            <div class="profile-role-grid">
+
+                <article class="profile-role-item">
+                    <h3>Batik Story</h3>
+                    <p>
+                        Tulis dan bagikan narasi mengenai
+                        filosofi serta budaya batik.
+                    </p>
+
+                    <a
+                        href="{% url 'batik_story:add_batik' %}"
+                        class="profile-button"
+                    >
+                        Tulis Cerita
+                    </a>
+                </article>
+
+
+                <article class="profile-role-item">
+                    <h3>Marketplace</h3>
+                    <p>
+                        Jelajahi platform produk hasil
+                        upcycling ReBatik.
+                    </p>
+
+                    <a
+                        href="{% url 'marketplace:home' %}"
+                        class="profile-button"
+                    >
+                        Buka Marketplace
+                    </a>
+                </article>
+
+
+                <article class="profile-role-item">
+                    <h3>Custom Batik</h3>
+                    <p>
+                        Akses fitur desain dan produk
+                        Batik Custom.
+                    </p>
+
+                    <a
+                        href="{% url 'batik_custom:show_home' %}"
+                        class="profile-button"
+                    >
+                        Buka Custom Batik
+                    </a>
+                </article>
+            </div>
+        </section>
+    </div>
+</div>
+
+{% endblock content %}
