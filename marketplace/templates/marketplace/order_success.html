@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load static marketplace_format %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/marketplace.css' %}">
+{% endblock css %}
+
+{% block content %}
+<section id="marketplace-page-content" class="mp-page-shell home-hero relative overflow-hidden">
+    <div class="batik-decoration decoration-top" aria-hidden="true">❁</div>
+    <div class="batik-decoration decoration-bottom" aria-hidden="true">❁</div>
+
+    <header class="mp-hero-header relative mx-auto mb-8 max-w-3xl text-center text-[var(--brown)]">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--brown-muted)]">Karya Pengrajin · Upcycled · Nusantara</p>
+        <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">Pesanan Diterima</h1>
+        <p class="mt-3 text-base text-[var(--brown-dark)] sm:text-lg">Terima kasih telah memilih karya upcycling Nusantara.</p>
+    </header>
+
+    <div
+        class="mp-panel-box mx-auto max-w-3xl rounded-2xl border-2 border-[var(--mp-accent)]
+               bg-[var(--mp-panel)] p-5 text-center text-[var(--brown)] shadow-2xl
+               sm:rounded-3xl sm:p-8 lg:p-10"
+    >
+        <div
+            class="mx-auto grid size-16 place-items-center rounded-full border-2
+                   border-[var(--mp-accent)] bg-[var(--brown)] text-3xl font-bold
+                   text-[var(--cream-light)] sm:size-20 sm:text-4xl"
+            role="img"
+            aria-label="Berhasil"
+        >
+            ✓
+        </div>
+
+        <h2 class="mt-5 text-2xl font-bold sm:text-3xl">Pesanan Anda berhasil dibuat!</h2>
+        <p class="mt-2 text-base font-bold text-[var(--brown-dark)] sm:text-lg">
+            Kode Pesanan #{{ reference_code }}
+        </p>
+        <p class="mx-auto mt-2 max-w-xl text-base text-[var(--brown-muted)] sm:text-lg">
+            Admin ReBatik akan menghubungi Anda melalui WhatsApp ({{ order.whatsapp }}) untuk konfirmasi pesanan dan pembayaran manual.
+        </p>
+
+        <div
+            class="mt-7 rounded-2xl border border-[var(--mp-accent)]
+                   bg-[var(--mp-surface)] p-5 text-left sm:p-7"
+        >
+            <p class="text-sm font-bold uppercase tracking-[0.18em] text-[var(--button)]">Ringkasan Pesanan</p>
+            <h3 class="mt-2 text-xl font-bold sm:text-2xl">{{ order.product_name }}</h3>
+            <dl class="mt-4 grid gap-4 border-t border-[var(--border)] pt-4 text-sm sm:grid-cols-2 sm:text-base">
+                <div>
+                    <dt class="font-semibold">Harga satuan</dt>
+                    <dd class="text-[var(--brown-muted)]">{{ order.unit_price|rupiah }}</dd>
+                </div>
+                <div>
+                    <dt class="font-semibold">Jumlah produk</dt>
+                    <dd class="text-[var(--brown-muted)]">{{ order.quantity }} buah</dd>
+                </div>
+                <div>
+                    <dt class="font-semibold">Total pembayaran</dt>
+                    <dd class="font-bold text-[var(--brown-dark)]">{{ order.total_price|rupiah }}</dd>
+                </div>
+                <div>
+                    <dt class="font-semibold">Metode penerimaan</dt>
+                    <dd class="text-[var(--brown-muted)]">{{ order.get_delivery_method_display }}</dd>
+                </div>
+                <div class="sm:col-span-2">
+                    <dt class="font-semibold">Lokasi / Alamat</dt>
+                    <dd class="text-[var(--brown-muted)]">
+                        {% if order.delivery_method == 'DROP_OFF' and order.dropoff_point %}
+                            {{ order.dropoff_point.name }} — {{ order.dropoff_point.city }} ({{ order.dropoff_point.address }})
+                        {% else %}
+                            {{ order.address }}
+                        {% endif %}
+                    </dd>
+                </div>
+            </dl>
+        </div>
+
+        <div class="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+            <a
+                href="{% url 'marketplace:order_detail' order.pk %}"
+                class="primary-action-button min-h-12 px-6 py-3 font-bold"
+            >
+                Lihat Detail Pesanan
+            </a>
+            <a
+                href="{% url 'marketplace:home' %}"
+                class="primary-action-button mp-button-brown min-h-12 px-6 py-3 font-bold"
+            >
+                Lanjut Belanja
+            </a>
+        </div>
+
+        <img
+            src="{% static 'img/mascot/happy.webp' %}"
+            alt="Maskot ReBatik tersenyum"
+            loading="lazy"
+            decoding="async"
+            class="mx-auto mt-6 h-24 w-24 object-contain sm:h-32 sm:w-32"
+        >
+    </div>
+</section>
+{% endblock content %}
+

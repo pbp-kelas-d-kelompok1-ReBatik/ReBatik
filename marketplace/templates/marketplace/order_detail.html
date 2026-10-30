@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+{% load static marketplace_format %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/marketplace.css' %}">
+{% endblock css %}
+
+{% block content %}
+<section id="marketplace-page-content" class="mp-page-shell home-hero relative overflow-hidden">
+    <div class="batik-decoration decoration-top" aria-hidden="true">❁</div>
+    <div class="batik-decoration decoration-bottom" aria-hidden="true">❁</div>
+
+    <header class="mp-hero-header relative mx-auto mb-8 max-w-4xl text-center text-[var(--brown)] sm:mb-10">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--brown-muted)]">Marketplace · Status Pesanan</p>
+        <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">Detail Pesanan</h1>
+        <p class="mt-3 text-base text-[var(--brown-dark)] sm:text-lg">Lihat perkembangan pesanan karya upcycling Anda.</p>
+    </header>
+
+    <div
+        class="mp-panel-box relative mx-auto max-w-6xl rounded-2xl border-2
+               border-[var(--mp-accent)]/60 bg-[var(--mp-panel)] p-5
+               text-[var(--brown)] shadow-2xl sm:rounded-3xl sm:p-8 lg:p-10"
+    >
+        <a
+            href="{% url 'marketplace:order_list' %}"
+            class="inline-flex items-center rounded-lg px-1 py-2 font-semibold text-[var(--brown)]
+                   underline decoration-[var(--mp-accent)] underline-offset-4
+                   hover:text-[var(--button-hover)]"
+        >
+            ← Pesanan Saya
+        </a>
+
+        {% include "marketplace/_messages.html" %}
+
+        <div
+            class="mt-6 flex flex-col gap-4 border-b border-[var(--border)] pb-5
+                   sm:flex-row sm:items-center sm:justify-between"
+        >
+            <div class="flex flex-wrap items-center gap-3 sm:gap-5">
+                <h2 class="text-3xl font-bold sm:text-4xl">{{ order.product_name }}</h2>
+                <span class="mp-status-badge min-h-11 rounded-full px-5 py-2 text-base font-bold sm:text-lg
+                    {% if order.status == 'PENDING' %}bg-[var(--mp-status-pending)] text-[var(--mp-status-pending-text)]
+                    {% elif order.status == 'PROCESSING' %}bg-[var(--mp-status-processing)] text-[var(--mp-status-processing-text)]
+                    {% elif order.status == 'READY' %}bg-[var(--mp-status-ready)] text-[var(--mp-status-ready-text)]
+                    {% elif order.status == 'COMPLETED' %}bg-[var(--mp-status-completed)] text-[var(--mp-status-completed-text)]
+                    {% else %}bg-[var(--mp-status-cancelled)] text-[var(--mp-status-cancelled-text)]{% endif %}">
+                    {{ order.get_status_display }}
+                </span>
+            </div>
+            <p class="text-sm text-[var(--brown-muted)] sm:text-base">
+                #{{ reference_code }} <span aria-hidden="true">·</span>
+                Dipesan {{ order.created_at|date:"d/m/Y" }}
+            </p>
+        </div>
+
+        <div class="mt-6 grid gap-5 lg:grid-cols-2 lg:gap-7">
+            <section
+                aria-labelledby="status-heading"
+                class="relative overflow-hidden rounded-2xl border-2
+                       border-[var(--mp-accent)] bg-[var(--mp-surface)]
+                       p-5 shadow-lg sm:p-7"
+            >
+                <h3 id="status-heading" class="text-2xl font-bold">Progres Pesanan</h3>
+                <ol class="mt-6 space-y-5 sm:space-y-6">
+                    {% for step in timeline_steps %}
+                        <li class="flex items-center gap-4">
+                            {% if step.state == 'done' %}
+                                <span
+                                    class="grid size-10 shrink-0 place-items-center rounded-full border-2
+                                           border-[var(--mp-accent)] bg-[var(--brown)] font-bold
+                                           text-[var(--cream-light)]"
+                                    aria-label="Selesai"
+                                >✓</span>
+                                <span class="text-base text-[var(--brown)] sm:text-lg">
+                                    {{ step.label }}
+                                    {% if step.created_at %}
+                                        · {{ step.created_at|date:"d/m/Y" }}
+                                    {% endif %}
+                                </span>
+                            {% elif step.state == 'current' %}
+                                <span
+                                    class="size-10 shrink-0 rounded-full border-2 border-[var(--mp-accent)]
+                                           bg-[var(--mp-accent)]"
+                                    aria-hidden="true"
+                                ></span>
+                                <span class="text-base font-bold text-[var(--brown)] sm:text-lg">{{ step.label }}</span>
+                            {% elif step.state == 'cancelled' %}
+                                <span
+                                    class="size-10 shrink-0 rounded-full border-2 border-[var(--danger)] bg-[var(--danger)]"
+                                    aria-hidden="true"
+                                ></span>
+                                <span class="text-base font-bold text-[var(--mp-status-cancelled-text)] sm:text-lg">{{ step.label }}</span>
+                            {% else %}
+                                <span
+                                    class="size-10 shrink-0 rounded-full border-2 border-[var(--mp-accent)]
+                                           bg-transparent"
+                                    aria-hidden="true"
+                                ></span>
+                                <span class="text-base text-[var(--brown-muted)] sm:text-lg">{{ step.label }}</span>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ol>
+
+                <section aria-labelledby="history-heading" class="mt-7 border-t border-[var(--border)] pt-5">
+                    <h4 id="history-heading" class="text-lg font-bold sm:text-xl">Riwayat Status</h4>
+                    {% if status_history %}
+                        <ol class="mt-3 space-y-3">
+                            {% for history in status_history %}
+                                <li class="border-l-2 border-[var(--mp-accent)] pl-3">
+                                    <p class="font-semibold text-[var(--brown)]">
+                                        {% if history.from_status %}
+                                            {{ history.get_from_status_display }} → {{ history.get_to_status_display }}
+                                        {% else %}
+                                            {{ history.get_to_status_display }}
+                                        {% endif %}
+                                    </p>
+                                    <p class="text-xs text-[var(--brown-muted)] sm:text-sm">
+                                        {{ history.changed_at|date:"d/m/Y H:i" }}
+                                        {% if history.changed_by %}
+                                            · oleh {{ history.changed_by.username }}
+                                        {% endif %}
+                                    </p>
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    {% endif %}
+                </section>
+            </section>
+
+            <section
+                aria-labelledby="spec-heading"
+                class="flex flex-col justify-between rounded-2xl border-2
+                       border-[var(--mp-accent)] bg-[var(--mp-surface)]
+                       p-5 shadow-lg sm:p-7"
+            >
+                <div>
+                    <h3 id="spec-heading" class="text-2xl font-bold">Rincian Pesanan</h3>
+                    <dl class="mt-5 grid gap-4 border-t border-[var(--border)] pt-4 text-base">
+                        <div class="flex justify-between gap-4">
+                            <dt class="font-semibold">Produk</dt>
+                            <dd class="text-right font-bold">
+                                <a href="{% url 'marketplace:product_detail' order.product_id %}" class="underline">
+                                    {{ order.product_name }}
+                                </a>
+                            </dd>
+                        </div>
+                        <div class="flex justify-between gap-4">
+                            <dt class="font-semibold">Harga satuan</dt>
+                            <dd>{{ order.unit_price|rupiah }}</dd>
+                        </div>
+                        <div class="flex justify-between gap-4">
+                            <dt class="font-semibold">Jumlah</dt>
+                            <dd>{{ order.quantity }} buah</dd>
+                        </div>
+                        <div class="flex justify-between gap-4 border-t border-[var(--border)] pt-3 text-lg font-bold">
+                            <dt>Total Harga</dt>
+                            <dd class="text-[var(--brown-dark)]">{{ order.total_price|rupiah }}</dd>
+                        </div>
+                        <div class="border-t border-[var(--border)] pt-3">
+                            <dt class="font-semibold">Metode Penerimaan</dt>
+                            <dd class="mt-1 text-[var(--brown-muted)]">{{ order.get_delivery_method_display }}</dd>
+                        </div>
+                        <div>
+                            <dt class="font-semibold">Lokasi / Alamat</dt>
+                            <dd class="mt-1 text-[var(--brown-muted)]">
+                                {% if order.delivery_method == 'DROP_OFF' and order.dropoff_point %}
+                                    {{ order.dropoff_point.name }} ({{ order.dropoff_point.city }}) — {{ order.dropoff_point.address }}
+                                {% else %}
+                                    {{ order.address }}
+                                {% endif %}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt class="font-semibold">Nomor WhatsApp</dt>
+                            <dd class="mt-1 text-[var(--brown-muted)]">{{ order.whatsapp }}</dd>
+                        </div>
+                        {% if order.notes %}
+                            <div>
+                                <dt class="font-semibold">Catatan</dt>
+                                <dd class="mt-1 whitespace-pre-line text-[var(--brown-muted)]">{{ order.notes }}</dd>
+                            </div>
+                        {% endif %}
+                    </dl>
+                </div>
+
+                {% if order.status == 'PENDING' %}
+                    <div class="mt-6 border-t border-[var(--border)] pt-5">
+                        <p class="text-sm text-[var(--brown-muted)]">
+                            Pesanan masih dapat dibatalkan selama belum dikonfirmasi oleh admin.
+                        </p>
+                        <a
+                            href="{% url 'marketplace:order_cancel' order.pk %}"
+                            class="mt-3 inline-flex min-h-12 w-full items-center justify-center rounded-xl
+                                   border-2 border-[var(--danger)] px-6 py-3 font-bold text-[var(--danger)]
+                                   transition hover:bg-[var(--mp-status-cancelled)]"
+                        >
+                            Batalkan Pesanan
+                        </a>
+                    </div>
+                {% endif %}
+            </section>
+        </div>
+    </div>
+</section>
+{% endblock content %}
+
