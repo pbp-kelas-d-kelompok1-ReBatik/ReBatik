@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<title>Admin Dashboard | ReBatik</title>
+{% endblock meta %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+{% endblock css %}
+
+{% block content %}
+
+<div class="profile-page">
+
+    <header class="profile-heading">
+
+        <p class="profile-eyebrow">REBATIK MANAGEMENT</p>
+
+        <h1>Administrator Dashboard</h1>
+
+        <p>
+            Selamat datang, {{ user.username }}.
+            Kelola platform ReBatik melalui panel administrasi.
+        </p>
+
+    </header>
+
+
+    <div class="profile-shell">
+
+        {% if profile %}
+
+            {% include "profiles/partials/profile_card.html" %}
+
+        {% else %}
+
+            <section class="profile-card profile-empty">
+
+                <h2>Profil Administrator</h2>
+
+                <a
+                    href="{% url 'profiles:create' %}"
+                    class="profile-button"
+                >
+                    Lengkapi Profil
+                </a>
+
+            </section>
+
+        {% endif %}
+
+
+        <section class="profile-card">
+
+            <h2>Platform Management</h2>
+
+            <p>
+                Administrator dapat menggunakan panel
+                Django Admin untuk mengelola data yang
+                sudah didaftarkan pada sistem.
+            </p>
+
+            {% if user.is_staff or user.is_superuser %}
+
+                <a
+                    href="{% url 'admin:index' %}"
+                    class="profile-button"
+                >
+                    Buka Admin Panel
+                </a>
+
+            {% else %}
+
+                <p class="profile-data-note">
+                    Akun ini belum memiliki akses Django Admin.
+                    Minta administrator utama memberikan status
+                    staff dan permission yang sesuai.
+                </p>
+
+            {% endif %}
+
+        </section>
+
+    </div>
+
+</div>
+
+{% endblock content %}

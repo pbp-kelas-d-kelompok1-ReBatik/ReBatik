@@ -15,9 +15,11 @@
     position: relative;
     z-index: 100;
     width: 100%;
+    /* Full width: hilangkan jarak kiri-kanan dan atas navbar */
     padding: 0;
+    margin: 0;
     box-sizing: border-box;
-    background: transparent;
+    background: var(--rb-bar-1);
     font-family: var(--rb-font);
 }
 
@@ -76,7 +78,9 @@
     justify-content: space-between;
     gap: 16px;
     min-height: var(--rb-h);
-    padding: 0 clamp(16px, 4vw, 64px);
+    padding: 0 clamp(18px, 3vw, 48px);
+    /* Bar menyentuh tepi viewport */
+    width: 100%;
     border-radius: 0;
     color: var(--rb-cream-2);
     background:
@@ -512,12 +516,11 @@
 .rb-mega {
     position: absolute;
     top: calc(100% - 4px);
-    right: 0;
-    left: 0;
+    right: clamp(10px, 2vw, 28px);
+    left: clamp(10px, 2vw, 28px);
     z-index: 190;
-    padding: 18px clamp(16px, 4vw, 64px);
-    border: 0;
-    border-bottom: 1px solid #ecd3b0;
+    padding: 18px 20px;
+    border: 1px solid #ecd3b0;
     border-radius: 0 0 18px 18px;
     background:
         radial-gradient(ellipse at 10% 10%, #fffaf0, transparent 55%),
@@ -791,6 +794,7 @@ body.rb-no-scroll {
 @media (max-width: 960px) {
     .rb-nav {
         --rb-h: 64px;
+        padding: 8px;
     }
 
     .rb-nav__links,
@@ -822,7 +826,7 @@ body.rb-no-scroll {
 
 @media (max-width: 380px) {
     .rb-nav__bar {
-        padding: 0 14px;
+        padding: 0 10px;
         gap: 8px;
     }
 
@@ -847,5 +851,26 @@ body.rb-no-scroll {
     .rb-drawer {
         animation: none !important;
         transition: none !important;
+    }
+}
+
+
+/* FULL WIDTH NAVBAR FIX */
+.rb-nav {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+}
+
+.rb-nav__bar {
+    width: 100%;
+    max-width: none;
+    border-radius: 0;
+}
+
+@media (max-width: 960px) {
+    .rb-nav {
+        padding: 0;
     }
 }

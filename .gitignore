@@ -15,3 +15,6 @@ node_modules/
 
 # Uploaded donation photos are local/runtime data, not source assets.
 media/donasi_kain/
+
+# Uploaded upcycling and reference photos are local/runtime data, not source assets.
+media/upcycling/

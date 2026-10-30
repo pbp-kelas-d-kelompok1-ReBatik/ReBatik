@@ -16,7 +16,10 @@
     padding: 24px 16px;
     background: linear-gradient(120deg, #ad8069 0%, #c99b7c 50%, #a87860 100%);
     color: var(--fashion-brown);
-    font-family: "ReBatik Garamond", Garamond, G.fashion-page img .fashion-page *,
+    font-family: "ReBatik Garamond", Garamond, Georgia, serif;
+}
+
+.fashion-page *,
 .fashion-page *::before,
 .fashion-page *::after {
     box-sizing: border-box;
@@ -285,7 +288,6 @@
     letter-spacing: 1px;
 }
 
-
 /* TABLET */
 @media (max-width: 850px) {
     .fashion-page {
@@ -302,8 +304,8 @@
     }
 
     .fashion-image {
-        height: 400px;
-        width: 600px;
+        height: clamp(220px, 42vw, 340px);
+        width: 100%;
     }
 
     .fashion-card-content h2 {
@@ -314,10 +316,14 @@
 /* HP */
 @media (max-width: 520px) {
     .fashion-page {
+        width: 100%;
         padding: 14px 10px;
+        overflow: clip;
     }
 
     .fashion-panel {
+        width: 100%;
+        max-width: 100%;
         padding: 27px 14px 18px;
         border-radius: 16px;
     }
@@ -353,49 +359,8 @@
     }
 
     .fashion-image {
-        height: 280px;
-    }
-
-    .fashion-card-content h2 {
-        font-size: 24px;
-    }
-
-    .fashion-card-content p {
-        font-size: 15px;
-
-    }
-
-    .fashion-card {
-        padding: 10px;
-    }
-
-    .fashion-option input[type="radio"]:checked + .fashion-card {
-        padding: 9.5px;
-    }
-
-    .fashion-image {
-        height: 280px;
-    }
-
-    .fashion-card-content h2 {
-        font-size: 24px;
-    }
-
-    .fashion-card-content p {
-        font-size: 15px;
-x;
-    }
-
-    .fashion-card {
-        padding: 10px;
-    }
-
-    .fashion-option input[type="radio"]:checked + .fashion-card {
-        padding: 9.5px;
-    }
-
-    .fashion-image {
-        height: 280px;
+        width: 100%;
+        height: clamp(190px, 62vw, 280px);
     }
 
     .fashion-card-content h2 {

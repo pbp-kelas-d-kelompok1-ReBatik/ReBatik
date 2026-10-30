@@ -52,11 +52,9 @@
                         class="rb-nav__link{% if app == 'batik_story' %} is-active{% endif %}"
                         {% if app == 'batik_story' %}aria-current="page"{% endif %}>Batik Story</a>
 
-                    <div class="rb-nav__item rb-nav__item--mega">
-                        <a href="{% url 'marketplace:home' %}"
-                            class="rb-nav__link rb-nav__link--mega{% if app == 'marketplace' %} is-active{% endif %}"
-                            id="rbMegaTrigger" aria-haspopup="true" aria-expanded="false" aria-controls="rbMega">Marketplace</a>
-                    </div>
+                    <a href="{% url 'marketplace:home' %}"
+                        class="rb-nav__link{% if app == 'marketplace' %} is-active{% endif %}"
+                        {% if app == 'marketplace' %}aria-current="page"{% endif %}>Marketplace</a>
 
                     <a href="{% url 'rewards:overview' %}"
                         class="rb-nav__link{% if view == 'rewards:overview' %} is-active{% endif %}"
@@ -70,7 +68,7 @@
                 <!-- Aksi kanan -->
                 <div class="rb-nav__actions">
 
-                    <form class="rb-nav__search" role="search" method="get" action="{% url 'marketplace:home' %}">
+                    <form class="rb-nav__search" role="search" method="get" action="{% url 'main:show_home' %}">
                         <svg class="rb-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
                         <input type="search" name="q" placeholder="Cari di ReBatik..." aria-label="Cari di ReBatik" autocomplete="off">
                     </form>
@@ -94,7 +92,8 @@
                         </button>
 
                         <div class="rb-user-menu" id="rbUserMenu" hidden>
-                            <a class="rb-user-menu__head" href="#">
+                            <!-- FIX: link kepala dropdown sekarang ke halaman profil -->
+                            <a class="rb-user-menu__head" href="{% url 'profiles:overview' %}">
                                 <span class="rb-avatar rb-avatar--lg" aria-hidden="true">{{ user.username|slice:":1"|upper }}</span>
                                 <span>
                                     <strong>Hai, {{ user.username }}</strong>
@@ -102,13 +101,29 @@
                                 </span>
                             </a>
                             <ul>
-                                <li><a href="#"><svg class="rb-ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Profile</a></li>
+                                <!-- FIX: Profile menampilkan username seperti base awal -->
+                                <li>
+                                    {% if user.is_authenticated %}
+                                    <a href="{% url 'profiles:overview' %}"{% if app == 'profiles' %} class="is-active"{% endif %}><svg class="rb-ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Profile ({{ user.username }})</a>
+                                    {% else %}
+                                    <a href="{% url 'profiles:overview' %}"{% if app == 'profiles' %} class="is-active"{% endif %}><svg class="rb-ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Profile</a>
+                                    {% endif %}
+                                </li>
                                 <li><a href="{% url 'rewards:history' %}"{% if view == 'rewards:history' %} class="is-active"{% endif %}><svg class="rb-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Riwayat</a></li>
+                                <li><a href="{% url 'marketplace:home' %}"><svg class="rb-ico" viewBox="0 0 24 24"><path d="M3 9h18l-1 12H4L3 9ZM5 9l2-6h10l2 6M9 21v-7h6v7"/></svg>Marketplace</a></li>
                                 <li><a href="{% url 'rewards:overview' %}"><svg class="rb-ico" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18M12 8c-2-4-6-4-6-1s4 1 6 1Zm0 0c2-4 6-4 6-1s-4 1-6 1Z"/></svg>Points and Rewards</a></li>
-                                <li><a href="{% url 'marketplace:home' %}"><svg class="rb-ico" viewBox="0 0 24 24"><path d="M4 9 5.5 4h13L20 9M4 9h16M4 9v11h16V9M9 20v-6h6v6"/></svg>Marketplace</a></li>
                                 <li><a href="{% url 'donasi:landing' %}"><svg class="rb-ico" viewBox="0 0 24 24"><path d="M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6-8 11-8 11Z"/></svg>Donasi Kain</a></li>
                                 <li><a href="{% url 'marketplace:dropoff' %}"><svg class="rb-ico" viewBox="0 0 24 24"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>Drop-off Point</a></li>
                                 <li><a href="{% url 'upcycling:request_list' %}"><svg class="rb-ico" viewBox="0 0 24 24"><path d="M7 19 3 12l3-5h4M17 5l4 7-3 5h-4M9 21l-3-2 2-3M15 3l3 2-2 3"/></svg>Upcycling Request</a></li>
+
+                                <!-- FIX: Dashboard Artisan & Admin dikembalikan -->
+                                {% if can_open_artisan_dashboard %}
+                                <li><a href="{% url 'upcycling:artisan_dashboard' %}"><svg class="rb-ico" viewBox="0 0 24 24"><path d="M3 9h18l-1 12H4L3 9ZM5 9l2-6h10l2 6"/></svg>Dashboard Artisan</a></li>
+                                {% endif %}
+                                {% if user.is_staff %}
+                                <li><a href="{% url 'upcycling:admin_dashboard' %}"><svg class="rb-ico" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>Dashboard Admin</a></li>
+                                {% endif %}
+
                                 <li><a href="{% url 'batik_custom:show_home' %}"><svg class="rb-ico" viewBox="0 0 24 24"><path d="m4 20 1-4L16 5l3 3L8 19l-4 1ZM14 7l3 3"/></svg>Custom Batik</a></li>
                                 <li><a href="{% url 'impact_tracker:dashboard' %}"><svg class="rb-ico" viewBox="0 0 24 24"><path d="M12 21v-8M12 13c0-5 3-8 8-8 0 5-3 8-8 8ZM12 15c0-4-2-6-7-6 0 4 2 6 7 6Z"/></svg>Impact Tracker</a></li>
                                 <li><a href="#"><svg class="rb-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>Pengaturan</a></li>
@@ -135,51 +150,6 @@
                 </div>
             </div>
 
-            <!-- Mega menu Marketplace (desktop) -->
-            <div class="rb-mega" id="rbMega" hidden>
-                <div class="rb-mega__inner">
-                    <div class="rb-mega__promo">
-                        <h3>Jelajahi Produk Batik Pilihan</h3>
-                        <a href="{% url 'marketplace:home' %}" class="rb-btn rb-btn--solid">Lihat Semua
-                            <svg class="rb-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-                    </div>
-
-                    <div class="rb-mega__col">
-                        <h4><svg class="rb-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 3-5 4 3 4 2-1v11h8V10l2 1 3-4-5-4a4 4 0 0 1-8 0Z"/></svg>Fashion</h4>
-                        <ul>
-                            <li><a href="{% url 'marketplace:home' %}?kategori=women">Women</a></li>
-                            <li><a href="{% url 'marketplace:home' %}?kategori=men">Men</a></li>
-                            <li><a href="{% url 'marketplace:home' %}?kategori=unisex">Unisex</a></li>
-                            <li><a href="{% url 'marketplace:home' %}?kategori=aksesoris">Aksesoris</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="rb-mega__col">
-                        <h4><svg class="rb-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8M5 10v10h14V10M10 20v-6h4v6"/></svg>Home Decor</h4>
-                        <ul>
-                            <li><a href="{% url 'marketplace:home' %}?kategori=dekorasi">Dekorasi</a></li>
-                            <li><a href="{% url 'marketplace:home' %}?kategori=alat-makan">Alat Makan</a></li>
-                            <li><a href="{% url 'marketplace:home' %}?kategori=furnitur">Furnitur</a></li>
-                            <li><a href="{% url 'marketplace:home' %}?kategori=aksesoris-rumah">Aksesoris Rumah</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="rb-mega__col">
-                        <h4><svg class="rb-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18M12 8c-2-4-6-4-6-1s4 1 6 1Zm0 0c2-4 6-4 6-1s-4 1-6 1Z"/></svg>Koleksi Spesial</h4>
-                        <ul>
-                            <li><a href="{% url 'marketplace:home' %}?kategori=batik-premium">Batik Premium</a></li>
-                            <li><a href="{% url 'marketplace:home' %}?kategori=batik-custom">Batik Custom</a></li>
-                            <li><a href="{% url 'marketplace:home' %}?kategori=ramah-lingkungan">Batik Ramah Lingkungan</a></li>
-                            <li><a href="{% url 'marketplace:home' %}?kategori=produk-lokal">Produk Lokal</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="rb-mega__photo" aria-hidden="true">
-                        <img src="{% static 'img/catalog/batik/parang.webp' %}" alt="" loading="lazy">
-                    </div>
-                </div>
-            </div>
-
             <!-- Side drawer (mobile) -->
             <div class="rb-drawer-backdrop" id="rbDrawerBackdrop" hidden></div>
             <aside class="rb-drawer" id="rbDrawer" aria-label="Menu navigasi" aria-hidden="true">
@@ -193,7 +163,7 @@
                     </button>
                 </div>
 
-                <form class="rb-nav__search rb-nav__search--drawer" role="search" method="get" action="{% url 'marketplace:home' %}">
+                <form class="rb-nav__search rb-nav__search--drawer" role="search" method="get" action="{% url 'main:show_home' %}">
                     <svg class="rb-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
                     <input type="search" name="q" placeholder="Cari di ReBatik..." aria-label="Cari di ReBatik" autocomplete="off">
                 </form>
@@ -201,13 +171,25 @@
                 <nav class="rb-drawer__nav">
                     <a href="{% url 'main:show_home' %}">Home{% include "_nav_chevron.html" %}</a>
                     <a href="{% url 'batik_story:show_batik_story' %}">Batik Story{% include "_nav_chevron.html" %}</a>
-                    {% if user.is_authenticated %}<a href="#">Profile{% include "_nav_chevron.html" %}</a>{% endif %}
-                    <a href="{% url 'rewards:history' %}">Riwayat{% include "_nav_chevron.html" %}</a>
+
+                    <!-- FIX: Profile tampil untuk semua user, seperti base awal -->
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'profiles:overview' %}">Profile ({{ user.username }}){% include "_nav_chevron.html" %}</a>
+                    {% else %}
+                    <a href="{% url 'profiles:overview' %}">Profile{% include "_nav_chevron.html" %}</a>
+                    {% endif %}
+
                     <a href="{% url 'marketplace:home' %}">Marketplace{% include "_nav_chevron.html" %}</a>
+                    <a href="{% url 'rewards:history' %}">Riwayat{% include "_nav_chevron.html" %}</a>
                     <a href="{% url 'rewards:overview' %}">Points and Rewards{% if notif_count %}<span class="rb-badge rb-badge--inline">{{ notif_count }}</span>{% else %}{% include "_nav_chevron.html" %}{% endif %}</a>
                     <a href="{% url 'donasi:landing' %}">Donasi Kain{% include "_nav_chevron.html" %}</a>
                     <a href="{% url 'marketplace:dropoff' %}">Drop-off Point{% include "_nav_chevron.html" %}</a>
                     <a href="{% url 'upcycling:request_list' %}">Upcycling Request{% include "_nav_chevron.html" %}</a>
+
+                    <!-- FIX: Dashboard Artisan & Admin dikembalikan -->
+                    {% if can_open_artisan_dashboard %}<a href="{% url 'upcycling:artisan_dashboard' %}">Dashboard Artisan{% include "_nav_chevron.html" %}</a>{% endif %}
+                    {% if user.is_staff %}<a href="{% url 'upcycling:admin_dashboard' %}">Dashboard Admin{% include "_nav_chevron.html" %}</a>{% endif %}
+
                     <a href="{% url 'batik_custom:show_home' %}">Custom Batik{% include "_nav_chevron.html" %}</a>
                     <a href="{% url 'impact_tracker:dashboard' %}">Impact Tracker{% include "_nav_chevron.html" %}</a>
                     <a href="#">Landing Page{% include "_nav_chevron.html" %}</a>

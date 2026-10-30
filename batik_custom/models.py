@@ -331,16 +331,25 @@ class BatikOrder(models.Model):
     def save(self, *args, **kwargs):
         if self.quantity < 1:
             raise ValueError("Jumlah pesanan minimal 1.")
+        if self.design_option_id and self.product_type != self.design_option.product_type:
+            raise ValueError("Kategori produk harus sesuai dengan model desain.")
 
-        if self.design_option_id:
-            if self.product_type != self.design_option.product_type:
-                raise ValueError(
-                    "Kategori produk harus sesuai dengan model desain."
-                )
-
+        previous_status = None
+        if self.pk:
+            previous_status = type(self).objects.filter(pk=self.pk).values_list("status", flat=True).first()
         self.total_price = self.unit_price * self.quantity
-
         super().save(*args, **kwargs)
+
+        # Perubahan status melalui admin maupun kode aplikasi akan memberi kabar ke pemilik.
+        if previous_status and previous_status != self.status:
+            from main.models import Notification
+            Notification.objects.create(
+                user=self.user,
+                title="Status pesanan diperbarui",
+                message=f"Pesanan #{self.pk} sekarang berstatus: {self.get_status_display()}.",
+                notification_type="order_updated",
+                target_url=f"/batik_custom/order/{self.pk}/confirmation/",
+            )
 
     def __str__(self):
         return f"Pesanan #{self.pk} - {self.recipient_name}"
