@@ -36,6 +36,12 @@ class RewardAdminForm(forms.ModelForm):
                 for value, label in self.fields["reward_type"].choices
                 if value == Reward.Type.VOUCHER
             ]
+        elif self.instance.reward_type == Reward.Type.VOUCHER:
+            self.fields["reward_type"].choices = [
+                (value, label)
+                for value, label in self.fields["reward_type"].choices
+                if value == Reward.Type.VOUCHER
+            ]
 
     def clean_reward_type(self):
         """Prevent changing the type of a reward that has been redeemed."""

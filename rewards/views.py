@@ -7,9 +7,10 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.http import HttpResponseForbidden
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Sum
 from django.shortcuts import render
+from django.views.decorators.http import require_POST
 
 from .models import PointTransaction, Reward, RewardRedemption
 from .forms import RewardAdminForm
@@ -214,6 +215,7 @@ def admin_vouchers(request):
     """Manage voucher catalog items from ReBatik's regular dashboard UI."""
     can_view = request.user.has_perm("rewards.view_reward")
     can_add = request.user.has_perm("rewards.add_reward")
+    can_change = request.user.has_perm("rewards.change_reward")
     if not can_view and not can_add:
         return HttpResponseForbidden("Anda tidak memiliki izin untuk mengelola katalog voucher.")
 
@@ -236,5 +238,65 @@ def admin_vouchers(request):
     return render(
         request,
         "rewards/admin_vouchers.html",
-        {"form": form, "vouchers": vouchers, "can_add": can_add},
+        {
+            "form": form,
+            "vouchers": vouchers,
+            "can_add": can_add,
+            "can_change": can_change,
+        },
     )
+
+
+@staff_member_required
+def admin_voucher_edit(request, voucher_id):
+    if not request.user.has_perm("rewards.change_reward"):
+        return HttpResponseForbidden("Anda tidak memiliki izin untuk mengubah voucher.")
+
+    voucher = get_object_or_404(
+        Reward,
+        pk=voucher_id,
+        reward_type=Reward.Type.VOUCHER,
+    )
+    if request.method == "POST":
+        form = RewardAdminForm(request.POST, request.FILES, instance=voucher)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Perubahan voucher berhasil disimpan.")
+            return redirect("rewards:admin_vouchers")
+    else:
+        form = RewardAdminForm(instance=voucher)
+
+    for field in form.fields.values():
+        field.widget.attrs["class"] = "voucher-admin-input"
+
+    return render(
+        request,
+        "rewards/admin_vouchers.html",
+        {
+            "form": form,
+            "vouchers": Reward.objects.filter(
+                reward_type=Reward.Type.VOUCHER
+            ).order_by("-pk"),
+            "can_add": request.user.has_perm("rewards.add_reward"),
+            "can_change": True,
+            "editing_voucher": voucher,
+        },
+    )
+
+
+@staff_member_required
+@require_POST
+def admin_voucher_deactivate(request, voucher_id):
+    if not request.user.has_perm("rewards.change_reward"):
+        return HttpResponseForbidden("Anda tidak memiliki izin untuk menonaktifkan voucher.")
+
+    voucher = get_object_or_404(
+        Reward,
+        pk=voucher_id,
+        reward_type=Reward.Type.VOUCHER,
+    )
+    if voucher.is_active:
+        voucher.is_active = False
+        voucher.save(update_fields=["is_active"])
+        messages.success(request, "Voucher berhasil dinonaktifkan.")
+    return redirect("rewards:admin_vouchers")
