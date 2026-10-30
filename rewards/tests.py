@@ -47,6 +47,14 @@ class VoucherAdminPresentationTests(SimpleTestCase):
             [value for value, _label in form.fields["reward_type"].choices],
         )
 
+    def test_existing_voucher_form_cannot_be_changed_into_a_physical_reward(self):
+        form = RewardAdminForm(instance=Reward(pk=1, reward_type=Reward.Type.VOUCHER))
+
+        self.assertEqual(
+            [value for value, _label in form.fields["reward_type"].choices],
+            [Reward.Type.VOUCHER],
+        )
+
     def test_reward_admin_groups_fields_and_shows_catalog_images(self):
         model_admin = RewardAdmin(Reward, admin.site)
 
@@ -105,6 +113,73 @@ class VoucherManagementDashboardTests(TestCase):
                 discount_value=Decimal("25000"),
             ).exists()
         )
+
+    def test_custom_admin_page_links_to_edit_and_deactivate_actions(self):
+        voucher = Reward.objects.create(
+            name="Voucher untuk dikelola",
+            reward_type=Reward.Type.VOUCHER,
+            points_required=100,
+            stock=4,
+            discount_value=10000,
+        )
+
+        response = self.client.get(reverse("rewards:admin_vouchers"))
+
+        self.assertContains(response, reverse("rewards:admin_voucher_edit", args=[voucher.pk]))
+        self.assertContains(
+            response,
+            reverse("rewards:admin_voucher_deactivate", args=[voucher.pk]),
+        )
+
+    def test_custom_admin_page_can_edit_voucher_details(self):
+        voucher = Reward.objects.create(
+            name="Voucher lama",
+            reward_type=Reward.Type.VOUCHER,
+            points_required=100,
+            stock=4,
+            discount_value=10000,
+        )
+
+        response = self.client.post(
+            reverse("rewards:admin_voucher_edit", args=[voucher.pk]),
+            {
+                "name": "Voucher diperbarui",
+                "description": "Diskon terbaru",
+                "reward_type": Reward.Type.VOUCHER,
+                "points_required": 200,
+                "stock": 7,
+                "is_active": "on",
+                "discount_value": "30000",
+            },
+        )
+
+        self.assertRedirects(response, reverse("rewards:admin_vouchers"))
+        voucher.refresh_from_db()
+        self.assertEqual(voucher.name, "Voucher diperbarui")
+        self.assertEqual(voucher.description, "Diskon terbaru")
+        self.assertEqual(voucher.points_required, 200)
+        self.assertEqual(voucher.stock, 7)
+        self.assertEqual(voucher.discount_value, Decimal("30000"))
+        self.assertTrue(voucher.is_active)
+
+    def test_custom_admin_page_can_deactivate_without_deleting_voucher(self):
+        voucher = Reward.objects.create(
+            name="Voucher tidak aktif",
+            reward_type=Reward.Type.VOUCHER,
+            points_required=100,
+            stock=4,
+            discount_value=10000,
+        )
+
+        response = self.client.post(
+            reverse("rewards:admin_voucher_deactivate", args=[voucher.pk]),
+        )
+
+        self.assertRedirects(response, reverse("rewards:admin_vouchers"))
+        voucher.refresh_from_db()
+        self.assertFalse(voucher.is_active)
+        self.assertEqual(voucher.stock, 4)
+        self.assertTrue(Reward.objects.filter(pk=voucher.pk).exists())
 
 
 class LegacyDonationWeightMigrationTests(SimpleTestCase):
