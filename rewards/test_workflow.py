@@ -40,6 +40,17 @@ class RewardWorkflowTests(TestCase):
 
         self.assertIn("color: var(--rewards-brown);", hero_rule)
 
+    def test_voucher_confirmation_modal_blurs_the_catalog_backdrop(self):
+        stylesheet = (
+            Path(__file__).resolve().parent.parent
+            / "static"
+            / "css"
+            / "rewards.css"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn(".voucher-confirm-backdrop", stylesheet)
+        self.assertIn("backdrop-filter: blur(6px);", stylesheet)
+
     def test_voucher_redemption_debits_points_and_uses_reward_stock_once(self):
         reward = Reward.objects.create(
             name="Voucher 20 ribu",
