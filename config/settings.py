@@ -48,6 +48,13 @@ def get_environment_bool(name, default="False"):
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_environment_bool("DEBUG")
 PRODUCTION = get_environment_bool("PRODUCTION")
+CLOUDINARY_URL = os.getenv("CLOUDINARY_URL", "").strip()
+
+if PRODUCTION and not CLOUDINARY_URL:
+    raise ImproperlyConfigured(
+        "CLOUDINARY_URL must be set when PRODUCTION=True."
+    )
+
 
 ALLOWED_HOSTS = [
     "localhost",
@@ -73,7 +80,11 @@ INSTALLED_APPS = [
     'upcycling',
     'rewards',
     'batik_story',
+    'donasi',
     'batik_custom',
+    'impact_tracker',
+    'profiles',
+    'landing',
 ]
 
 MIDDLEWARE = [
@@ -99,6 +110,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'upcycling.context_processors.upcycling_navigation',
             ],
         },
     },
@@ -183,6 +195,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Jakarta'
+UPCYCLING_FABRIC_DEADLINE_DAYS = 7
 
 USE_I18N = True
 
@@ -204,8 +217,28 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 WHITENOISE_USE_FINDERS = True
 
+# Beberapa gambar katalog berekstensi .jpe; pastikan dikirim sebagai JPEG
+# (X-Content-Type-Options: nosniff membuat browser menolak tipe yang salah).
+WHITENOISE_MIMETYPES = {
+    ".jpe": "image/jpeg",
+    ".webp": "image/webp",
+}
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+STORAGES = {
+    "default": {
+        "BACKEND": (
+            "config.storage_backends.CloudinaryMediaStorage"
+            if PRODUCTION
+            else "django.core.files.storage.FileSystemStorage"
+        ),
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 

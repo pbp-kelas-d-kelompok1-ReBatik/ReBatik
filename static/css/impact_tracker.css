@@ -1,0 +1,758 @@
+/* =====================================================
+   REBATIK - IMPACT TRACKER
+   Semua selector memakai prefix "impact-" agar tidak
+   bentrok dengan halaman lain.
+   ===================================================== */
+
+.impact-page {
+    --impact-brown-dark: #67452f;
+    --impact-brown: #89532f;
+    --impact-brown-soft: #8a6a55;
+    --impact-peach: #e8c2a6;
+    --impact-cream: #f7f0e5;
+    --impact-card: #fffcf7;
+    --impact-line: #e6d3bf;
+    --impact-shadow: 0 8px 24px rgba(103, 69, 47, 0.12);
+    --impact-radius: 22px;
+
+    background: var(--impact-cream);
+    color: var(--impact-brown-dark);
+    font-family: "Garamond", Georgia, "Times New Roman", serif;
+    font-size: 18px;
+    line-height: 1.6;
+    overflow-x: clip;
+}
+
+.impact-page h1,
+.impact-page h2,
+.impact-page h3,
+.impact-page p,
+.impact-page ul,
+.impact-page ol,
+.impact-page dl {
+    margin: 0;
+    padding: 0;
+}
+
+.impact-page ul,
+.impact-page ol {
+    list-style: none;
+}
+
+.impact-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* ---------- Isolasi dari gaya global ---------- */
+
+/* style.css memberi semua h1 garis emas (h1::after); tidak dipakai di sini. */
+.impact-page h1::after {
+    content: none;
+}
+
+/* Cegah gaya global elemen <header>/<section>/<article> (mis. bar cokelat
+   bergaya navbar) bocor ke halaman ini. */
+.impact-page header,
+.impact-page section,
+.impact-page article {
+    position: static;
+    min-height: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    border: 0;
+    box-shadow: none;
+    text-shadow: none;
+}
+
+.impact-page header {
+    display: block;
+    width: auto;
+    padding: 0;
+    background: none;
+    color: inherit;
+}
+
+/* display:flex pada item aktivitas akan mengalahkan atribut [hidden]. */
+.impact-page [hidden] {
+    display: none !important;
+}
+
+/* ---------- Tombol & tautan ---------- */
+
+.impact-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0 28px;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    font-family: "Plus Jakarta Sans", Arial, sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.impact-btn--primary {
+    background: var(--impact-brown);
+    color: #fff;
+}
+
+.impact-btn--primary:hover {
+    background: var(--impact-brown-dark);
+}
+
+.impact-btn--ghost {
+    border-color: var(--impact-brown);
+    color: var(--impact-brown-dark);
+}
+
+.impact-btn--ghost:hover {
+    background: rgba(255, 252, 247, 0.6);
+}
+
+.impact-btn--light {
+    background: var(--impact-cream);
+    color: var(--impact-brown-dark);
+}
+
+.impact-btn--light:hover {
+    background: #fff;
+}
+
+.impact-btn--outline-light {
+    border-color: var(--impact-cream);
+    color: var(--impact-cream);
+}
+
+.impact-btn--outline-light:hover {
+    background: rgba(247, 240, 229, 0.15);
+}
+
+.impact-link {
+    color: var(--impact-brown);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.impact-link:hover {
+    color: var(--impact-brown-dark);
+}
+
+/* ---------- Hero ---------- */
+
+.impact-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 84px 24px 92px;
+    text-align: center;
+    background: linear-gradient(135deg, var(--impact-peach) 0%, #efd3bb 55%, var(--impact-cream) 100%);
+}
+
+.impact-cloud {
+    position: absolute;
+    z-index: -1;
+    height: auto;
+    max-width: none;
+    pointer-events: none;
+}
+
+.impact-cloud--top {
+    top: 0;
+    right: 0;
+    width: clamp(150px, 26vw, 360px);
+}
+
+.impact-cloud--bottom {
+    bottom: 0;
+    left: 0;
+    width: clamp(140px, 24vw, 330px);
+}
+
+.impact-hero__content {
+    position: relative;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.impact-eyebrow {
+    margin-bottom: 12px;
+    font-family: "Plus Jakarta Sans", Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    color: var(--impact-brown);
+}
+
+.impact-hero h1 {
+    margin-bottom: 18px;
+    font-size: clamp(34px, 5vw, 56px);
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--impact-brown-dark);
+}
+
+.impact-hero__lead {
+    max-width: 640px;
+    margin: 0 auto 30px;
+    font-size: clamp(18px, 2vw, 21px);
+}
+
+.impact-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    justify-content: center;
+}
+
+/* ---------- Section ---------- */
+
+.impact-section {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 64px 24px 0;
+}
+
+.impact-section--tight {
+    padding-top: 32px;
+}
+
+.impact-section__head {
+    margin-bottom: 28px;
+    text-align: center;
+}
+
+.impact-section__head--left {
+    margin-bottom: 18px;
+    text-align: left;
+}
+
+.impact-section__head h2 {
+    margin-bottom: 6px;
+    font-size: clamp(26px, 3.4vw, 36px);
+    line-height: 1.2;
+}
+
+.impact-section__head p {
+    color: var(--impact-brown-soft);
+}
+
+.impact-footnote {
+    margin-top: 20px;
+    font-size: 15px;
+    text-align: center;
+    color: var(--impact-brown-soft);
+}
+
+.impact-footnote--left {
+    margin-top: 14px;
+    text-align: left;
+}
+
+/* ---------- Statistik ---------- */
+
+.impact-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.impact-stat {
+    padding: 26px 22px;
+    background: var(--impact-card);
+    border: 1px solid var(--impact-line);
+    border-radius: var(--impact-radius);
+    box-shadow: var(--impact-shadow);
+}
+
+.impact-stat__label {
+    font-family: "Plus Jakarta Sans", Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--impact-brown);
+}
+
+.impact-stat__value {
+    margin: 6px 0 2px;
+    font-size: clamp(40px, 5vw, 54px);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--impact-brown-dark);
+}
+
+.impact-stat__note {
+    font-size: 15px;
+    color: var(--impact-brown-soft);
+}
+
+/* ---------- Kontribusi pribadi ---------- */
+
+.impact-personal {
+    padding: 28px;
+    background: var(--impact-card);
+    border: 1px solid var(--impact-line);
+    border-left: 6px solid var(--impact-brown);
+    border-radius: var(--impact-radius);
+    box-shadow: var(--impact-shadow);
+}
+
+.impact-personal__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.impact-personal__grid dt {
+    font-size: 15px;
+    color: var(--impact-brown-soft);
+}
+
+.impact-personal__grid dd {
+    margin: 0;
+    font-size: 34px;
+    font-weight: 700;
+}
+
+.impact-personal__empty {
+    margin-bottom: 4px;
+}
+
+/* ---------- Perjalanan donasi ---------- */
+
+.impact-journeys {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.impact-journey {
+    padding: 26px 24px;
+    background: var(--impact-card);
+    border: 1px solid var(--impact-line);
+    border-radius: var(--impact-radius);
+    box-shadow: var(--impact-shadow);
+}
+
+.impact-journey h3 {
+    margin-bottom: 18px;
+    font-size: 24px;
+}
+
+.impact-journey__steps {
+    position: relative;
+    display: grid;
+    gap: 20px;
+}
+
+.impact-journey__steps::before {
+    content: "";
+    position: absolute;
+    top: 18px;
+    bottom: 18px;
+    left: 17px;
+    width: 2px;
+    background: var(--impact-peach);
+}
+
+.impact-journey__step {
+    position: relative;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.impact-journey__index {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--impact-brown);
+    color: #fff;
+    font-family: "Plus Jakarta Sans", Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.impact-journey__label {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.impact-journey__count {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: var(--impact-peach);
+    font-family: "Plus Jakarta Sans", Arial, sans-serif;
+    font-size: 13px;
+    line-height: 22px;
+}
+
+.impact-journey__desc {
+    font-size: 16px;
+    color: var(--impact-brown-soft);
+}
+
+/* ---------- Grafik ---------- */
+
+.impact-chart-card {
+    padding: 24px;
+    background: var(--impact-card);
+    border: 1px solid var(--impact-line);
+    border-radius: var(--impact-radius);
+    box-shadow: var(--impact-shadow);
+}
+
+.impact-chart-card__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
+
+.impact-legend {
+    display: flex;
+    gap: 18px;
+    font-size: 15px;
+}
+
+.impact-legend__dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    border-radius: 3px;
+}
+
+.impact-legend__dot--done,
+.impact-chart__seg--done {
+    background: var(--impact-brown);
+}
+
+.impact-legend__dot--progress,
+.impact-chart__seg--progress {
+    background: var(--impact-peach);
+}
+
+.impact-filter {
+    display: inline-flex;
+    padding: 4px;
+    border: 1px solid var(--impact-line);
+    border-radius: 999px;
+    background: var(--impact-cream);
+}
+
+.impact-filter__item {
+    padding: 4px 16px;
+    border-radius: 999px;
+    font-family: "Plus Jakarta Sans", Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--impact-brown-dark);
+}
+
+.impact-filter__item.is-active {
+    background: var(--impact-brown);
+    color: #fff;
+}
+
+.impact-chart-scroll {
+    overflow-x: auto;
+    padding-bottom: 6px;
+}
+
+.impact-chart {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    width: max-content;
+    min-width: 100%;
+}
+
+.impact-chart__col {
+    position: relative;
+    flex: 1 0 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.impact-chart__total {
+    min-height: 22px;
+    font-family: "Plus Jakarta Sans", Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.impact-chart__track {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+    height: 220px;
+    border-bottom: 2px solid var(--impact-line);
+}
+
+.impact-chart__bar {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    width: min(100%, 38px);
+    height: 100%;
+}
+
+.impact-chart__seg {
+    display: block;
+    width: 100%;
+}
+
+.impact-chart__seg:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.impact-chart__label {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+.impact-chart__year {
+    min-height: 16px;
+    font-size: 12px;
+    color: var(--impact-brown-soft);
+}
+
+/* ---------- Aktivitas ---------- */
+
+.impact-activity {
+    display: grid;
+    gap: 12px;
+}
+
+.impact-activity__item {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    padding: 16px 20px;
+    background: var(--impact-card);
+    border: 1px solid var(--impact-line);
+    border-radius: 18px;
+}
+
+.impact-activity__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.impact-activity__title {
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.impact-activity__meta {
+    font-size: 15px;
+    color: var(--impact-brown-soft);
+}
+
+.impact-badge,
+.impact-status {
+    flex: none;
+    padding: 2px 12px;
+    border-radius: 999px;
+    font-family: "Plus Jakarta Sans", Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 22px;
+}
+
+.impact-badge--donasi {
+    background: var(--impact-peach);
+    color: var(--impact-brown-dark);
+}
+
+.impact-badge--upcycling {
+    background: var(--impact-brown-dark);
+    color: var(--impact-cream);
+}
+
+.impact-status {
+    border: 1px solid var(--impact-line);
+    background: var(--impact-cream);
+    color: var(--impact-brown-dark);
+}
+
+.impact-status.is-done {
+    border-color: var(--impact-brown);
+    background: var(--impact-brown);
+    color: #fff;
+}
+
+/* ---------- Pencarian aktivitas ---------- */
+
+.impact-activity-tools {
+    display: grid;
+    gap: 6px;
+    max-width: 520px;
+    margin: 0 auto 20px;
+}
+
+.impact-activity-search-label {
+    font-family: "Plus Jakarta Sans", Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--impact-brown);
+}
+
+.impact-activity-search {
+    width: 100%;
+    min-height: 46px;
+    padding: 0 18px;
+    border: 1px solid var(--impact-line);
+    border-radius: 999px;
+    background: var(--impact-card);
+    color: var(--impact-brown-dark);
+    font-family: inherit;
+    font-size: 17px;
+}
+
+.impact-activity-search::placeholder {
+    color: var(--impact-brown-soft);
+}
+
+.impact-activity-search:focus-visible {
+    outline: 2px solid var(--impact-brown);
+    outline-offset: 2px;
+}
+
+.impact-activity-search-hint {
+    font-size: 14px;
+    text-align: center;
+    color: var(--impact-brown-soft);
+}
+
+.impact-activity-no-results {
+    margin-top: 16px;
+    text-align: center;
+    color: var(--impact-brown-soft);
+}
+
+/* ---------- Empty state ---------- */
+
+.impact-empty {
+    display: grid;
+    gap: 10px;
+    justify-items: center;
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--impact-brown-soft);
+    background: var(--impact-card);
+    border: 2px dashed var(--impact-peach);
+    border-radius: var(--impact-radius);
+}
+
+.impact-chart-card .impact-empty {
+    border-radius: 16px;
+}
+
+.impact-empty__title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--impact-brown-dark);
+}
+
+/* ---------- CTA ---------- */
+
+.impact-cta {
+    margin-top: 64px;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 72px 24px;
+    text-align: center;
+    background: var(--impact-brown-dark);
+    color: var(--impact-cream);
+}
+
+.impact-cta::before {
+    opacity: 0.1;
+}
+
+.impact-cta__content {
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.impact-cta h2 {
+    margin-bottom: 10px;
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.2;
+}
+
+.impact-cta p {
+    margin-bottom: 26px;
+}
+
+/* ---------- Responsif ---------- */
+
+@media (max-width: 1000px) {
+    .impact-stats,
+    .impact-personal__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .impact-journeys {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .impact-hero {
+        padding: 64px 20px 76px;
+    }
+
+    .impact-section {
+        padding: 48px 16px 0;
+    }
+
+    .impact-stats {
+        gap: 12px;
+    }
+
+    .impact-stat {
+        padding: 20px 16px;
+    }
+
+    .impact-chart-card {
+        padding: 16px;
+    }
+
+    .impact-activity__item {
+        flex-wrap: wrap;
+        gap: 8px 12px;
+    }
+
+    .impact-activity__body {
+        flex: 1 1 60%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .impact-btn {
+        transition: none;
+    }
+}

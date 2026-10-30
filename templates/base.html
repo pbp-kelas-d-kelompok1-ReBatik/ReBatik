@@ -1,109 +1,252 @@
 {% load static %}
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>ReBatik</title>
-    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+
+    <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
 
-    {% block meta %}
-    {% endblock meta %}
+    <!-- JavaScript -->
+    <script src="{% static 'js/htmx.min.js' %}" defer></script>
+    <script src="{% static 'js/motif-modal.js' %}" defer></script>
+    <script src="{% static 'js/toast.js' %}" defer></script>
+    <script src="{% static 'js/logout-modal.js' %}" defer></script>
 
-    {% block css %}
-    {% endblock css %}
+    {% block meta %}{% endblock meta %}
+    {% block css %}{% endblock css %}
 </head>
 
 <body>
     <div class="bg">
+
+        <!-- NAVBAR -->
         <header class="navbar">
+
             <a href="{% url 'main:show_home' %}" class="logo">
                 ReBatik
             </a>
 
             <nav class="nav-links">
+
                 <a href="{% url 'main:show_home' %}">Home</a>
-                <a href="{% url 'batik_story:show_batik_story' %}">Batik Story</a>
+
+                <a href="{% url 'batik_story:show_batik_story' %}">
+                    Batik Story
+                </a>
 
                 {% if user.is_authenticated %}
-                <span class="nav-user-label">{{ user.username }}</span>
+
+                <span class="nav-user-label">
+                    {{ user.username }}
+                </span>
+
                 <form method="post" action="{% url 'main:logout' %}" class="nav-logout-form">
+
                     {% csrf_token %}
-                    <button type="submit" class="nav-logout-button">Logout</button>
+
+                    <button type="submit" class="nav-logout-button">
+                        Logout
+                    </button>
                 </form>
 
                 {% else %}
+
                 <a href="{% url 'main:login' %}">Sign in</a>
                 <a href="{% url 'main:signup' %}">Sign up</a>
+
                 {% endif %}
-                <a href="{% url 'rewards:overview' %}">Reward</a>
+
+                <a href="{% url 'rewards:overview' %}">
+                    Reward
+                </a>
+
             </nav>
 
-            <button type="button" class="menu-btn" onclick="toggleMenu()" aria-label="Open menu">
+            <!-- MOBILE MENU BUTTON -->
+            <button type="button" class="menu-btn" onclick="toggleMenu()" aria-label="Open menu" aria-controls="navMenu"
+                aria-expanded="false">
+
                 <span></span>
                 <span></span>
                 <span></span>
+
             </button>
 
+            <!-- DROPDOWN MENU -->
             <div class="nav-menu" id="navMenu">
+
                 {% if user.is_authenticated %}
-                <a href="#">Profile ({{ user.username }})</a>
+                <a href="{% url 'profiles:overview' %}">Profile ({{ user.username }})</a>
                 {% else %}
-                <a href="#">Profile</a>
+                <a href="{% url 'profiles:overview' %}">Profile</a>
                 {% endif %}
+                <a href="{% url 'marketplace:home' %}">
+                    MarketPlace
+                </a>
+
+                <a href="{% url 'rewards:overview' %}">
+                    Points and Rewards
+                </a>
+
+                <a href="{% url 'donasi:landing' %}">
+                    Donasi Kain
+                </a>
+
+                <a href="{% url 'marketplace:dropoff' %}">
+                    Drop-off Point
+                </a>
+
+                <a href="{% url 'upcycling:request_list' %}">
+                    Upcycling Request
+                </a>
+
+                {% if can_open_artisan_dashboard %}
+                <a href="{% url 'upcycling:artisan_dashboard' %}">
+                    Dashboard Artisan
+                </a>
+                {% endif %}
+                
                 <a href="{% url 'marketplace:home' %}">MarketPlace</a>
                 {% if user.is_authenticated %}
                 <a href="{% url 'marketplace:order_list' %}">Pesanan Saya</a>
                 {% endif %}
                 {% if user.is_staff %}
                 <a href="{% url 'marketplace:manage_product_list' %}">Kelola Produk</a>
+                <a href="{% url 'upcycling:admin_dashboard' %}">Dashboard Admin</a>
                 {% endif %}
                 <a href="{% url 'rewards:overview' %}">Points and Rewards</a>
                 <a href="#">Donasi Kain</a>
                 <a href="{% url 'marketplace:dropoff' %}">Drop-off Point</a>
                 <a href="{% url 'upcycling:request_list' %}">Upcycling Request</a>
                 <a href="{% url 'batik_custom:show_home' %}">Custom Batik</a>
-                <a href="#">Impact Tracker</a>
-                <a href="#">Landing page</a>
+                <a href="{% url 'impact_tracker:dashboard' %}">Impact Tracker</a>
+                <a href="{% url 'landing:index' %}">Landing page</a>
 
                 {% if user.is_authenticated %}
+
                 <form method="post" action="{% url 'main:logout' %}" class="nav-menu-logout-form">
+
                     {% csrf_token %}
-                    <button type="submit" class="nav-menu-logout-button">Logout</button>
+
+                    <button type="submit" class="nav-menu-logout-button">
+                        Logout
+                    </button>
+
                 </form>
+
                 {% else %}
-                <a href="{% url 'main:login' %}">Sign in</a>
-                <a href="{% url 'main:signup' %}">Sign up</a>
+
+                <a href="{% url 'main:login' %}">
+                    Sign in
+                </a>
+
+                <a href="{% url 'main:signup' %}">
+                    Sign up
+                </a>
+
                 {% endif %}
+
             </div>
         </header>
 
+        <!-- MAIN CONTENT -->
         <main>
-            {% block content %}
-            {% endblock content %}
+            {% block content %}{% endblock content %}
         </main>
+
     </div>
 
+    <!-- FOOTER -->
     <footer class="site-footer">
         <p>
-            © 2026 ReBatik. Fakultas Ilmu Komputer, Universitas Indonesia.
+            © 2026 ReBatik. Fakultas Ilmu Komputer,
+            Universitas Indonesia.
         </p>
     </footer>
 
+
+    <!-- =================================
+         LOGOUT CONFIRMATION MODAL
+    ================================== -->
+    <div id="logoutConfirmModal" class="logout-modal" aria-hidden="true">
+
+        <!-- Background overlay -->
+        <div class="logout-modal-backdrop" data-logout-cancel>
+        </div>
+
+        <!-- Modal dialog -->
+        <section class="logout-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="logoutModalTitle"
+            aria-describedby="logoutModalDescription">
+
+            <!-- Batik decorations -->
+            <div class="logout-batik-decoration logout-batik-top-left"></div>
+            <div class="logout-batik-decoration logout-batik-top-right"></div>
+            <div class="logout-batik-decoration logout-batik-bottom-left"></div>
+            <div class="logout-batik-decoration logout-batik-bottom-right"></div>
+
+            <div class="logout-modal-content">
+
+                <!-- Crying mascot -->
+                <div class="logout-mascot">
+                    <img src="{% static 'img/mascot/crying.webp' %}" alt="Maskot ReBatik sedang menangis">
+                </div>
+
+                <!-- Confirmation text -->
+                <div class="logout-modal-text">
+
+                    <h2 id="logoutModalTitle">
+                        Yakin ingin logout?
+                    </h2>
+
+                    <p id="logoutModalDescription">
+                        Kamu yakin ingin keluar dari akunmu?
+                    </p>
+
+                    <!-- Action buttons -->
+                    <div class="logout-modal-actions">
+
+                        <button type="button" class="logout-btn logout-btn-cancel" id="cancelLogout">
+                            Batal
+                        </button>
+
+                        <button type="button" class="logout-btn logout-btn-confirm" id="confirmLogout">
+                            Ya, Logout
+                        </button>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </div>
+    <!-- END LOGOUT CONFIRMATION MODAL -->
+
+
+    <!-- MOBILE MENU SCRIPT -->
     <script>
         function toggleMenu() {
             const menu = document.getElementById("navMenu");
+            const button = document.querySelector(".menu-btn");
+
             menu.classList.toggle("active");
+
+            button.setAttribute(
+                "aria-expanded",
+                menu.classList.contains("active")
+            );
         }
     </script>
 
+    <!-- PAGE-SPECIFIC SCRIPTS -->
     {% block extra_js %}{% endblock extra_js %}
     {% block scripts %}{% endblock scripts %}
+
 </body>
 
 </html>

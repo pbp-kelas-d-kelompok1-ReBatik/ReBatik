@@ -1,178 +1,41 @@
-
 {% extends "base.html" %}
 {% load static %}
 
+{% block meta %}
+<meta name="description" content="Pilih gaya batik yang mencerminkan kepribadianmu di ReBatik.">
+{% endblock meta %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/custom/style_quiz.css' %}">
+{% endblock css %}
+
 {% block content %}
-<style>
-    .quiz-wrapper {
-        max-width: 1100px;
-        margin: 50px auto;
-        padding: 24px;
-    }
+<section class="vibe-page">
+    <div class="vibe-panel">
 
-    .vibe-card {
-        background: #fffdf8;
-        border-radius: 24px;
-        padding: 40px;
-        text-align: center;
-    }
+        <header class="vibe-header">
+            <p class="vibe-eyebrow">LANGKAH 2 DARI 3</p>
 
-    .vibe-card h1 {
-        font-size: 36px;
-        margin-bottom: 10px;
-        color: #704936;
-    }
+            <div class="vibe-divider">
+                <span></span>
+                <b>✿</b>
+                <span></span>
+            </div>
 
-    .subtitle {
-        color: #777;
-        margin-bottom: 32px;
-    }
+            <h1>What's Your Vibe?</h1>
+            <div class="vibe-title-underline"></div>
 
-    .style-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 20px;
-    }
-
-    .style-option {
-        position: relative;
-        display: block;
-        cursor: pointer;
-        text-align: left;
-    }
-
-    .style-option input {
-        position: absolute;
-        opacity: 0;
-        pointer-events: none;
-    }
-
-    .option-content {
-        position: relative;
-        height: 100%;
-        min-height: 330px;
-        padding: 12px;
-        border: 2px solid #e9e4d9;
-        border-radius: 18px;
-        transition: border-color .2s, background .2s;
-        background: #fff;
-    }
-
-    .style-option input:checked + .option-content {
-        border-color: #704936;
-        background: #f0f5eb;
-        box-shadow: 0 0 0 2px #52765320;
-    }
-
-    .style-option input:focus-visible + .option-content {
-        outline: 3px solid #704936;
-        outline-offset: 3px;
-    }
-
-    .style-image,
-    .image-placeholder {
-        display: flex;
-        width: 100%;
-        height: 190px;
-        object-fit: cover;
-        border-radius: 12px;
-        margin-bottom: 14px;
-    }
-
-    .image-placeholder {
-        align-items: center;
-        justify-content: center;
-        background: #f1ece2;
-        color: #887d6d;
-        font-size: 13px;
-        text-align: center;
-    }
-
-    .option-content h2 {
-        font-size: 20px;
-        margin: 8px 0;
-        color: #704936;
-    }
-
-    .option-content p {
-        color: #777;
-        font-size: 13px;
-        line-height: 1.5;
-        margin: 6px 0;
-    }
-
-    .checkmark {
-        display: none;
-        position: absolute;
-        z-index: 2;
-        top: 18px;
-        right: 18px;
-        color: #704936;
-        background: white;
-        border-radius: 50%;
-        padding: 4px 8px;
-        font-weight: bold;
-    }
-
-    .style-option input:checked + .option-content .checkmark {
-        display: block;
-    }
-
-    .next-button {
-        margin-top: 32px;
-        padding: 14px 28px;
-        background: #704936;
-        color: white;
-        border: none;
-        border-radius: 30px;
-        cursor: pointer;
-        font-size: 16px;
-    }
-
-    .next-button:hover {
-        background: #704936;
-    }
-
-    @media (max-width: 700px) {
-        .style-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 12px;
-        }
-
-        .vibe-card {
-            padding: 24px 14px;
-        }
-
-        .style-image,
-        .image-placeholder {
-            height: 150px;
-        }
-
-        .option-content {
-            min-height: 280px;
-        }
-    }
-
-    @media (max-width: 450px) {
-        .style-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
-
-<div class="quiz-wrapper">
-    <form method="POST" action="{% url 'batik_custom:select_style' %}">
-        {% csrf_token %}
-
-        <section class="vibe-card">
-            <h1>What's your vibe?</h1>
-            <p class="subtitle">
-                Pilih gaya yang paling menggambarkan seleramu.
+            <p class="vibe-subtitle">
+                Pilih gaya yang paling menggambarkan kepribadianmu.
             </p>
+        </header>
 
-            <div class="style-grid">
+        <form method="POST" action="{% url 'batik_custom:select_style' %}">
+            {% csrf_token %}
+
+            <div class="vibe-grid">
                 {% for style in styles %}
-                <label class="style-option">
+                <label class="vibe-option">
                     <input
                         type="radio"
                         name="style"
@@ -180,38 +43,57 @@
                         required
                     >
 
-                    <div class="option-content">
-                        <span class="checkmark">✓</span>
+                    <div class="vibe-card">
+                        <span class="vibe-check" aria-hidden="true">✓</span>
 
-                        {% if style.image %}
-                            <img
-                                src="{{ style.image.url }}"
-                                alt="Outfit batik gaya {{ style.name }}"
-                                class="style-image"
-                            >
+                        {% if style.image_url %}
+                        <img
+                            class="vibe-image"
+                            src="{{ style.image_url }}"
+                            alt="Gaya batik {{ style.name }}"
+                            loading="lazy"
+                        >
                         {% else %}
-                            <div class="image-placeholder">
-                                Foto batik belum tersedia
-                            </div>
+                        <div class="vibe-image vibe-image-placeholder">
+                            <span>✿</span>
+                            <p>Foto {{ style.name }}</p>
+                        </div>
                         {% endif %}
 
-                        <h2>{{ style.name }}</h2>
-                        <p>{{ style.description }}</p>
-                        <p>{{ style.detail }}</p>
+                        <div class="vibe-card-content">
+                            <h2>{{ style.name }}</h2>
+                            <p class="vibe-description">
+                                {{ style.description }}
+                            </p>
+                            {% if style.detail %}
+                            <p class="vibe-detail">
+                                {{ style.detail }}
+                            </p>
+                            {% endif %}
+                        </div>
                     </div>
                 </label>
                 {% empty %}
-                    <p>
-                        Belum ada pilihan gaya. Tambahkan data
-                        StyleOptions melalui Django Admin.
-                    </p>
+                <div class="vibe-empty">
+                    <p>Belum ada pilihan gaya yang tersedia.</p>
+                    <p>Silakan tambahkan StyleOptions melalui Django Admin.</p>
+                </div>
                 {% endfor %}
             </div>
 
-            <button type="submit" class="next-button">
-                Explore my colors →
-            </button>
-        </section>
-    </form>
-</div>
-{% endblock %}
+            <div class="vibe-actions">
+                <button type="submit" class="vibe-next">
+                    <span>Explore my colors</span>
+                    <span aria-hidden="true">→</span>
+                </button>
+            </div>
+        </form>
+
+        <footer class="vibe-footer">
+            <span>THE BEAUTY OF HERITAGE</span>
+            <span>Est. ReBatik 2026</span>
+        </footer>
+
+    </div>
+</section>
+{% endblock content %}
