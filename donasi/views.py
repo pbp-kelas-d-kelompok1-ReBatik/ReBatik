@@ -15,6 +15,7 @@ def landing(request):
 
 
 def create(request):
+    """Accept a donation submission, associating it with the signed-in user if any."""
     if request.method == "POST":
         form = DonasiKainForm(
             request.POST,
@@ -22,7 +23,10 @@ def create(request):
         )
 
         if form.is_valid():
-            form.save()
+            donation = form.save(commit=False)
+            if request.user.is_authenticated:
+                donation.user = request.user
+            donation.save()
 
             messages.success(
                 request,

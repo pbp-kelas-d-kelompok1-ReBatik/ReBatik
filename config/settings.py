@@ -108,6 +108,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'upcycling.context_processors.upcycling_navigation',
             ],
         },
     },
@@ -192,6 +193,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Jakarta'
+UPCYCLING_FABRIC_DEADLINE_DAYS = 7
 
 USE_I18N = True
 
