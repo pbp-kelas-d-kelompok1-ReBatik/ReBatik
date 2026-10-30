@@ -19,7 +19,8 @@ class AdminDashboardVoucherLinksTests(TestCase):
         voucher_url = reverse("rewards:admin_vouchers")
         self.assertContains(response, voucher_url)
         self.assertContains(response, f"{voucher_url}#voucher-form")
-        self.assertContains(response, f'href="{voucher_url}#voucher-form">Tambah voucher</a>')
+        add_voucher_links = f'href="{voucher_url}#voucher-form"'.encode()
+        self.assertEqual(response.content.count(add_voucher_links), 3)
 
     def test_regular_user_does_not_see_add_voucher_navigation_link(self):
         member = get_user_model().objects.create_user(
