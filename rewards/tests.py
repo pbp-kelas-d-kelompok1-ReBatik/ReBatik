@@ -6,10 +6,12 @@ import tempfile
 from types import SimpleNamespace
 
 from django.contrib.auth import get_user_model
+from django.contrib import admin
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import SimpleTestCase, TestCase, override_settings
 
 from .models import PointTransaction, Reward
+from .admin import RewardAdmin, RewardAdminForm
 from .services import (
     InsufficientPoints,
     award_upcycling_completion,
@@ -21,6 +23,30 @@ from .services import (
 )
 from .views import _level_progress
 from .templatetags.rewards_format import decimal_comma_id
+
+
+class VoucherAdminPresentationTests(SimpleTestCase):
+    def test_new_reward_form_is_prepared_for_adding_a_voucher(self):
+        form = RewardAdminForm()
+
+        self.assertEqual(form["reward_type"].value(), Reward.Type.VOUCHER)
+        self.assertEqual(form.fields["name"].label, "Nama voucher")
+        self.assertIn("nama singkat", form.fields["name"].help_text)
+        self.assertEqual(form.fields["image"].label, "Gambar voucher")
+
+    def test_reward_admin_groups_fields_and_shows_catalog_images(self):
+        model_admin = RewardAdmin(Reward, admin.site)
+
+        self.assertEqual(Reward._meta.verbose_name_plural, "katalog voucher")
+        self.assertEqual(
+            model_admin.fieldsets,
+            (
+                ("Informasi voucher", {"fields": ("name", "description", "reward_type")}),
+                ("Penukaran", {"fields": ("points_required", "discount_value", "stock", "is_active")}),
+                ("Gambar katalog", {"fields": ("image",)}),
+            ),
+        )
+        self.assertIn("image_preview", model_admin.list_display)
 
 
 class LegacyDonationWeightMigrationTests(SimpleTestCase):
