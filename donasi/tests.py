@@ -65,6 +65,40 @@ class VerifiedDonationRewardTests(TestCase):
             2,
         )
 
+    def test_already_confirmed_donation_is_awarded_when_user_and_weight_are_added(self):
+        donation = DonasiKain.objects.create(
+            donor_name="Guest donor",
+            whatsapp="081234567890",
+            email="guest@example.com",
+            address="Depok",
+            city="Depok",
+            item_name="Kain batik",
+            donation_type=DonasiKain.JenisDonasi.KAIN,
+            quantity=1,
+            condition=DonasiKain.Kondisi.BAIK,
+            description="Donasi terkonfirmasi sebelum terhubung ke akun",
+            donation_method=DonasiKain.MetodeDonasi.KIRIM_SENDIRI,
+            status=DonasiKain.Status.DIKONFIRMASI,
+        )
+        form_data = model_to_dict(donation)
+        form_data.update(user=self.user.pk, verified_weight_kg="2.500")
+        form = admin.site._registry[DonasiKain].form(data=form_data, instance=donation)
+        self.assertTrue(form.is_valid(), form.errors)
+
+        request = RequestFactory().post("/admin/donasi/donasikain/")
+        request.user = self.staff
+        donation_admin = admin.site._registry[DonasiKain]
+        donation_admin.save_model(request, donation, form, change=True)
+        donation_admin.save_model(request, donation, form, change=True)
+
+        donation_points = PointTransaction.objects.get(
+            donation=donation,
+            kind=PointTransaction.Kind.DONATION,
+        )
+        self.assertEqual(donation_points.user, self.user)
+        self.assertEqual(donation_points.points, 200)
+        self.assertEqual(PointTransaction.objects.filter(donation=donation).count(), 2)
+
     def test_unlinked_donation_remains_valid_without_reward_fields(self):
         donation = DonasiKain.objects.create(
             donor_name="Guest donor",

@@ -75,16 +75,11 @@ class DonasiKainAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at",)
 
     def save_model(self, request, obj, form, change):
-        """Save the donation and award points on eligible confirmation transitions."""
-        old_status = None
-        if change:
-            old_status = DonasiKain.objects.values_list("status", flat=True).get(pk=obj.pk)
-
+        """Save the donation and award points when a confirmed record is eligible."""
         with transaction.atomic():
             super().save_model(request, obj, form, change)
             if (
-                old_status != DonasiKain.Status.DIKONFIRMASI
-                and obj.status == DonasiKain.Status.DIKONFIRMASI
+                obj.status == DonasiKain.Status.DIKONFIRMASI
                 and obj.user_id
                 and obj.verified_weight_kg
             ):
