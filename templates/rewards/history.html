@@ -21,6 +21,11 @@
 
     <section class="rewards-panel history-panel" aria-label="Semua transaksi poin">
         <a class="history-back-link" href="{% url 'rewards:overview' %}">← Points and Rewards</a>
+        <nav class="mb-6 flex flex-wrap gap-4" aria-label="Navigasi Points and Rewards">
+            <a class="history-all-link" href="{% url 'rewards:catalog' %}">Katalog Voucher</a>
+            <a class="history-all-link" href="{% url 'rewards:vouchers' %}">Voucher Saya</a>
+            <a class="history-all-link" href="{% url 'rewards:history' %}" aria-current="page">Riwayat Poin</a>
+        </nav>
         <p id="history-loading" class="htmx-indicator history-loading" role="status" aria-live="polite">Memuat riwayat poin…</p>
         {% include "rewards/_history_content.html" %}
         <p class="rewards-footnote">Poin belum masuk setelah 3 hari kerja? Hubungi tim ReBatik lewat WhatsApp.</p>

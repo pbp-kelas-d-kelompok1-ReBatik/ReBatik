@@ -1,0 +1,31 @@
+{% if voucher_success_message %}
+    <div
+        id="voucher-success-modal"
+        class="voucher-confirm-modal is-open"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="voucher-success-title"
+        aria-describedby="voucher-success-message"
+    >
+        <button
+            type="button"
+            class="voucher-confirm-backdrop"
+            data-voucher-success-close
+            aria-label="Tutup pesan berhasil"
+        ></button>
+        <section class="voucher-confirm-dialog">
+            <button
+                type="button"
+                class="voucher-confirm-close"
+                data-voucher-success-close
+                aria-label="Tutup pesan berhasil"
+            >×</button>
+            <p class="rewards-eyebrow">POINTS AND REWARDS</p>
+            <h2 id="voucher-success-title">Penukaran Berhasil!</h2>
+            <p id="voucher-success-message" class="voucher-confirm-subtitle">{{ voucher_success_message }}</p>
+            <div class="voucher-confirm-actions">
+                <button type="button" class="primary-action-button" data-voucher-success-close>Tutup</button>
+            </div>
+        </section>
+    </div>
+{% endif %}
