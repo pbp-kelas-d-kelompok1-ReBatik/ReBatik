@@ -107,3 +107,19 @@ class RewardWorkflowTests(TestCase):
         reward.refresh_from_db()
         self.assertEqual(reward.stock, 4)
         self.assertFalse(RewardRedemption.objects.exists())
+
+    def test_physical_redemption_rejects_shipping_address_over_field_limit(self):
+        reward = Reward.objects.create(
+            name="Tas kain",
+            reward_type=Reward.Type.PHYSICAL,
+            points_required=100,
+            stock=2,
+        )
+
+        with self.assertRaisesRegex(ValueError, "maksimal 255 karakter"):
+            redeem_reward(self.user, reward.pk, shipping_address="A" * 256)
+
+        reward.refresh_from_db()
+        self.assertEqual(reward.stock, 2)
+        self.assertFalse(RewardRedemption.objects.exists())
+        self.assertEqual(get_available_points(self.user), 300)

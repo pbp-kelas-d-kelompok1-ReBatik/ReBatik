@@ -200,17 +200,20 @@ def redeem_reward(user, reward_id, *, shipping_address=""):
     pending and require a nonblank shipping address. Return the redemption.
     Raise Reward.DoesNotExist for a missing or inactive reward,
     RewardUnavailable for depleted stock, InsufficientPoints for a shortfall,
-    and ValueError for a missing physical shipping address or conflicting
-    ledger data. Database lookup errors for the user can also propagate.
+    and ValueError for a missing or overlong physical shipping address or
+    conflicting ledger data. Database lookup errors for the user can propagate.
     """
+    shipping_address = shipping_address.strip()
     get_user_model().objects.select_for_update().get(pk=user.pk)
     reward = Reward.objects.select_for_update().get(pk=reward_id, is_active=True)
     if reward.stock < 1:
         raise RewardUnavailable("Reward sedang habis.")
     if get_available_points(user) < reward.points_required:
         raise InsufficientPoints("Poin Anda belum mencukupi.")
-    if reward.reward_type == Reward.Type.PHYSICAL and not shipping_address.strip():
+    if reward.reward_type == Reward.Type.PHYSICAL and not shipping_address:
         raise ValueError("Alamat pengiriman wajib diisi untuk barang fisik.")
+    if len(shipping_address) > 255:
+        raise ValueError("Alamat pengiriman maksimal 255 karakter.")
 
     redemption = RewardRedemption.objects.create(
         user=user,
@@ -227,7 +230,7 @@ def redeem_reward(user, reward_id, *, shipping_address=""):
             if reward.reward_type == Reward.Type.VOUCHER
             else None
         ),
-        shipping_address=shipping_address.strip(),
+        shipping_address=shipping_address,
         fulfilled_at=timezone.now() if reward.reward_type == Reward.Type.VOUCHER else None,
     )
     reward.stock -= 1
