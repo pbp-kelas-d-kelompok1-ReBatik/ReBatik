@@ -581,7 +581,7 @@ class UpcyclingWorkflowTests(TestCase):
         staff = User.objects.create_user(username="header-contrast-admin", is_staff=True)
         self.client.force_login(staff)
         responses_and_titles.append(
-            (self.client.get(reverse("upcycling:admin_dashboard")), "Dashboard Admin")
+            (self.client.get(reverse("upcycling:admin_dashboard")), "Penugasan Upcycling")
         )
 
         for response, title in responses_and_titles:
