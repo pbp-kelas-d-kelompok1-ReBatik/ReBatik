@@ -11,7 +11,7 @@ const initializeUpcyclingForm = () => {
     const validationMessages = {
         fabric: ["Kain", "Pilih kain yang ingin digunakan."],
         fabric_other_description: ["Jenis kain lainnya", "Tuliskan jenis kain yang akan digunakan."],
-        fabric_photo: ["Foto kain", "Unggah foto kain yang akan diolah."],
+        fabric_photos: ["Foto kain", "Unggah 1 sampai 3 foto kain."],
         fabric_condition: ["Kondisi kain", "Pilih kondisi kain jika diketahui."],
         fabric_dimensions: ["Ukuran kain", "Isi perkiraan ukuran atau jumlah kain."],
         category: ["Kategori produk", "Pilih kategori produk."],
@@ -23,7 +23,7 @@ const initializeUpcyclingForm = () => {
     const validationTargets = {
         fabric: "#pilih-kain",
         fabric_other_description: "#id_fabric_other_description",
-        fabric_photo: "#id_fabric_photo",
+        fabric_photos: "#id_fabric_photos",
         fabric_condition: "#id_fabric_condition",
         fabric_dimensions: "#id_fabric_dimensions",
         category: "#pilih-produk",
@@ -74,15 +74,18 @@ const initializeUpcyclingForm = () => {
         window.requestAnimationFrame(showClientValidationErrors);
     }, true);
 
-    const fabricPhotoField = document.getElementById("id_fabric_photo");
+    const fabricPhotoField = document.getElementById("id_fabric_photos");
     const fabricPhotoPreview = document.getElementById("fabric-photo-preview");
     const fabricPhotoPlaceholder = document.getElementById("fabric-photo-placeholder");
     const fabricPhotoMascot = document.getElementById("fabric-photo-mascot");
     const fabricPhotoChangeLabel = document.getElementById("fabric-photo-change-label");
+    const fabricPhotoCount = document.getElementById("fabric-photo-count");
     let fabricPhotoPreviewUrl = null;
     fabricPhotoField?.addEventListener("change", () => {
-        const photo = fabricPhotoField.files[0];
-        if (!photo || !photo.type.startsWith("image/")) return;
+        const photos = Array.from(fabricPhotoField.files);
+        if (!photos.length) return;
+        const photo = photos[0];
+        if (!photo.type.startsWith("image/")) return;
 
         if (fabricPhotoPreviewUrl) URL.revokeObjectURL(fabricPhotoPreviewUrl);
         fabricPhotoPreviewUrl = URL.createObjectURL(photo);
@@ -91,6 +94,8 @@ const initializeUpcyclingForm = () => {
         fabricPhotoPlaceholder.classList.add("hidden");
         fabricPhotoMascot.classList.add("hidden");
         fabricPhotoChangeLabel.classList.remove("hidden");
+        fabricPhotoCount.textContent = `${photos.length} foto dipilih. Maksimal 3 foto.`;
+        fabricPhotoCount.classList.remove("hidden");
     });
 
     const categoryFields = form.querySelectorAll('[name="category"]');

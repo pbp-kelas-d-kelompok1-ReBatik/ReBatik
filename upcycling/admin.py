@@ -9,6 +9,7 @@ from django.utils import timezone
 from rewards.services import award_upcycling_completion
 
 from .models import (
+    AdditionalFabricPhoto,
     ArtisanProfile,
     ProductType,
     UpcyclingRequest,
@@ -171,6 +172,12 @@ class UpcyclingStatusHistoryInline(admin.TabularInline):
     extra = 0
     can_delete = False
 
+
+class AdditionalFabricPhotoInline(admin.TabularInline):
+    model = AdditionalFabricPhoto
+    extra = 0
+    max_num = 2
+
     def has_add_permission(self, request, obj=None):
         return False
 
@@ -178,7 +185,7 @@ class UpcyclingStatusHistoryInline(admin.TabularInline):
 @admin.register(UpcyclingRequest)
 class UpcyclingRequestAdmin(admin.ModelAdmin):
     form = UpcyclingRequestAdminForm
-    inlines = (UpcyclingStatusHistoryInline,)
+    inlines = (AdditionalFabricPhotoInline, UpcyclingStatusHistoryInline)
     list_display = ("reference_code", "product", "user", "artisan", "status", "return_status", "created_at")
     list_filter = ("status", "return_status", "fabric", "category", "delivery_method")
     search_fields = ("user__username", "user__email", "custom_product", "whatsapp", "address")

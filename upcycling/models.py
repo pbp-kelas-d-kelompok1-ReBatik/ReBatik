@@ -269,8 +269,32 @@ class UpcyclingRequest(models.Model):
         return self.get_product_display()
 
     @property
+    def fabric_photos(self):
+        photos = [self.fabric_photo] if self.fabric_photo else []
+        photos.extend(
+            photo.image for photo in self.additional_fabric_photos.all()
+        )
+        return photos
+
+    @property
     def reference_code(self):
         return f"RB-{self.pk.hex[:8].upper()}"
+
+
+class AdditionalFabricPhoto(models.Model):
+    request = models.ForeignKey(
+        UpcyclingRequest,
+        on_delete=models.CASCADE,
+        related_name="additional_fabric_photos",
+    )
+    image = models.ImageField(upload_to="upcycling/fabric/")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ("created_at", "pk")
+
+    def __str__(self):
+        return f"Foto tambahan · {self.request.reference_code}"
 
 
 class UpcyclingStatusHistory(models.Model):

@@ -24,6 +24,21 @@ PRODUCTS_BY_CATEGORY = {
     "LAINNYA": ("LAINNYA",),
 }
 
+
+class MultipleImageInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleImageField(forms.ImageField):
+    widget = MultipleImageInput
+
+    def clean(self, data, initial=None):
+        if not data:
+            return []
+        if not isinstance(data, (list, tuple)):
+            data = [data]
+        return [super().clean(image, initial) for image in data]
+
 def get_product_options_by_category():
     """Return product choices grouped for the request form's category picker."""
     product_labels = dict(UpcyclingRequest.PRODUCT_CHOICES)
@@ -37,6 +52,8 @@ def get_product_options_by_category():
 
 
 class UpcyclingRequestForm(forms.ModelForm):
+    fabric_photos = MultipleImageField(required=False)
+
     def __init__(self, *args, **kwargs):
         """Configure request choices and labels."""
         super().__init__(*args, **kwargs)
@@ -48,9 +65,16 @@ class UpcyclingRequestForm(forms.ModelForm):
         for field_name, choices in choices_by_field.items():
             self.fields[field_name].choices = choices
 
-        self.fields["fabric_photo"].label = "Foto kain"
-        self.fields["fabric_photo"].required = self.instance._state.adding
-        self.fields["fabric_photo"].widget.attrs.update({"accept": "image/*"})
+        self.fields["fabric_photos"].label = "Foto kain (1–3 foto)"
+        self.fields["fabric_photos"].widget.attrs.update(
+            {"accept": "image/*", "multiple": True}
+        )
+        self.existing_fabric_photo_count = (
+            int(bool(self.instance.fabric_photo))
+            + self.instance.additional_fabric_photos.count()
+            if not self.instance._state.adding
+            else 0
+        )
         self.fields["fabric"].label = "Jenis kain atau barang yang akan diolah"
         self.fields["fabric_condition"].label = "Kondisi kain menurut Anda"
         self.fields["fabric_condition"].choices = [
@@ -78,7 +102,6 @@ class UpcyclingRequestForm(forms.ModelForm):
         fields = [
             "fabric",
             "fabric_other_description",
-            "fabric_photo",
             "fabric_condition",
             "fabric_dimensions",
             "fabric_composition",
@@ -114,13 +137,6 @@ class UpcyclingRequestForm(forms.ModelForm):
         widgets = {
             "fabric": forms.RadioSelect(attrs={"class": "sr-only"}),
             "fabric_other_description": forms.TextInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "maxlength": 100}),
-            "fabric_photo": forms.FileInput(
-                attrs={
-                    "class": "upcycling-photo-input",
-                    "accept": "image/*",
-                    "aria-label": "Tambah foto kain",
-                }
-            ),
             "fabric_dimensions": forms.TextInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "placeholder": "Contoh: 1 celana jeans atau kain 1 × 2 m"}),
             "fabric_composition": forms.TextInput(
                 attrs={
@@ -199,11 +215,18 @@ class UpcyclingRequestForm(forms.ModelForm):
             )
         return quantity
 
-    def clean_fabric_photo(self):
-        photo = self.cleaned_data.get("fabric_photo")
-        if photo and photo.size > 5 * 1024 * 1024:
-            raise forms.ValidationError("Ukuran foto kain maksimal 5 MB.")
-        return photo
+    def clean_fabric_photos(self):
+        photos = self.cleaned_data.get("fabric_photos", [])
+        if self.existing_fabric_photo_count + len(photos) < 1:
+            raise forms.ValidationError("Unggah minimal 1 foto kain.")
+        if self.existing_fabric_photo_count + len(photos) > 3:
+            raise forms.ValidationError(
+                "Jumlah foto kain maksimal 3. Foto yang sudah tersimpan tetap dihitung."
+            )
+        for photo in photos:
+            if photo.size > 5 * 1024 * 1024:
+                raise forms.ValidationError("Ukuran setiap foto kain maksimal 5 MB.")
+        return photos
 
     def clean_whatsapp(self):
         """Validate and normalize an Indonesian mobile number."""

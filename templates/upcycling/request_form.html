@@ -248,9 +248,9 @@
 
             <div class="grid gap-5 sm:grid-cols-2">
                 <div class="space-y-2 sm:col-span-2">
-                    <label for="{{ form.fabric_photo.id_for_label }}" class="block text-base font-semibold sm:text-lg">Foto kain <span aria-hidden="true">*</span></label>
+                    <label for="{{ form.fabric_photos.id_for_label }}" class="block text-base font-semibold sm:text-lg">Foto kain <span aria-hidden="true">*</span></label>
                     <div id="fabric-photo-upload" class="upcycling-photo-upload">
-                        {{ form.fabric_photo }}
+                        {{ form.fabric_photos }}
                         <div
                             id="fabric-photo-placeholder"
                             class="upcycling-photo-placeholder{% if form.instance.fabric_photo %} hidden{% endif %}"
@@ -259,7 +259,7 @@
                             <span class="upcycling-photo-add"></span>
                             <span class="font-bold">Tambah foto kain</span>
                             <span>Unggah foto seluruh kain dan detail permukaannya</span>
-                            <span class="text-sm">JPG atau PNG · maksimal 5 MB</span>
+                            <span class="text-sm">Pilih 1–3 foto · JPG atau PNG · maksimal 5 MB per foto</span>
                         </div>
                         <img
                             id="fabric-photo-mascot"
@@ -279,11 +279,12 @@
                             class="upcycling-photo-change{% if not form.instance.fabric_photo %} hidden{% endif %}"
                             aria-hidden="true"
                         >
-                            + Ganti foto
+                            + Pilih/ganti foto
                         </span>
                     </div>
-                    <p class="text-sm text-[var(--brown-muted)]">Unggah foto seluruh kain dan detail permukaannya, maksimal 5 MB.</p>
-                    {{ form.fabric_photo.errors }}
+                    <p id="fabric-photo-count" class="hidden text-sm font-semibold text-[var(--brown-muted)]" aria-live="polite"></p>
+                    <p class="text-sm text-[var(--brown-muted)]">Pilih 1–3 foto kain sekaligus. Setiap foto maksimal 5 MB; pada permintaan yang diedit, foto lama tetap dihitung.</p>
+                    {{ form.fabric_photos.errors }}
                 </div>
                 <div class="space-y-2">
                     <label for="{{ form.fabric_condition.id_for_label }}" class="block text-base font-semibold sm:text-lg">Kondisi kain menurut Anda</label>

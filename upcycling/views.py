@@ -23,6 +23,7 @@ from .forms import (
     get_product_options_by_category,
 )
 from .models import (
+    AdditionalFabricPhoto,
     ArtisanProfile,
     NOTES_MAX_LENGTH,
     UpcyclingRateLimitBucket,
@@ -259,6 +260,10 @@ def request_create(request):
                     upcycling_request.user = user
                     upcycling_request.status = UpcyclingRequest.Status.PENDING_ASSIGNMENT
                     upcycling_request.save()
+                    _save_fabric_photos(
+                        upcycling_request,
+                        form.cleaned_data["fabric_photos"],
+                    )
                     UpcyclingStatusHistory.objects.create(
                         request=upcycling_request,
                         to_status=upcycling_request.status,
@@ -292,6 +297,24 @@ def request_create(request):
     )
 
 
+def _save_fabric_photos(upcycling_request, photos):
+    """Keep one primary image on the request and store up to two extras."""
+    photos = list(photos)
+    if not photos:
+        return
+    offset = 0
+    if not upcycling_request.fabric_photo:
+        upcycling_request.fabric_photo = photos[0]
+        upcycling_request.save(update_fields=("fabric_photo", "updated_at"))
+        offset = 1
+    existing_extras = upcycling_request.additional_fabric_photos.count()
+    for index, photo in enumerate(photos[offset:], start=existing_extras + 1):
+        AdditionalFabricPhoto.objects.create(
+            request=upcycling_request,
+            image=photo,
+        )
+
+
 @login_required
 def request_success(request, pk):
     """Show the confirmation page for the signed-in user's new request."""
@@ -318,7 +341,9 @@ def request_detail(request, pk):
     if request.user.groups.filter(name="Artisan").exists():
         artisan = ArtisanProfile.objects.filter(user=request.user).first()
 
-    accessible_requests = UpcyclingRequest.objects.select_related("user", "artisan__user")
+    accessible_requests = UpcyclingRequest.objects.select_related(
+        "user", "artisan__user"
+    ).prefetch_related("additional_fabric_photos")
     if artisan:
         upcycling_request = get_object_or_404(
             accessible_requests.filter(Q(user=request.user) | Q(artisan=artisan)),
@@ -453,6 +478,17 @@ def request_detail(request, pk):
         "upcycling/request_detail.html",
         {
             "upcycling_request": upcycling_request,
+            "fabric_photos": [
+                image
+                for image in (
+                    upcycling_request.fabric_photo,
+                    *[
+                        item.image
+                        for item in upcycling_request.additional_fabric_photos.all()
+                    ],
+                )
+                if image
+            ],
             "reference_code": upcycling_request.reference_code,
             "timeline_steps": timeline_steps,
             "status_history": status_history,
@@ -577,6 +613,10 @@ def request_update(request, pk):
                     )
                 current_request.save(
                     update_fields=[*form.Meta.fields, "updated_at"]
+                )
+                _save_fabric_photos(
+                    current_request,
+                    form.cleaned_data["fabric_photos"],
                 )
 
             messages.success(request, "Permintaan berhasil diperbarui.")
@@ -747,7 +787,11 @@ def cancel_request(request, pk):
 @login_required
 def artisan_dashboard(request):
     artisan = _get_artisan_profile(request.user)
-    assigned_requests = UpcyclingRequest.objects.filter(artisan=artisan).select_related("user")
+    assigned_requests = (
+        UpcyclingRequest.objects.filter(artisan=artisan)
+        .select_related("user")
+        .prefetch_related("additional_fabric_photos")
+    )
     return render(
         request,
         "upcycling/artisan_dashboard.html",
