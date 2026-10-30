@@ -23,6 +23,21 @@ from upcycling.models import UpcyclingRequest
 
 DONASI_DONE = DonasiKain.Status.SELESAI
 UPCYCLING = UpcyclingRequest.Status
+UPCYCLING_PENDING_STATUSES = (
+    UPCYCLING.PENDING_ASSIGNMENT,
+    UPCYCLING.PENDING_REVIEW,
+)
+UPCYCLING_PROCESSING_STATUSES = (
+    UPCYCLING.AWAITING_FABRIC,
+    UPCYCLING.INSPECTION,
+    UPCYCLING.AWAITING_APPROVAL,
+    UPCYCLING.AWAITING_DELIVERY_DETAILS,
+    UPCYCLING.IN_PROGRESS,
+    UPCYCLING.READY,
+)
+UPCYCLING_PENDING_OR_PROCESSING_STATUSES = (
+    UPCYCLING_PENDING_STATUSES + UPCYCLING_PROCESSING_STATUSES
+)
 
 # Kunci query string ``?period=`` -> jumlah bulan (None = seluruh riwayat).
 PERIOD_CHOICES = {"6": 6, "12": 12, "all": None}
@@ -89,8 +104,10 @@ def get_upcycling_stats():
         requests=Count("pk", filter=active),
         participants=Count("user", distinct=True, filter=active),
         items_completed=_sum("quantity", status=UPCYCLING.COMPLETED),
-        pending=Count("pk", filter=Q(status=UPCYCLING.PENDING)),
-        processing=Count("pk", filter=Q(status=UPCYCLING.PROCESSING)),
+        pending=Count("pk", filter=Q(status__in=UPCYCLING_PENDING_STATUSES)),
+        processing=Count(
+            "pk", filter=Q(status__in=UPCYCLING_PROCESSING_STATUSES)
+        ),
         completed=Count("pk", filter=Q(status=UPCYCLING.COMPLETED)),
     )
     return totals
@@ -109,7 +126,7 @@ def get_personal_stats(user):
         requests=Count("pk", filter=active),
         processing=Count(
             "pk",
-            filter=Q(status__in=[UPCYCLING.PENDING, UPCYCLING.PROCESSING]),
+            filter=Q(status__in=UPCYCLING_PENDING_OR_PROCESSING_STATUSES),
         ),
         completed=Count("pk", filter=Q(status=UPCYCLING.COMPLETED)),
         items_completed=_sum("quantity", status=UPCYCLING.COMPLETED),
