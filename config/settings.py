@@ -55,6 +55,7 @@ if PRODUCTION and not CLOUDINARY_URL:
         "CLOUDINARY_URL must be set when PRODUCTION=True."
     )
 
+
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",

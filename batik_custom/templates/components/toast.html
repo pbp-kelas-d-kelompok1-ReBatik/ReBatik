@@ -1,0 +1,11 @@
+{% load static %}
+<div id="toast-component" class="toast-component toast-hidden" popover="manual" role="status" aria-live="polite">
+    <div class="toast-content">
+        <img id="toast-mascot" src="{% static 'img/mascot/pointing.webp' %}" alt="Maskot ReBatik">
+        <div class="toast-copy">
+            <h3 id="toast-title" class="toast-title">Notifikasi</h3>
+            <p id="toast-message" class="toast-message">Pesan notifikasi</p>
+        </div>
+    </div>
+</div>
+<script src="{% static 'js/toast.js' %}" defer></script>
