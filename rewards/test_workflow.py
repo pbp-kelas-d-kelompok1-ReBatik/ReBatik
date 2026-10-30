@@ -178,7 +178,9 @@ class RewardWorkflowTests(TestCase):
 
         reward.refresh_from_db()
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "rewards/confirm_redemption.html")
+        self.assertTemplateUsed(response, "rewards/catalog.html")
+        self.assertContains(response, 'id="voucher-confirm-modal"')
+        self.assertContains(response, 'class="voucher-confirm-modal is-open"')
         self.assertContains(response, "Sisa setelah penukaran")
         self.assertEqual(get_available_points(self.user), 300)
         self.assertEqual(reward.stock, 2)
