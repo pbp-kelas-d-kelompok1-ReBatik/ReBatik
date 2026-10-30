@@ -80,18 +80,37 @@ class Product(models.Model):
 
 
 class DropOffPoint(models.Model):
+    code = models.SlugField(max_length=60, unique=True, null=True, blank=True)
     name = models.CharField(max_length=255)
     address = models.TextField()
     city = models.CharField(max_length=100)
+    province = models.CharField(max_length=100, blank=True, default="")
     operating_hours = models.CharField(max_length=100, default="09:00 - 17:00 WIB")
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
+    phone = models.CharField(max_length=20, blank=True, default="")
+    accepted_items = models.CharField(max_length=255, blank=True, default="")
 
     class Meta:
         ordering = ["city", "name"]
 
     def __str__(self):
         return f"{self.name} - {self.city}"
+
+    @property
+    def accepted_items_list(self):
+        """Return accepted fabric types as a clean list for templates."""
+        return [item.strip() for item in self.accepted_items.split(",") if item.strip()]
+
+    @property
+    def whatsapp_url(self):
+        """Return a wa.me link for the partner phone number (08xx -> 628xx)."""
+        digits = "".join(ch for ch in self.phone if ch.isdigit())
+        if not digits:
+            return ""
+        if digits.startswith("0"):
+            digits = "62" + digits[1:]
+        return f"https://wa.me/{digits}"
 
 
 class Order(models.Model):
