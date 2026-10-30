@@ -1,4 +1,3 @@
-
 from urllib.parse import urlparse
 
 from django import forms
@@ -8,7 +7,6 @@ from .models import (
     MAX_ORDER_QUANTITY,
     NOTES_MAX_LENGTH,
     DropOffPoint,
-    MarketplaceOrder,
     Order,
     Product,
 )
@@ -32,65 +30,9 @@ TEXTAREA_CLASSES = (
 )
 
 
-# =====================================================
-# MARKETPLACE ORDER FORM (fitur dari branch kamu)
-# =====================================================
 
-class MarketplaceOrderForm(forms.ModelForm):
-    class Meta:
-        model = MarketplaceOrder
-        fields = [
-            "quantity",
-            "recipient_name",
-            "phone",
-            "address",
-            "notes",
-        ]
-        widgets = {
-            "quantity": forms.NumberInput(
-                attrs={
-                    "min": 1,
-                    "class": "w-full rounded-xl border p-3",
-                }
-            ),
-            "recipient_name": forms.TextInput(
-                attrs={
-                    "class": "w-full rounded-xl border p-3",
-                    "placeholder": "Nama penerima",
-                }
-            ),
-            "phone": forms.TextInput(
-                attrs={
-                    "class": "w-full rounded-xl border p-3",
-                    "placeholder": "Nomor WhatsApp",
-                }
-            ),
-            "address": forms.Textarea(
-                attrs={
-                    "class": "w-full rounded-xl border p-3",
-                    "rows": 3,
-                    "placeholder": "Alamat lengkap",
-                }
-            ),
-            "notes": forms.Textarea(
-                attrs={
-                    "class": "w-full rounded-xl border p-3",
-                    "rows": 2,
-                    "placeholder": "Catatan tambahan (opsional)",
-                }
-            ),
-        }
-
-    def clean_quantity(self):
-        quantity = self.cleaned_data["quantity"]
-        if quantity < 1:
-            raise forms.ValidationError("Jumlah minimal 1 produk.")
-        return quantity
-
-
-# =====================================================
 # PRODUCT FORM (fitur dari main)
-# =====================================================
+
 
 class ProductForm(forms.ModelForm):
     price = forms.IntegerField(
@@ -245,9 +187,9 @@ class ProductForm(forms.ModelForm):
         return url
 
 
-# =====================================================
+
 # CHECKOUT FORM (fitur dari main)
-# =====================================================
+
 
 class CheckoutForm(forms.ModelForm):
     def __init__(self, *args, product=None, **kwargs):
