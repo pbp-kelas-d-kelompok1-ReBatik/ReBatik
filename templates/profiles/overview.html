@@ -3,6 +3,9 @@
 
 {% block meta %}
 <title>Profil Saya | ReBatik</title>
+<p class="profile-eyebrow">
+    Peran: {{ role|title }}
+</p>
 <meta
     name="description"
     content="Kelola profil dan pantau kontribusimu bersama ReBatik."
@@ -223,22 +226,41 @@
         <section class="profile-card">
 
             <div class="profile-section-heading">
-                <h2>Pesanan Saya</h2>
+                <h2>Pesanan Batik Custom</h2>
+
                 <a href="{% url 'profiles:orders' %}">
-                    Lihat Riwayat →
+                    Lihat Semua →
                 </a>
             </div>
 
-            <p>
-                Lihat halaman Pesanan Saya untuk memantau riwayat
-                pembelian melalui Marketplace.
-            </p>
+            {% for order in recent_orders %}
+
+                <article class="profile-list-item">
+                    <div>
+                        <h3>Pesanan #{{ order.pk }}</h3>
+                        <p>{{ order.get_product_type_display }}</p>
+                        <p>Motif: {{ order.motif.name }}</p>
+                        <p>{{ order.get_status_display }}</p>
+                        <p>{{ order.created_at|date:"d M Y" }}</p>
+                    </div>
+
+                    <strong>Rp {{ order.total_price|floatformat:0 }}</strong>
+
+                </article>
+
+            {% empty %}
+
+                <div class="profile-empty">
+                    Belum ada pesanan Batik Custom.
+                </div>
+
+            {% endfor %}
 
             <a
                 href="{% url 'profiles:orders' %}"
                 class="profile-button"
             >
-                Buka Pesanan Saya
+                Buka Riwayat Pesanan
             </a>
 
         </section>
