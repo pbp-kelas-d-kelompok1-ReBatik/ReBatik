@@ -562,6 +562,7 @@ class RewardsPageTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["featured_vouchers"]), 5)
+        self.assertEqual(response.content.count(b'class="voucher-card"'), 5)
         for index in range(1, 6):
             self.assertContains(response, f"Voucher utama {index}")
         self.assertNotContains(response, "Voucher utama 6")
@@ -572,6 +573,7 @@ class RewardsPageTests(TestCase):
 
         catalog_response = self.client.get("/rewards/catalog/")
         self.assertEqual(catalog_response.context["rewards"].count(), 7)
+        self.assertEqual(catalog_response.content.count(b'class="voucher-card"'), 7)
 
     def test_voucher_image_renders_as_a_small_thumbnail_on_both_catalog_pages(self):
         self.client.force_login(self.user)
