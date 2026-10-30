@@ -84,6 +84,7 @@ INSTALLED_APPS = [
     'batik_custom',
     'impact_tracker',
     'profiles',
+    'landing',
 ]
 
 MIDDLEWARE = [
