@@ -972,13 +972,19 @@ class RewardsPageTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "≥ 0,4 kg")
 
-    def test_points_overview_links_to_dropoff_locations_to_donate_more_fabric(self):
-        """Give users a direct path to the existing fabric drop-off directory."""
+    def test_points_overview_links_to_fabric_donation_form(self):
+        """Send users to the donation form rather than the marketplace drop-off directory."""
         self.client.force_login(self.user)
 
         response = self.client.get("/rewards/")
 
-        self.assertContains(response, 'href="/marketplace/drop-off/"')
+        donate_action = (
+            response.content.decode()
+            .split('<div class="donate-fabric-action">', 1)[1]
+            .split("</div>", 1)[0]
+        )
+        self.assertIn(f'href="{reverse("donasi:create")}"', donate_action)
+        self.assertNotIn('href="/marketplace/drop-off/"', donate_action)
         self.assertContains(response, "Donasikan Kain Baru →")
 
     def test_points_overview_explains_all_current_earning_rules(self):
