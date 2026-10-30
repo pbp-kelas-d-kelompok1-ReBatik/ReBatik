@@ -100,8 +100,8 @@ class LoginRedirectTests(TestCase):
             ]
             self.assertEqual(positions, sorted(positions))
 
-        self.assertIn('href="#">Profile</a>', guest_menu)
-        self.assertIn('href="#">Profile (rezky)</a>', member_menu)
+        self.assertIn('href="/profile/">Profile</a>', guest_menu)
+        self.assertIn('href="/profile/">Profile (rezky)</a>', member_menu)
 
     def test_hamburger_shows_auth_actions_for_guest_and_member(self):
         guest_response = self.client.get(reverse("main:show_home"))
@@ -115,7 +115,7 @@ class LoginRedirectTests(TestCase):
         member_response = self.client.get(reverse("main:show_home"))
         member_menu = extract_nav_menu(member_response)
 
-        self.assertIn('href="#">Profile (rezky)</a>', member_menu)
+        self.assertIn('href="/profile/">Profile (rezky)</a>', member_menu)
         self.assertNotIn("Masuk sebagai", member_menu)
         self.assertIn(
             'action="/logout/" class="nav-menu-logout-form"',
