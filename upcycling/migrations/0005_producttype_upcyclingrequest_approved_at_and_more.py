@@ -282,10 +282,6 @@ class Migration(migrations.Migration):
             name='artisan',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='upcycling_requests', to='upcycling.artisanprofile'),
         ),
-        migrations.AddIndex(
-            model_name='upcyclingrequest',
-            index=models.Index(fields=['artisan', 'status'], name='upreq_artisan_status_idx'),
-        ),
         migrations.AddConstraint(
             model_name='upcyclingrequest',
             constraint=models.CheckConstraint(condition=models.Q(('quoted_price__isnull', True), ('quoted_price__gte', 0), _connector='OR'), name='upreq_quote_nonnegative'),
