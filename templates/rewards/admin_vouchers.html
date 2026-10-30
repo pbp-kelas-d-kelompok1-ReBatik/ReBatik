@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static rewards_format %}
+
+{% block meta %}<title>Kelola Katalog Voucher | ReBatik</title>{% endblock %}
+{% block css %}<link rel="stylesheet" href="{% static 'css/rewards.css' %}">{% endblock %}
+
+{% block content %}
+<main class="rewards-page">
+    <section class="rewards-hero">
+        <p class="rewards-eyebrow">DASHBOARD ADMIN</p>
+        <h1>Kelola Katalog Voucher</h1>
+        <p>Tambahkan voucher diskon dan atur ketersediaannya di katalog Points and Rewards.</p>
+    </section>
+
+    <section class="rewards-panel">
+        <p><a class="history-back-link" href="{% url 'profiles:overview' %}">← Kembali ke dashboard admin</a></p>
+
+        {% if messages %}
+            <div class="my-4 space-y-2">
+                {% for message in messages %}<p class="rounded-lg border p-3" role="status">{{ message }}</p>{% endfor %}
+            </div>
+        {% endif %}
+
+        {% if can_add %}
+            <section id="voucher-form" class="voucher-admin-form-panel" aria-labelledby="voucher-form-heading">
+                <h2 id="voucher-form-heading" class="text-2xl font-bold">Tambah voucher</h2>
+                <p class="mt-1 mb-5">Isi informasi diskon, biaya poin, kuota, dan gambar opsional.</p>
+                <form method="post" enctype="multipart/form-data" class="voucher-admin-form">
+                    {% csrf_token %}
+                    {{ form.reward_type.as_hidden }}
+                    {% if form.non_field_errors %}<div class="voucher-admin-errors">{{ form.non_field_errors }}</div>{% endif %}
+
+                    {% for field in form.visible_fields %}
+                        {% if field.name != "reward_type" %}
+                        <div class="voucher-admin-field{% if field.name == 'is_active' %} voucher-admin-checkbox-field{% endif %}">
+                            {% if field.name == "is_active" %}
+                                {{ field }}
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {% else %}
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                            {% endif %}
+                            {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+                            {% if field.errors %}<div class="voucher-admin-errors">{{ field.errors }}</div>{% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+
+                    <button type="submit" class="primary-action-button px-6 py-3 font-bold">Simpan voucher</button>
+                </form>
+            </section>
+        {% endif %}
+
+        <section class="mt-9" aria-labelledby="voucher-list-heading">
+            <h2 id="voucher-list-heading" class="text-2xl font-bold">Voucher yang terdaftar</h2>
+            <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {% for voucher in vouchers %}
+                    <article class="history-row items-start gap-3">
+                        {% if voucher.image %}<img class="voucher-thumbnail" src="{{ voucher.image.url }}" alt="Gambar {{ voucher.name }}">{% endif %}
+                        <div class="min-w-0">
+                            <h3>{{ voucher.name }}</h3>
+                            <p class="mt-2">Diskon Rp{{ voucher.discount_value|intcomma_id }}</p>
+                            <p class="mt-1">{{ voucher.points_required }} poin · kuota {{ voucher.stock }}</p>
+                            <p class="mt-1 font-semibold">{% if voucher.is_active %}Aktif{% else %}Tidak aktif{% endif %}</p>
+                        </div>
+                    </article>
+                {% empty %}<p class="history-empty">Belum ada voucher terdaftar.</p>{% endfor %}
+            </div>
+        </section>
+    </section>
+</main>
+{% endblock %}

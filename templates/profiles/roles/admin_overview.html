@@ -90,12 +90,12 @@
                 </p>
                 <div class="profile-card-actions">
                     {% if perms.rewards.view_reward %}
-                        <a href="{% url 'admin:rewards_reward_changelist' %}" class="profile-button profile-button-secondary">
+                        <a href="{% url 'rewards:admin_vouchers' %}" class="profile-button profile-button-secondary">
                             Buka katalog voucher
                         </a>
                     {% endif %}
                     {% if perms.rewards.add_reward %}
-                        <a href="{% url 'admin:rewards_reward_add' %}" class="profile-button">
+                        <a href="{% url 'rewards:admin_vouchers' %}#voucher-form" class="profile-button">
                             Tambah voucher
                         </a>
                     {% endif %}

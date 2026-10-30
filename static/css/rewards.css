@@ -988,3 +988,60 @@ body.voucher-confirm-open {
         width: 100%;
     }
 }
+.voucher-admin-form-panel {
+    margin-top: 24px;
+    padding: clamp(18px, 3vw, 28px);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--card);
+}
+
+.voucher-admin-form {
+    display: grid;
+    gap: 18px;
+}
+
+.voucher-admin-field {
+    display: grid;
+    gap: 7px;
+}
+
+.voucher-admin-field > label {
+    font-weight: 700;
+}
+
+.voucher-admin-field > small {
+    color: var(--brown-muted);
+    font-size: 0.9rem;
+}
+
+.voucher-admin-input {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: #fffdf9;
+    color: var(--brown);
+}
+
+.voucher-admin-field textarea.voucher-admin-input {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.voucher-admin-checkbox-field {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    justify-content: start;
+}
+
+.voucher-admin-checkbox-field input {
+    width: 18px;
+    height: 18px;
+}
+
+.voucher-admin-errors {
+    color: #a21d18;
+    font-size: 0.9rem;
+}

@@ -2,14 +2,17 @@
 
 from decimal import Decimal
 
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.contrib import messages
+from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
 from django.db.models import Sum
 from django.shortcuts import render
 
 from .models import PointTransaction, Reward, RewardRedemption
+from .forms import RewardAdminForm
 from .services import (
     InsufficientPoints,
     RewardUnavailable,
@@ -194,3 +197,34 @@ def redeem_reward_view(request, reward_id):
         messages.success(request, f"Voucher berhasil ditukar: {redemption.voucher_code}")
         return redirect("rewards:vouchers")
     return redirect("rewards:catalog")
+
+
+@staff_member_required
+def admin_vouchers(request):
+    """Manage voucher catalog items from ReBatik's regular dashboard UI."""
+    can_view = request.user.has_perm("rewards.view_reward")
+    can_add = request.user.has_perm("rewards.add_reward")
+    if not can_view and not can_add:
+        return HttpResponseForbidden("Anda tidak memiliki izin untuk mengelola katalog voucher.")
+
+    if request.method == "POST":
+        if not can_add:
+            return HttpResponseForbidden("Anda tidak memiliki izin untuk menambah voucher.")
+        form = RewardAdminForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Voucher berhasil ditambahkan ke katalog.")
+            return redirect("rewards:admin_vouchers")
+    else:
+        form = RewardAdminForm() if can_add else None
+
+    if form:
+        for field in form.fields.values():
+            field.widget.attrs["class"] = "voucher-admin-input"
+
+    vouchers = Reward.objects.filter(reward_type=Reward.Type.VOUCHER).order_by("-pk")
+    return render(
+        request,
+        "rewards/admin_vouchers.html",
+        {"form": form, "vouchers": vouchers, "can_add": can_add},
+    )
