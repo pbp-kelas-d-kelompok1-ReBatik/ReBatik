@@ -45,11 +45,13 @@ class ArtisanProfile(models.Model):
     max_active_requests = models.PositiveSmallIntegerField(default=3)
 
     def active_request_count(self):
+        """Count assigned requests that are not in a terminal status."""
         return self.upcycling_requests.exclude(
             status__in=UpcyclingRequest.TERMINAL_STATUSES
         ).count()
 
     def has_capacity(self):
+        """Return whether the active request count is below the artisan's limit."""
         return self.active_request_count() < self.max_active_requests
 
     def __str__(self):
@@ -308,12 +310,14 @@ class UpcyclingRequest(models.Model):
         return f"{self.get_product_name()} — {self.user}"
 
     def get_product_name(self):
+        """Return the custom product name when selected and supplied, else its label."""
         if self.product == "LAINNYA" and self.custom_product:
             return self.custom_product
         return self.get_product_display()
 
     @property
     def fabric_photos(self):
+        """Return the primary fabric photo followed by the additional photo images."""
         photos = [self.fabric_photo] if self.fabric_photo else []
         photos.extend(
             photo.image for photo in self.additional_fabric_photos.all()

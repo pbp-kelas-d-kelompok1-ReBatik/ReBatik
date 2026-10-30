@@ -9,6 +9,7 @@ class Command(BaseCommand):
     help = "Mark fabric handoff requests as expired after their deadline."
 
     def handle(self, *args, **options):
+        """Expire overdue fabric handoffs with no recorded receipt and record history."""
         now = timezone.now()
         expired_count = 0
         candidates = UpcyclingRequest.objects.filter(

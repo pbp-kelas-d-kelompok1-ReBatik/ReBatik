@@ -14,6 +14,7 @@ class DonasiKainAdminForm(forms.ModelForm):
         fields = "__all__"
 
     def clean(self):
+        """Validate verified weights and protect donations that already earned points."""
         cleaned = super().clean()
         if not cleaned:
             return cleaned
@@ -74,6 +75,7 @@ class DonasiKainAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at",)
 
     def save_model(self, request, obj, form, change):
+        """Save the donation and award points on eligible confirmation transitions."""
         old_status = None
         if change:
             old_status = DonasiKain.objects.values_list("status", flat=True).get(pk=obj.pk)

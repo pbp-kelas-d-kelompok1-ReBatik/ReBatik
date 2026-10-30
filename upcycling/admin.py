@@ -51,6 +51,7 @@ class UpcyclingRequestAdminForm(forms.ModelForm):
         fields = "__all__"
 
     def __init__(self, *args, **kwargs):
+        """Limit artisan choices to eligible profiles and the current assignee."""
         super().__init__(*args, **kwargs)
         artisan_field = self.fields.get("artisan")
         if not artisan_field:
@@ -70,6 +71,7 @@ class UpcyclingRequestAdminForm(forms.ModelForm):
         )
 
     def clean(self):
+        """Validate assignment and workflow requirements for the selected status."""
         cleaned = super().clean()
         if not cleaned:
             return cleaned
@@ -143,6 +145,7 @@ class UpcyclingRequestAdminForm(forms.ModelForm):
         return cleaned
 
     def clean_status(self):
+        """Reject status transitions outside the admin workflow."""
         new_status = self.cleaned_data["status"]
         if self.instance._state.adding or new_status == self.instance.status:
             return new_status
@@ -201,6 +204,7 @@ class UpcyclingRequestAdmin(admin.ModelAdmin):
     )
 
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+        """Lock an existing request while processing an admin POST."""
         if request.method != "POST":
             return super().changeform_view(request, object_id, form_url, extra_context)
         using = router.db_for_write(self.model)
@@ -212,6 +216,7 @@ class UpcyclingRequestAdmin(admin.ModelAdmin):
             return super().changeform_view(request, object_id, form_url, extra_context)
 
     def save_model(self, request, obj, form, change):
+        """Save workflow timestamps and record status changes and completion points."""
         old = None
         if change:
             old = UpcyclingRequest.objects.get(pk=obj.pk)

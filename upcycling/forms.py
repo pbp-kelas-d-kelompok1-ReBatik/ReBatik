@@ -33,6 +33,7 @@ class MultipleImageField(forms.ImageField):
     widget = MultipleImageInput
 
     def clean(self, data, initial=None):
+        """Validate each supplied image and return a list, or an empty list for no data."""
         if not data:
             return []
         if not isinstance(data, (list, tuple)):
@@ -272,6 +273,10 @@ class UpcyclingRequestForm(forms.ModelForm):
         return quantity
 
     def clean_fabric_photos(self):
+        """Require one to three fabric photos including existing photos.
+
+        Each new photo may be at most 5 MiB. Raise ValidationError otherwise.
+        """
         photos = self.cleaned_data.get("fabric_photos", [])
         if self.existing_fabric_photo_count + len(photos) < 1:
             raise forms.ValidationError("Unggah minimal 1 foto barang atau kain.")
@@ -285,6 +290,10 @@ class UpcyclingRequestForm(forms.ModelForm):
         return photos
 
     def clean_reference_photos(self):
+        """Allow up to three reference photos including existing photos.
+
+        Each new photo may be at most 5 MiB. Raise ValidationError otherwise.
+        """
         photos = self.cleaned_data.get("reference_photos", [])
         if self.existing_reference_photo_count + len(photos) > 3:
             raise forms.ValidationError("Foto referensi maksimal 3 gambar.")
@@ -312,7 +321,11 @@ class UpcyclingRequestForm(forms.ModelForm):
         return normalized
 
     def clean(self):
-        """Validate product/category compatibility and custom product names."""
+        """Validate dependent selections and clear descriptions that no longer apply.
+
+        Errors are attached to the relevant fields; product choices must match
+        their category, and selected "other" options require descriptions.
+        """
         cleaned_data = super().clean()
         fabric = cleaned_data.get("fabric")
         other_fabric = cleaned_data.get("fabric_other_description", "").strip()

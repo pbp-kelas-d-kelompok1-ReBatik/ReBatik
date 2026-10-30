@@ -2,6 +2,7 @@ from .models import ArtisanProfile
 
 
 def upcycling_navigation(request):
+    """Expose whether the signed-in user has the artisan role and profile."""
     user = request.user
     can_open_artisan_dashboard = (
         user.is_authenticated

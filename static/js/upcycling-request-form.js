@@ -1,3 +1,4 @@
+/** Connect request form validation, photo previews, and dependent product fields. */
 const initializeUpcyclingForm = () => {
     const form = document.getElementById("upcycling-form");
     if (!form) return;

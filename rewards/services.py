@@ -20,6 +20,12 @@ class RewardUnavailable(ValueError):
 
 
 def calculate_donation_points(weight_kg):
+    """Return points for a positive, finite donation weight in kilograms.
+
+    Weights below 0.5 kg earn 50 points; 0.5 through 2 earn 100,
+    over 2 through 5 earn 200, and over 5 earn 300. Raise ValueError
+    for a nonnumeric, non-finite, or nonpositive weight.
+    """
     try:
         weight = Decimal(str(weight_kg))
     except (InvalidOperation, TypeError, ValueError):
@@ -47,6 +53,13 @@ def _existing_or_create(
     donation=None,
     reward_redemption=None,
 ):
+    """Return the ledger entry and whether it was created for this source.
+
+    A reference is scoped to the user and kind. At most one source may be
+    supplied, and it must belong to the user and match the transaction kind.
+    Raise ValueError for an invalid source or conflicting existing data.
+    An existing entry with no weight is updated when a weight is supplied.
+    """
     source_count = sum(source is not None for source in (upcycling_request, donation, reward_redemption))
     if source_count > 1:
         raise ValueError("A point transaction can only reference one source.")
@@ -105,6 +118,15 @@ def _existing_or_create(
 
 @transaction.atomic
 def award_verified_donation(user, *, donation_reference, weight_kg, verified_at=None, donation=None):
+    """Award donation points and, once per local month, a 25-point bonus.
+
+    Weight is in kilograms and is stored to six decimal places. The month
+    comes from verified_at in the current time zone, or from the current time
+    when omitted. Return (donation transaction, new bonus or None); a retry
+    returns the existing donation transaction and no bonus. Raise ValueError
+    for a missing reference, invalid weight, or conflicting source data.
+    Decimal quantization errors and a naive verified_at can also propagate.
+    """
     if not donation_reference:
         raise ValueError("A donation reference is required.")
     points = calculate_donation_points(weight_kg)
@@ -137,6 +159,11 @@ def award_verified_donation(user, *, donation_reference, weight_kg, verified_at=
 
 @transaction.atomic
 def award_upcycling_completion(user, *, request_reference, upcycling_request=None):
+    """Award 150 points once per user and request reference.
+
+    Return the existing or newly created transaction. Raise ValueError if the
+    reference is missing or the supplied source conflicts with ledger data.
+    """
     if not request_reference:
         raise ValueError("A request reference is required.")
     record, _ = _existing_or_create(
@@ -151,10 +178,12 @@ def award_upcycling_completion(user, *, request_reference, upcycling_request=Non
 
 
 def get_available_points(user):
+    """Return the sum of the user's ledger entries, or zero if there are none."""
     return PointTransaction.objects.filter(user=user).aggregate(total=Sum("points"))["total"] or 0
 
 
 def get_lifetime_points(user):
+    """Return positive points earned, excluding reward refunds."""
     return (
         PointTransaction.objects.filter(user=user, points__gt=0)
         .exclude(kind=PointTransaction.Kind.REWARD_REFUNDED)
@@ -165,6 +194,15 @@ def get_lifetime_points(user):
 
 @transaction.atomic
 def redeem_reward(user, reward_id, *, shipping_address=""):
+    """Redeem an active reward, deducting points and one unit of stock.
+
+    Vouchers are fulfilled immediately with a code; physical rewards remain
+    pending and require a nonblank shipping address. Return the redemption.
+    Raise Reward.DoesNotExist for a missing or inactive reward,
+    RewardUnavailable for depleted stock, InsufficientPoints for a shortfall,
+    and ValueError for a missing physical shipping address or conflicting
+    ledger data. Database lookup errors for the user can also propagate.
+    """
     get_user_model().objects.select_for_update().get(pk=user.pk)
     reward = Reward.objects.select_for_update().get(pk=reward_id, is_active=True)
     if reward.stock < 1:
@@ -207,7 +245,13 @@ def redeem_reward(user, reward_id, *, shipping_address=""):
 
 @transaction.atomic
 def redeem_points(user, *, redemption_reference, reward_name, points_cost):
-    """Keep the earlier ledger-only API available for existing integrations."""
+    """Keep the earlier ledger-only API available for existing integrations.
+
+    Return the existing or new debit for redemption_reference. A retry must
+    use the same reward name and positive integer cost. Raise ValueError for
+    invalid or conflicting inputs and InsufficientPoints for a new debit
+    exceeding the balance. Database lookup errors for the user can propagate.
+    """
     if not redemption_reference or not reward_name:
         raise ValueError("A redemption reference and reward name are required.")
     try:
@@ -241,6 +285,12 @@ def redeem_points(user, *, redemption_reference, reward_name, points_cost):
 
 @transaction.atomic
 def cancel_physical_redemption(redemption, *, admin_user, reason):
+    """Cancel a pending physical redemption and restore its stock and points.
+
+    Record admin_user and a nonblank reason, then return the redemption.
+    Raise ValueError for an ineligible redemption, blank reason, or conflicting
+    ledger data. Missing database records propagate their lookup errors.
+    """
     redemption = RewardRedemption.objects.select_for_update().select_related("reward", "user").get(pk=redemption.pk)
     if redemption.status != RewardRedemption.Status.PENDING:
         raise ValueError("Hanya penukaran barang fisik yang masih menunggu dapat dibatalkan.")

@@ -1,4 +1,5 @@
 (() => {
+    /** Connect the photo gallery dialog once; do nothing until its controls exist. */
     function initializePhotoZoom() {
         const dialog = document.getElementById("artisan-photo-zoom");
         const preview = document.getElementById("artisan-photo-zoom-image");

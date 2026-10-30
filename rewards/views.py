@@ -105,6 +105,7 @@ def transaction_history(request):
 
 @login_required
 def reward_catalog(request):
+    """Show active, in-stock rewards, the user's balance, and five recent redemptions."""
     redemptions = RewardRedemption.objects.filter(user=request.user).select_related("reward")[:5]
     return render(
         request,
@@ -119,6 +120,10 @@ def reward_catalog(request):
 
 @login_required
 def redeem_reward_view(request, reward_id):
+    """Redeem a reward on POST and redirect to the catalog with a result message.
+
+    Missing rewards and redemption ValueErrors are presented as error messages.
+    """
     if request.method != "POST":
         return redirect("rewards:catalog")
     shipping_address = request.POST.get("shipping_address", "")

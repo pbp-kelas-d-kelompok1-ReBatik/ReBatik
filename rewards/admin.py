@@ -13,6 +13,7 @@ class RewardAdminForm(forms.ModelForm):
         fields = "__all__"
 
     def clean_reward_type(self):
+        """Prevent changing the type of a reward that has been redeemed."""
         reward_type = self.cleaned_data["reward_type"]
         if self.instance.pk and self.instance.redemptions.exists() and reward_type != self.instance.reward_type:
             raise forms.ValidationError("Jenis reward tidak dapat diubah setelah pernah ditukar.")
@@ -25,6 +26,7 @@ class RewardRedemptionAdminForm(forms.ModelForm):
         fields = "__all__"
 
     def clean(self):
+        """Validate redemption status changes and physical cancellation reasons."""
         cleaned = super().clean()
         if self.instance.pk:
             old = RewardRedemption.objects.select_related("reward").get(pk=self.instance.pk)
@@ -68,6 +70,10 @@ class RewardRedemptionAdmin(admin.ModelAdmin):
         return False
 
     def save_model(self, request, obj, form, change):
+        """Apply cancellation refunds or mark fulfillment when saving a redemption.
+
+        Cancellation ValueErrors are converted to Django ValidationErrors.
+        """
         old_status = None
         if change:
             old_status = RewardRedemption.objects.values_list("status", flat=True).get(pk=obj.pk)

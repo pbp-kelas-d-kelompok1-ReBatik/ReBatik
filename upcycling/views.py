@@ -57,7 +57,12 @@ def _parse_filter_date(value):
 
 
 def _parse_quote_component(value, label, *, required, allow_zero=False):
-    """Parse a quote line item as a whole-rupiah amount within the request limit."""
+    """Parse a whole-rupiah quote component up to Rp99,999,999.
+
+    Accept an optional Rp prefix and dot thousands separators. Blank optional
+    values return zero; zero is otherwise accepted only when allow_zero is
+    true. Raise ValueError for missing required or invalid amounts.
+    """
     raw_value = str(value or "").strip()
     if not raw_value:
         if required:
@@ -340,7 +345,7 @@ def request_create(request):
 
 
 def _save_fabric_photos(upcycling_request, photos):
-    """Keep one primary image on the request and store up to two extras."""
+    """Set a primary fabric image if needed and append the remaining photos."""
     photos = list(photos)
     if not photos:
         return
@@ -544,7 +549,7 @@ def submit_fabric_handoff(request, pk):
 
 @login_required
 def request_update(request, pk):
-    """Update an owned request while it is still awaiting review."""
+    """Update an owned request while it is awaiting artisan assignment."""
     upcycling_request = get_object_or_404(
         UpcyclingRequest,
         pk=pk,
@@ -654,6 +659,7 @@ def request_delete(request, pk):
 
 
 def _record_user_status_change(upcycling_request, user, old_status):
+    """Record a request's previous and current status with the acting user."""
     UpcyclingStatusHistory.objects.create(
         request=upcycling_request,
         from_status=old_status,
@@ -664,6 +670,7 @@ def _record_user_status_change(upcycling_request, user, old_status):
 
 @login_required
 def approve_quote(request, pk):
+    """Approve an available quote on POST and request product delivery details."""
     if request.method != "POST":
         return redirect("upcycling:request_detail", pk=pk)
     with transaction.atomic():
@@ -684,6 +691,7 @@ def approve_quote(request, pk):
 
 @login_required
 def submit_product_delivery(request, pk):
+    """Save valid delivery details on POST and move an eligible request into production."""
     if request.method != "POST":
         return redirect("upcycling:request_detail", pk=pk)
     with transaction.atomic():
@@ -708,6 +716,7 @@ def submit_product_delivery(request, pk):
 
 @login_required
 def confirm_completion(request, pk):
+    """Complete a ready request on POST, record history, and award completion points."""
     if request.method != "POST":
         return redirect("upcycling:request_detail", pk=pk)
     with transaction.atomic():
@@ -738,6 +747,11 @@ def confirm_completion(request, pk):
 
 @login_required
 def cancel_request(request, pk):
+    """Cancel an eligible request or reject a pending quote on POST.
+
+    If fabric has been received, mark it as pending return. Ineligible actions
+    produce a message and leave the request unchanged.
+    """
     if request.method != "POST":
         return redirect("upcycling:request_detail", pk=pk)
     with transaction.atomic():
@@ -786,6 +800,10 @@ def cancel_request(request, pk):
 
 @login_required
 def artisan_dashboard(request):
+    """Show requests assigned to the signed-in artisan.
+
+    Raise PermissionDenied if the user lacks the artisan role or profile.
+    """
     artisan = _get_artisan_profile(request.user)
     assigned_requests = (
         UpcyclingRequest.objects.filter(artisan=artisan)
@@ -801,6 +819,7 @@ def artisan_dashboard(request):
 
 @staff_member_required(login_url="/admin/login/")
 def admin_dashboard(request):
+    """Show staff the selected assignment, review, or production queue."""
     assignment_status = UpcyclingRequest.Status.PENDING_ASSIGNMENT
     available_statuses = (
         assignment_status,
@@ -867,6 +886,7 @@ def admin_dashboard(request):
 
 @staff_member_required(login_url="/admin/login/")
 def admin_assign_artisan(request, pk):
+    """Assign an artisan on POST and report validation errors in a message."""
     if request.method != "POST":
         return redirect("upcycling:admin_dashboard")
 
@@ -888,6 +908,11 @@ def admin_assign_artisan(request, pk):
 
 @login_required
 def artisan_update_request(request, pk):
+    """Apply an assigned artisan's valid workflow action on POST.
+
+    Invalid actions and input values become error messages; successful changes
+    are saved with status history. Missing artisan access raises PermissionDenied.
+    """
     if request.method != "POST":
         return redirect("upcycling:artisan_dashboard")
     artisan = _get_artisan_profile(request.user)

@@ -5,7 +5,7 @@ from .models import ArtisanProfile, UpcyclingRequest, UpcyclingStatusHistory
 
 
 def eligible_artisans_for_request(upcycling_request):
-    """Return available artisan users with matching skills and spare capacity."""
+    """Return eligible artisan profiles with matching skills and spare capacity."""
     candidates = (
         ArtisanProfile.objects.filter(
             is_available=True,
@@ -25,7 +25,12 @@ def eligible_artisans_for_request(upcycling_request):
 
 @transaction.atomic
 def assign_artisan_to_request(request_id, artisan_id, *, assigned_by):
-    """Assign an eligible artisan to an unassigned request and record history."""
+    """Assign an eligible artisan to an unassigned request and record history.
+
+    artisan_id identifies an ArtisanProfile; assigned_by is the user recorded
+    in the history. Return the updated request. Raise ValidationError when the
+    request or artisan is missing or the assignment is not eligible.
+    """
     upcycling_request = (
         UpcyclingRequest.objects.select_for_update()
         .filter(pk=request_id)
