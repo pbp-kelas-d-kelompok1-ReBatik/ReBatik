@@ -161,3 +161,42 @@ class RewardWorkflowTests(TestCase):
         self.assertContains(response, own_redemption.voucher_code)
         self.assertContains(response, "Rp20.000")
         self.assertNotContains(response, other_redemption.voucher_code)
+
+    def test_redemption_confirmation_does_not_spend_points_until_confirmed(self):
+        reward = Reward.objects.create(
+            name="Voucher 5 ribu",
+            reward_type=Reward.Type.VOUCHER,
+            points_required=100,
+            stock=2,
+            discount_value="5000",
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(reverse("rewards:redeem", args=[reward.pk]))
+
+        reward.refresh_from_db()
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "rewards/confirm_redemption.html")
+        self.assertContains(response, "Sisa setelah penukaran")
+        self.assertEqual(get_available_points(self.user), 300)
+        self.assertEqual(reward.stock, 2)
+        self.assertFalse(RewardRedemption.objects.exists())
+
+    def test_confirmed_redemption_spends_points_and_redirects_to_my_vouchers(self):
+        reward = Reward.objects.create(
+            name="Voucher 5 ribu",
+            reward_type=Reward.Type.VOUCHER,
+            points_required=100,
+            stock=2,
+            discount_value="5000",
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("rewards:redeem", args=[reward.pk]),
+            {"confirm": "yes"},
+        )
+
+        self.assertRedirects(response, reverse("rewards:vouchers"))
+        self.assertEqual(get_available_points(self.user), 200)
+        self.assertEqual(RewardRedemption.objects.count(), 1)
