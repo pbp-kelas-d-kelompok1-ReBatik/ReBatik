@@ -106,24 +106,24 @@ def transaction_history(request):
 @login_required
 def reward_catalog(request):
     """Show active vouchers and a short preview of the user's recent redemptions."""
+    return render(request, "rewards/catalog.html", _voucher_catalog_context(request.user))
+
+
+def _voucher_catalog_context(user):
     voucher_redemptions = RewardRedemption.objects.filter(
-        user=request.user,
+        user=user,
         reward__reward_type=Reward.Type.VOUCHER,
         voucher_code__isnull=False,
     ).select_related("reward")[:5]
-    return render(
-        request,
-        "rewards/catalog.html",
-        {
-            "rewards": Reward.objects.filter(
-                reward_type=Reward.Type.VOUCHER,
-                is_active=True,
-                stock__gt=0,
-            ),
-            "available_points": get_available_points(request.user),
-            "recent_redemptions": voucher_redemptions,
-        },
-    )
+    return {
+        "rewards": Reward.objects.filter(
+            reward_type=Reward.Type.VOUCHER,
+            is_active=True,
+            stock__gt=0,
+        ),
+        "available_points": get_available_points(user),
+        "recent_redemptions": voucher_redemptions,
+    }
 
 
 @login_required
@@ -169,15 +169,14 @@ def redeem_reward_view(request, reward_id):
             messages.error(request, "Poin Anda belum mencukupi.")
             return redirect("rewards:catalog")
 
-        return render(
-            request,
-            "rewards/confirm_redemption.html",
+        context = _voucher_catalog_context(request.user)
+        context.update(
             {
-                "reward": reward,
-                "available_points": available_points,
+                "confirm_reward": reward,
                 "remaining_points": available_points - reward.points_required,
-            },
+            }
         )
+        return render(request, "rewards/catalog.html", context)
 
     try:
         redemption = redeem_reward(request.user, reward_id)
