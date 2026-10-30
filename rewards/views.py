@@ -64,6 +64,11 @@ def points_overview(request):
     if saved_weight_kg is None:
         saved_weight_kg = Decimal("0")
     recent_transactions = user_transactions[:5]
+    featured_vouchers = Reward.objects.filter(
+        reward_type=Reward.Type.VOUCHER,
+        is_active=True,
+        stock__gt=0,
+    )[:5]
     context = {
         "available_points": get_available_points(request.user),
         "lifetime_points": lifetime_points,
@@ -72,6 +77,7 @@ def points_overview(request):
         "saved_weight_kg": saved_weight_kg,
         "saved_weight_unknown_count": donations.filter(weight_kg__isnull=True).count(),
         "recent_transactions": recent_transactions,
+        "featured_vouchers": featured_vouchers,
         **_level_progress(lifetime_points),
     }
     return render(request, "rewards/overview.html", context)

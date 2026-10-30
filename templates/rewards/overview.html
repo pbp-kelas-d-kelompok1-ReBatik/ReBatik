@@ -99,6 +99,31 @@
                 </article>
             </div>
 
+            <section class="recent-history" aria-labelledby="voucher-catalog-heading">
+                <div class="rewards-section-heading">
+                    <h2 id="voucher-catalog-heading">Katalog Voucher</h2>
+                    <div class="flex flex-wrap gap-4">
+                        <a class="history-all-link" href="{% url 'rewards:catalog' %}">Selengkapnya →</a>
+                        <a class="history-all-link" href="{% url 'rewards:vouchers' %}">Voucher saya (sudah ditukar) →</a>
+                    </div>
+                </div>
+                <p class="rewards-helper">Berikut hingga lima voucher aktif yang bisa ditukar dengan poin. Voucher Saya berisi kode yang sudah kamu tukar.</p>
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {% for voucher in featured_vouchers %}
+                        <article class="history-row flex-col items-start gap-2">
+                            <div>
+                                <h3>{{ voucher.name }}</h3>
+                                <p class="mt-2">Diskon Rp{{ voucher.discount_value|intcomma_id }}</p>
+                                <p class="mt-1 font-semibold">{{ voucher.points_required|intcomma_id }} poin · kuota {{ voucher.stock }}</p>
+                                {% if voucher.description %}<p class="mt-2">{{ voucher.description }}</p>{% endif %}
+                            </div>
+                        </article>
+                    {% empty %}
+                        <p class="history-empty">Belum ada voucher aktif yang tersedia.</p>
+                    {% endfor %}
+                </div>
+            </section>
+
             <section class="earning-guide" aria-label="Panduan mendapatkan poin">
                 <details class="earning-guide-details">
                     <summary>Cara Mendapatkan Poin</summary>
@@ -216,8 +241,7 @@
             <div class="rewards-section-heading">
                 <h2 id="recent-history-heading">Riwayat Poin</h2>
                 <div class="flex flex-wrap gap-4">
-                    <a class="history-all-link" href="{% url 'rewards:catalog' %}">Katalog voucher →</a>
-                    <a class="history-all-link" href="{% url 'rewards:vouchers' %}">Voucher saya →</a>
+                    <a class="history-all-link" href="{% url 'rewards:vouchers' %}">Voucher saya (sudah ditukar) →</a>
                     <a class="history-all-link" href="{% url 'rewards:history' %}">Lihat semua →</a>
                 </div>
             </div>
