@@ -1,0 +1,9 @@
+<section class="notification-panel">
+  <header><strong>Notifikasi</strong><span>{{ unread_count }} belum dibaca</span></header>
+  {% for item in notifications %}
+    <article class="notification-item {% if not item.is_read %}is-unread{% endif %}">
+      <div><strong>{{ item.title }}</strong><p>{{ item.message }}</p><time>{{ item.created_at|date:"d M Y, H:i" }} WIB</time></div>
+      {% if not item.is_read %}<form method="post" action="{% url 'main:notification_mark_read' item.pk %}">{% csrf_token %}<button type="submit" aria-label="Tandai telah dibaca">✓</button></form>{% endif %}
+    </article>
+  {% empty %}<p class="notification-empty">Belum ada notifikasi.</p>{% endfor %}
+</section>

@@ -1,5 +1,6 @@
 from io import BytesIO
 from pathlib import Path
+import re
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -535,14 +536,23 @@ class UpcyclingWorkflowTests(TestCase):
 
         self.assertContains(response, 'href="/upcycling/"')
         self.assertContains(response, "Upcycling Request")
-        nav_menu_html = (
-            response.content.decode()
-            .split('<div class="nav-menu" id="navMenu">', 1)[1]
-            .split("</div>", 1)[0]
+        page = response.content.decode()
+        nav_match = re.search(
+            r'<nav\b[^>]*class="[^"]*\brb-drawer__nav\b[^"]*"[^>]*>'
+            r'(.*?)</nav>',
+            page,
+            re.DOTALL,
         )
-        self.assertInHTML(
-            '<a href="/upcycling/artisan/">Dashboard Artisan</a>',
+        self.assertIsNotNone(
+            nav_match,
+            "Navigasi mobile dengan class rb-drawer__nav tidak ditemukan.",
+        )
+
+        nav_menu_html = nav_match.group(1)
+        self.assertRegex(
             nav_menu_html,
+            r'<a\b[^>]*href="/upcycling/artisan/"[^>]*>'
+            r'[\s\S]*?Dashboard Artisan',
         )
         self.assertContains(response, "Buka dashboard artisan")
         self.assertContains(response, "primary-action-button mt-5 min-h-11 px-5 py-2 text-sm")

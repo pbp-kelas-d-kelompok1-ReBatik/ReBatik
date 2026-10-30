@@ -304,8 +304,8 @@
     }
 
     .fashion-image {
-        height: 400px;
-        width: 600px;
+        height: clamp(220px, 42vw, 340px);
+        width: 100%;
     }
 
     .fashion-card-content h2 {
@@ -316,10 +316,14 @@
 /* HP */
 @media (max-width: 520px) {
     .fashion-page {
+        width: 100%;
         padding: 14px 10px;
+        overflow: clip;
     }
 
     .fashion-panel {
+        width: 100%;
+        max-width: 100%;
         padding: 27px 14px 18px;
         border-radius: 16px;
     }
@@ -355,7 +359,8 @@
     }
 
     .fashion-image {
-        height: 280px;
+        width: 100%;
+        height: clamp(190px, 62vw, 280px);
     }
 
     .fashion-card-content h2 {
