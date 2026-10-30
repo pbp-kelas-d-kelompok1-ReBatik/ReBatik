@@ -78,6 +78,66 @@ class LegacyDonationWeightMigrationTests(SimpleTestCase):
         self.assertEqual(fake_manager.filters["kind"], "donation")
 
 
+class RewardDiscountSnapshotMigrationTests(SimpleTestCase):
+    def test_backfills_existing_redemptions_from_the_reward_value(self):
+        redemptions = [
+            SimpleNamespace(
+                pk=1,
+                discount_value_snapshot=None,
+                reward=SimpleNamespace(discount_value=Decimal("20000.00")),
+            ),
+            SimpleNamespace(
+                pk=2,
+                discount_value_snapshot=None,
+                reward=SimpleNamespace(discount_value=None),
+            ),
+        ]
+
+        class FakeQuerySet:
+            def __init__(self, rows):
+                self.rows = rows
+
+            def select_related(self, *fields):
+                return self
+
+            def iterator(self):
+                return iter(self.rows)
+
+            def update(self, **values):
+                for row in self.rows:
+                    for name, value in values.items():
+                        setattr(row, name, value)
+                return len(self.rows)
+
+        class FakeManager:
+            def using(self, alias):
+                return self
+
+            def filter(self, **filters):
+                rows = redemptions
+                if filters.get("discount_value_snapshot__isnull"):
+                    rows = [row for row in rows if row.discount_value_snapshot is None]
+                if "pk" in filters:
+                    rows = [row for row in rows if row.pk == filters["pk"]]
+                return FakeQuerySet(rows)
+
+        historical_model = SimpleNamespace(objects=FakeManager())
+        fake_apps = SimpleNamespace(
+            get_model=lambda app_label, model_name: historical_model
+        )
+        schema_editor = SimpleNamespace(
+            connection=SimpleNamespace(alias="default")
+        )
+        migration = import_module(
+            "rewards.migrations.0004_rewardredemption_discount_value_snapshot"
+        )
+
+        migration.backfill_discount_value_snapshot(fake_apps, schema_editor)
+
+        self.assertEqual(redemptions[0].discount_value_snapshot, Decimal("20000.00"))
+        self.assertIsNone(redemptions[1].discount_value_snapshot)
+
+
 class LevelProgressTests(SimpleTestCase):
     def test_level_names_are_consistent_at_each_tier_boundary(self):
         cases = (
