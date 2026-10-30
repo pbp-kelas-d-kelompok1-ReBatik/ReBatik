@@ -714,3 +714,58 @@
     color: white;
     cursor: pointer;
 }
+
+/* ---------------- ACCOUNT SETTINGS ---------------- */
+.settings-shell {
+    max-width: 850px;
+}
+
+.settings-description {
+    margin: 0 0 18px;
+    color: #806753;
+    line-height: 1.6;
+}
+
+.settings-form {
+    display: grid;
+    gap: 0;
+}
+
+.settings-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 16px 4px;
+    border-bottom: 1px solid #eadfd1;
+    cursor: pointer;
+}
+
+.settings-option span {
+    display: grid;
+    gap: 5px;
+}
+
+.settings-option strong {
+    color: #57321d;
+    font-size: 17px;
+}
+
+.settings-option small {
+    color: #806753;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.settings-option input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    flex: none;
+    accent-color: #70452f;
+}
+
+@media (max-width: 560px) {
+    .settings-option {
+        align-items: flex-start;
+    }
+}

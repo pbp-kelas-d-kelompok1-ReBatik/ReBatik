@@ -78,40 +78,53 @@
             <!-- ACTIONS -->
             <div class="rb-nav__actions">
 
-                <!-- SEARCH -->
-                <form class="rb-nav__search"
-                      role="search"
-                      method="get"
-                      action="{% url 'main:show_home' %}">
-
-                    <svg class="rb-ico" viewBox="0 0 24 24" aria-hidden="true">
-                        <circle cx="11" cy="11" r="7"/>
-                        <path d="m20 20-3.5-3.5"/>
-                    </svg>
-
-                    <input type="search"
-                           name="q"
-                           placeholder="Cari di ReBatik..."
-                           aria-label="Cari di ReBatik"
-                           autocomplete="off">
-                </form>
+                <!-- SEARCH: HTMX LIVE SUGGESTIONS -->
+                <div class="rb-search-wrap">
+                    <form class="rb-nav__search"
+                          role="search"
+                          method="get"
+                          action="{% url 'main:show_home' %}"
+                          hx-get="{% url 'main:navbar_search' %}"
+                          hx-trigger="input changed delay:250ms, focus"
+                          hx-target="#rbSearchResults"
+                          hx-swap="innerHTML">
+                        <svg class="rb-ico" viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="11" cy="11" r="7"/>
+                            <path d="m20 20-3.5-3.5"/>
+                        </svg>
+                        <input type="search"
+                               name="q"
+                               placeholder="Cari di ReBatik..."
+                               aria-label="Cari di ReBatik"
+                               autocomplete="off">
+                    </form>
+                    <div id="rbSearchResults" class="rb-search-results"></div>
+                </div>
 
                 {% if user.is_authenticated %}
 
                 <!-- NOTIFICATION -->
-                <button type="button"
-                        class="rb-nav__icon-btn rb-nav__bell"
-                        aria-label="Notifikasi">
-
-                    <svg class="rb-ico" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/>
-                        <path d="M10.3 20a1.9 1.9 0 0 0 3.4 0"/>
-                    </svg>
-
-                    {% if notif_count %}
-                    <span class="rb-badge">{{ notif_count }}</span>
-                    {% endif %}
-                </button>
+                <div class="rb-notification-wrap">
+                    <button type="button"
+                            class="rb-nav__icon-btn rb-nav__bell"
+                            id="rbNotificationTrigger"
+                            aria-label="Notifikasi"
+                            aria-expanded="false"
+                            aria-controls="rbNotificationPanel"
+                            hx-get="{% url 'main:notifications' %}"
+                            hx-trigger="click"
+                            hx-target="#rbNotificationPanel"
+                            hx-swap="innerHTML">
+                        <svg class="rb-ico" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/>
+                            <path d="M10.3 20a1.9 1.9 0 0 0 3.4 0"/>
+                        </svg>
+                        {% if notif_count %}
+                        <span class="rb-badge">{{ notif_count }}</span>
+                        {% endif %}
+                    </button>
+                    <div id="rbNotificationPanel" class="rb-notification-panel" hidden></div>
+                </div>
 
                 <span class="rb-nav__sep" aria-hidden="true"></span>
 
@@ -126,7 +139,11 @@
                             aria-controls="rbUserMenu">
 
                         <span class="rb-avatar" aria-hidden="true">
-                            {{ user.username|slice:":1"|upper }}
+                            {% if user.profile.avatar %}
+                                <img src="{{ user.profile.avatar.url }}" alt="">
+                            {% else %}
+                                {{ user.username|slice:":1"|upper }}
+                            {% endif %}
                         </span>
 
                         <svg class="rb-ico rb-chev" viewBox="0 0 24 24">
@@ -144,7 +161,11 @@
                            href="{% url 'profiles:overview' %}">
 
                             <span class="rb-avatar rb-avatar--lg">
-                                {{ user.username|slice:":1"|upper }}
+                                {% if user.profile.avatar %}
+                                    <img src="{{ user.profile.avatar.url }}" alt="">
+                                {% else %}
+                                    {{ user.username|slice:":1"|upper }}
+                                {% endif %}
                             </span>
 
                             <span>
@@ -232,8 +253,8 @@
                             </li>
 
                             <li>
-                                <a href="#">
-                                    Pengaturan
+                                <a href="{% url 'profiles:settings' %}">
+                                    ⚙️ Pengaturan
                                 </a>
                             </li>
                         </ul>
@@ -321,21 +342,23 @@
             </div>
 
             <!-- MOBILE SEARCH -->
-            <form class="rb-nav__search rb-nav__search--drawer"
-                  role="search"
-                  method="get"
-                  action="{% url 'main:show_home' %}">
-
-                <svg class="rb-ico" viewBox="0 0 24 24">
-                    <circle cx="11" cy="11" r="7"/>
-                    <path d="m20 20-3.5-3.5"/>
-                </svg>
-
-                <input type="search"
-                       name="q"
-                       placeholder="Cari di ReBatik..."
-                       autocomplete="off">
-            </form>
+            <div class="rb-search-wrap rb-search-wrap--drawer">
+                <form class="rb-nav__search rb-nav__search--drawer"
+                      role="search"
+                      method="get"
+                      action="{% url 'main:show_home' %}"
+                      hx-get="{% url 'main:navbar_search' %}"
+                      hx-trigger="input changed delay:250ms, focus"
+                      hx-target="#rbDrawerSearchResults"
+                      hx-swap="innerHTML">
+                    <svg class="rb-ico" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="7"/>
+                        <path d="m20 20-3.5-3.5"/>
+                    </svg>
+                    <input type="search" name="q" placeholder="Cari di ReBatik..." autocomplete="off">
+                </form>
+                <div id="rbDrawerSearchResults" class="rb-search-results"></div>
+            </div>
 
             <!-- MOBILE NAVIGATION -->
             <nav class="rb-drawer__nav">
@@ -405,6 +428,11 @@
                 <a href="{% url 'landing:index' %}">
                     Landing Page{% include "_nav_chevron.html" %}
                 </a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'profiles:settings' %}">
+                    ⚙️ Pengaturan{% include "_nav_chevron.html" %}
+                </a>
+                {% endif %}
 
             </nav>
 
