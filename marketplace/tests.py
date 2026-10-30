@@ -246,10 +246,36 @@ class MarketplaceCatalogueViewTests(TestCase):
     def test_dropoff_list_filters_by_city_and_search(self):
         response = self.client.get(
             reverse("marketplace:dropoff"),
-            {"city": "Depok", "q": "Margonda"},
+            {"city": "Depok", "q": "Titik Depok"},
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(list(response.context["drop_points"]), [self.drop_depok])
+        self.assertIn(self.drop_depok, response.context["drop_points"])
+        self.assertNotIn(self.drop_bandung, response.context["drop_points"])
+
+    def test_dropoff_points_api_returns_json_and_supports_filtering(self):
+        url = reverse("marketplace:dropoff_points_api")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertGreaterEqual(payload["count"], 50)
+        self.assertEqual(payload["source"], "rebatik-dummy-dropoff-api")
+        self.assertIn("items", payload)
+
+        # Filter by city
+        city_resp = self.client.get(url, {"city": "Depok"})
+        self.assertEqual(city_resp.status_code, 200)
+        city_payload = city_resp.json()
+        self.assertTrue(all(item["city"] == "Depok" for item in city_payload["items"]))
+
+        # Detail endpoint
+        detail_url = reverse("marketplace:dropoff_point_api_detail", kwargs={"code": "rbt-depok-beji"})
+        detail_resp = self.client.get(detail_url)
+        self.assertEqual(detail_resp.status_code, 200)
+        self.assertEqual(detail_resp.json()["item"]["code"], "rbt-depok-beji")
+
+        # Nonexistent code returns 404 JSON
+        not_found_url = reverse("marketplace:dropoff_point_api_detail", kwargs={"code": "nonexistent-code"})
+        self.assertEqual(self.client.get(not_found_url).status_code, 404)
 
     def test_regions_api_returns_cached_and_fallback_data(self):
         cache.clear()

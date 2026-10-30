@@ -39,11 +39,57 @@ ReBatik adalah platform yang menghadirkan konsep upcycling dengan mengolah pakai
 
 ## Sumber/Dokumentasi API
 
-### Public API
+### 1. Public API Eksternal
 
 | Layanan | Endpoint / Metode | Kegunaan | Dokumentasi |
 |---|---|---|---|
 | API Wilayah Indonesia (emsifa) | `GET https://www.emsifa.com/api-wilayah-indonesia/v2/provinces.json`<br>`GET https://www.emsifa.com/api-wilayah-indonesia/v2/regencies/{province_id}.json`<br>`GET https://www.emsifa.com/api-wilayah-indonesia/v2/districts/{regency_id}.json`<br>`GET https://www.emsifa.com/api-wilayah-indonesia/v2/villages/{district_id}.json` | Dropdown provinsi sampai kelurahan beserta kode pos pada form alamat (Drop-Off Point, Donasi, Upcycling Request). Ganti placeholder ID dengan ID wilayah yang dipilih. | [Dokumentasi emsifa](https://www.emsifa.com/api-wilayah-indonesia/)|
+
+### 2. Mock API ReBatik (Internal Drop-off Point API — 52 Lokasi Spesifik)
+
+Untuk memenuhi kebutuhan data lokasi pengumpulan kain secara spesifik dan terintegrasi lintas platform (Web & Mobile Flutter kelompok), ReBatik menyediakan Mock API titik pengumpulan (*Drop-off Point*) dengan **52 data lokasi riil** di berbagai kota Indonesia. API ini mendukung CORS (`Access-Control-Allow-Origin: *`) dan respons JSON standar.
+
+| Sumber / Lingkungan | Tautan Mock API | Keterangan & Parameter |
+|---|---|---|
+| **Production (PWS Live)** | `GET https://alisa-selvia-rebatik.pws.cs.ui.ac.id/marketplace/api/dropoff-points/` | Endpoint live seluruh daftar 52 titik drop-off point. |
+| **PWS Filter Kota** | `GET https://alisa-selvia-rebatik.pws.cs.ui.ac.id/marketplace/api/dropoff-points/?city=Depok` | Filter titik berdasarkan kota (contoh: `Depok`, `Bandung`, `Solo`, `Jakarta Selatan`, dll). |
+| **PWS Filter Pencarian** | `GET https://alisa-selvia-rebatik.pws.cs.ui.ac.id/marketplace/api/dropoff-points/?q=Margonda` | Pencarian teks bebas nama titik / alamat / provinsi. |
+| **PWS Detail Titik** | `GET https://alisa-selvia-rebatik.pws.cs.ui.ac.id/marketplace/api/dropoff-points/{code}/` | Detail titik spesifik berdasarkan kode unik (contoh: `rbt-dpk-01`, `rbt-jkt-01`). |
+| **Local Development** | `GET http://127.0.0.1:8000/marketplace/api/dropoff-points/` | Digunakan saat pengujian di server lokal Django. |
+| **GitHub Raw Mock API** | `https://raw.githubusercontent.com/alisa-selvia/ReBatik/main/marketplace/data/dropoff_points.json` | Mock static JSON direct link tanpa perlu server aktif (cocok untuk integrasi Flutter kelompok). |
+
+<details>
+<summary>Contoh Payload JSON Mock API Drop-off Point</summary>
+
+```json
+{
+  "status": "success",
+  "total": 52,
+  "filters": { "city": "Depok", "query": "" },
+  "data": [
+    {
+      "code": "rbt-dpk-01",
+      "name": "Drop-off ReBatik Margonda Creative Hub",
+      "address": "Jl. Margonda No. 240, Kemiri Muka, Kecamatan Beji",
+      "city": "Depok",
+      "province": "Jawa Barat",
+      "operating_hours": "08:30 - 20:00 WIB",
+      "latitude": -6.372841,
+      "longitude": 106.831518,
+      "phone": "+6281299881101",
+      "accepted_items": ["Kain Perca Batik", "Baju Batik Bekas", "Sarung & Selendang"],
+      "maps_url": "https://www.google.com/maps?q=-6.372841,106.831518",
+      "detail_url": "/marketplace/api/dropoff-points/rbt-dpk-01/"
+    }
+  ]
+}
+```
+</details>
+
+### 3. Data Awal Deployment (Initial Seed Data ≥ 50 Data Utama)
+
+Sesuai ketentuan rubrik PBP (minimal 50 data utama saat dideploy ke PWS), aplikasi ReBatik telah dilengkapi dengan dataset inisial yang otomatis diisi ke database saat `python manage.py migrate` dijalankan:
+- **52 Titik Drop-off Point**: Termuat di `marketplace/data/dropoff_points.json`, ter-seed via migrasi `0004_seed_dummy_dropoff_points.py` atau command `python manage.py sync_dropoff_points`.
 
 ## Jenis/Peran Pengguna Aplikasi
 
