@@ -1,5 +1,6 @@
 
 from django.core.validators import MinValueValidator
+from django.conf import settings
 from django.db import models
 from django.conf import settings
 
@@ -33,7 +34,14 @@ class DonasiKain(models.Model):
         DIKONFIRMASI = "DIKONFIRMASI", "Dikonfirmasi"
         SELESAI = "SELESAI", "Selesai"
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="donasi_kain",)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="donasi_kain",
+    )
+
     donor_name = models.CharField("Nama donatur", max_length=120)
     whatsapp = models.CharField("Nomor WhatsApp", max_length=25)
     email = models.EmailField("E-mail")
@@ -89,6 +97,14 @@ class DonasiKain(models.Model):
         max_length=20,
         choices=Status.choices,
         default=Status.MENUNGGU,
+    )
+    verified_weight_kg = models.DecimalField(
+        "Berat hasil verifikasi (kg)",
+        max_digits=8,
+        decimal_places=3,
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(0.001)],
     )
     created_at = models.DateTimeField(
         "Tanggal pengajuan",

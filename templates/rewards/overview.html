@@ -215,7 +215,10 @@
         <section class="recent-history" aria-labelledby="recent-history-heading">
             <div class="rewards-section-heading">
                 <h2 id="recent-history-heading">Riwayat Poin</h2>
-                <a class="history-all-link" href="{% url 'rewards:history' %}">Lihat semua →</a>
+                <div class="flex flex-wrap gap-4">
+                    <a class="history-all-link" href="{% url 'rewards:catalog' %}">Katalog reward →</a>
+                    <a class="history-all-link" href="{% url 'rewards:history' %}">Lihat semua →</a>
+                </div>
             </div>
             <p class="rewards-helper">Semua poin yang masuk dan keluar tercatat di sini.</p>
             <div class="history-list">
