@@ -11,6 +11,7 @@ from donasi.models import DonasiKain
 from rewards.models import PointTransaction
 from rewards.services import (get_available_points, get_lifetime_points,)
 from upcycling.models import UpcyclingRequest
+from batik_custom.models import BatikOrder
 
 from .forms import UserProfileForm
 from .models import UserProfile
@@ -50,15 +51,7 @@ def overview(request):
 
     saved_weight_kg = donation_transactions.aggregate(total=Sum("weight_kg"))["total"] or Decimal("0")
 
-    # orders = (
-    #     BatikOrder.objects
-    #     .filter(user=request.user)
-    #     .select_related(
-    #         "motif",
-    #         "palette",
-    #         "design_option",
-    #     )
-    # )
+    orders = (BatikOrder.objects.filter(user=request.user).select_related("motif", "palette", "design_option",))
 
     context = {
         **common_context,
@@ -71,8 +64,8 @@ def overview(request):
         "saved_weight_kg": saved_weight_kg,
         "recent_upcycling": upcycling_requests[:3],
         "recent_transactions": transactions[:5],
-        # "order_count": orders.count(),
-        # "recent_orders": orders[:3],
+        "order_count": orders.count(),
+        "recent_orders": orders.order_by("-created_at")[:3],
     }
 
     return render(
