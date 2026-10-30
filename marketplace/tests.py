@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
@@ -14,6 +16,7 @@ from .models import (
     Product,
 )
 from .services import OrderTransitionNotAllowed, OutOfStock, cancel_order, place_order
+from rewards.models import Reward, RewardRedemption
 
 User = get_user_model()
 
@@ -324,6 +327,24 @@ class CheckoutAndOrderViewTests(TestCase):
             city="Depok",
         )
 
+    def create_available_voucher(self, *, user=None, discount=Decimal("50000"), code="RB-TEST01"):
+        reward = Reward.objects.create(
+            name="Voucher Marketplace",
+            reward_type=Reward.Type.VOUCHER,
+            points_required=100,
+            discount_value=discount,
+            stock=5,
+        )
+        return RewardRedemption.objects.create(
+            user=user or self.buyer,
+            reward=reward,
+            points_spent=100,
+            discount_value_snapshot=discount,
+            status=RewardRedemption.Status.FULFILLED,
+            voucher_code=code,
+            voucher_status=RewardRedemption.VoucherStatus.AVAILABLE,
+        )
+
     def test_checkout_requires_authentication(self):
         url = reverse("marketplace:checkout", kwargs={"pk": self.product.pk})
         response = self.client.get(url)
@@ -363,6 +384,74 @@ class CheckoutAndOrderViewTests(TestCase):
         order.refresh_from_db()
         self.assertEqual(order.unit_price, 185000)
         self.assertEqual(order.total_price, 370000)
+
+    def test_checkout_applies_owned_voucher_and_marks_it_used(self):
+        voucher = self.create_available_voucher()
+        self.client.force_login(self.buyer)
+        response = self.client.post(
+            reverse("marketplace:checkout", kwargs={"pk": self.product.pk}),
+            data={
+                "quantity": 2,
+                "delivery_method": Order.DeliveryMethod.DROP_OFF,
+                "dropoff_point": self.dropoff.pk,
+                "whatsapp": "081234567890",
+                "voucher_code": voucher.voucher_code,
+            },
+        )
+
+        order = Order.objects.get(user=self.buyer)
+        voucher.refresh_from_db()
+        self.assertRedirects(response, reverse("marketplace:order_success", kwargs={"pk": order.pk}))
+        self.assertEqual(order.reward_redemption, voucher)
+        self.assertEqual(order.discount_amount, 50000)
+        self.assertEqual(order.total_price, 320000)
+        self.assertEqual(voucher.voucher_status, RewardRedemption.VoucherStatus.USED)
+
+    def test_voucher_discount_is_capped_at_order_subtotal(self):
+        voucher = self.create_available_voucher(discount=Decimal("250000"))
+        order = place_order(
+            self.buyer,
+            self.product.pk,
+            quantity=1,
+            delivery_method=Order.DeliveryMethod.KURIR,
+            address="Jl. UI Depok",
+            whatsapp="+6281234567890",
+            voucher_code=voucher.voucher_code,
+        )
+        self.assertEqual(order.discount_amount, self.product.price)
+        self.assertEqual(order.total_price, 0)
+
+    def test_cancelled_order_releases_voucher_for_reuse(self):
+        voucher = self.create_available_voucher()
+        order = place_order(
+            self.buyer,
+            self.product.pk,
+            quantity=1,
+            delivery_method=Order.DeliveryMethod.KURIR,
+            address="Jl. UI Depok",
+            whatsapp="+6281234567890",
+            voucher_code=voucher.voucher_code,
+        )
+        cancel_order(order.pk, by_user=self.buyer)
+        voucher.refresh_from_db()
+        self.assertEqual(voucher.voucher_status, RewardRedemption.VoucherStatus.AVAILABLE)
+
+    def test_checkout_rejects_voucher_owned_by_another_user(self):
+        voucher = self.create_available_voucher(user=self.other_user, code="RB-OTHER01")
+        self.client.force_login(self.buyer)
+        response = self.client.post(
+            reverse("marketplace:checkout", kwargs={"pk": self.product.pk}),
+            data={
+                "quantity": 1,
+                "delivery_method": Order.DeliveryMethod.KURIR,
+                "address": "Jl. UI Depok",
+                "whatsapp": "081234567890",
+                "voucher_code": voucher.voucher_code,
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Kode voucher tidak valid atau sudah digunakan.")
+        self.assertFalse(Order.objects.filter(user=self.buyer).exists())
 
     def test_service_raises_out_of_stock_when_stock_is_insufficient(self):
         with self.assertRaises(OutOfStock):
@@ -635,3 +724,38 @@ class MarketplaceAdminTests(TestCase):
             OrderStatusHistory.objects.filter(order=self.order).count(),
             2,
         )
+
+    def test_admin_cancellation_releases_used_voucher(self):
+        reward = Reward.objects.create(
+            name="Voucher admin",
+            reward_type=Reward.Type.VOUCHER,
+            points_required=100,
+            discount_value=Decimal("30000"),
+            stock=2,
+        )
+        redemption = RewardRedemption.objects.create(
+            user=self.buyer,
+            reward=reward,
+            points_spent=100,
+            discount_value_snapshot=Decimal("30000"),
+            status=RewardRedemption.Status.FULFILLED,
+            voucher_code="RB-ADMIN01",
+            voucher_status=RewardRedemption.VoucherStatus.USED,
+        )
+        self.order.reward_redemption = redemption
+        self.order.discount_amount = 30000
+        self.order.save(update_fields=("reward_redemption", "discount_amount"))
+        order_admin = OrderAdmin(Order, admin.site)
+        request = RequestFactory().post("/admin/marketplace/order/")
+        request.user = self.admin_user
+        form = OrderAdminForm(
+            instance=self.order,
+            data={**model_to_dict(self.order), "status": Order.Status.CANCELLED},
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
+        updated_order = form.save(commit=False)
+        order_admin.save_model(request, updated_order, form, change=True)
+
+        redemption.refresh_from_db()
+        self.assertEqual(redemption.voucher_status, RewardRedemption.VoucherStatus.AVAILABLE)

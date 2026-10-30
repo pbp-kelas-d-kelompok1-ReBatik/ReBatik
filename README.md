@@ -262,3 +262,74 @@ Workflow deployment tidak menjalankan migration database production. Setelah ril
 Sebelum merge, workflow dapat dijalankan manual dari tab **Actions**. Pemicu manual menjalankan tes, membangun CSS, lalu melakukan dry run push ke PWS. Ini memeriksa alur push tanpa memperbarui branch PWS atau melakukan deployment.
 
 Jika PowerShell menampilkan pesan bahwa `npm` tidak bisa dijalankan karena execution policy, gunakan `npm.cmd` sebagai pengganti `npm` pada perintah di atas, misalnya `npm.cmd ci` atau `npm.cmd run tailwind:build`.
+
+## AI Disclosure (Pengungkapan Penggunaan AI)
+
+### 1. Alat AI yang Digunakan
+
+Selama proses pengembangan ReBatik, tim menggunakan beberapa alat berbasis Artificial Intelligence (AI) sebagai alat bantu dalam proses perancangan, pengembangan, pemecahan masalah, dan penyusunan dokumentasi.
+
+| Alat | Penggunaan |
+|------|------------|
+| **ChatGPT (OpenAI)** | Membantu memahami konsep Django, mendiskusikan struktur aplikasi, memberikan saran kode, menjelaskan implementasi Python, HTML, CSS, dan JavaScript, serta membantu menganalisis dan memperbaiki error selama pengembangan. |
+| **Claude (Anthropic)** | Mengeksplorasi ide desain antarmuka (UI/UX), menyusun konsep tampilan halaman, serta memberikan saran implementasi komponen antarmuka, termasuk halaman Impact Tracker. |
+| **CodeRabbit** | Digunakan secara terbatas untuk membantu proses pengujian deployment. |
+| **GitHub AI** | Digunakan secara terbatas untuk membantu proses pengujian deployment. |
+
+### 2. Bentuk Penggunaan AI dalam Pengembangan
+
+Penggunaan AI difokuskan pada beberapa aspek pengembangan ReBatik, yaitu:
+
+- **Perencanaan dan Desain:** Membantu mengeksplorasi ide tampilan halaman, rancangan fitur, serta alur interaksi pengguna sebelum implementasi.
+- **Pengembangan Frontend:** Memberikan referensi struktur HTML, penyesuaian CSS, pengembangan layout responsif, dan interaksi menggunakan JavaScript.
+- **Pengembangan Backend:** Membantu memahami dan mengimplementasikan konsep Django, termasuk Models, Forms, Views, URL Routing, serta pengelolaan data melalui database.
+- **Debugging:** Membantu menganalisis pesan error, memahami traceback, mengidentifikasi kemungkinan penyebab masalah, dan memberikan alternatif penyelesaian.
+- **Dokumentasi:** Membantu menyusun penjelasan teknis dan merapikan dokumentasi penggunaan aplikasi.
+- **Pengujian Deployment:** CodeRabbit dan GitHub AI hanya digunakan untuk membantu proses pengujian deployment, dan tidak digunakan untuk menulis kode atau fitur aplikasi.
+
+### 3. Strategi Penyusunan Prompt
+
+Dalam menggunakan AI, tim menerapkan pendekatan bertahap dan iteratif. AI tidak hanya diberikan instruksi umum untuk membuat keseluruhan aplikasi, tetapi juga diberikan konteks dan permasalahan yang lebih spesifik.
+
+Tahapan yang dilakukan meliputi:
+
+1. Menjelaskan kebutuhan fitur, tujuan implementasi, dan hasil yang diharapkan.
+2. Memberikan konteks berupa potongan kode, struktur folder proyek, tangkapan layar desain, atau pesan error yang ditemukan.
+3. Meminta saran, penjelasan, atau alternatif penyelesaian sesuai permasalahan yang sedang dihadapi.
+4. Meninjau dan menyesuaikan hasil yang diberikan agar sesuai dengan struktur aplikasi ReBatik yang sudah ada.
+5. Melakukan pengujian dan perbaikan secara bertahap apabila implementasi belum berjalan sesuai harapan.
+
+Prompt juga disesuaikan kembali berdasarkan hasil implementasi, terutama ketika saran yang diberikan belum sesuai dengan kebutuhan atau struktur proyek.
+
+### 4. Keterbatasan AI dan Penyesuaian Manual
+
+Hasil yang diberikan AI tidak selalu dapat langsung diterapkan. Beberapa saran memerlukan penyesuaian karena AI tidak selalu memiliki konteks lengkap mengenai struktur proyek, konfigurasi, dependensi, dan implementasi yang telah dibuat sebelumnya.
+
+Beberapa keterbatasan yang ditemukan selama pengembangan antara lain:
+
+- **Integrasi Proyek:** Saran kode terkadang menggunakan nama fungsi, import, URL, atau lokasi template yang berbeda dari struktur aplikasi yang sebenarnya. Oleh karena itu, diperlukan penyesuaian secara manual.
+- **Styling Frontend:** Beberapa saran CSS tidak langsung sesuai dengan stylesheet dan konfigurasi Tailwind CSS yang digunakan. Tim perlu memeriksa kembali pemanggilan stylesheet, selector, serta hasil kompilasi CSS.
+- **Database dan Migration:** Perubahan pada model memerlukan pemeriksaan migration agar struktur database tetap sesuai dengan implementasi model terbaru.
+- **Integrasi JavaScript dan HTML:** Penggunaan ID elemen, selector, dan event handler perlu disesuaikan dengan struktur HTML yang sebenarnya agar interaksi berjalan dengan baik.
+- **Proses Debugging:** Solusi yang diberikan AI tidak selalu langsung menyelesaikan masalah. Beberapa error memerlukan pemeriksaan tambahan terhadap kode dan konfigurasi proyek.
+
+Oleh karena itu, setiap saran yang diperoleh dari AI ditinjau dan disesuaikan kembali oleh tim. Keputusan akhir terkait implementasi, integrasi, dan perbaikan tetap menjadi tanggung jawab tim pengembang.
+
+### 5. Verifikasi dan Pengujian
+
+Implementasi yang memperoleh bantuan AI diperiksa dan diuji kembali dalam lingkungan pengembangan lokal sebelum digunakan sebagai bagian dari aplikasi ReBatik.
+
+Proses verifikasi meliputi:
+
+- Menjalankan pemeriksaan aplikasi menggunakan `python manage.py check`.
+- Menjalankan migration ketika terdapat perubahan pada model database.
+- Menguji pengiriman form dan memastikan data berhasil tersimpan ke database.
+- Memeriksa URL routing dan proses rendering template.
+- Memeriksa tampilan frontend, termasuk pemanggilan CSS dan interaksi JavaScript.
+- Menguji integrasi setiap fitur dengan aplikasi ReBatik secara keseluruhan.
+
+### 6. Transparansi dan Tanggung Jawab Pengembangan
+
+AI digunakan sebagai alat bantu selama proses pengembangan, bukan sebagai pengganti pemahaman dan tanggung jawab tim.
+
+Tim tetap bertanggung jawab dalam meninjau, menyesuaikan, mengintegrasikan, serta menguji hasil implementasi sebelum digunakan dalam aplikasi. Seluruh keputusan akhir mengenai fungsionalitas, desain, dan integrasi kode berada di bawah tanggung jawab tim pengembang.

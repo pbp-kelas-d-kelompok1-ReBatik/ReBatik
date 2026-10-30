@@ -54,6 +54,16 @@
                     <dt class="font-semibold">Jumlah produk</dt>
                     <dd class="text-[var(--brown-muted)]">{{ order.quantity }} buah</dd>
                 </div>
+                {% if order.reward_redemption_id %}
+                    <div>
+                        <dt class="font-semibold">Subtotal</dt>
+                        <dd class="text-[var(--brown-muted)]">{{ order.subtotal_price|rupiah }}</dd>
+                    </div>
+                    <div>
+                        <dt class="font-semibold">Potongan voucher · {{ order.reward_redemption.voucher_code }}</dt>
+                        <dd class="font-semibold text-[var(--brown-muted)]">−{{ order.discount_amount|rupiah }}</dd>
+                    </div>
+                {% endif %}
                 <div>
                     <dt class="font-semibold">Total pembayaran</dt>
                     <dd class="font-bold text-[var(--brown-dark)]">{{ order.total_price|rupiah }}</dd>
