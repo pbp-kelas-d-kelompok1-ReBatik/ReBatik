@@ -197,7 +197,7 @@ class RewardWorkflowTests(TestCase):
         self.assertEqual(reward.stock, 2)
         self.assertFalse(RewardRedemption.objects.exists())
 
-    def test_confirmed_redemption_spends_points_and_redirects_to_my_vouchers(self):
+    def test_confirmed_catalog_redemption_stays_on_catalog_and_shows_success_popup(self):
         reward = Reward.objects.create(
             name="Voucher 5 ribu",
             reward_type=Reward.Type.VOUCHER,
@@ -210,8 +210,33 @@ class RewardWorkflowTests(TestCase):
         response = self.client.post(
             reverse("rewards:redeem", args=[reward.pk]),
             {"confirm": "yes"},
+            follow=True,
         )
 
-        self.assertRedirects(response, reverse("rewards:vouchers"))
+        self.assertEqual(response.redirect_chain[0][0], reverse("rewards:catalog"))
         self.assertEqual(get_available_points(self.user), 200)
         self.assertEqual(RewardRedemption.objects.count(), 1)
+        self.assertContains(response, 'id="voucher-success-modal"')
+        self.assertContains(response, "Voucher berhasil ditukar")
+
+    def test_confirmed_overview_redemption_stays_on_points_page_and_shows_success_popup(self):
+        reward = Reward.objects.create(
+            name="Voucher dari ringkasan",
+            reward_type=Reward.Type.VOUCHER,
+            points_required=100,
+            stock=2,
+            discount_value="5000",
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("rewards:redeem", args=[reward.pk]),
+            {"confirm": "yes", "return_to": "overview"},
+            follow=True,
+        )
+
+        self.assertEqual(response.redirect_chain[0][0], reverse("rewards:overview"))
+        self.assertEqual(get_available_points(self.user), 200)
+        self.assertEqual(RewardRedemption.objects.count(), 1)
+        self.assertContains(response, 'id="voucher-success-modal"')
+        self.assertContains(response, "Voucher berhasil ditukar")

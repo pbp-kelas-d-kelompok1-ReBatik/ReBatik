@@ -606,8 +606,25 @@ class RewardsPageTests(TestCase):
             / "rewards.css"
         ).read_text(encoding="utf-8")
         self.assertIn(".voucher-thumbnail", stylesheet)
-        self.assertIn("width: 64px;", stylesheet)
-        self.assertIn("height: 64px;", stylesheet)
+        self.assertIn(".voucher-card .voucher-thumbnail", stylesheet)
+        self.assertIn("height: 142px;", stylesheet)
+
+    def test_points_overview_voucher_cards_can_start_the_same_page_redemption_flow(self):
+        voucher = Reward.objects.create(
+            name="Voucher langsung dari poin",
+            reward_type=Reward.Type.VOUCHER,
+            points_required=100,
+            stock=3,
+            discount_value=Decimal("15000"),
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get("/rewards/")
+
+        self.assertContains(response, "Tukar poin")
+        self.assertContains(response, f'action="/rewards/catalog/{voucher.pk}/redeem/"')
+        self.assertContains(response, 'id="voucher-confirm-modal"')
+        self.assertContains(response, 'src="/static/js/rewards-vouchers.js"')
 
     def test_earning_guide_precedes_catalog_and_voucher_link_only_appears_there(self):
         self.client.force_login(self.user)
