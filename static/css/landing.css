@@ -352,15 +352,15 @@
 }
 
 .landing-decoration-top {
-    top: -42px;
-    right: -10px;
-    width: 110px;
+    top: 8px;
+    right: 8px;
+    width: 90px;
 }
 
 .landing-decoration-bottom {
-    bottom: -30px;
-    left: -10px;
-    width: 100px;
+    bottom: 6px;
+    left: 8px;
+    width: 85px;
 }
 
 
@@ -502,6 +502,8 @@
 
     .landing-problem {
         gap: 16px;
+        min-height: 550px;
+        padding-bottom: 90px;
     }
 
     .landing-problem-image img {
@@ -513,11 +515,20 @@
     }
 
     .landing-decoration {
-        width: 95px;
+    opacity: 0.65;
+    }
+
+    .landing-decoration-top {
+        top: 5px;
+        right: 5px;
+        width: 65px;
     }
 
     .landing-decoration-bottom {
-        width: 82px;
+        bottom: 10px;
+        left: 50%;
+        width: 125px;
+        transform: translateX(-50%);
     }
 
     .landing-impact {
