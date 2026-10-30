@@ -9,6 +9,7 @@ from django.contrib.auth import get_user_model
 from django.contrib import admin
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import SimpleTestCase, TestCase, override_settings
+from django.urls import reverse
 
 from .models import PointTransaction, Reward
 from .admin import RewardAdmin, RewardAdminForm
@@ -59,6 +60,51 @@ class VoucherAdminPresentationTests(SimpleTestCase):
             ),
         )
         self.assertIn("image_preview", model_admin.list_display)
+
+
+class VoucherManagementDashboardTests(TestCase):
+    def setUp(self):
+        self.admin_user = get_user_model().objects.create_superuser(
+            username="voucher-manager",
+            email="voucher-manager@example.com",
+            password="test-password",
+        )
+        self.client.force_login(self.admin_user)
+
+    def test_custom_admin_page_lists_vouchers_and_provides_image_upload_form(self):
+        response = self.client.get(reverse("rewards:admin_vouchers"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Kelola Katalog Voucher")
+        self.assertContains(response, 'enctype="multipart/form-data"')
+        self.assertContains(response, 'name="image"')
+        self.assertContains(response, "Tambah voucher")
+
+    def test_custom_admin_page_creates_a_voucher_and_redirects_back(self):
+        response = self.client.post(
+            reverse("rewards:admin_vouchers"),
+            {
+                "name": "Voucher Admin Dashboard",
+                "description": "Diskon untuk pengujian",
+                "reward_type": Reward.Type.VOUCHER,
+                "points_required": 150,
+                "stock": 8,
+                "is_active": "on",
+                "discount_value": "25000",
+            },
+        )
+
+        self.assertRedirects(response, reverse("rewards:admin_vouchers"))
+        self.assertTrue(
+            Reward.objects.filter(
+                name="Voucher Admin Dashboard",
+                reward_type=Reward.Type.VOUCHER,
+                points_required=150,
+                stock=8,
+                is_active=True,
+                discount_value=Decimal("25000"),
+            ).exists()
+        )
 
 
 class LegacyDonationWeightMigrationTests(SimpleTestCase):
