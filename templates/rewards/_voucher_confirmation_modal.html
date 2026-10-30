@@ -1,0 +1,48 @@
+{% load rewards_format %}
+<div
+    id="voucher-confirm-modal"
+    class="voucher-confirm-modal{% if confirm_reward %} is-open{% endif %}"
+    {% if not confirm_reward %}hidden{% endif %}
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="voucher-confirm-title"
+    aria-describedby="voucher-confirm-description"
+>
+    <button
+        type="button"
+        class="voucher-confirm-backdrop"
+        data-voucher-modal-close
+        aria-label="Tutup konfirmasi"
+    ></button>
+    <section class="voucher-confirm-dialog" tabindex="-1">
+        <button
+            type="button"
+            class="voucher-confirm-close"
+            data-voucher-modal-close
+            aria-label="Tutup konfirmasi"
+        >×</button>
+        <p class="rewards-eyebrow">KONFIRMASI</p>
+        <h2 id="voucher-confirm-title">Tukar voucher ini?</h2>
+        <p id="voucher-confirm-description" class="voucher-confirm-subtitle">
+            Pastikan nilai diskon dan saldo poinmu sudah sesuai.
+        </p>
+
+        <div class="voucher-confirm-summary">
+            <h3 id="voucher-confirm-name">{% if confirm_reward %}{{ confirm_reward.name }}{% endif %}</h3>
+            <p>Nilai diskon: <strong id="voucher-confirm-discount">{% if confirm_reward %}Rp{{ confirm_reward.discount_value|intcomma_id }}{% endif %}</strong></p>
+            <p>Biaya penukaran: <strong><span id="voucher-confirm-points">{% if confirm_reward %}{{ confirm_reward.points_required }}{% endif %}</span> poin</strong></p>
+            <p>Saldo saat ini: <strong><span id="voucher-confirm-balance">{% if confirm_reward %}{{ available_points }}{% endif %}</span> poin</strong></p>
+            <p>Sisa setelah penukaran: <strong><span id="voucher-confirm-remaining">{% if confirm_reward %}{{ remaining_points }}{% endif %}</span> poin</strong></p>
+        </div>
+
+        <div class="voucher-confirm-actions">
+            <button type="button" class="voucher-confirm-cancel" data-voucher-modal-close>Batal</button>
+            <form id="voucher-confirm-form" method="post" {% if confirm_reward %}action="{% url 'rewards:redeem' confirm_reward.pk %}"{% endif %}>
+                {% csrf_token %}
+                <input type="hidden" name="confirm" value="yes">
+                <input type="hidden" name="return_to" value="{{ return_to|default:'catalog' }}">
+                <button type="submit" class="primary-action-button">Konfirmasi dan tukar</button>
+            </form>
+        </div>
+    </section>
+</div>

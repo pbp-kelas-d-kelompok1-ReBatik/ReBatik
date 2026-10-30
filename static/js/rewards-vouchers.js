@@ -1,4 +1,22 @@
 (() => {
+    const successModal = document.getElementById("voucher-success-modal");
+    if (successModal) {
+        const closeSuccessModal = () => {
+            successModal.hidden = true;
+            successModal.classList.remove("is-open");
+            document.body.classList.remove("voucher-confirm-open");
+        };
+
+        successModal.querySelectorAll("[data-voucher-success-close]").forEach((control) => {
+            control.addEventListener("click", closeSuccessModal);
+        });
+        successModal.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") closeSuccessModal();
+        });
+        document.body.classList.add("voucher-confirm-open");
+        successModal.querySelector("[data-voucher-success-close]")?.focus();
+    }
+
     const modal = document.getElementById("voucher-confirm-modal");
     const confirmationForm = document.getElementById("voucher-confirm-form");
     if (!modal || !confirmationForm) return;
@@ -20,6 +38,9 @@
         confirmationForm.action = triggerForm.action;
         confirmationForm.querySelector("[name='csrfmiddlewaretoken']").value =
             triggerForm.querySelector("[name='csrfmiddlewaretoken']").value;
+        const returnToInput = confirmationForm.querySelector("[name='return_to']");
+        const triggerReturnTo = triggerForm.querySelector("[name='return_to']");
+        if (returnToInput) returnToInput.value = triggerReturnTo?.value || "catalog";
 
         setText("voucher-confirm-name", data.voucherName);
         setText("voucher-confirm-discount", data.voucherDiscount);

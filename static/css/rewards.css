@@ -988,6 +988,125 @@ body.voucher-confirm-open {
         width: 100%;
     }
 }
+.voucher-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 205px), 1fr));
+    gap: 18px;
+    margin-top: 16px;
+}
+
+.voucher-card {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 13px;
+    overflow: hidden;
+    border: 1px solid var(--rewards-card-border);
+    border-radius: 18px;
+    background: linear-gradient(160deg, #fffdf9 0%, var(--rewards-surface) 100%);
+    box-shadow: 0 5px 16px rgb(74 46 41 / 8%);
+    text-align: center;
+    transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.voucher-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgb(74 46 41 / 13%);
+}
+
+.voucher-card-media {
+    width: 100%;
+    height: 142px;
+    overflow: hidden;
+    border: 1px solid rgb(214 191 175 / 75%);
+    border-radius: 13px;
+    background: var(--rewards-soft);
+}
+
+.voucher-card .voucher-thumbnail {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+    object-fit: cover;
+}
+
+.voucher-card-placeholder {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    place-items: center;
+    padding: 12px;
+    background:
+        radial-gradient(circle at 18% 20%, rgb(255 255 255 / 60%) 0 3px, transparent 4px),
+        radial-gradient(circle at 82% 75%, rgb(255 255 255 / 48%) 0 20px, transparent 21px),
+        linear-gradient(140deg, #e8bca8, #f2dfd1 58%, #d9b898);
+    color: #57321d;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.voucher-card-title {
+    display: -webkit-box;
+    min-height: 2.7em;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow-wrap: anywhere;
+    color: var(--rewards-brown);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.voucher-card-value {
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--rewards-soft);
+    color: var(--rewards-brown);
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.voucher-card-details {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    color: var(--rewards-muted);
+    font-size: 0.82rem;
+}
+
+.voucher-card-details span {
+    padding: 4px 8px;
+    border: 1px solid rgb(214 191 175 / 65%);
+    border-radius: 999px;
+    background: #fffdf9;
+}
+
+.voucher-card-description {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    color: var(--rewards-muted);
+    font-size: 0.88rem;
+    line-height: 1.45;
+}
+
+.voucher-card .voucher-redemption-trigger {
+    width: 100%;
+    margin-top: auto;
+}
+
 .voucher-admin-form-panel {
     margin-top: 24px;
     padding: clamp(18px, 3vw, 28px);

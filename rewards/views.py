@@ -81,6 +81,7 @@ def points_overview(request):
         "saved_weight_unknown_count": donations.filter(weight_kg__isnull=True).count(),
         "recent_transactions": recent_transactions,
         "featured_vouchers": featured_vouchers,
+        "voucher_success_message": request.session.pop("voucher_success_message", ""),
         **_level_progress(lifetime_points),
     }
     return render(request, "rewards/overview.html", context)
@@ -115,7 +116,9 @@ def transaction_history(request):
 @login_required
 def reward_catalog(request):
     """Show active vouchers and a short preview of the user's recent redemptions."""
-    return render(request, "rewards/catalog.html", _voucher_catalog_context(request.user))
+    context = _voucher_catalog_context(request.user)
+    context["voucher_success_message"] = request.session.pop("voucher_success_message", "")
+    return render(request, "rewards/catalog.html", context)
 
 
 def _voucher_catalog_context(user):
@@ -150,6 +153,10 @@ def my_vouchers(request):
     return render(request, "rewards/vouchers.html", {"vouchers": vouchers})
 
 
+def _redemption_return_page(request):
+    return "rewards:overview" if request.POST.get("return_to") == "overview" else "rewards:catalog"
+
+
 @login_required
 def redeem_reward_view(request, reward_id):
     """Confirm a voucher redemption, then atomically debit points and quota."""
@@ -165,24 +172,25 @@ def redeem_reward_view(request, reward_id):
             )
         except Reward.DoesNotExist:
             messages.error(request, "Voucher tidak tersedia.")
-            return redirect("rewards:catalog")
+            return redirect(_redemption_return_page(request))
 
         available_points = get_available_points(request.user)
         if reward.stock < 1:
             messages.error(request, "Voucher sedang habis.")
-            return redirect("rewards:catalog")
+            return redirect(_redemption_return_page(request))
         if reward.discount_value is None or reward.discount_value <= 0:
             messages.error(request, "Voucher belum dikonfigurasi dengan benar.")
-            return redirect("rewards:catalog")
+            return redirect(_redemption_return_page(request))
         if available_points < reward.points_required:
             messages.error(request, "Poin Anda belum mencukupi.")
-            return redirect("rewards:catalog")
+            return redirect(_redemption_return_page(request))
 
         context = _voucher_catalog_context(request.user)
         context.update(
             {
                 "confirm_reward": reward,
                 "remaining_points": available_points - reward.points_required,
+                "return_to": "overview" if request.POST.get("return_to") == "overview" else "catalog",
             }
         )
         return render(request, "rewards/catalog.html", context)
@@ -194,9 +202,11 @@ def redeem_reward_view(request, reward_id):
     except (InsufficientPoints, RewardUnavailable, ValueError) as exc:
         messages.error(request, str(exc))
     else:
-        messages.success(request, f"Voucher berhasil ditukar: {redemption.voucher_code}")
-        return redirect("rewards:vouchers")
-    return redirect("rewards:catalog")
+        request.session["voucher_success_message"] = (
+            f"Voucher berhasil ditukar. Kode: {redemption.voucher_code}"
+        )
+        return redirect(_redemption_return_page(request))
+    return redirect(_redemption_return_page(request))
 
 
 @staff_member_required
