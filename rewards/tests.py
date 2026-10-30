@@ -523,6 +523,22 @@ class RewardsPageTests(TestCase):
         self.assertIn("width: 64px;", stylesheet)
         self.assertIn("height: 64px;", stylesheet)
 
+    def test_earning_guide_precedes_catalog_and_voucher_link_only_appears_there(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get("/rewards/")
+
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode()
+        self.assertLess(
+            html.index("Cara Mendapatkan Poin"),
+            html.index("Katalog Voucher"),
+        )
+        catalog_start = html.index('aria-labelledby="voucher-catalog-heading"')
+        history_start = html.index('id="recent-history-heading"')
+        self.assertIn('href="/rewards/vouchers/">Voucher saya →', html[catalog_start:history_start])
+        self.assertNotIn('href="/rewards/vouchers/"', html[history_start:])
+
     def test_points_overview_shows_balance_and_only_owners_recent_activity(self):
         """Show the signed-in user's balance and recent transactions only."""
         self.make_transaction(
