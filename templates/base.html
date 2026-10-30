@@ -394,7 +394,7 @@
                 </a>
                 {% endif %}
 
-                {% if user.is_staff and perms.rewards.add_reward %}
+                {% if user.is_staff and perms.rewards.view_reward or user.is_staff and perms.rewards.add_reward %}
                 <a href="{% url 'rewards:admin_vouchers' %}">
                     Kelola Voucher{% include "_nav_chevron.html" %}
                 </a>

@@ -82,27 +82,6 @@
 
         </section>
 
-        {% if perms.rewards.view_reward or perms.rewards.add_reward %}
-            <section class="profile-card" aria-labelledby="voucher-admin-heading">
-                <h2 id="voucher-admin-heading">Kelola Katalog Voucher</h2>
-                <p>
-                    Tambahkan voucher baru untuk ditukar dengan poin atau periksa voucher yang sudah ada.
-                </p>
-                <div class="profile-card-actions">
-                    {% if perms.rewards.view_reward %}
-                        <a href="{% url 'rewards:admin_vouchers' %}" class="profile-button profile-button-secondary">
-                            Buka katalog voucher
-                        </a>
-                    {% endif %}
-                    {% if perms.rewards.add_reward %}
-                        <a href="{% url 'rewards:admin_voucher_add' %}" class="profile-button">
-                            Tambah voucher
-                        </a>
-                    {% endif %}
-                </div>
-            </section>
-        {% endif %}
-
     </div>
 
 </div>

@@ -8,7 +8,7 @@
         {% endif %}
     </div>
     <h3 class="voucher-card-title">{{ voucher.name }}</h3>
-    <p class="voucher-card-value">Diskon Rp{{ voucher.discount_value|intcomma_id }}</p>
+    <p class="voucher-card-value">Diskon Rp{{ voucher.discount_value|decimal_comma_id }}</p>
     <div class="voucher-card-details">
         <span>{{ voucher.points_required|intcomma_id }} poin</span>
         <span>Kuota {{ voucher.stock }}</span>

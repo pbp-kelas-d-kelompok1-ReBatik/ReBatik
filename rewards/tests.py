@@ -76,6 +76,7 @@ class VoucherAdminPresentationTests(SimpleTestCase):
             ),
         )
         self.assertIn("image_preview", model_admin.list_display)
+        self.assertNotIn("is_active", model_admin.list_editable)
 
 
 class VoucherManagementDashboardTests(TestCase):
@@ -272,7 +273,7 @@ class VoucherManagementDashboardTests(TestCase):
             reward_type=Reward.Type.VOUCHER,
             points_required=125,
             stock=3,
-            discount_value=15000,
+            discount_value=Decimal("15000.75"),
         )
 
         response = self.client.get(reverse("rewards:admin_vouchers"))
@@ -283,6 +284,7 @@ class VoucherManagementDashboardTests(TestCase):
         self.assertContains(response, f'href="/rewards/admin/vouchers/{voucher.pk}/edit/"')
         self.assertNotContains(response, "hx-get")
         self.assertContains(response, 'class="primary-action-button voucher-admin-add-link"')
+        self.assertContains(response, "Diskon Rp15.000,75")
         self.assertNotContains(response, 'class="voucher-admin-form-grid"')
         rewards_stylesheet = (
             Path(__file__).resolve().parent.parent

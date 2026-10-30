@@ -827,7 +827,7 @@ class UpcyclingWorkflowTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, request_obj.reference_code)
-        self.assertContains(response, "Dashboard Admin")
+        self.assertContains(response, "Penugasan Upcycling")
         self.assertContains(response, self.artisan_user.username)
         self.assertContains(response, 'hx-target="#admin-dashboard-live"')
         self.assertContains(response, 'hx-select="#admin-dashboard-live"')

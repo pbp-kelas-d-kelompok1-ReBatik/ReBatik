@@ -16,7 +16,6 @@ class RewardAdmin(admin.ModelAdmin):
     list_display = ("name", "image_preview", "points_required", "discount_value", "stock", "is_active")
     list_filter = ("reward_type", "is_active")
     search_fields = ("name", "description")
-    list_editable = ("is_active",)
     list_per_page = 25
 
     @admin.display(description="Gambar")
