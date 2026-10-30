@@ -421,35 +421,9 @@ def request_detail(request, pk):
         item.to_status: item.changed_at
         for item in status_history
     }
-    status_descriptions = {
-        UpcyclingRequest.Status.PENDING_ASSIGNMENT: "Admin sedang mencocokkan permintaan dengan keahlian dan kapasitas artisan.",
-        UpcyclingRequest.Status.PENDING_REVIEW: "Artisan meninjau model produk dan informasi kain yang Anda kirim.",
-        UpcyclingRequest.Status.AWAITING_FABRIC: "Serahkan kain sesuai rencana sebelum tenggat agar request tidak kedaluwarsa.",
-        UpcyclingRequest.Status.INSPECTION: "Artisan memeriksa kondisi fisik kain dan menyiapkan rincian penawaran.",
-        UpcyclingRequest.Status.AWAITING_APPROVAL: "Periksa rincian harga dan catatan artisan sebelum menyetujui atau menolak penawaran.",
-        UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS: "Harga sudah disetujui. Isi metode dan lokasi penerimaan sebelum produksi dimulai.",
-        UpcyclingRequest.Status.IN_PROGRESS: "Artisan sedang mengerjakan produk. Tunggu pembaruan saat produk siap diserahkan.",
-        UpcyclingRequest.Status.READY: "Konfirmasikan penerimaan produk untuk menyelesaikan request.",
-        UpcyclingRequest.Status.COMPLETED: "Produk telah diterima dan poin upcycling sudah tercatat.",
-        UpcyclingRequest.Status.REJECTED: "Periksa alasan penolakan dan status pengembalian kain pada ringkasan request.",
-        UpcyclingRequest.Status.CANCELLED: "Periksa status pengembalian kain pada ringkasan request jika kain sudah diterima.",
-        UpcyclingRequest.Status.EXPIRED: "Request kedaluwarsa karena kain belum diserahkan sebelum tenggat.",
-    }
-    if is_assigned_artisan:
-        status_descriptions.update({
-            UpcyclingRequest.Status.PENDING_REVIEW: "Tinjau kelayakan awal request dan tentukan apakah bisa diproses.",
-            UpcyclingRequest.Status.AWAITING_FABRIC: "Menunggu Eco-Member menyerahkan kain sebelum tenggat.",
-            UpcyclingRequest.Status.INSPECTION: "Periksa kondisi fisik kain dan isi rincian penawaran harga.",
-            UpcyclingRequest.Status.AWAITING_APPROVAL: "Menunggu Eco-Member menyetujui atau menolak penawaran harga.",
-            UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS: "Menunggu Eco-Member melengkapi metode dan lokasi penerimaan produk.",
-            UpcyclingRequest.Status.IN_PROGRESS: "Kerjakan produk setelah harga dan detail penerimaan disetujui.",
-            UpcyclingRequest.Status.READY: "Menunggu Eco-Member mengonfirmasi penerimaan produk.",
-        })
-
     timeline_steps = [
         {
             "label": "Diajukan",
-            "description": "Permintaan berhasil diajukan dan masuk ke antrean ReBatik.",
             "created_at": upcycling_request.created_at,
             "state": "done",
         },
@@ -471,15 +445,17 @@ def request_detail(request, pk):
         for index, value in enumerate(progression):
             timeline_steps.append({
                 "label": UpcyclingRequest.Status(value).label,
-                "description": status_descriptions[value],
                 "status": value,
-                "state": "done" if index < current_index else "current" if index == current_index else "upcoming",
+                "state": (
+                    "done"
+                    if status == UpcyclingRequest.Status.COMPLETED or index < current_index
+                    else "current" if index == current_index else "upcoming"
+                ),
                 "created_at": status_dates.get(value),
             })
     else:
         timeline_steps.append({
             "label": upcycling_request.get_status_display(),
-            "description": status_descriptions[status],
             "status": status,
             "created_at": status_dates.get(status),
             "state": "cancelled",

@@ -95,7 +95,7 @@
                 {% endif %}
                 <ol class="mt-4 space-y-5 sm:space-y-6" aria-label="Timeline status permintaan">
                     {% for step in timeline_steps %}
-                        <li class="flex items-start gap-4" data-status-description>
+                        <li class="flex items-start gap-4">
                             {% if step.state == 'done' %}
                                 <span
                                     class="grid size-10 shrink-0 place-items-center rounded-full border-2
@@ -110,7 +110,6 @@
                                             {{ step.created_at|date:"d/m/Y, H:i" }} WIB
                                         </span>
                                     {% endif %}
-                                    <span class="mt-1 block text-sm text-[var(--brown-muted)]">{{ step.description }}</span>
                                 </span>
                             {% elif step.state == 'current' %}
                                 <span
@@ -125,7 +124,6 @@
                                             {{ step.created_at|date:"d/m/Y, H:i" }} WIB
                                         </span>
                                     {% endif %}
-                                    <span class="mt-1 block text-sm font-normal text-[var(--brown-muted)]">{{ step.description }}</span>
                                     {% if step.state == 'current' and upcycling_request.status == 'AWAITING_FABRIC' and upcycling_request.fabric_deadline %}
                                         <span class="mt-2 block text-sm font-semibold">Tenggat penyerahan kain: <time datetime="{{ upcycling_request.fabric_deadline|date:'c' }}">{{ upcycling_request.fabric_deadline|date:"d M Y, H:i" }} WIB</time></span>
                                     {% endif %}
@@ -137,7 +135,6 @@
                                 ></span>
                                 <span class="min-w-0 text-base font-bold text-[#7a3027] sm:text-lg">
                                     <span class="block">{{ step.label }}</span>
-                                    <span class="mt-1 block text-sm font-normal">{{ step.description }}</span>
                                     {% if step.created_at %}<span class="mt-1 block text-sm font-normal">{{ step.created_at|date:"d/m/Y, H:i" }} WIB</span>{% endif %}
                                 </span>
                             {% else %}
@@ -148,7 +145,6 @@
                                 ></span>
                                 <span class="min-w-0 text-base text-[var(--brown-muted)] sm:text-lg">
                                     <span class="block">{{ step.label }}</span>
-                                    <span class="mt-1 block text-sm">{{ step.description }}</span>
                                 </span>
                             {% endif %}
                         </li>

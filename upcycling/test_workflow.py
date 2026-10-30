@@ -221,7 +221,7 @@ class UpcyclingWorkflowTests(TestCase):
         self.assertIsNone(request_obj.artisan_id)
         self.assertEqual(request_obj.status_history.count(), 1)
 
-    def test_request_detail_uses_one_timeline_with_stage_descriptions(self):
+    def test_request_detail_uses_one_timeline_without_status_descriptions(self):
         request_obj = make_request(self.user)
         self.client.force_login(self.user)
 
@@ -231,9 +231,18 @@ class UpcyclingWorkflowTests(TestCase):
         self.assertNotContains(response, "Langkah berikutnya")
         self.assertNotContains(response, "Riwayat Status")
         self.assertNotContains(response, "upcycling-status-badge")
-        self.assertContains(response, "Admin sedang mencocokkan permintaan dengan keahlian dan kapasitas artisan.")
-        self.assertContains(response, "Artisan meninjau model produk dan informasi kain yang Anda kirim.")
-        self.assertContains(response, 'data-status-description')
+        self.assertNotContains(response, "Admin sedang mencocokkan permintaan dengan keahlian dan kapasitas artisan.")
+        self.assertNotContains(response, "Artisan meninjau model produk dan informasi kain yang Anda kirim.")
+        self.assertNotContains(response, 'data-status-description')
+
+    def test_completed_request_checks_every_timeline_step(self):
+        request_obj = make_request(self.user, status=UpcyclingRequest.Status.COMPLETED)
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("upcycling:request_detail", args=[request_obj.pk]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content.decode().count('aria-label="Selesai"'), 10)
 
     def test_admin_candidate_filter_matches_skill_availability_and_capacity(self):
         request_obj = make_request(self.user)

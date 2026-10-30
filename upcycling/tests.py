@@ -1360,7 +1360,7 @@ class UpcyclingRequestViewTests(TestCase):
             "PENDING_ASSIGNMENT": ["done", "current"] + ["upcoming"] * 8,
             "AWAITING_DELIVERY_DETAILS": ["done"] * 6 + ["current", "upcoming", "upcoming", "upcoming"],
             "IN_PROGRESS": ["done"] * 7 + ["current", "upcoming", "upcoming"],
-            "COMPLETED": ["done"] * 9 + ["current"],
+            "COMPLETED": ["done"] * 10,
             "CANCELLED": ["done", "cancelled"],
         }
 
@@ -1375,8 +1375,8 @@ class UpcyclingRequestViewTests(TestCase):
                 self.assertEqual(response.status_code, 200)
                 self.assertEqual(states, expected)
 
-    def test_detail_timeline_explains_fabric_handoff_and_deadline(self):
-        """Test behavior: the current timeline step explains what to do and by when."""
+    def test_detail_timeline_keeps_fabric_deadline_without_status_description(self):
+        """Test behavior: the fabric deadline remains visible without repeated status copy."""
         deadline = datetime(2026, 11, 5, 12, 0, tzinfo=datetime_timezone.utc)
         upcycling_request = self.make_request(
             self.user,
@@ -1393,12 +1393,10 @@ class UpcyclingRequestViewTests(TestCase):
             step for step in response.context["timeline_steps"]
             if step["state"] == "current"
         )
-        self.assertEqual(
-            current_step["description"],
-            "Serahkan kain sesuai rencana sebelum tenggat agar request tidak kedaluwarsa.",
-        )
+        self.assertNotIn("description", current_step)
         self.assertContains(response, "Menunggu kain diserahkan")
         self.assertContains(response, "05 Nov 2026")
+        self.assertNotContains(response, "Serahkan kain sesuai rencana sebelum tenggat")
 
     def test_user_submits_fabric_handoff_details_after_review_approval(self):
         """Test behavior: approved requests collect handoff logistics from the owner."""
