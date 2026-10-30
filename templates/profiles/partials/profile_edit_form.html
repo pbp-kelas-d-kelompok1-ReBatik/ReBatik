@@ -1,0 +1,35 @@
+<article class="profile-card">
+
+    <div class="profile-section-heading">
+        <h2>Edit Profil</h2>
+    </div>
+
+    <form
+        method="post"
+        action="{% url 'profiles:edit' %}"
+        enctype="multipart/form-data"
+        hx-post="{% url 'profiles:edit' %}"
+        hx-encoding="multipart/form-data"
+        hx-target="#profile-content"
+        hx-swap="innerHTML"
+    >
+        {% csrf_token %}
+
+        {% include "profiles/partials/form_fields.html" %}
+
+        <div class="profile-card-actions">
+            <button type="submit" class="profile-button">
+                Simpan Perubahan
+            </button>
+
+            <a
+                href="{% url 'profiles:overview' %}"
+                class="profile-button profile-button-secondary"
+            >
+                Batal
+            </a>
+        </div>
+
+    </form>
+
+</article>
