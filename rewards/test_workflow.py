@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
@@ -25,6 +27,17 @@ class RewardWorkflowTests(TestCase):
             source_reference="seed-credit",
             description="Saldo awal tes",
         )
+
+    def test_reward_page_hero_uses_readable_text_on_light_background(self):
+        stylesheet = (
+            Path(__file__).resolve().parent.parent
+            / "static"
+            / "css"
+            / "rewards.css"
+        ).read_text(encoding="utf-8")
+        hero_rule = stylesheet.split(".rewards-hero {", 1)[1].split("}", 1)[0]
+
+        self.assertIn("color: var(--rewards-brown);", hero_rule)
 
     def test_voucher_redemption_debits_points_and_uses_reward_stock_once(self):
         reward = Reward.objects.create(
