@@ -107,6 +107,29 @@ class RewardWorkflowTests(TestCase):
         self.assertEqual(reward.stock, 4)
         self.assertFalse(RewardRedemption.objects.exists())
 
+    def test_forged_redemption_request_cannot_spend_more_points_than_user_has(self):
+        reward = Reward.objects.create(
+            name="Voucher di atas saldo",
+            reward_type=Reward.Type.VOUCHER,
+            points_required=500,
+            stock=4,
+            discount_value="5000",
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("rewards:redeem", args=[reward.pk]),
+            {"confirm": "yes", "return_to": "overview"},
+            follow=True,
+        )
+
+        self.assertEqual(response.redirect_chain[0][0], reverse("rewards:overview"))
+        self.assertContains(response, "Poin Anda belum mencukupi.")
+        self.assertEqual(get_available_points(self.user), 300)
+        self.assertEqual(RewardRedemption.objects.count(), 0)
+        reward.refresh_from_db()
+        self.assertEqual(reward.stock, 4)
+
     def test_catalog_only_shows_vouchers_even_if_legacy_physical_reward_is_active(self):
         Reward.objects.create(
             name="Voucher aktif",

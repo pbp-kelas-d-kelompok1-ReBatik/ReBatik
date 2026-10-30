@@ -736,6 +736,23 @@ class RewardsPageTests(TestCase):
         self.assertContains(response, 'id="voucher-confirm-modal"')
         self.assertContains(response, 'src="/static/js/rewards-vouchers.js"')
 
+    def test_vouchers_remain_visible_but_redeem_buttons_are_disabled_when_points_are_insufficient(self):
+        Reward.objects.create(
+            name="Voucher di atas saldo",
+            reward_type=Reward.Type.VOUCHER,
+            points_required=100,
+            stock=3,
+            discount_value=Decimal("15000"),
+        )
+        self.client.force_login(self.user)
+
+        for path in ("/rewards/", "/rewards/catalog/"):
+            with self.subTest(path=path):
+                response = self.client.get(path)
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, "Voucher di atas saldo")
+                self.assertContains(response, 'type="submit" disabled')
+
     def test_earning_guide_precedes_catalog_and_voucher_link_only_appears_there(self):
         self.client.force_login(self.user)
 
