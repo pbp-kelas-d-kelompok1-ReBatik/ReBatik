@@ -163,6 +163,7 @@ class UpcyclingRequest(models.Model):
         blank=True,
         on_delete=models.SET_NULL,
         related_name="upcycling_requests",
+        db_index=False,
     )
     fabric = models.CharField(max_length=20, choices=FABRIC_CHOICES)
     fabric_other_description = models.CharField(max_length=100, blank=True)
