@@ -67,7 +67,12 @@ class UpcyclingRequestForm(forms.ModelForm):
 
         self.fields["fabric_photos"].label = "Foto kain (1–3 foto)"
         self.fields["fabric_photos"].widget.attrs.update(
-            {"accept": "image/*", "multiple": True}
+            {
+                "accept": "image/*",
+                "multiple": True,
+                "class": "upcycling-photo-input",
+                "aria-label": "Pilih 1 hingga 3 foto kain",
+            }
         )
         self.existing_fabric_photo_count = (
             int(bool(self.instance.fabric_photo))
