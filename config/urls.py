@@ -19,8 +19,6 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf import settings
 from django.views.static import serve
-from django.conf import settings
-from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,6 +31,8 @@ urlpatterns = [
     path('batik_custom/', include('batik_custom.urls')),
     path('impact-tracker/', include('impact_tracker.urls')),
     path('profile/', include('profiles.urls')),
+
+    # Serve uploaded media files on PWS
     re_path(
         r'^media/(?P<path>.*)$',
         serve,
