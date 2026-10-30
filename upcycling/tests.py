@@ -640,6 +640,7 @@ class UpcyclingRequestViewTests(TestCase):
         response = self.client.get(reverse("upcycling:request_create"))
 
         self.assertContains(response, 'id="fabric-photo-upload"')
+        self.assertContains(response, 'class="upcycling-photo-input"')
         self.assertContains(response, "Tambah foto kain")
         self.assertContains(response, 'id="fabric-photo-preview"')
         self.assertContains(response, 'src="/static/img/mascot/pointing.webp"')
