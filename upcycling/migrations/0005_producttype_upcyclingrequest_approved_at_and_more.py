@@ -71,7 +71,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='upcyclingrequest',
             name='completed_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='upcycling_completions_confirmed', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(blank=True, db_index=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='upcycling_completions_confirmed', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='upcyclingrequest',
@@ -126,7 +126,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='upcyclingrequest',
             name='fabric_received_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='fabric_receipts_confirmed', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(blank=True, db_index=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='fabric_receipts_confirmed', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='upcyclingrequest',
@@ -141,7 +141,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='upcyclingrequest',
             name='payment_confirmed_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='upcycling_payments_confirmed', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(blank=True, db_index=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='upcycling_payments_confirmed', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='upcyclingrequest',
@@ -196,7 +196,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='upcyclingrequest',
             name='return_confirmed_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='fabric_returns_confirmed', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(blank=True, db_index=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='fabric_returns_confirmed', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='upcyclingrequest',
