@@ -313,12 +313,19 @@
                             alt=""
                             aria-hidden="true"
                         >
-                        <img
-                            id="fabric-photo-preview"
-                            class="upcycling-photo-preview{% if not form.instance.fabric_photo %} hidden{% endif %}"
-                            {% if form.instance.fabric_photo %}src="{{ form.instance.fabric_photo.url }}"{% endif %}
-                            alt="Pratinjau foto kain"
+                        <div
+                            id="fabric-photo-previews"
+                            data-existing-photo-count="{{ form.existing_fabric_photo_count }}"
+                            class="upcycling-photo-previews pointer-events-none absolute inset-0 hidden grid-cols-2 gap-2 p-3 sm:grid-cols-3{% if form.instance.fabric_photo %} grid{% endif %}"
                         >
+                            {% for photo in form.instance.fabric_photos %}
+                                <img
+                                    src="{{ photo.url }}"
+                                    alt="Pratinjau foto barang atau kain {{ forloop.counter }} dari {{ form.instance.fabric_photos|length }}"
+                                    class="h-full min-h-0 w-full rounded-lg object-cover"
+                                >
+                            {% endfor %}
+                        </div>
                         <span
                             id="fabric-photo-change-label"
                             class="upcycling-photo-change{% if not form.instance.fabric_photo %} hidden{% endif %}"
@@ -327,7 +334,7 @@
                             + Pilih/ganti foto
                         </span>
                     </div>
-                    <p id="fabric-photo-count" class="hidden text-sm font-semibold text-[var(--brown-muted)]" aria-live="polite"></p>
+                    <p id="fabric-photo-count" class="{% if not form.instance.fabric_photo %}hidden {% endif %}text-sm font-semibold text-[var(--brown-muted)]" aria-live="polite">{% if form.instance.fabric_photo %}{{ form.existing_fabric_photo_count }} foto tersimpan{% endif %}</p>
                     <p class="text-sm text-[var(--brown-muted)]">Pilih 1–3 foto sekaligus. Setiap foto maksimal 5 MB; pada permintaan yang diedit, foto lama tetap dihitung.</p>
                     {{ form.fabric_photos.errors }}
                 </div>
@@ -525,16 +532,28 @@
                     <label for="{{ form.reference_photos.id_for_label }}" class="block text-base font-semibold sm:text-lg">{{ form.reference_photos.label }}</label>
                     <div id="reference-photo-upload" class="upcycling-photo-upload min-h-56">
                         {{ form.reference_photos }}
-                        <div id="reference-photo-placeholder" class="upcycling-photo-placeholder">
+                        <div id="reference-photo-placeholder" class="upcycling-photo-placeholder{% if form.existing_reference_photo_count %} hidden{% endif %}">
                             <span class="upcycling-photo-add"></span>
                             <span class="font-bold">Tambah foto contoh hasil</span>
                             <span>Contoh produk, model, atau detail desain yang Anda inginkan</span>
                             <span class="text-sm">Pilih hingga 3 gambar · maksimal 5 MB per gambar</span>
                         </div>
-                        <img src="{% static 'img/mascot/pointing.webp' %}" alt="" aria-hidden="true" id="reference-photo-mascot" class="upcycling-photo-mascot">
-                        <div id="reference-photo-previews" class="absolute inset-0 z-10 hidden grid-cols-2 gap-2 p-3 sm:grid-cols-3"></div>
+                        <img src="{% static 'img/mascot/pointing.webp' %}" alt="" aria-hidden="true" id="reference-photo-mascot" class="upcycling-photo-mascot{% if form.existing_reference_photo_count %} hidden{% endif %}">
+                        <div
+                            id="reference-photo-previews"
+                            data-existing-photo-count="{{ form.existing_reference_photo_count }}"
+                            class="upcycling-photo-previews pointer-events-none absolute inset-0 hidden grid-cols-2 gap-2 p-3 sm:grid-cols-3{% if form.existing_reference_photo_count %} grid{% endif %}"
+                        >
+                            {% for photo in form.instance.reference_photos.all %}
+                                <img
+                                    src="{{ photo.image.url }}"
+                                    alt="Pratinjau foto contoh hasil {{ forloop.counter }} dari {{ form.existing_reference_photo_count }}"
+                                    class="h-full min-h-0 w-full rounded-lg object-cover"
+                                >
+                            {% endfor %}
+                        </div>
                     </div>
-                    <p id="reference-photo-count" class="hidden text-sm font-semibold text-[var(--brown-muted)]" aria-live="polite"></p>
+                    <p id="reference-photo-count" class="{% if not form.existing_reference_photo_count %}hidden {% endif %}text-sm font-semibold text-[var(--brown-muted)]" aria-live="polite">{% if form.existing_reference_photo_count %}{{ form.existing_reference_photo_count }} foto tersimpan.{% endif %}</p>
                     <p class="text-sm text-[var(--brown-muted)]">Unggah gambar produk atau desain yang ingin dijadikan acuan. Foto barang atau kain yang akan diolah diunggah terpisah pada Step 1.</p>
                     {{ form.reference_photos.errors }}
                 </div>

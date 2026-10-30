@@ -83,27 +83,101 @@ const initializeUpcyclingForm = () => {
     }, true);
 
     const fabricPhotoField = document.getElementById("id_fabric_photos");
-    const fabricPhotoPreview = document.getElementById("fabric-photo-preview");
+    const fabricPhotoPreviews = document.getElementById("fabric-photo-previews");
     const fabricPhotoPlaceholder = document.getElementById("fabric-photo-placeholder");
     const fabricPhotoMascot = document.getElementById("fabric-photo-mascot");
     const fabricPhotoChangeLabel = document.getElementById("fabric-photo-change-label");
     const fabricPhotoCount = document.getElementById("fabric-photo-count");
-    let fabricPhotoPreviewUrl = null;
-    fabricPhotoField?.addEventListener("change", () => {
-        const photos = Array.from(fabricPhotoField.files);
-        if (!photos.length) return;
-        const photo = photos[0];
-        if (!photo.type.startsWith("image/")) return;
+    const existingFabricPhotoCount = Number(fabricPhotoPreviews.dataset.existingPhotoCount || 0);
+    const existingFabricPhotoNodes = Array.from(fabricPhotoPreviews.querySelectorAll("img"))
+        .map((image) => image.cloneNode(true));
+    let selectedFabricPhotos = [];
+    let fabricPhotoPreviewUrls = [];
+    const syncSelectedFabricFiles = () => {
+        const transfer = new DataTransfer();
+        selectedFabricPhotos.forEach((photo) => transfer.items.add(photo));
+        fabricPhotoField.files = transfer.files;
+    };
 
-        if (fabricPhotoPreviewUrl) URL.revokeObjectURL(fabricPhotoPreviewUrl);
-        fabricPhotoPreviewUrl = URL.createObjectURL(photo);
-        fabricPhotoPreview.src = fabricPhotoPreviewUrl;
-        fabricPhotoPreview.classList.remove("hidden");
-        fabricPhotoPlaceholder.classList.add("hidden");
-        fabricPhotoMascot.classList.add("hidden");
-        fabricPhotoChangeLabel.classList.remove("hidden");
-        fabricPhotoCount.textContent = `${photos.length} foto dipilih. Maksimal 3 foto.`;
-        fabricPhotoCount.classList.remove("hidden");
+    const renderFabricPhotoPreviews = (overflowCount = 0) => {
+        fabricPhotoPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+        fabricPhotoPreviewUrls = [];
+        fabricPhotoPreviews.replaceChildren();
+        existingFabricPhotoNodes.forEach((image) => {
+            fabricPhotoPreviews.append(image.cloneNode(true));
+        });
+        selectedFabricPhotos.forEach((photo, index) => {
+            const image = document.createElement("img");
+            const url = URL.createObjectURL(photo);
+            fabricPhotoPreviewUrls.push(url);
+            image.src = url;
+            image.alt = `Pratinjau foto barang atau kain ${existingFabricPhotoCount + index + 1} dari ${existingFabricPhotoCount + selectedFabricPhotos.length}`;
+            image.className = "h-full min-h-0 w-full rounded-lg object-cover";
+            const tile = document.createElement("div");
+            tile.className = "relative min-h-0 min-w-0 overflow-hidden rounded-lg";
+            tile.append(image);
+
+            const removeButton = document.createElement("button");
+            removeButton.type = "button";
+            removeButton.className = "upcycling-photo-remove";
+            removeButton.setAttribute(
+                "aria-label",
+                `Batalkan foto barang atau kain ${existingFabricPhotoCount + index + 1}`,
+            );
+            removeButton.title = "Batalkan foto ini";
+            removeButton.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                selectedFabricPhotos.splice(index, 1);
+                syncSelectedFabricFiles();
+                renderFabricPhotoPreviews();
+            });
+            tile.append(removeButton);
+            fabricPhotoPreviews.append(tile);
+        });
+
+        const totalPhotoCount = existingFabricPhotoCount + selectedFabricPhotos.length;
+        if (totalPhotoCount) {
+            fabricPhotoPreviews.classList.remove("hidden");
+            fabricPhotoPreviews.classList.add("grid");
+            fabricPhotoPlaceholder.classList.add("hidden");
+            fabricPhotoMascot.classList.add("hidden");
+            fabricPhotoChangeLabel.classList.remove("hidden");
+            fabricPhotoCount.textContent = selectedFabricPhotos.length
+                ? `${totalPhotoCount} dari maksimal 3 foto dipilih${overflowCount ? `; ${overflowCount} foto tambahan tidak ditambahkan` : ""}.`
+                : `${existingFabricPhotoCount} foto tersimpan.`;
+            fabricPhotoCount.classList.remove("hidden");
+        } else {
+            fabricPhotoPreviews.classList.add("hidden");
+            fabricPhotoPreviews.classList.remove("grid");
+            fabricPhotoPlaceholder.classList.remove("hidden");
+            fabricPhotoMascot.classList.remove("hidden");
+            fabricPhotoChangeLabel.classList.add("hidden");
+            fabricPhotoCount.classList.add("hidden");
+        }
+    };
+
+    selectedFabricPhotos = Array.from(fabricPhotoField.files)
+        .filter((photo) => photo.type.startsWith("image/"));
+    if (selectedFabricPhotos.length) renderFabricPhotoPreviews();
+
+    fabricPhotoField?.addEventListener("change", () => {
+        const newlyPickedPhotos = Array.from(fabricPhotoField.files)
+            .filter((photo) => photo.type.startsWith("image/"));
+        if (!newlyPickedPhotos.length) return;
+
+        const isAlreadySelected = (candidate) => selectedFabricPhotos.some((photo) => (
+            photo.name === candidate.name
+            && photo.size === candidate.size
+            && photo.lastModified === candidate.lastModified
+        ));
+        const availableSlots = Math.max(0, 3 - existingFabricPhotoCount - selectedFabricPhotos.length);
+        const photosToAdd = newlyPickedPhotos.filter((photo) => !isAlreadySelected(photo));
+        const addedPhotos = photosToAdd.slice(0, availableSlots);
+        const overflowCount = photosToAdd.length - addedPhotos.length;
+        selectedFabricPhotos = [...selectedFabricPhotos, ...addedPhotos];
+        syncSelectedFabricFiles();
+        renderFabricPhotoPreviews(overflowCount);
     });
 
     const referencePhotoField = document.getElementById("id_reference_photos");
@@ -111,35 +185,94 @@ const initializeUpcyclingForm = () => {
     const referencePhotoMascot = document.getElementById("reference-photo-mascot");
     const referencePhotoPreviews = document.getElementById("reference-photo-previews");
     const referencePhotoCount = document.getElementById("reference-photo-count");
+    const existingReferencePhotoCount = Number(referencePhotoPreviews.dataset.existingPhotoCount || 0);
+    const existingReferencePhotoNodes = Array.from(referencePhotoPreviews.querySelectorAll("img"))
+        .map((image) => image.cloneNode(true));
+    let selectedReferencePhotos = [];
     let referencePhotoPreviewUrls = [];
-    referencePhotoField?.addEventListener("change", () => {
-        const photos = Array.from(referencePhotoField.files).filter((photo) => photo.type.startsWith("image/"));
+    const syncSelectedReferenceFiles = () => {
+        const transfer = new DataTransfer();
+        selectedReferencePhotos.forEach((photo) => transfer.items.add(photo));
+        referencePhotoField.files = transfer.files;
+    };
+
+    const renderReferencePhotoPreviews = (overflowCount = 0) => {
         referencePhotoPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
         referencePhotoPreviewUrls = [];
         referencePhotoPreviews.replaceChildren();
-        if (!photos.length) {
+        existingReferencePhotoNodes.forEach((image) => {
+            referencePhotoPreviews.append(image.cloneNode(true));
+        });
+        selectedReferencePhotos.forEach((photo, index) => {
+            const image = document.createElement("img");
+            const url = URL.createObjectURL(photo);
+            referencePhotoPreviewUrls.push(url);
+            image.src = url;
+            image.alt = `Pratinjau foto contoh hasil ${existingReferencePhotoCount + index + 1} dari ${existingReferencePhotoCount + selectedReferencePhotos.length}`;
+            image.className = "h-full min-h-0 w-full rounded-lg object-cover";
+            const tile = document.createElement("div");
+            tile.className = "relative min-h-0 min-w-0 overflow-hidden rounded-lg";
+            tile.append(image);
+
+            const removeButton = document.createElement("button");
+            removeButton.type = "button";
+            removeButton.className = "upcycling-photo-remove";
+            removeButton.setAttribute(
+                "aria-label",
+                `Batalkan foto contoh hasil ${existingReferencePhotoCount + index + 1}`,
+            );
+            removeButton.title = "Batalkan foto ini";
+            removeButton.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                selectedReferencePhotos.splice(index, 1);
+                syncSelectedReferenceFiles();
+                renderReferencePhotoPreviews();
+            });
+            tile.append(removeButton);
+            referencePhotoPreviews.append(tile);
+        });
+
+        const totalPhotoCount = existingReferencePhotoCount + selectedReferencePhotos.length;
+        if (totalPhotoCount) {
+            referencePhotoPreviews.classList.remove("hidden");
+            referencePhotoPreviews.classList.add("grid");
+            referencePhotoPlaceholder.classList.add("hidden");
+            referencePhotoMascot.classList.add("hidden");
+            referencePhotoCount.textContent = selectedReferencePhotos.length
+                ? `${totalPhotoCount} dari maksimal 3 foto dipilih${overflowCount ? `; ${overflowCount} foto tambahan tidak ditambahkan` : ""}.`
+                : `${existingReferencePhotoCount} foto tersimpan.`;
+            referencePhotoCount.classList.remove("hidden");
+        } else {
             referencePhotoPreviews.classList.add("hidden");
             referencePhotoPreviews.classList.remove("grid");
             referencePhotoPlaceholder.classList.remove("hidden");
             referencePhotoMascot.classList.remove("hidden");
             referencePhotoCount.classList.add("hidden");
-            return;
         }
-        photos.forEach((photo) => {
-            const image = document.createElement("img");
-            const url = URL.createObjectURL(photo);
-            referencePhotoPreviewUrls.push(url);
-            image.src = url;
-            image.alt = "Pratinjau foto referensi";
-            image.className = "h-full min-h-0 w-full rounded-lg object-cover";
-            referencePhotoPreviews.append(image);
-        });
-        referencePhotoPreviews.classList.remove("hidden");
-        referencePhotoPreviews.classList.add("grid");
-        referencePhotoPlaceholder.classList.add("hidden");
-        referencePhotoMascot.classList.add("hidden");
-        referencePhotoCount.textContent = `${photos.length} foto referensi dipilih. Maksimal 3 foto.`;
-        referencePhotoCount.classList.remove("hidden");
+    };
+
+    selectedReferencePhotos = Array.from(referencePhotoField.files)
+        .filter((photo) => photo.type.startsWith("image/"));
+    if (selectedReferencePhotos.length) renderReferencePhotoPreviews();
+
+    referencePhotoField?.addEventListener("change", () => {
+        const newlyPickedPhotos = Array.from(referencePhotoField.files)
+            .filter((photo) => photo.type.startsWith("image/"));
+        if (!newlyPickedPhotos.length) return;
+
+        const isAlreadySelected = (candidate) => selectedReferencePhotos.some((photo) => (
+            photo.name === candidate.name
+            && photo.size === candidate.size
+            && photo.lastModified === candidate.lastModified
+        ));
+        const availableSlots = Math.max(0, 3 - existingReferencePhotoCount - selectedReferencePhotos.length);
+        const photosToAdd = newlyPickedPhotos.filter((photo) => !isAlreadySelected(photo));
+        const addedPhotos = photosToAdd.slice(0, availableSlots);
+        const overflowCount = photosToAdd.length - addedPhotos.length;
+        selectedReferencePhotos = [...selectedReferencePhotos, ...addedPhotos];
+        syncSelectedReferenceFiles();
+        renderReferencePhotoPreviews(overflowCount);
     });
 
     const categoryFields = form.querySelectorAll('[name="category"]');

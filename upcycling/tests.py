@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone as datetime_timezone
 from base64 import b64decode
+from decimal import Decimal
 from unittest.mock import patch
 
 from django.contrib import admin
@@ -14,6 +15,8 @@ from .admin import UpcyclingRequestAdminForm
 from .forms import FabricHandoffForm, UpcyclingRequestForm
 from .forms import ProductDeliveryForm
 from .models import (
+    AdditionalFabricPhoto,
+    AdditionalReferencePhoto,
     ArtisanProfile,
     ProductType,
     UpcyclingRateLimitBucket,
@@ -21,12 +24,18 @@ from .models import (
     UpcyclingStatusHistory,
 )
 from .security import consume_upcycling_rate_limit
+from .templatetags.upcycling_format import rupiah
 
 
 User = get_user_model()
 TINY_PNG = b64decode(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGNgYGAAAAAEAAH2FzhVAAAAAElFTkSuQmCC"
 )
+
+
+class UpcyclingPriceFormatTests(SimpleTestCase):
+    def test_rupiah_uses_indonesian_thousands_separator(self):
+        self.assertEqual(rupiah(Decimal("95000.00")), "95.000")
 
 
 class UpcyclingRequestFormTests(SimpleTestCase):
@@ -123,6 +132,12 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         )
         self.assertFalse(too_many.is_valid())
         self.assertIn("reference_photos", too_many.errors)
+
+    def test_photo_inputs_are_preserved_across_htmx_validation_swaps(self):
+        form = UpcyclingRequestForm()
+
+        self.assertIn("hx-preserve", form.fields["fabric_photos"].widget.attrs)
+        self.assertIn("hx-preserve", form.fields["reference_photos"].widget.attrs)
 
     def test_fabric_upload_rejects_non_images_and_files_over_five_mb(self):
         invalid_files = [
@@ -726,14 +741,71 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertContains(response, 'id="fabric-photo-upload"')
         self.assertContains(response, 'class="upcycling-photo-input"')
         self.assertContains(response, "Tambah foto barang atau kain")
-        self.assertContains(response, 'id="fabric-photo-preview"')
+        self.assertContains(response, 'id="fabric-photo-previews"')
+        self.assertContains(response, 'data-existing-photo-count="0"')
         self.assertContains(response, 'src="/static/img/mascot/pointing.webp"')
         self.assertContains(response, 'class="upcycling-photo-add"')
         self.assertContains(response, 'name="fabric_photos"')
         self.assertContains(response, "Pilih 1–3 foto")
         self.assertContains(response, 'id="reference-photo-upload"')
+        self.assertContains(response, 'id="reference-photo-previews"')
+        self.assertContains(response, 'data-existing-photo-count="0"')
         self.assertContains(response, 'name="reference_photos"')
         self.assertContains(response, "Foto contoh hasil yang Anda inginkan (opsional)")
+
+    def test_edit_form_previews_all_existing_fabric_photos(self):
+        request_obj = self.make_request(
+            self.user,
+            status=UpcyclingRequest.Status.PENDING_ASSIGNMENT,
+            fabric_photo=SimpleUploadedFile(
+                "fabric-first.png", TINY_PNG, content_type="image/png"
+            ),
+        )
+        for index in range(2):
+            AdditionalFabricPhoto.objects.create(
+                request=request_obj,
+                image=SimpleUploadedFile(
+                    f"fabric-extra-{index}.png", TINY_PNG, content_type="image/png"
+                ),
+            )
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_update", args=[request_obj.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="fabric-photo-previews"')
+        self.assertContains(response, 'data-existing-photo-count="3"')
+        self.assertEqual(response.content.count(b'alt="Pratinjau foto barang atau kain'), 3)
+        self.assertContains(response, "3 foto tersimpan")
+
+    def test_edit_form_previews_all_existing_reference_photos(self):
+        request_obj = self.make_request(
+            self.user,
+            status=UpcyclingRequest.Status.PENDING_ASSIGNMENT,
+        )
+        for index in range(2):
+            AdditionalReferencePhoto.objects.create(
+                request=request_obj,
+                image=SimpleUploadedFile(
+                    f"reference-existing-{index}.png",
+                    TINY_PNG,
+                    content_type="image/png",
+                ),
+            )
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("upcycling:request_update", args=[request_obj.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="reference-photo-previews"')
+        self.assertContains(response, 'data-existing-photo-count="2"')
+        self.assertEqual(
+            response.content.count(b'alt="Pratinjau foto contoh hasil'), 2
+        )
 
     def test_create_request_saves_each_uploaded_fabric_photo(self):
         self.client.force_login(self.user)
@@ -777,6 +849,13 @@ class UpcyclingRequestViewTests(TestCase):
         )
         self.assertEqual(len(detail_response.context["reference_photos"]), 2)
         self.assertContains(detail_response, "Foto referensi produk/desain")
+        self.assertEqual(
+            detail_response.content.count(
+                b'class="aspect-[1.4] w-full rounded-xl bg-[var(--upcycling-soft)] object-cover"'
+            ),
+            3,
+        )
+        self.assertNotContains(detail_response, "aspect-square")
 
     def test_edit_request_can_add_photos_only_up_to_three_total(self):
         upcycling_request = self.make_request(
@@ -1229,8 +1308,8 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertEqual(response.context["selected_from"], "")
         self.assertEqual(response.context["selected_to"], "")
 
-    def test_status_history_hides_other_actors_username(self):
-        """Test behavior: status history hides other actors username."""
+    def test_status_timeline_does_not_expose_history_actor_details(self):
+        """Test behavior: simplified timeline does not expose actor usernames."""
         staff_user = get_user_model().objects.create_user(
             username="staff-secret",
             password="staff-password",
@@ -1249,7 +1328,6 @@ class UpcyclingRequestViewTests(TestCase):
         )
 
         self.assertNotContains(response, "staff-secret")
-        self.assertContains(response, "Tim ReBatik")
 
     def test_status_tabs_include_current_filters_and_share_sync_target(self):
         """Test behavior: status tabs include current filters and share sync target."""
@@ -1297,8 +1375,8 @@ class UpcyclingRequestViewTests(TestCase):
                 self.assertEqual(response.status_code, 200)
                 self.assertEqual(states, expected)
 
-    def test_detail_explains_next_action_and_fabric_handoff_deadline(self):
-        """Test behavior: detail tells the user what to do and by when."""
+    def test_detail_timeline_explains_fabric_handoff_and_deadline(self):
+        """Test behavior: the current timeline step explains what to do and by when."""
         deadline = datetime(2026, 11, 5, 12, 0, tzinfo=datetime_timezone.utc)
         upcycling_request = self.make_request(
             self.user,
@@ -1311,9 +1389,14 @@ class UpcyclingRequestViewTests(TestCase):
             reverse("upcycling:request_detail", args=[upcycling_request.pk])
         )
 
-        next_step = response.context["next_step"]
-        self.assertEqual(next_step["title"], "Serahkan kain")
-        self.assertEqual(next_step["deadline"], deadline)
+        current_step = next(
+            step for step in response.context["timeline_steps"]
+            if step["state"] == "current"
+        )
+        self.assertEqual(
+            current_step["description"],
+            "Serahkan kain sesuai rencana sebelum tenggat agar request tidak kedaluwarsa.",
+        )
         self.assertContains(response, "Menunggu kain diserahkan")
         self.assertContains(response, "05 Nov 2026")
 

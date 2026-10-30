@@ -75,6 +75,7 @@ class UpcyclingRequestForm(forms.ModelForm):
                 "multiple": True,
                 "class": "upcycling-photo-input",
                 "aria-label": "Pilih 1 hingga 3 foto barang atau kain",
+                "hx-preserve": True,
             }
         )
         self.existing_fabric_photo_count = (
@@ -90,6 +91,7 @@ class UpcyclingRequestForm(forms.ModelForm):
                 "multiple": True,
                 "class": "upcycling-photo-input",
                 "aria-label": "Pilih hingga 3 foto referensi produk atau desain",
+                "hx-preserve": True,
             }
         )
         self.existing_reference_photo_count = (
