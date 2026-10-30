@@ -4,7 +4,8 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
+from django.db.migrations.loader import MigrationLoader
+from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 from django.utils import timezone
 from PIL import Image
@@ -16,6 +17,23 @@ from .forms import UpcyclingRequestForm, get_product_options_by_category
 
 
 User = get_user_model()
+
+
+class UpcyclingMigrationStructureTests(SimpleTestCase):
+    def test_artisan_status_index_is_separated_from_initial_schema_migration(self):
+        loader = MigrationLoader(None, ignore_no_migrations=True)
+        request_at_0005 = loader.project_state(
+            ("upcycling", "0005_producttype_upcyclingrequest_approved_at_and_more")
+        ).apps.get_model("upcycling", "UpcyclingRequest")
+        request_at_0022 = loader.project_state(
+            ("upcycling", "0022_add_artisan_status_index")
+        ).apps.get_model("upcycling", "UpcyclingRequest")
+
+        index_name = "upreq_artisan_status_idx"
+        migration_0005_indexes = {index.name for index in request_at_0005._meta.indexes}
+        migration_0022_indexes = {index.name for index in request_at_0022._meta.indexes}
+        self.assertNotIn(index_name, migration_0005_indexes)
+        self.assertIn(index_name, migration_0022_indexes)
 
 
 def make_png():
