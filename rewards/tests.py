@@ -6,7 +6,7 @@ from types import SimpleNamespace
 from django.contrib.auth import get_user_model
 from django.test import SimpleTestCase, TestCase
 
-from .models import PointTransaction
+from .models import PointTransaction, Reward
 from .services import (
     InsufficientPoints,
     award_upcycling_completion,
@@ -445,6 +445,46 @@ class RewardsPageTests(TestCase):
         response = self.client.get("/rewards/")
 
         self.assertRedirects(response, "/login/?next=/rewards/")
+
+    def test_points_overview_shows_five_vouchers_and_links_to_the_full_catalog(self):
+        for index in range(7):
+            Reward.objects.create(
+                name=f"Voucher utama {index + 1}",
+                reward_type=Reward.Type.VOUCHER,
+                points_required=100 + index,
+                stock=2,
+                discount_value=5000 + index * 1000,
+            )
+        Reward.objects.create(
+            name="Voucher nonaktif",
+            reward_type=Reward.Type.VOUCHER,
+            points_required=100,
+            stock=2,
+            discount_value=5000,
+            is_active=False,
+        )
+        Reward.objects.create(
+            name="Reward fisik lama",
+            reward_type=Reward.Type.PHYSICAL,
+            points_required=100,
+            stock=2,
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get("/rewards/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["featured_vouchers"]), 5)
+        for index in range(1, 6):
+            self.assertContains(response, f"Voucher utama {index}")
+        self.assertNotContains(response, "Voucher utama 6")
+        self.assertNotContains(response, "Voucher nonaktif")
+        self.assertNotContains(response, "Reward fisik lama")
+        self.assertContains(response, "Selengkapnya")
+        self.assertContains(response, 'href="/rewards/catalog/"')
+
+        catalog_response = self.client.get("/rewards/catalog/")
+        self.assertEqual(catalog_response.context["rewards"].count(), 7)
 
     def test_points_overview_shows_balance_and_only_owners_recent_activity(self):
         """Show the signed-in user's balance and recent transactions only."""
