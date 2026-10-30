@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django import forms
+from django.utils.html import format_html
 
 from .models import PointTransaction, Reward, RewardRedemption
 
@@ -8,6 +9,30 @@ class RewardAdminForm(forms.ModelForm):
     class Meta:
         model = Reward
         fields = "__all__"
+        labels = {
+            "name": "Nama voucher",
+            "description": "Deskripsi",
+            "reward_type": "Jenis reward",
+            "points_required": "Poin untuk menukar",
+            "stock": "Jumlah voucher tersedia",
+            "is_active": "Tampilkan di katalog",
+            "discount_value": "Nilai diskon (Rp)",
+            "image": "Gambar voucher",
+        }
+        help_texts = {
+            "name": "Gunakan nama singkat yang akan tampil di katalog.",
+            "description": "Jelaskan syarat atau cara menggunakan voucher.",
+            "points_required": "Jumlah poin yang harus dimiliki pengguna untuk menukar voucher ini.",
+            "stock": "Voucher hanya tampil di katalog jika jumlahnya lebih dari 0.",
+            "is_active": "Matikan opsi ini untuk menyembunyikan voucher dari katalog.",
+            "discount_value": "Isi nominal potongan harga dalam rupiah.",
+            "image": "Opsional. Unggah gambar kecil berbentuk JPG, PNG, atau WebP.",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.instance.pk:
+            self.fields["reward_type"].initial = Reward.Type.VOUCHER
 
     def clean_reward_type(self):
         """Prevent changing the type of a reward that has been redeemed."""
@@ -42,9 +67,25 @@ class RewardAdminForm(forms.ModelForm):
 @admin.register(Reward)
 class RewardAdmin(admin.ModelAdmin):
     form = RewardAdminForm
-    list_display = ("name", "reward_type", "points_required", "stock", "is_active")
+    fieldsets = (
+        ("Informasi voucher", {"fields": ("name", "description", "reward_type")}),
+        ("Penukaran", {"fields": ("points_required", "discount_value", "stock", "is_active")}),
+        ("Gambar katalog", {"fields": ("image",)}),
+    )
+    list_display = ("name", "image_preview", "points_required", "discount_value", "stock", "is_active")
     list_filter = ("reward_type", "is_active")
     search_fields = ("name", "description")
+    list_editable = ("is_active",)
+    list_per_page = 25
+
+    @admin.display(description="Gambar")
+    def image_preview(self, obj):
+        if not obj.image:
+            return "—"
+        return format_html(
+            '<img src="{}" alt="" style="width: 48px; height: 48px; object-fit: cover; border-radius: 6px;">',
+            obj.image.url,
+        )
 
 
 @admin.register(RewardRedemption)

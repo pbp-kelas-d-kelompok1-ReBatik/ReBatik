@@ -20,6 +20,8 @@ class Reward(models.Model):
 
     class Meta:
         ordering = ["points_required", "name"]
+        verbose_name = "voucher"
+        verbose_name_plural = "katalog voucher"
 
     def __str__(self):
         return self.name
