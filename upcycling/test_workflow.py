@@ -522,6 +522,39 @@ class UpcyclingWorkflowTests(TestCase):
         self.assertNotContains(response, "Dashboard Artisan")
         self.assertNotContains(response, "Dashboard Admin")
 
+    def test_upcycling_page_titles_use_contrasting_text_color(self):
+        request_obj = make_request(self.user)
+        self.client.force_login(self.user)
+        responses_and_titles = [
+            (self.client.get(reverse("upcycling:request_list")), "Permintaan Saya"),
+            (self.client.get(reverse("upcycling:request_create")), "Upcycling Request"),
+            (
+                self.client.get(reverse("upcycling:request_success", args=[request_obj.pk])),
+                "Permintaan Terkirim",
+            ),
+            (
+                self.client.get(reverse("upcycling:request_detail", args=[request_obj.pk])),
+                "Detail Permintaan",
+            ),
+        ]
+
+        self.client.force_login(self.artisan_user)
+        responses_and_titles.append(
+            (self.client.get(reverse("upcycling:artisan_dashboard")), "Dashboard Artisan")
+        )
+
+        staff = User.objects.create_user(username="header-contrast-admin", is_staff=True)
+        self.client.force_login(staff)
+        responses_and_titles.append(
+            (self.client.get(reverse("upcycling:admin_dashboard")), "Dashboard Admin")
+        )
+
+        for response, title in responses_and_titles:
+            with self.subTest(title=title):
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, title)
+                self.assertContains(response, "text-center text-[var(--brown)]")
+
     def test_admin_dashboard_requires_staff_access(self):
         self.client.force_login(self.user)
 
