@@ -3,7 +3,6 @@
 
 {% block meta %}
 <title>{{ judul|default:"Batik Story" }} - ReBatik</title>
-
 <meta name="description" content="Jelajahi sejarah, filosofi, dan makna motif batik Nusantara bersama ReBatik.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,25 +11,22 @@
 <script src="{% static 'js/batik_story.js' %}" defer></script>
 {% endblock meta %}
 
-
 {% block content %}
 <main class="batik-page">
 
     <!-- HERO SECTION -->
     <section class="batik-hero">
         <div class="hero-overlay"></div>
+
         <div class="hero-container">
             <div class="hero-copy">
-
                 <p class="hero-eyebrow">
                     WARISAN <span>·</span> KREATIVITAS <span>·</span> MASA DEPAN
                 </p>
 
-                <h1 class="hero-title">
-                    BATIK <span>STORY</span>
-                </h1>
+                <h1 class="hero-title">BATIK <span>STORY</span></h1>
 
-                <div class="title-decoration">
+                <div class="title-decoration" aria-hidden="true">
                     <span></span>
                     <i>✥</i>
                     <span></span>
@@ -44,63 +40,57 @@
 
                 <p class="hero-typing">
                     <span id="typing-text">{{ ket1|default:"Setiap motif menyimpan cerita." }}</span>
-                    <span class="typing-cursor">|</span>
+                    <span class="typing-cursor" aria-hidden="true">|</span>
                 </p>
 
                 <a href="#story-section" class="explore-btn">
-                    <span class="book-icon">♧</span>
+                    <span class="book-icon" aria-hidden="true">♧</span>
                     Jelajahi Cerita Batik
-                    <span class="arrow">→</span>
+                    <span class="arrow" aria-hidden="true">→</span>
                 </a>
 
-                <!-- FEATURE CARDS -->
                 <div class="hero-features">
-
                     <a href="#story-section" class="feature-card">
-                        <span class="feature-icon">♧</span>
+                        <span class="feature-icon" aria-hidden="true">♧</span>
                         <h3>Sejarah &amp; Makna</h3>
                         <p>Pelajari filosofi<br>setiap motif</p>
                     </a>
 
                     <a href="#story-section" class="feature-card">
-                        <span class="feature-icon">✥</span>
+                        <span class="feature-icon" aria-hidden="true">✥</span>
                         <h3>Eksplorasi Motif</h3>
                         <p>Kenali ragam batik<br>Nusantara</p>
                     </a>
 
                     <a href="{% url 'batik_custom:show_home' %}" class="feature-card">
-                        <span class="feature-icon">✎</span>
+                        <span class="feature-icon" aria-hidden="true">✎</span>
                         <h3>Buat Custom</h3>
                         <p>Rancang motif<br>versi Anda</p>
                     </a>
 
                     <a href="{% url 'marketplace:home' %}" class="feature-card">
-                        <span class="feature-icon">♧</span>
+                        <span class="feature-icon" aria-hidden="true">♧</span>
                         <h3>Dukung Pengrajin</h3>
                         <p>Beli dan lestarikan<br>batik lokal</p>
                     </a>
-
                 </div>
             </div>
         </div>
 
         <a href="#story-section" class="scroll-indicator" aria-label="Jelajahi cerita batik">
             <span class="scroll-mouse"><span></span></span>
-            <span class="scroll-arrow">⌄</span>
+            <span class="scroll-arrow" aria-hidden="true">⌄</span>
         </a>
     </section>
-
 
     <!-- STORY COLLECTION -->
     <section id="story-section" class="story-section">
 
-        <!-- SECTION HEADING -->
         <div class="section-heading">
             <p class="section-eyebrow">JEJAK BUDAYA NUSANTARA</p>
-
             <h2>Discover Batik <span>Stories</span></h2>
 
-            <div class="section-divider">
+            <div class="section-divider" aria-hidden="true">
                 <span>✥</span>
             </div>
 
@@ -109,8 +99,6 @@
                 Kenali cerita yang menjadikan batik lebih dari sekadar kain.
             </p>
         </div>
-
-
 
         <!-- COLLECTION TOOLBAR -->
         <div class="story-toolbar">
@@ -124,35 +112,70 @@
             </span>
         </div>
 
-        <!-- SEARCH BAR -->
-        <div class="story-search">
+
+        <!-- PENCARIAN, FILTER, DAN SORTING BERBASIS DATABASE -->
+        <form
+            method="GET"
+            action="{% url 'batik_story:show_batik_story' %}"
+            class="story-search"
+            role="search"
+        >
             <span class="story-search-icon" aria-hidden="true">⌕</span>
 
-            <input type="search" id="story-search-input" placeholder="Cari nama motif atau asal daerah..."
-                aria-label="Cari motif batik" autocomplete="off">
+            <input
+                type="search"
+                name="q"
+                value="{{ query }}"
+                placeholder="Cari nama motif, daerah, atau filosofi..."
+                aria-label="Cari motif batik"
+                autocomplete="off"
+            >
 
-            <button type="button" id="story-search-clear" aria-label="Hapus pencarian">
-                ×
-            </button>
-        </div>
+            <select name="asal" aria-label="Filter asal daerah">
+                <option value="">Semua daerah</option>
 
+            {% for kode, nama_daerah in asal_choices %}
+                <option
+                    value="{{ kode }}"
+                    {% if selected_asal == kode %}selected{% endif %}
+                >
+                    {{ nama_daerah }}
+                </option>
+            {% endfor %}
+        </select>
 
-        <p id="story-search-status" class="story-search-status" aria-live="polite"></p>
-        <div id="story-empty-state" class="story-empty-state" hidden>
-                <img src="{% static 'img/mascot/crying.webp' %}"
-                alt="Kapy sedih karena cerita tidak ditemukan" class="story-empty-mascot">
+        <select name="sort" aria-label="Urutkan nama motif">
+            <option
+                value="nama_asc"
+                {% if selected_sort == "nama_asc" %}selected{% endif %}
+            >
+                Nama: A–Z
+            </option>
 
-            <h3>Yah, motifnya belum ditemukan :D</h3>
+            <option
+                value="nama_desc"
+                {% if selected_sort == "nama_desc" %}selected{% endif %}
+            >
+                Nama: Z–A
+            </option>
+        </select>
 
-            <p>
-                Sepertinya Kapy belum menemukan cerita yang kamu cari.
-                Coba kata kunci lain, ya!
-            </p>
+        <button type="submit" class="story-search-submit">
+            Cari
+        </button>
 
-            <button type="button" id="story-empty-reset">
-                Lihat Semua Cerita
-            </button>
-        </div>
+        <a
+            href="{% url 'batik_story:show_batik_story' %}"
+            class="story-search-reset"
+        >
+            Reset
+        </a>
+    </form>
+
+    <!-- STATUS HASIL PENCARIAN -->
+    <p class="story-search-status" aria-live="polite">
+        Menampilkan {{ batiks|length }} cerita{% if query %} untuk kata kunci “{{ query }}”{% endif %}{% if selected_asal %} dari {{ selected_asal }}{% endif %}.
+    </p>
 
 
         <!-- BATIK CARDS GRID -->
@@ -161,6 +184,7 @@
             {% for batik in batiks %}
             <article class="story-card">
 
+                <!-- IMAGE -->
                 <div class="card-image">
                     {% if batik.static_gambar_path %}
                     <img src="{% static batik.static_gambar_path %}" alt="Motif batik {{ batik.nama }}" loading="lazy">
@@ -168,21 +192,20 @@
                     <img src="{{ batik.gambar.url }}" alt="Motif batik {{ batik.nama }}" loading="lazy">
                     {% else %}
                     <div class="image-placeholder">
-                        <span>✥</span>
+                        <span aria-hidden="true">✥</span>
                         <p>ReBatik Heritage</p>
                     </div>
                     {% endif %}
 
-                    <span class="image-number">
-                        {% if forloop.counter < 10 %}0{% endif %}{{ forloop.counter }} </span>
-
-                            <div class="image-overlay"></div>
+                    <span class="image-number">{{ forloop.counter|stringformat:"02d" }}</span>
+                    <div class="image-overlay"></div>
                 </div>
 
+                <!-- CARD CONTENT -->
                 <div class="card-content">
 
                     <div class="card-meta">
-                        <span class="location-icon">⌖</span>
+                        <span class="location-icon" aria-hidden="true">⌖</span>
                         <span>{{ batik.get_asal_display|default:"Nusantara" }}</span>
                     </div>
 
@@ -190,30 +213,74 @@
                         <h3>{{ batik.nama }}</h3>
 
                         <div class="card-actions">
-                            <label class="love" title="Simpan favorit">
-                                <input type="checkbox" aria-label="Sukai {{ batik.nama }}">
-                                <span>♡</span>
-                            </label>
 
-                            {% if user.is_authenticated and user.is_staff %}
-                            <button type="button" class="delete-batik-btn" popovertarget="delete-batik-{{ batik.id }}"
-                                title="Hapus motif batik" aria-label="Hapus {{ batik.nama }}">🗑</button>
+                            
+                            <!-- FAVORITE -->
+                            {% if batik.id_story %}
+                            <button type="button" class="love {% if batik.is_favorited %}is-favorited{% endif %}"
+                                data-url="{% url 'batik_story:toggle_favorite' batik.id_story %}"
+                                aria-label="Sukai {{ batik.nama }}"
+                                aria-pressed="{{ batik.is_favorited|yesno:'true,false' }}">
+                                <span class="love-icon">
+                                    {% if batik.is_favorited %}♥{% else %}♡{% endif %}
+                                </span>
+                                <span class="favorite-count">
+                                    {{ batik.favorite_count|default:0 }}
+                                </span>
+                            </button>
+                            {% else %}
+                            <button type="button" class="love" disabled>
+                                <span class="love-icon">♡</span>
+                                <span class="favorite-count">0</span>
+                            </button>
+                            {% endif %}
+                            
+                            <!-- EDIT AND DELETE: STAFF ONLY -->
+                            {% if user.is_authenticated and user.is_staff and batik.id_story %}
+                            <div class="admin-card-actions">
+
+                                <a href="{% url 'batik_story:story_edit' batik.id_story %}"
+                                    class="card-action-btn card-action-edit" title="Edit motif"
+                                    aria-label="Edit {{ batik.nama }}">
+                                    <span class="action-label">Edit</span>
+                                    <svg class="action-icon" viewBox="0 0 24 24" width="16" height="16" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M12 20h9"></path>
+                                        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                    </svg>
+                                </a>
+
+                                <button type="button" class="card-action-btn card-action-delete"
+                                    popovertarget="delete-batik-{{ batik.id_story }}" title="Hapus motif"
+                                    aria-label="Hapus {{ batik.nama }}">
+                                    <span class="action-label">Hapus</span>
+                                    <svg class="action-icon" viewBox="0 0 24 24" width="16" height="16" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M3 6h18"></path>
+                                        <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"></path>
+                                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                                        <path d="M10 11v6M14 11v6"></path>
+                                    </svg>
+                                </button>
+
+                            </div>
                             {% endif %}
 
-
-
-
-            
                         </div>
                     </div>
 
+                    <!-- DESCRIPTION -->
                     <p class="card-description">
                         {{ batik.deskripsi|default:"Mengenal keindahan motif batik Nusantara."|truncatewords:22 }}
                     </p>
 
+                    <!-- STORY DETAIL BUTTON -->
                     {% if batik.id_story %}
                     <button type="button" class="story-button"
-                        data-story-url="{% url 'batik_story:story_detail' batik.id_story %}"> Baca Cerita <span>→</span>
+                        data-story-url="{% url 'batik_story:story_detail' batik.id_story %}">
+                        Baca Cerita <span aria-hidden="true">→</span>
                     </button>
                     {% else %}
                     <button type="button" class="story-button" disabled>
@@ -223,40 +290,41 @@
 
                 </div>
 
-                {% if user.is_authenticated and user.is_staff %}
-                <div id="delete-batik-{{ batik.id }}" class="story-delete-modal" popover="auto" role="dialog"
-                    aria-labelledby="delete-title-{{ batik.id }}">
-                    <button type="button" class="story-delete-modal__backdrop"
-                        popovertarget="delete-batik-{{ batik.id }}" popovertargetaction="hide"
-                        aria-label="Tutup konfirmasi"></button>
-
+                <!-- DELETE CONFIRMATION MODAL -->
+                {% if user.is_authenticated and user.is_staff and batik.id_story %}
+                <div id="delete-batik-{{ batik.id_story }}" class="story-delete-modal" popover="auto" role="dialog"
+                    aria-labelledby="delete-title-{{ batik.id_story }}">
                     <div class="story-delete-modal__content">
-                        <button type="button" class="story-delete-modal__close"
-                            popovertarget="delete-batik-{{ batik.id }}" popovertargetaction="hide"
-                            aria-label="Tutup">×</button>
 
-                        <h2 id="delete-title-{{ batik.id }}">
+                        <button type="button" class="story-delete-modal__close"
+                            popovertarget="delete-batik-{{ batik.id_story }}" popovertargetaction="hide"
+                            aria-label="Tutup">
+                            ×
+                        </button>
+
+                        <h2 id="delete-title-{{ batik.id_story }}">
                             Hapus Motif Batik?
                         </h2>
 
                         <p>
                             Apakah Anda yakin ingin menghapus
                             <strong>{{ batik.nama }}</strong>?
+                            Tindakan ini tidak bisa dibatalkan.
                         </p>
 
                         <div class="story-delete-modal__actions">
-                            <button type="button" class="button button-secondary"
-                                popovertarget="delete-batik-{{ batik.id }}" popovertargetaction="hide">Batal</button>
 
+                            <button type="button" class="story-delete-btn story-delete-btn--cancel"
+                                popovertarget="delete-batik-{{ batik.id_story }}" popovertargetaction="hide">
+                                Batal
+                            </button>
 
-                            {% if batik.id_story %}
                             <form method="post" action="{% url 'batik_story:delete_story' batik.id_story %}">
                                 {% csrf_token %}
-                                <button type="submit" class="button button-danger">
+                                <button type="submit" class="story-delete-btn story-delete-btn--confirm">
                                     Ya, Hapus
                                 </button>
                             </form>
-                            {% endif %}
 
                         </div>
                     </div>
@@ -267,14 +335,15 @@
 
             {% empty %}
             <div class="empty-state">
-                <span>✥</span>
+                <span aria-hidden="true">✥</span>
                 <h3>Cerita Batik Segera Hadir</h3>
                 <p>Koleksi cerita batik Nusantara sedang dipersiapkan.</p>
             </div>
             {% endfor %}
+
         </div>
 
-
+        <!-- STORY DETAIL DIALOG -->
         <dialog id="story-modal" class="story-modal">
             <button type="button" id="story-modal-close" class="story-modal-close" aria-label="Tutup cerita">
                 ×
@@ -285,9 +354,7 @@
             </div>
         </dialog>
 
-
-
-        <!-- ADD BATIK CARD: ONLY ONCE -->
+        <!-- ADD BATIK CARD: STAFF ONLY -->
         {% if user.is_authenticated and user.is_staff %}
         <article class="add-batik-card">
 
@@ -297,6 +364,7 @@
             </div>
 
             <div class="add-batik-card-content">
+
                 <div class="add-batik-card-text">
                     <h3>Tambahkan Motif Batik</h3>
                     <p>
@@ -308,12 +376,24 @@
                 <a href="{% url 'batik_story:add_batik' %}" class="add-batik-card-button">
                     <span>Tambah →</span>
                 </a>
-            </div>
 
+            </div>
         </article>
         {% endif %}
-        </div>
-    </section>
 
+    </section>
 </main>
+
+<!-- CSRF TOKEN FOR FAVORITE AJAX -->
+<form id="csrf-form" hidden>
+    {% csrf_token %}
+</form>
+
+<script>
+    window.BATIK_USER_AUTHENTICATED =
+        "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
+    window.BATIK_LOGIN_URL = "{% url 'main:login' %}";
+</script>
+
 {% endblock content %}
+```

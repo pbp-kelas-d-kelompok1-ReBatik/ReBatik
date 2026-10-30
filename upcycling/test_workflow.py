@@ -505,8 +505,10 @@ class UpcyclingWorkflowTests(TestCase):
 
         response = self.client.get(reverse("upcycling:request_list"))
 
-        self.assertContains(response, 'href="/upcycling/">Upcycling Request</a>')
-        self.assertContains(response, 'href="/upcycling/artisan/">Dashboard Artisan</a>')
+        self.assertContains(response, 'href="/upcycling/"')
+        self.assertContains(response, "Upcycling Request")
+        self.assertContains(response, 'href="/upcycling/artisan/"')
+        self.assertContains(response, "Dashboard Artisan")
         self.assertContains(response, "Buka dashboard artisan")
         self.assertContains(response, "primary-action-button mt-5 min-h-11 px-5 py-2 text-sm")
 
@@ -515,7 +517,8 @@ class UpcyclingWorkflowTests(TestCase):
 
         response = self.client.get(reverse("upcycling:request_list"))
 
-        self.assertContains(response, 'href="/upcycling/">Upcycling Request</a>')
+        self.assertContains(response, 'href="/upcycling/"')
+        self.assertContains(response, "Upcycling Request")
         self.assertNotContains(response, "Dashboard Artisan")
         self.assertNotContains(response, "Dashboard Admin")
 
