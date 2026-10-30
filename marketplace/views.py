@@ -12,7 +12,15 @@ from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.views.decorators.http import require_GET
 
+from .dropoff_api import (
+    DUMMY_DROPOFF_SOURCE,
+    dataset_version,
+    filter_dropoff_points,
+    find_dropoff_point,
+    load_dummy_dropoff_points,
+)
 from .forms import CheckoutForm, ProductForm
 from .models import (
     MAX_ORDER_QUANTITY,
@@ -25,6 +33,7 @@ from .services import OrderTransitionNotAllowed, OutOfStock, cancel_order, place
 PRODUCTS_PER_PAGE = 12
 ORDERS_PER_PAGE = 10
 MANAGE_PRODUCTS_PER_PAGE = 15
+DROPOFF_PER_PAGE = 9
 
 
 def staff_required(view_func):
@@ -608,10 +617,10 @@ def manage_product_restore(request, pk):
 def dropoff_list(request):
     """Display active fabric drop-off points with server-side city and search filters."""
     all_points = DropOffPoint.objects.all().order_by("city", "name")
-    cities = sorted(
-        list(
-            DropOffPoint.objects.values_list("city", flat=True).distinct()
-        )
+    cities = list(
+        DropOffPoint.objects.order_by("city")
+        .values_list("city", flat=True)
+        .distinct()
     )
 
     selected_city = request.GET.get("city", "").strip()
@@ -628,16 +637,62 @@ def dropoff_list(request):
             Q(name__icontains=selected_query)
             | Q(address__icontains=selected_query)
             | Q(city__icontains=selected_query)
+            | Q(province__icontains=selected_query)
         )
 
+    paginator = Paginator(drop_points, DROPOFF_PER_PAGE)
+    page_obj = paginator.get_page(request.GET.get("page"))
+
     context = {
-        "drop_points": drop_points,
+        "drop_points": page_obj.object_list,
+        "page_obj": page_obj,
+        "paginator": paginator,
+        "total_drop_points": paginator.count,
         "cities": cities,
         "selected_city": selected_city,
         "selected_query": selected_query,
         "has_any_drop_points": all_points.exists(),
     }
     return render(request, "marketplace/dropoff.html", context)
+
+
+def _public_json(payload, status=200):
+    """Return a read-only JSON response that other apps/frontends may consume (CORS-open)."""
+    response = JsonResponse(payload, status=status, json_dumps_params={"ensure_ascii": False})
+    response["Access-Control-Allow-Origin"] = "*"
+    response["Cache-Control"] = "public, max-age=300"
+    return response
+
+
+@require_GET
+def dropoff_points_api(request):
+    """Dummy Drop-off Point API: list points with optional `city` and `q` filters."""
+    city = request.GET.get("city", "").strip()[:100]
+    query = request.GET.get("q", "").strip()[:100]
+    all_points = load_dummy_dropoff_points()
+    items = filter_dropoff_points(all_points, city=city, query=query)
+    return _public_json(
+        {
+            "source": DUMMY_DROPOFF_SOURCE,
+            "version": dataset_version(),
+            "count": len(items),
+            "filters": {"city": city, "q": query},
+            "cities": sorted({point["city"] for point in all_points}),
+            "items": items,
+        }
+    )
+
+
+@require_GET
+def dropoff_point_api_detail(request, code):
+    """Dummy Drop-off Point API: retrieve a single point by its unique code."""
+    point = find_dropoff_point(code)
+    if point is None:
+        return _public_json(
+            {"source": DUMMY_DROPOFF_SOURCE, "error": "Drop-off point tidak ditemukan."},
+            status=404,
+        )
+    return _public_json({"source": DUMMY_DROPOFF_SOURCE, "item": point})
 
 
 FALLBACK_PROVINCES = [

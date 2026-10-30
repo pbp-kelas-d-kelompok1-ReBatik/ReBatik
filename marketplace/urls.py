@@ -31,4 +31,10 @@ urlpatterns = [
     ),
     path("drop-off/", views.dropoff_list, name="dropoff"),
     path("api/regions/", views.regions_api, name="regions_api"),
+    path("api/dropoff-points/", views.dropoff_points_api, name="dropoff_points_api"),
+    path(
+        "api/dropoff-points/<slug:code>/",
+        views.dropoff_point_api_detail,
+        name="dropoff_point_api_detail",
+    ),
 ]
