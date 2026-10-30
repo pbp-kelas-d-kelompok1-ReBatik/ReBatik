@@ -14,5 +14,6 @@ urlpatterns = [
     path("search/clear/", views.clear_search_history, name="clear_search_history"),
     path("notifications/", views.notification_list, name="notifications"),
     path("notifications/<int:pk>/read/", views.notification_mark_read, name="notification_mark_read"),
+    path("notifications/read-all/", views.notification_mark_all_read, name="notification_mark_all_read"),
 
 ]

@@ -1,0 +1,37 @@
+<section class="notification-card" aria-label="Daftar notifikasi">
+    <header class="notification-card__header">
+        <strong>🔔 Notifikasi</strong>
+        <span>{{ unread_count }} belum dibaca</span>
+    </header>
+    {% for item in notifications %}
+        <article class="notification-item {% if not item.is_read %}is-unread{% endif %}">
+            <span class="notification-item__icon">
+                {% if item.notification_type == "order_created" or item.notification_type == "order_updated" or item.notification_type == "order_cancelled" %}📦
+                {% elif item.notification_type == "login" or item.notification_type == "logout" %}🔐
+                {% elif item.notification_type == "donation_updated" %}♻️
+                {% elif item.notification_type == "upcycling_updated" %}🧵
+                {% else %}🌿{% endif %}
+            </span>
+            <div class="notification-item__body">
+                <strong>{{ item.title }}</strong>
+                <p>{{ item.message }}</p>
+                <time>{{ item.created_at|timesince }} lalu</time>
+            </div>
+            {% if not item.is_read %}
+                <form method="post" action="{% url 'main:notification_mark_read' item.pk %}" hx-post="{% url 'main:notification_mark_read' item.pk %}" hx-target="#rbNotificationPanel" hx-swap="innerHTML">
+                    {% csrf_token %}
+                    <button type="submit" aria-label="Tandai telah dibaca">●</button>
+                </form>
+            {% endif %}
+        </article>
+    {% empty %}
+        <p class="notification-empty">Belum ada notifikasi.</p>
+    {% endfor %}
+    {% if unread_count %}
+        <form method="post" action="{% url 'main:notification_mark_all_read' %}" hx-post="{% url 'main:notification_mark_all_read' %}" hx-target="#rbNotificationPanel" hx-swap="innerHTML">
+            {% csrf_token %}
+            <button class="notification-read-all" type="submit">Tandai semua sudah dibaca</button>
+        </form>
+    {% endif %}
+    <a class="notification-see-all" href="{% url 'main:notifications' %}">Lihat semua notifikasi →</a>
+</section>

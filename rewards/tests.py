@@ -282,7 +282,14 @@ class VoucherManagementDashboardTests(TestCase):
         self.assertContains(response, 'class="voucher-card voucher-admin-card"')
         self.assertContains(response, 'class="voucher-admin-actions"')
         self.assertContains(response, f'href="/rewards/admin/vouchers/{voucher.pk}/edit/"')
-        self.assertNotContains(response, "hx-get")
+        # Navbar HTMX controls (search and notifications) are rendered by
+        # base.html, so check only the voucher card actions here.
+        voucher_card_html = (
+            response.content.decode()
+            .split(f'id="voucher-admin-card-{voucher.pk}"', 1)[1]
+            .split("</article>", 1)[0]
+        )
+        self.assertNotIn("hx-get", voucher_card_html)
         self.assertContains(response, 'class="primary-action-button voucher-admin-add-link"')
         self.assertContains(response, "Diskon Rp15.000,75")
         self.assertNotContains(response, 'class="voucher-admin-form-grid"')

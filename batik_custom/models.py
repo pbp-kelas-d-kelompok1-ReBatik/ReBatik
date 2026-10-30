@@ -344,12 +344,20 @@ class BatikOrder(models.Model):
 
         # Perubahan status melalui admin maupun kode aplikasi akan memberi kabar ke pemilik.
         if previous_status and previous_status != self.status:
-            from main.models import Notification
-            Notification.objects.create(
-                user=self.user,
-                title="Status pesanan diperbarui",
-                message=f"Pesanan #{self.pk} sekarang berstatus: {self.get_status_display()}.",
-                notification_type="order_updated",
+            from main.views import create_notification
+            notification_type = (
+                "order_cancelled" if self.status == "cancelled" else "order_updated"
+            )
+            title = (
+                "Pesanan dibatalkan"
+                if self.status == "cancelled"
+                else "Status pesanan diperbarui"
+            )
+            create_notification(
+                self.user,
+                title,
+                f"Pesanan #{self.pk} sekarang berstatus: {self.get_status_display()}.",
+                notification_type=notification_type,
                 target_url=f"/batik_custom/order/{self.pk}/confirmation/",
             )
 

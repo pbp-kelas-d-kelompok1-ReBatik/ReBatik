@@ -801,7 +801,7 @@ body.rb-no-scroll {
     .rb-nav__sep,
     .rb-nav__user,
     .rb-hide-mobile,
-    .rb-nav__actions > .rb-nav__search,
+    .rb-nav__actions > .rb-search-wrap,
     .rb-mega {
         display: none !important;
     }
@@ -873,4 +873,737 @@ body.rb-no-scroll {
     .rb-nav {
         padding: 0;
     }
+}
+
+
+/* ---------------- LIVE SEARCH + NOTIFICATION PANELS ---------------- */
+.rb-search-wrap,
+.rb-notification-wrap {
+    position: relative;
+    flex: none;
+}
+
+.rb-search-results {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    z-index: 1200;
+    display: none;
+    width: min(390px, 88vw);
+    max-height: min(70vh, 520px);
+    overflow-y: auto;
+    border: 1px solid #ead1b2;
+    border-radius: 14px;
+    background: #fffaf1;
+    color: #503321;
+    box-shadow: 0 16px 38px rgba(64, 38, 24, .25);
+}
+
+.rb-search-results.is-visible:not(:empty) {
+    display: block;
+}
+
+.rb-search-wrap--drawer .rb-search-results {
+    top: 100%;
+    width: 100%;
+}
+
+.search-suggestions {
+    padding: 13px;
+    font-family: Georgia, serif;
+}
+
+.search-panel-heading,
+.notification-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 5px 7px 11px;
+    color: #754326;
+    border-bottom: 1px solid #efdfca;
+}
+
+.search-panel-heading span,
+.notification-card__header span {
+    color: #98765b;
+    font-size: 12px;
+}
+
+.search-suggestion {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 8px;
+    border-bottom: 1px solid #f2e7d9;
+    color: #503321;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.search-suggestion:hover {
+    border-radius: 8px;
+    background: #f8ead7;
+}
+
+.search-suggestion > span:nth-child(2) {
+    min-width: 0;
+    flex: 1;
+}
+
+.search-suggestion small {
+    color: #98765b;
+    font-size: 12px;
+}
+
+.search-suggestion-icon {
+    display: grid;
+    width: 27px;
+    height: 27px;
+    flex: none;
+    place-items: center;
+    border-radius: 50%;
+    background: #f5e3ca;
+    color: #784628;
+}
+
+.search-no-results,
+.search-empty {
+    padding: 18px 10px;
+    color: #795e49;
+    text-align: center;
+}
+
+.search-no-results strong {
+    display: block;
+    color: #503321;
+}
+
+.search-no-results p {
+    margin: 6px 0 0;
+    font-size: 13px;
+}
+
+.search-all {
+    display: block;
+    width: 100%;
+    padding: 11px 8px;
+    border: 0;
+    background: transparent;
+    color: #784628;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.rb-notification-panel {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: -70px;
+    z-index: 1250;
+    width: min(390px, 92vw);
+    max-height: min(75vh, 580px);
+    overflow-y: auto;
+    border: 1px solid #ead1b2;
+    border-radius: 15px;
+    background: #fffaf1;
+    color: #503321;
+    box-shadow: 0 16px 38px rgba(64, 38, 24, .28);
+}
+
+.rb-notification-panel[hidden] {
+    display: none;
+}
+
+.notification-card {
+    padding: 13px;
+    font-family: Georgia, serif;
+}
+
+.notification-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 6px;
+    border-bottom: 1px solid #f0e3d2;
+}
+
+.notification-item.is-unread {
+    background: #fff4e4;
+}
+
+.notification-item__icon {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    flex: none;
+    place-items: center;
+    border-radius: 50%;
+    background: #f5e3ca;
+}
+
+.notification-item__body {
+    min-width: 0;
+    flex: 1;
+}
+
+.notification-item__body strong {
+    display: block;
+    color: #4e3020;
+    font-size: 14px;
+}
+
+.notification-item__body p {
+    margin: 3px 0;
+    color: #806753;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.notification-item__body time {
+    color: #a1846b;
+    font-size: 11px;
+}
+
+.notification-item form button {
+    border: 0;
+    background: transparent;
+    color: #c64d42;
+    cursor: pointer;
+}
+
+.notification-read-all,
+.notification-see-all {
+    display: block;
+    width: 100%;
+    padding: 11px;
+    border: 0;
+    border-radius: 8px;
+    background: #754326;
+    color: #fff8ee;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.notification-see-all {
+    margin-top: 8px;
+}
+
+.notification-empty {
+    padding: 18px;
+    color: #806753;
+    text-align: center;
+}
+
+.rb-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    object-fit: cover;
+}
+
+@media (max-width: 960px) {
+    .rb-search-wrap--drawer {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .rb-notification-panel {
+        right: -48px;
+    }
+}
+
+
+/* =========================================================
+   REBATIK NAVBAR UI POLISH — menu, notification & search
+   Overrides for the compact reference design.
+   ========================================================= */
+
+.rb-nav .rb-user-menu {
+    width: 264px;
+    max-width: calc(100vw - 24px);
+    max-height: min(78vh, 620px);
+    padding: 9px 10px 8px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border: 1px solid #ead3b5;
+    border-radius: 15px;
+    background: #fffaf1;
+    box-shadow: 0 14px 32px rgba(57, 34, 22, .25);
+}
+
+.rb-nav .rb-user-menu__head {
+    gap: 10px;
+    padding: 7px 8px 10px;
+}
+
+.rb-nav .rb-user-menu__head .rb-avatar {
+    width: 43px;
+    height: 43px;
+}
+
+.rb-nav .rb-user-menu__head strong {
+    font-size: 16px;
+}
+
+.rb-nav .rb-user-menu__head small {
+    font-size: 12px;
+}
+
+.rb-nav .rb-user-menu ul {
+    padding: 6px 0;
+}
+
+.rb-nav .rb-user-menu li a,
+.rb-nav .rb-user-menu__logout button {
+    min-height: 33px;
+    gap: 10px;
+    padding: 6px 9px;
+    border-radius: 7px;
+    color: #553724;
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+.rb-nav .rb-user-menu li a > span:last-child {
+    min-width: 0;
+    flex: 1;
+}
+
+.rb-nav .rb-user-menu li a:hover,
+.rb-nav .rb-user-menu li a.is-active,
+.rb-nav .rb-user-menu__logout button:hover {
+    background: #f7e7d1;
+}
+
+.rb-nav .rb-menu-icon {
+    display: inline-grid;
+    width: 20px;
+    flex: 0 0 20px;
+    place-items: center;
+    color: #70452b;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.rb-nav .rb-user-menu__logout {
+    margin-top: 4px;
+    padding-top: 6px;
+    border-top: 1px solid #ead9c3;
+}
+
+.rb-nav .rb-user-menu__logout button {
+    width: 100%;
+}
+
+/* Notification dropdown: compact cream card like the reference */
+.rb-nav .rb-notification-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: -10px;
+    z-index: 1500;
+    width: min(410px, calc(100vw - 22px));
+    max-width: calc(100vw - 22px);
+    max-height: min(76vh, 590px);
+    overflow: auto;
+    border: 1px solid #ead3b5;
+    border-radius: 16px;
+    background: #fffaf1;
+    color: #503321;
+    box-shadow: 0 15px 36px rgba(64, 38, 24, .25);
+}
+
+.rb-nav .notification-card {
+    padding: 12px 13px 13px;
+    font-family: "Garamond", Georgia, serif;
+}
+
+.rb-nav .notification-card__header {
+    min-height: 35px;
+    padding: 1px 5px 10px;
+    border-bottom: 1px solid #efdfca;
+}
+
+.rb-nav .notification-card__header > strong {
+    color: #583724;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.rb-nav .notification-card__actions {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.rb-nav .notification-card__actions form {
+    margin: 0;
+}
+
+.rb-nav .notification-mark-all {
+    padding: 3px 0;
+    border: 0;
+    color: #805536;
+    background: transparent;
+    font-family: inherit;
+    font-size: 12px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.rb-nav .notification-settings {
+    display: grid;
+    width: 25px;
+    height: 25px;
+    place-items: center;
+    border-radius: 50%;
+    color: #68432d;
+    font-family: Arial, sans-serif;
+    font-size: 19px;
+    text-decoration: none;
+}
+
+.rb-nav .notification-settings:hover {
+    background: #f5e6d2;
+}
+
+.rb-nav .notification-card__list {
+    padding: 2px 0;
+}
+
+.rb-nav .notification-item {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    min-height: 68px;
+    padding: 9px 5px;
+    border-bottom: 1px solid #f0e3d2;
+    background: transparent;
+}
+
+.rb-nav .notification-item.is-unread {
+    background: #fff7eb;
+}
+
+.rb-nav .notification-item__icon {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border-radius: 50%;
+    color: #71472d;
+    background: #f8e7cf;
+    font-size: 19px;
+}
+
+.rb-nav .notification-item__body {
+    min-width: 0;
+}
+
+.rb-nav .notification-item__body strong {
+    display: block;
+    margin: 0 0 3px;
+    color: #4c3021;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.rb-nav .notification-item__body p {
+    display: -webkit-box;
+    margin: 0;
+    overflow: hidden;
+    color: #8a715c;
+    font-size: 12px;
+    line-height: 1.35;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.rb-nav .notification-item__meta {
+    display: flex;
+    align-items: center;
+    align-self: start;
+    gap: 7px;
+    padding-top: 3px;
+    white-space: nowrap;
+}
+
+.rb-nav .notification-item__meta time {
+    color: #a1846b;
+    font-size: 11px;
+}
+
+.rb-nav .notification-item__meta form {
+    margin: 0;
+}
+
+.rb-nav .notification-item__meta button {
+    display: grid;
+    width: 14px;
+    height: 20px;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.rb-nav .notification-item__meta button span {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #e34a55;
+}
+
+.rb-nav .notification-empty {
+    display: grid;
+    justify-items: center;
+    gap: 5px;
+    padding: 24px 12px;
+    color: #806753;
+    text-align: center;
+}
+
+.rb-nav .notification-empty > span {
+    color: #c18b58;
+    font-size: 25px;
+}
+
+.rb-nav .notification-empty strong {
+    color: #593a27;
+    font-size: 15px;
+}
+
+.rb-nav .notification-empty p {
+    margin: 0;
+    font-size: 12px;
+}
+
+.rb-nav .notification-see-all {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    margin: 10px 3px 0;
+    padding: 8px 12px;
+    border-radius: 9px;
+    color: #fff8ed;
+    background: linear-gradient(110deg, #70452b, #8a542f);
+    font-size: 14px;
+    text-decoration: none;
+    transition: filter .2s ease;
+}
+
+.rb-nav .notification-see-all:hover {
+    filter: brightness(1.08);
+}
+
+/* Search suggestions and recent search history */
+.rb-nav .rb-search-results {
+    width: min(280px, calc(100vw - 22px));
+    max-height: min(70vh, 440px);
+    border: 1px solid #ead3b5;
+    border-radius: 13px;
+    background: #fffaf1;
+    box-shadow: 0 14px 32px rgba(64, 38, 24, .23);
+}
+
+.rb-nav .search-suggestions {
+    padding: 11px 12px 9px;
+    color: #563724;
+    font-family: "Garamond", Georgia, serif;
+}
+
+.rb-nav .search-panel-heading {
+    min-height: 27px;
+    padding: 0 4px 8px;
+    border-bottom: 1px solid #efdfca;
+}
+
+.rb-nav .search-panel-eyebrow {
+    color: #a65d2c;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.rb-nav .search-panel-heading small {
+    color: #9b8068;
+    font-size: 11px;
+}
+
+.rb-nav .search-suggestion {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 29px;
+    padding: 5px 4px;
+    border-bottom: 0;
+    border-radius: 6px;
+    color: #503321;
+    font-size: 13px;
+    line-height: 1.2;
+    text-decoration: none;
+}
+
+.rb-nav .search-suggestion:hover {
+    background: #f8ead7;
+}
+
+.rb-nav .search-suggestion-icon {
+    display: grid;
+    width: 17px;
+    height: 17px;
+    flex: 0 0 17px;
+    place-items: center;
+    color: #79553a;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+}
+
+.rb-nav .search-suggestion > span:nth-child(2) {
+    min-width: 0;
+    flex: 1;
+}
+
+.rb-nav .search-suggestion small {
+    color: #a1846b;
+    font-size: 10px;
+}
+
+.rb-nav .search-history-list {
+    padding: 4px 0 7px;
+}
+
+.rb-nav .search-history-clear {
+    margin: 0;
+    padding-top: 7px;
+    border-top: 1px solid #efdfca;
+}
+
+.rb-nav .search-all {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 7px 4px 3px;
+    border: 0;
+    color: #79553a;
+    background: transparent;
+    font-family: inherit;
+    font-size: 12px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.rb-nav .search-all:hover {
+    color: #a34f2b;
+}
+
+.rb-nav .search-empty {
+    margin: 9px 4px;
+    color: #98765b;
+    font-size: 12px;
+}
+
+.rb-nav .search-no-results {
+    display: grid;
+    justify-items: center;
+    gap: 5px;
+    padding: 22px 13px 20px;
+    text-align: center;
+}
+
+.rb-nav .search-no-results__icon {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 3px;
+    place-items: center;
+    border-radius: 50%;
+    color: #70452b;
+    background: #f8e7cf;
+    font-family: Arial, sans-serif;
+    font-size: 27px;
+}
+
+.rb-nav .search-no-results strong {
+    color: #4e3020;
+    font-size: 14px;
+}
+
+.rb-nav .search-no-results p {
+    max-width: 225px;
+    margin: 0;
+    color: #8a715c;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+@media (max-width: 960px) {
+    .rb-nav .rb-user-menu {
+        right: 0;
+        width: min(264px, calc(100vw - 24px));
+        max-height: 78vh;
+    }
+
+    .rb-nav .rb-notification-panel {
+        right: -6px;
+        width: min(390px, calc(100vw - 22px));
+    }
+
+    .rb-nav .rb-search-wrap--drawer .rb-search-results {
+        width: 100%;
+    }
+}
+
+@media (max-width: 420px) {
+    .rb-nav .notification-item {
+        grid-template-columns: 36px minmax(0, 1fr) auto;
+        gap: 7px;
+        padding: 8px 2px;
+    }
+
+    .rb-nav .notification-item__icon {
+        width: 34px;
+        height: 34px;
+        font-size: 16px;
+    }
+
+    .rb-nav .notification-item__meta time {
+        font-size: 10px;
+    }
+}
+
+
+/* Consistent outline icons for the account menu */
+.rb-nav .rb-menu-icon {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #70452b;
+}
+
+.rb-nav .rb-menu-icon svg {
+    display: block;
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.65;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.rb-nav .rb-user-menu li a:hover .rb-menu-icon {
+    color: #a45f32;
 }
