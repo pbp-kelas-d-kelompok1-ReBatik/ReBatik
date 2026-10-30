@@ -213,6 +213,13 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 WHITENOISE_USE_FINDERS = True
 
+# Beberapa gambar katalog berekstensi .jpe; pastikan dikirim sebagai JPEG
+# (X-Content-Type-Options: nosniff membuat browser menolak tipe yang salah).
+WHITENOISE_MIMETYPES = {
+    ".jpe": "image/jpeg",
+    ".webp": "image/webp",
+}
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 

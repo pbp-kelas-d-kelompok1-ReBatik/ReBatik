@@ -1,0 +1,3713 @@
+{
+    "version": 2,
+    "motifs": [
+        {
+            "name": "Kawung",
+            "description": "Kawung klasik, simbol kesempurnaan.",
+            "image": "img/catalog/recommended_motifs/kawung.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sidomukti",
+            "description": "Sidomukti klasik bernuansa jingga dan cokelat.",
+            "image": "img/catalog/recommended_motifs/batik-sidomukti.webp",
+            "style": "Elegant",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Truntum",
+            "description": "Truntum bertabur bintang yang elegan.",
+            "image": "img/catalog/recommended_motifs/truntum.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Parang Rusak",
+            "description": "Parang rusak yang gagah dan sarat tradisi.",
+            "image": "img/catalog/recommended_motifs/parang-rusak.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Megamendung",
+            "description": "Awan megamendung yang dinamis dari Cirebon.",
+            "image": "img/catalog/recommended_motifs/megamendung.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Food",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Lasem Burung Hong",
+            "description": "Burung hong khas Lasem berpadu sulur flora.",
+            "image": "img/catalog/recommended_motifs/batik-lasem-motif-burung-hong.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Dark",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Parang",
+            "description": "Parang klasik dengan garis diagonal tegas.",
+            "image": "img/catalog/recommended_motifs/parang.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Flora Nusantara",
+            "description": "Flora nusantara yang segar dan berwarna.",
+            "image": "img/catalog/recommended_motifs/flora_nusantara.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Tujuh Rupa",
+            "description": "Tujuh rupa dengan bunga-bunga berwarna.",
+            "image": "img/catalog/recommended_motifs/tujuhrupa.webp",
+            "style": "Elegant",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Warm",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sekar Jagad Warna Coklat",
+            "description": "Sekar jagad nuansa cokelat yang hangat.",
+            "image": "img/catalog/recommended_motifs/Batik-Sekar-Jagad-Warna-Coklat.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Ondel-ondel",
+            "description": "Ondel-ondel khas Betawi yang ceria.",
+            "image": "img/catalog/recommended_motifs/ondel.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kawung Minimal",
+            "description": "Kawung versi minimal yang ringan dan bersih.",
+            "image": "img/catalog/recommended_motifs/kawung_minimal.png",
+            "style": "Minimalist",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Warm",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Nitik",
+            "description": "Nitik mungil dengan pola geometris halus.",
+            "image": "img/catalog/recommended_motifs/nitik.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Lereng",
+            "description": "Lereng diagonal yang tegas dan rapi.",
+            "image": "img/catalog/recommended_motifs/lereng.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kontemporer Parang",
+            "description": "Parang kontemporer dengan sentuhan modern.",
+            "image": "img/catalog/recommended_motifs/kontemporer_parang.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Truntum",
+            "description": "Truntum bertabur bintang yang elegan.",
+            "image": "img/catalog/recommended_motifs/truntum.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Ceplok",
+            "description": "Ceplok geometris yang rapi dan berirama.",
+            "image": "img/catalog/recommended_motifs/ceplok.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kawung",
+            "description": "Kawung klasik, simbol kesempurnaan.",
+            "image": "img/catalog/recommended_motifs/kawung.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Truntum Hitam",
+            "description": "Truntum hitam dengan bintang oranye yang tegas.",
+            "image": "img/catalog/recommended_motifs/truntum-hitam.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Food",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sekar Jagad Warna Coklat",
+            "description": "Sekar jagad nuansa cokelat yang hangat.",
+            "image": "img/catalog/recommended_motifs/Batik-Sekar-Jagad-Warna-Coklat.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Dark",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Sekar Jagad",
+            "description": "Sekar jagad penuh warna dan ekspresif.",
+            "image": "img/catalog/recommended_motifs/sekar-jagad.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Parang Rusak",
+            "description": "Parang rusak yang gagah dan sarat tradisi.",
+            "image": "img/catalog/recommended_motifs/parang-rusak.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Ondel-ondel",
+            "description": "Ondel-ondel khas Betawi yang ceria.",
+            "image": "img/catalog/recommended_motifs/ondel.jpg",
+            "style": "Creative",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Dark",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Tumpal",
+            "description": "Tumpal segitiga yang tegas dan grafis.",
+            "image": "img/catalog/recommended_motifs/tumpal.jpg",
+            "style": "Creative",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Megamendung",
+            "description": "Awan megamendung yang dinamis dari Cirebon.",
+            "image": "img/catalog/recommended_motifs/megamendung.jpg",
+            "style": "Creative",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Sekar Jagad",
+            "description": "Sekar jagad penuh warna dan ekspresif.",
+            "image": "img/catalog/recommended_motifs/sekar-jagad.jpg",
+            "style": "Creative",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Warm",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kontemporer Parang",
+            "description": "Parang kontemporer dengan sentuhan modern.",
+            "image": "img/catalog/recommended_motifs/kontemporer_parang.jpg",
+            "style": "Creative",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Flora Nusantara",
+            "description": "Flora nusantara yang segar dan berwarna.",
+            "image": "img/catalog/recommended_motifs/flora_nusantara.jpg",
+            "style": "Creative",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Truntum Hitam",
+            "description": "Truntum hitam dengan bintang oranye yang tegas.",
+            "image": "img/catalog/recommended_motifs/truntum-hitam.jpg",
+            "style": "Creative",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Lasem Burung Hong",
+            "description": "Burung hong khas Lasem berpadu sulur flora.",
+            "image": "img/catalog/recommended_motifs/batik-lasem-motif-burung-hong.jpg",
+            "style": "Creative",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Tujuh Rupa",
+            "description": "Tujuh rupa dengan bunga-bunga berwarna.",
+            "image": "img/catalog/recommended_motifs/tujuhrupa.webp",
+            "style": "Creative",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Lereng",
+            "description": "Lereng diagonal yang tegas dan rapi.",
+            "image": "img/catalog/recommended_motifs/lereng.jpg",
+            "style": "Creative",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sukapura",
+            "description": "Panel garis khas Sukapura bernuansa tanah.",
+            "image": "img/catalog/recommended_motifs/batik-sukapura.webp",
+            "style": "Creative",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Food",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sekar Jagad Warna Coklat",
+            "description": "Sekar jagad nuansa cokelat yang hangat.",
+            "image": "img/catalog/recommended_motifs/Batik-Sekar-Jagad-Warna-Coklat.jpg",
+            "style": "Natural",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Semen",
+            "description": "Semen bermotif tumbuhan dan satwa yang organik.",
+            "image": "img/catalog/recommended_motifs/semen.jpg",
+            "style": "Natural",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Simbut",
+            "description": "Simbut dengan daun-daun besar yang organik.",
+            "image": "img/catalog/recommended_motifs/simbut.jpg",
+            "style": "Natural",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Food",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Flora Nusantara",
+            "description": "Flora nusantara yang segar dan berwarna.",
+            "image": "img/catalog/recommended_motifs/flora_nusantara.jpg",
+            "style": "Natural",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Dark",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kawung Minimal",
+            "description": "Kawung versi minimal yang ringan dan bersih.",
+            "image": "img/catalog/recommended_motifs/kawung_minimal.png",
+            "style": "Natural",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sukapura",
+            "description": "Panel garis khas Sukapura bernuansa tanah.",
+            "image": "img/catalog/recommended_motifs/batik-sukapura.webp",
+            "style": "Natural",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Tujuh Rupa",
+            "description": "Tujuh rupa dengan bunga-bunga berwarna.",
+            "image": "img/catalog/recommended_motifs/tujuhrupa.webp",
+            "style": "Natural",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Warm",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Lereng",
+            "description": "Lereng diagonal yang tegas dan rapi.",
+            "image": "img/catalog/recommended_motifs/lereng.jpg",
+            "style": "Natural",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Parang",
+            "description": "Parang klasik dengan garis diagonal tegas.",
+            "image": "img/catalog/recommended_motifs/parang.jpg",
+            "style": "Natural",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Parang Rusak",
+            "description": "Parang rusak yang gagah dan sarat tradisi.",
+            "image": "img/catalog/recommended_motifs/parang-rusak.jpg",
+            "style": "Natural",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Ondel-ondel",
+            "description": "Ondel-ondel khas Betawi yang ceria.",
+            "image": "img/catalog/recommended_motifs/ondel.jpg",
+            "style": "Natural",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Sekar Jagad",
+            "description": "Sekar jagad penuh warna dan ekspresif.",
+            "image": "img/catalog/recommended_motifs/sekar-jagad.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Flora Nusantara",
+            "description": "Flora nusantara yang segar dan berwarna.",
+            "image": "img/catalog/recommended_motifs/flora_nusantara.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Tujuh Rupa",
+            "description": "Tujuh rupa dengan bunga-bunga berwarna.",
+            "image": "img/catalog/recommended_motifs/tujuhrupa.webp",
+            "style": "Bohemian",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Lasem Burung Hong",
+            "description": "Burung hong khas Lasem berpadu sulur flora.",
+            "image": "img/catalog/recommended_motifs/batik-lasem-motif-burung-hong.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Megamendung",
+            "description": "Awan megamendung yang dinamis dari Cirebon.",
+            "image": "img/catalog/recommended_motifs/megamendung.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Tumpal",
+            "description": "Tumpal segitiga yang tegas dan grafis.",
+            "image": "img/catalog/recommended_motifs/tumpal.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Food",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Simbut",
+            "description": "Simbut dengan daun-daun besar yang organik.",
+            "image": "img/catalog/recommended_motifs/simbut.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Dark",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Semen",
+            "description": "Semen bermotif tumbuhan dan satwa yang organik.",
+            "image": "img/catalog/recommended_motifs/semen.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Lereng",
+            "description": "Lereng diagonal yang tegas dan rapi.",
+            "image": "img/catalog/recommended_motifs/lereng.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sukapura",
+            "description": "Panel garis khas Sukapura bernuansa tanah.",
+            "image": "img/catalog/recommended_motifs/batik-sukapura.webp",
+            "style": "Bohemian",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Warm",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sidomukti",
+            "description": "Sidomukti klasik bernuansa jingga dan cokelat.",
+            "image": "img/catalog/recommended_motifs/batik-sidomukti.webp",
+            "style": "Bohemian",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Nitik",
+            "description": "Nitik mungil dengan pola geometris halus.",
+            "image": "img/catalog/recommended_motifs/nitik.jpg",
+            "style": "Casual",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Ondel-ondel",
+            "description": "Ondel-ondel khas Betawi yang ceria.",
+            "image": "img/catalog/recommended_motifs/ondel.jpg",
+            "style": "Casual",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Warm",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kawung Minimal",
+            "description": "Kawung versi minimal yang ringan dan bersih.",
+            "image": "img/catalog/recommended_motifs/kawung_minimal.png",
+            "style": "Casual",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Ceplok",
+            "description": "Ceplok geometris yang rapi dan berirama.",
+            "image": "img/catalog/recommended_motifs/ceplok.jpg",
+            "style": "Casual",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Tumpal",
+            "description": "Tumpal segitiga yang tegas dan grafis.",
+            "image": "img/catalog/recommended_motifs/tumpal.jpg",
+            "style": "Casual",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kontemporer Parang",
+            "description": "Parang kontemporer dengan sentuhan modern.",
+            "image": "img/catalog/recommended_motifs/kontemporer_parang.jpg",
+            "style": "Casual",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Simbut",
+            "description": "Simbut dengan daun-daun besar yang organik.",
+            "image": "img/catalog/recommended_motifs/simbut.jpg",
+            "style": "Casual",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Lasem Burung Hong",
+            "description": "Burung hong khas Lasem berpadu sulur flora.",
+            "image": "img/catalog/recommended_motifs/batik-lasem-motif-burung-hong.jpg",
+            "style": "Casual",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sekar Jagad Warna Coklat",
+            "description": "Sekar jagad nuansa cokelat yang hangat.",
+            "image": "img/catalog/recommended_motifs/Batik-Sekar-Jagad-Warna-Coklat.jpg",
+            "style": "Casual",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Food",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sidomukti",
+            "description": "Sidomukti klasik bernuansa jingga dan cokelat.",
+            "image": "img/catalog/recommended_motifs/batik-sidomukti.webp",
+            "style": "Casual",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Dark",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Tujuh Rupa",
+            "description": "Tujuh rupa dengan bunga-bunga berwarna.",
+            "image": "img/catalog/recommended_motifs/tujuhrupa.webp",
+            "style": "Casual",
+            "fashion_preference": "Women",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Parang Rusak",
+            "description": "Parang rusak yang gagah dan sarat tradisi.",
+            "image": "img/catalog/recommended_motifs/parang-rusak.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sidomukti",
+            "description": "Sidomukti klasik bernuansa jingga dan cokelat.",
+            "image": "img/catalog/recommended_motifs/batik-sidomukti.webp",
+            "style": "Elegant",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kawung",
+            "description": "Kawung klasik, simbol kesempurnaan.",
+            "image": "img/catalog/recommended_motifs/kawung.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Warm",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Parang",
+            "description": "Parang klasik dengan garis diagonal tegas.",
+            "image": "img/catalog/recommended_motifs/parang.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Truntum",
+            "description": "Truntum bertabur bintang yang elegan.",
+            "image": "img/catalog/recommended_motifs/truntum.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Megamendung",
+            "description": "Awan megamendung yang dinamis dari Cirebon.",
+            "image": "img/catalog/recommended_motifs/megamendung.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Truntum Hitam",
+            "description": "Truntum hitam dengan bintang oranye yang tegas.",
+            "image": "img/catalog/recommended_motifs/truntum-hitam.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sukapura",
+            "description": "Panel garis khas Sukapura bernuansa tanah.",
+            "image": "img/catalog/recommended_motifs/batik-sukapura.webp",
+            "style": "Elegant",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Lereng",
+            "description": "Lereng diagonal yang tegas dan rapi.",
+            "image": "img/catalog/recommended_motifs/lereng.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Nitik",
+            "description": "Nitik mungil dengan pola geometris halus.",
+            "image": "img/catalog/recommended_motifs/nitik.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Food",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Ondel-ondel",
+            "description": "Ondel-ondel khas Betawi yang ceria.",
+            "image": "img/catalog/recommended_motifs/ondel.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Dark",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kawung Minimal",
+            "description": "Kawung versi minimal yang ringan dan bersih.",
+            "image": "img/catalog/recommended_motifs/kawung_minimal.png",
+            "style": "Minimalist",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Lereng",
+            "description": "Lereng diagonal yang tegas dan rapi.",
+            "image": "img/catalog/recommended_motifs/lereng.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Food",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Nitik",
+            "description": "Nitik mungil dengan pola geometris halus.",
+            "image": "img/catalog/recommended_motifs/nitik.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Dark",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kontemporer Parang",
+            "description": "Parang kontemporer dengan sentuhan modern.",
+            "image": "img/catalog/recommended_motifs/kontemporer_parang.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Ceplok",
+            "description": "Ceplok geometris yang rapi dan berirama.",
+            "image": "img/catalog/recommended_motifs/ceplok.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Parang",
+            "description": "Parang klasik dengan garis diagonal tegas.",
+            "image": "img/catalog/recommended_motifs/parang.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Warm",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Truntum Hitam",
+            "description": "Truntum hitam dengan bintang oranye yang tegas.",
+            "image": "img/catalog/recommended_motifs/truntum-hitam.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Truntum",
+            "description": "Truntum bertabur bintang yang elegan.",
+            "image": "img/catalog/recommended_motifs/truntum.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kawung",
+            "description": "Kawung klasik, simbol kesempurnaan.",
+            "image": "img/catalog/recommended_motifs/kawung.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Semen",
+            "description": "Semen bermotif tumbuhan dan satwa yang organik.",
+            "image": "img/catalog/recommended_motifs/semen.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sidomukti",
+            "description": "Sidomukti klasik bernuansa jingga dan cokelat.",
+            "image": "img/catalog/recommended_motifs/batik-sidomukti.webp",
+            "style": "Minimalist",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Ondel-ondel",
+            "description": "Ondel-ondel khas Betawi yang ceria.",
+            "image": "img/catalog/recommended_motifs/ondel.jpg",
+            "style": "Creative",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Tumpal",
+            "description": "Tumpal segitiga yang tegas dan grafis.",
+            "image": "img/catalog/recommended_motifs/tumpal.jpg",
+            "style": "Creative",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Megamendung",
+            "description": "Awan megamendung yang dinamis dari Cirebon.",
+            "image": "img/catalog/recommended_motifs/megamendung.jpg",
+            "style": "Creative",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Truntum Hitam",
+            "description": "Truntum hitam dengan bintang oranye yang tegas.",
+            "image": "img/catalog/recommended_motifs/truntum-hitam.jpg",
+            "style": "Creative",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kontemporer Parang",
+            "description": "Parang kontemporer dengan sentuhan modern.",
+            "image": "img/catalog/recommended_motifs/kontemporer_parang.jpg",
+            "style": "Creative",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Food",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Sekar Jagad",
+            "description": "Sekar jagad penuh warna dan ekspresif.",
+            "image": "img/catalog/recommended_motifs/sekar-jagad.jpg",
+            "style": "Creative",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Dark",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sukapura",
+            "description": "Panel garis khas Sukapura bernuansa tanah.",
+            "image": "img/catalog/recommended_motifs/batik-sukapura.webp",
+            "style": "Creative",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sekar Jagad Warna Coklat",
+            "description": "Sekar jagad nuansa cokelat yang hangat.",
+            "image": "img/catalog/recommended_motifs/Batik-Sekar-Jagad-Warna-Coklat.jpg",
+            "style": "Creative",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Simbut",
+            "description": "Simbut dengan daun-daun besar yang organik.",
+            "image": "img/catalog/recommended_motifs/simbut.jpg",
+            "style": "Creative",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Warm",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kawung",
+            "description": "Kawung klasik, simbol kesempurnaan.",
+            "image": "img/catalog/recommended_motifs/kawung.jpg",
+            "style": "Creative",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Truntum",
+            "description": "Truntum bertabur bintang yang elegan.",
+            "image": "img/catalog/recommended_motifs/truntum.jpg",
+            "style": "Creative",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Semen",
+            "description": "Semen bermotif tumbuhan dan satwa yang organik.",
+            "image": "img/catalog/recommended_motifs/semen.jpg",
+            "style": "Natural",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Warm",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sekar Jagad Warna Coklat",
+            "description": "Sekar jagad nuansa cokelat yang hangat.",
+            "image": "img/catalog/recommended_motifs/Batik-Sekar-Jagad-Warna-Coklat.jpg",
+            "style": "Natural",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Simbut",
+            "description": "Simbut dengan daun-daun besar yang organik.",
+            "image": "img/catalog/recommended_motifs/simbut.jpg",
+            "style": "Natural",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sukapura",
+            "description": "Panel garis khas Sukapura bernuansa tanah.",
+            "image": "img/catalog/recommended_motifs/batik-sukapura.webp",
+            "style": "Natural",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Flora Nusantara",
+            "description": "Flora nusantara yang segar dan berwarna.",
+            "image": "img/catalog/recommended_motifs/flora_nusantara.jpg",
+            "style": "Natural",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kawung Minimal",
+            "description": "Kawung versi minimal yang ringan dan bersih.",
+            "image": "img/catalog/recommended_motifs/kawung_minimal.png",
+            "style": "Natural",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sidomukti",
+            "description": "Sidomukti klasik bernuansa jingga dan cokelat.",
+            "image": "img/catalog/recommended_motifs/batik-sidomukti.webp",
+            "style": "Natural",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Lasem Burung Hong",
+            "description": "Burung hong khas Lasem berpadu sulur flora.",
+            "image": "img/catalog/recommended_motifs/batik-lasem-motif-burung-hong.jpg",
+            "style": "Natural",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Food",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Ceplok",
+            "description": "Ceplok geometris yang rapi dan berirama.",
+            "image": "img/catalog/recommended_motifs/ceplok.jpg",
+            "style": "Natural",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Dark",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Truntum",
+            "description": "Truntum bertabur bintang yang elegan.",
+            "image": "img/catalog/recommended_motifs/truntum.jpg",
+            "style": "Natural",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Sekar Jagad",
+            "description": "Sekar jagad penuh warna dan ekspresif.",
+            "image": "img/catalog/recommended_motifs/sekar-jagad.jpg",
+            "style": "Natural",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Flora Nusantara",
+            "description": "Flora nusantara yang segar dan berwarna.",
+            "image": "img/catalog/recommended_motifs/flora_nusantara.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Dark",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Sekar Jagad",
+            "description": "Sekar jagad penuh warna dan ekspresif.",
+            "image": "img/catalog/recommended_motifs/sekar-jagad.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Tujuh Rupa",
+            "description": "Tujuh rupa dengan bunga-bunga berwarna.",
+            "image": "img/catalog/recommended_motifs/tujuhrupa.webp",
+            "style": "Bohemian",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Lasem Burung Hong",
+            "description": "Burung hong khas Lasem berpadu sulur flora.",
+            "image": "img/catalog/recommended_motifs/batik-lasem-motif-burung-hong.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Warm",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Megamendung",
+            "description": "Awan megamendung yang dinamis dari Cirebon.",
+            "image": "img/catalog/recommended_motifs/megamendung.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Simbut",
+            "description": "Simbut dengan daun-daun besar yang organik.",
+            "image": "img/catalog/recommended_motifs/simbut.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Tumpal",
+            "description": "Tumpal segitiga yang tegas dan grafis.",
+            "image": "img/catalog/recommended_motifs/tumpal.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Semen",
+            "description": "Semen bermotif tumbuhan dan satwa yang organik.",
+            "image": "img/catalog/recommended_motifs/semen.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Truntum Hitam",
+            "description": "Truntum hitam dengan bintang oranye yang tegas.",
+            "image": "img/catalog/recommended_motifs/truntum-hitam.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Parang",
+            "description": "Parang klasik dengan garis diagonal tegas.",
+            "image": "img/catalog/recommended_motifs/parang.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Ceplok",
+            "description": "Ceplok geometris yang rapi dan berirama.",
+            "image": "img/catalog/recommended_motifs/ceplok.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Food",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Nitik",
+            "description": "Nitik mungil dengan pola geometris halus.",
+            "image": "img/catalog/recommended_motifs/nitik.jpg",
+            "style": "Casual",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Ondel-ondel",
+            "description": "Ondel-ondel khas Betawi yang ceria.",
+            "image": "img/catalog/recommended_motifs/ondel.jpg",
+            "style": "Casual",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Ceplok",
+            "description": "Ceplok geometris yang rapi dan berirama.",
+            "image": "img/catalog/recommended_motifs/ceplok.jpg",
+            "style": "Casual",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Food",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kawung Minimal",
+            "description": "Kawung versi minimal yang ringan dan bersih.",
+            "image": "img/catalog/recommended_motifs/kawung_minimal.png",
+            "style": "Casual",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Dark",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Tumpal",
+            "description": "Tumpal segitiga yang tegas dan grafis.",
+            "image": "img/catalog/recommended_motifs/tumpal.jpg",
+            "style": "Casual",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kontemporer Parang",
+            "description": "Parang kontemporer dengan sentuhan modern.",
+            "image": "img/catalog/recommended_motifs/kontemporer_parang.jpg",
+            "style": "Casual",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sukapura",
+            "description": "Panel garis khas Sukapura bernuansa tanah.",
+            "image": "img/catalog/recommended_motifs/batik-sukapura.webp",
+            "style": "Casual",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Warm",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Lereng",
+            "description": "Lereng diagonal yang tegas dan rapi.",
+            "image": "img/catalog/recommended_motifs/lereng.jpg",
+            "style": "Casual",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Parang Rusak",
+            "description": "Parang rusak yang gagah dan sarat tradisi.",
+            "image": "img/catalog/recommended_motifs/parang-rusak.jpg",
+            "style": "Casual",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Parang",
+            "description": "Parang klasik dengan garis diagonal tegas.",
+            "image": "img/catalog/recommended_motifs/parang.jpg",
+            "style": "Casual",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Truntum",
+            "description": "Truntum bertabur bintang yang elegan.",
+            "image": "img/catalog/recommended_motifs/truntum.jpg",
+            "style": "Casual",
+            "fashion_preference": "Men",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kawung",
+            "description": "Kawung klasik, simbol kesempurnaan.",
+            "image": "img/catalog/recommended_motifs/kawung.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sidomukti",
+            "description": "Sidomukti klasik bernuansa jingga dan cokelat.",
+            "image": "img/catalog/recommended_motifs/batik-sidomukti.webp",
+            "style": "Elegant",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Parang Rusak",
+            "description": "Parang rusak yang gagah dan sarat tradisi.",
+            "image": "img/catalog/recommended_motifs/parang-rusak.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Truntum",
+            "description": "Truntum bertabur bintang yang elegan.",
+            "image": "img/catalog/recommended_motifs/truntum.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Food",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Parang",
+            "description": "Parang klasik dengan garis diagonal tegas.",
+            "image": "img/catalog/recommended_motifs/parang.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Dark",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Megamendung",
+            "description": "Awan megamendung yang dinamis dari Cirebon.",
+            "image": "img/catalog/recommended_motifs/megamendung.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Lasem Burung Hong",
+            "description": "Burung hong khas Lasem berpadu sulur flora.",
+            "image": "img/catalog/recommended_motifs/batik-lasem-motif-burung-hong.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Truntum Hitam",
+            "description": "Truntum hitam dengan bintang oranye yang tegas.",
+            "image": "img/catalog/recommended_motifs/truntum-hitam.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Warm",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Lereng",
+            "description": "Lereng diagonal yang tegas dan rapi.",
+            "image": "img/catalog/recommended_motifs/lereng.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sekar Jagad Warna Coklat",
+            "description": "Sekar jagad nuansa cokelat yang hangat.",
+            "image": "img/catalog/recommended_motifs/Batik-Sekar-Jagad-Warna-Coklat.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Semen",
+            "description": "Semen bermotif tumbuhan dan satwa yang organik.",
+            "image": "img/catalog/recommended_motifs/semen.jpg",
+            "style": "Elegant",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kawung Minimal",
+            "description": "Kawung versi minimal yang ringan dan bersih.",
+            "image": "img/catalog/recommended_motifs/kawung_minimal.png",
+            "style": "Minimalist",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Lereng",
+            "description": "Lereng diagonal yang tegas dan rapi.",
+            "image": "img/catalog/recommended_motifs/lereng.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Nitik",
+            "description": "Nitik mungil dengan pola geometris halus.",
+            "image": "img/catalog/recommended_motifs/nitik.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kontemporer Parang",
+            "description": "Parang kontemporer dengan sentuhan modern.",
+            "image": "img/catalog/recommended_motifs/kontemporer_parang.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Ceplok",
+            "description": "Ceplok geometris yang rapi dan berirama.",
+            "image": "img/catalog/recommended_motifs/ceplok.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Truntum",
+            "description": "Truntum bertabur bintang yang elegan.",
+            "image": "img/catalog/recommended_motifs/truntum.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Truntum Hitam",
+            "description": "Truntum hitam dengan bintang oranye yang tegas.",
+            "image": "img/catalog/recommended_motifs/truntum-hitam.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Food",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Parang",
+            "description": "Parang klasik dengan garis diagonal tegas.",
+            "image": "img/catalog/recommended_motifs/parang.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Dark",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kawung",
+            "description": "Kawung klasik, simbol kesempurnaan.",
+            "image": "img/catalog/recommended_motifs/kawung.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sidomukti",
+            "description": "Sidomukti klasik bernuansa jingga dan cokelat.",
+            "image": "img/catalog/recommended_motifs/batik-sidomukti.webp",
+            "style": "Minimalist",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Parang Rusak",
+            "description": "Parang rusak yang gagah dan sarat tradisi.",
+            "image": "img/catalog/recommended_motifs/parang-rusak.jpg",
+            "style": "Minimalist",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Warm",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Ondel-ondel",
+            "description": "Ondel-ondel khas Betawi yang ceria.",
+            "image": "img/catalog/recommended_motifs/ondel.jpg",
+            "style": "Creative",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Tumpal",
+            "description": "Tumpal segitiga yang tegas dan grafis.",
+            "image": "img/catalog/recommended_motifs/tumpal.jpg",
+            "style": "Creative",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Megamendung",
+            "description": "Awan megamendung yang dinamis dari Cirebon.",
+            "image": "img/catalog/recommended_motifs/megamendung.jpg",
+            "style": "Creative",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Warm",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kontemporer Parang",
+            "description": "Parang kontemporer dengan sentuhan modern.",
+            "image": "img/catalog/recommended_motifs/kontemporer_parang.jpg",
+            "style": "Creative",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Truntum Hitam",
+            "description": "Truntum hitam dengan bintang oranye yang tegas.",
+            "image": "img/catalog/recommended_motifs/truntum-hitam.jpg",
+            "style": "Creative",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Sekar Jagad",
+            "description": "Sekar jagad penuh warna dan ekspresif.",
+            "image": "img/catalog/recommended_motifs/sekar-jagad.jpg",
+            "style": "Creative",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Flora Nusantara",
+            "description": "Flora nusantara yang segar dan berwarna.",
+            "image": "img/catalog/recommended_motifs/flora_nusantara.jpg",
+            "style": "Creative",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Lasem Burung Hong",
+            "description": "Burung hong khas Lasem berpadu sulur flora.",
+            "image": "img/catalog/recommended_motifs/batik-lasem-motif-burung-hong.jpg",
+            "style": "Creative",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Tujuh Rupa",
+            "description": "Tujuh rupa dengan bunga-bunga berwarna.",
+            "image": "img/catalog/recommended_motifs/tujuhrupa.webp",
+            "style": "Creative",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sekar Jagad Warna Coklat",
+            "description": "Sekar jagad nuansa cokelat yang hangat.",
+            "image": "img/catalog/recommended_motifs/Batik-Sekar-Jagad-Warna-Coklat.jpg",
+            "style": "Creative",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Food",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Nitik",
+            "description": "Nitik mungil dengan pola geometris halus.",
+            "image": "img/catalog/recommended_motifs/nitik.jpg",
+            "style": "Creative",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Dark",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Semen",
+            "description": "Semen bermotif tumbuhan dan satwa yang organik.",
+            "image": "img/catalog/recommended_motifs/semen.jpg",
+            "style": "Natural",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sekar Jagad Warna Coklat",
+            "description": "Sekar jagad nuansa cokelat yang hangat.",
+            "image": "img/catalog/recommended_motifs/Batik-Sekar-Jagad-Warna-Coklat.jpg",
+            "style": "Natural",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Food",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Simbut",
+            "description": "Simbut dengan daun-daun besar yang organik.",
+            "image": "img/catalog/recommended_motifs/simbut.jpg",
+            "style": "Natural",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Dark",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sukapura",
+            "description": "Panel garis khas Sukapura bernuansa tanah.",
+            "image": "img/catalog/recommended_motifs/batik-sukapura.webp",
+            "style": "Natural",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Flora Nusantara",
+            "description": "Flora nusantara yang segar dan berwarna.",
+            "image": "img/catalog/recommended_motifs/flora_nusantara.jpg",
+            "style": "Natural",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kawung Minimal",
+            "description": "Kawung versi minimal yang ringan dan bersih.",
+            "image": "img/catalog/recommended_motifs/kawung_minimal.png",
+            "style": "Natural",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Warm",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Tujuh Rupa",
+            "description": "Tujuh rupa dengan bunga-bunga berwarna.",
+            "image": "img/catalog/recommended_motifs/tujuhrupa.webp",
+            "style": "Natural",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kawung",
+            "description": "Kawung klasik, simbol kesempurnaan.",
+            "image": "img/catalog/recommended_motifs/kawung.jpg",
+            "style": "Natural",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Sekar Jagad",
+            "description": "Sekar jagad penuh warna dan ekspresif.",
+            "image": "img/catalog/recommended_motifs/sekar-jagad.jpg",
+            "style": "Natural",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Parang Rusak",
+            "description": "Parang rusak yang gagah dan sarat tradisi.",
+            "image": "img/catalog/recommended_motifs/parang-rusak.jpg",
+            "style": "Natural",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Nitik",
+            "description": "Nitik mungil dengan pola geometris halus.",
+            "image": "img/catalog/recommended_motifs/nitik.jpg",
+            "style": "Natural",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Sekar Jagad",
+            "description": "Sekar jagad penuh warna dan ekspresif.",
+            "image": "img/catalog/recommended_motifs/sekar-jagad.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Flora Nusantara",
+            "description": "Flora nusantara yang segar dan berwarna.",
+            "image": "img/catalog/recommended_motifs/flora_nusantara.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Tujuh Rupa",
+            "description": "Tujuh rupa dengan bunga-bunga berwarna.",
+            "image": "img/catalog/recommended_motifs/tujuhrupa.webp",
+            "style": "Bohemian",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Lasem Burung Hong",
+            "description": "Burung hong khas Lasem berpadu sulur flora.",
+            "image": "img/catalog/recommended_motifs/batik-lasem-motif-burung-hong.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Megamendung",
+            "description": "Awan megamendung yang dinamis dari Cirebon.",
+            "image": "img/catalog/recommended_motifs/megamendung.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Food",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Tumpal",
+            "description": "Tumpal segitiga yang tegas dan grafis.",
+            "image": "img/catalog/recommended_motifs/tumpal.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Dark",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Simbut",
+            "description": "Simbut dengan daun-daun besar yang organik.",
+            "image": "img/catalog/recommended_motifs/simbut.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Semen",
+            "description": "Semen bermotif tumbuhan dan satwa yang organik.",
+            "image": "img/catalog/recommended_motifs/semen.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sidomukti",
+            "description": "Sidomukti klasik bernuansa jingga dan cokelat.",
+            "image": "img/catalog/recommended_motifs/batik-sidomukti.webp",
+            "style": "Bohemian",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Warm",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Parang Rusak",
+            "description": "Parang rusak yang gagah dan sarat tradisi.",
+            "image": "img/catalog/recommended_motifs/parang-rusak.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Ceplok",
+            "description": "Ceplok geometris yang rapi dan berirama.",
+            "image": "img/catalog/recommended_motifs/ceplok.jpg",
+            "style": "Bohemian",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Nitik",
+            "description": "Nitik mungil dengan pola geometris halus.",
+            "image": "img/catalog/recommended_motifs/nitik.jpg",
+            "style": "Casual",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Warm",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Ondel-ondel",
+            "description": "Ondel-ondel khas Betawi yang ceria.",
+            "image": "img/catalog/recommended_motifs/ondel.jpg",
+            "style": "Casual",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Light",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Halloween",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kawung Minimal",
+            "description": "Kawung versi minimal yang ringan dan bersih.",
+            "image": "img/catalog/recommended_motifs/kawung_minimal.png",
+            "style": "Casual",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Sunset",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Thanksgiving"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Ceplok",
+            "description": "Ceplok geometris yang rapi dan berirama.",
+            "image": "img/catalog/recommended_motifs/ceplok.jpg",
+            "style": "Casual",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Warm",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Christmas",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Tumpal",
+            "description": "Tumpal segitiga yang tegas dan grafis.",
+            "image": "img/catalog/recommended_motifs/tumpal.jpg",
+            "style": "Casual",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Easter",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Cool",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kontemporer Parang",
+            "description": "Parang kontemporer dengan sentuhan modern.",
+            "image": "img/catalog/recommended_motifs/kontemporer_parang.jpg",
+            "style": "Casual",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Valentine's Day",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Fall",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Simbut",
+            "description": "Simbut dengan daun-daun besar yang organik.",
+            "image": "img/catalog/recommended_motifs/simbut.jpg",
+            "style": "Casual",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Retro",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Summer",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Vintage"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Batik Sukapura",
+            "description": "Panel garis khas Sukapura bernuansa tanah.",
+            "image": "img/catalog/recommended_motifs/batik-sukapura.webp",
+            "style": "Casual",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Pastel",
+                "Dark",
+                "Spring",
+                "Food",
+                "Ocean",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Parang",
+            "description": "Parang klasik dengan garis diagonal tegas.",
+            "image": "img/catalog/recommended_motifs/parang.jpg",
+            "style": "Casual",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Dark",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Gradient",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Semen",
+            "description": "Semen bermotif tumbuhan dan satwa yang organik.",
+            "image": "img/catalog/recommended_motifs/semen.jpg",
+            "style": "Casual",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Spring",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Winter",
+                "Neon"
+            ],
+            "is_active": true
+        },
+        {
+            "name": "Kawung",
+            "description": "Kawung klasik, simbol kesempurnaan.",
+            "image": "img/catalog/recommended_motifs/kawung.jpg",
+            "style": "Casual",
+            "fashion_preference": "Unisex",
+            "palettes": [
+                "Wedding",
+                "Nature",
+                "Light",
+                "Sunset",
+                "Food",
+                "Neutral",
+                "Halloween",
+                "Thanksgiving",
+                "Neon"
+            ],
+            "is_active": true
+        }
+    ]
+}

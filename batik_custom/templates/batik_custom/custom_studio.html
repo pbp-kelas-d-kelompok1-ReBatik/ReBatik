@@ -12,7 +12,7 @@
 
 {% block content %}
 <main class="custom-studio-page" id="motif-app"
-    data-motif-image="{% if motif.static_image_path %}{% static motif.static_image_path %}{% elif motif.image %}{{ motif.image.url }}{% else %}{% static 'img/catalog/recommended_motifs/flora_nusantara.jpg' %}{% endif %}"
+    data-motif-image="{% if motif.image_url %}{{ motif.image_url }}{% else %}{% static 'img/catalog/recommended_motifs/flora_nusantara.jpg' %}{% endif %}"
     data-motif-name="{{ motif.name|default:'Batik Nusantara' }}"
     data-motif-description="{{ motif.description|default:'Motif batik pilihanmu.'|striptags }}"
     data-motif-id="{{ motif.pk|default:'' }}"
@@ -45,7 +45,7 @@
 
             <div class="cs-motif-card">
                 <img id="selected-motif-image"
-                    src="{% if motif.static_image_path %}{% static motif.static_image_path %}{% elif motif.image %}{{ motif.image.url }}{% else %}{% static 'img/catalog/recommended_motifs/flora_nusantara.jpg' %}{% endif %}"
+                    src="{% if motif.image_url %}{{ motif.image_url }}{% else %}{% static 'img/catalog/recommended_motifs/flora_nusantara.jpg' %}{% endif %}"
                     alt="{{ motif.name|default:'Batik Nusantara' }}" onerror="this.style.display='none'">
                 <div class="cs-motif-info">
                     <p>Selected Motif</p>
