@@ -45,7 +45,7 @@ class UpcyclingRequestFormTests(SimpleTestCase):
     def form(self, data):
         return UpcyclingRequestForm(
             data=data,
-            files={"fabric_photo": SimpleUploadedFile("fabric.png", TINY_PNG, content_type="image/png")},
+            files={"fabric_photos": [SimpleUploadedFile("fabric.png", TINY_PNG, content_type="image/png")]},
         )
 
     def test_valid_request_form(self):
@@ -56,6 +56,48 @@ class UpcyclingRequestFormTests(SimpleTestCase):
             form.cleaned_data["fabric_composition"],
             "Katun 95%, elastane 5%",
         )
+
+    def test_fabric_upload_accepts_up_to_three_images(self):
+        files = [
+            SimpleUploadedFile(f"fabric-{index}.png", TINY_PNG, content_type="image/png")
+            for index in range(3)
+        ]
+        form = UpcyclingRequestForm(
+            data=self.valid_data,
+            files={"fabric_photos": files},
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(len(form.cleaned_data["fabric_photos"]), 3)
+
+    def test_fabric_upload_rejects_more_than_three_images(self):
+        files = [
+            SimpleUploadedFile(f"fabric-{index}.png", TINY_PNG, content_type="image/png")
+            for index in range(4)
+        ]
+        form = UpcyclingRequestForm(
+            data=self.valid_data,
+            files={"fabric_photos": files},
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("fabric_photos", form.errors)
+
+    def test_fabric_upload_rejects_non_images_and_files_over_five_mb(self):
+        invalid_files = [
+            SimpleUploadedFile("fabric.txt", b"not an image", content_type="text/plain"),
+            SimpleUploadedFile("large.png", b"0" * (5 * 1024 * 1024 + 1), content_type="image/png"),
+        ]
+
+        for photo in invalid_files:
+            with self.subTest(name=photo.name):
+                form = UpcyclingRequestForm(
+                    data=self.valid_data,
+                    files={"fabric_photos": [photo]},
+                )
+
+                self.assertFalse(form.is_valid())
+                self.assertIn("fabric_photos", form.errors)
 
     def test_fabric_composition_is_optional_and_prompt_explains_the_choices(self):
         form = self.form({**self.valid_data, "fabric_composition": ""})
@@ -499,9 +541,9 @@ class UpcyclingRequestViewTests(TestCase):
 
     def post_form(self, url, data=None, **kwargs):
         payload = (data or self.form_data).copy()
-        payload["fabric_photo"] = SimpleUploadedFile(
-            "fabric.png", TINY_PNG, content_type="image/png"
-        )
+        payload["fabric_photos"] = [
+            SimpleUploadedFile("fabric.png", TINY_PNG, content_type="image/png")
+        ]
         return self.client.post(url, payload, **kwargs)
 
     def test_request_list_paginates_25_requests_and_preserves_status_filter(self):
@@ -602,6 +644,57 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertContains(response, 'id="fabric-photo-preview"')
         self.assertContains(response, 'src="/static/img/mascot/pointing.webp"')
         self.assertContains(response, 'class="upcycling-photo-add"')
+        self.assertContains(response, 'name="fabric_photos"')
+        self.assertContains(response, "Pilih 1–3 foto")
+
+    def test_create_request_saves_each_uploaded_fabric_photo(self):
+        self.client.force_login(self.user)
+        payload = self.form_data.copy()
+        payload["fabric_photos"] = [
+            SimpleUploadedFile(f"fabric-{index}.png", TINY_PNG, content_type="image/png")
+            for index in range(3)
+        ]
+        response = self.client.post(
+            reverse("upcycling:request_create"),
+            payload,
+        )
+
+        self.assertEqual(response.status_code, 302)
+        upcycling_request = UpcyclingRequest.objects.get(user=self.user)
+        self.assertTrue(upcycling_request.fabric_photo)
+        self.assertEqual(upcycling_request.additional_fabric_photos.count(), 2)
+        detail_response = self.client.get(
+            reverse("upcycling:request_detail", args=[upcycling_request.pk])
+        )
+        self.assertEqual(len(detail_response.context["fabric_photos"]), 3)
+
+    def test_edit_request_can_add_photos_only_up_to_three_total(self):
+        upcycling_request = self.make_request(
+            self.user,
+            fabric_photo=SimpleUploadedFile(
+                "existing.png", TINY_PNG, content_type="image/png"
+            ),
+        )
+        self.client.force_login(self.user)
+        edit_url = reverse("upcycling:request_update", args=[upcycling_request.pk])
+
+        payload = self.form_data.copy()
+        payload["fabric_photos"] = [
+            SimpleUploadedFile(f"extra-{index}.png", TINY_PNG, content_type="image/png")
+            for index in range(2)
+        ]
+        response = self.client.post(edit_url, payload)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(upcycling_request.additional_fabric_photos.count(), 2)
+
+        payload["fabric_photos"] = [
+            SimpleUploadedFile("too-many.png", TINY_PNG, content_type="image/png")
+        ]
+        response = self.client.post(edit_url, payload)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Jumlah foto kain maksimal 3")
 
     def test_form_keeps_batik_preferences_visible_after_validation_error(self):
         self.client.force_login(self.user)
@@ -680,15 +773,20 @@ class UpcyclingRequestViewTests(TestCase):
 
     def test_update_rate_limit_returns_429_after_ten_posts(self):
         """Test behavior: update rate limit returns 429 after ten posts."""
-        upcycling_request = self.make_request(self.user)
+        upcycling_request = self.make_request(
+            self.user,
+            fabric_photo=SimpleUploadedFile(
+                "existing.png", TINY_PNG, content_type="image/png"
+            ),
+        )
         self.client.force_login(self.user)
         url = reverse("upcycling:request_update", args=[upcycling_request.pk])
 
         for _ in range(10):
-            response = self.post_form(url)
+            response = self.client.post(url, self.form_data)
             self.assertEqual(response.status_code, 302)
 
-        limited_response = self.post_form(url)
+        limited_response = self.client.post(url, self.form_data)
 
         self.assertEqual(limited_response.status_code, 429)
         self.assertEqual(limited_response["Retry-After"], "60")
@@ -1232,7 +1330,12 @@ class UpcyclingRequestViewTests(TestCase):
 
     def test_user_can_update_own_pending_request_and_sees_toast(self):
         """Test behavior: user can update own pending request and sees toast."""
-        upcycling_request = self.make_request(self.user)
+        upcycling_request = self.make_request(
+            self.user,
+            fabric_photo=SimpleUploadedFile(
+                "existing.png", TINY_PNG, content_type="image/png"
+            ),
+        )
         self.client.force_login(self.user)
         data = self.form_data.copy()
         data["quantity"] = 2
@@ -1249,7 +1352,12 @@ class UpcyclingRequestViewTests(TestCase):
 
     def test_update_does_not_accept_posted_user_or_status(self):
         """Test behavior: update does not accept posted user or status."""
-        upcycling_request = self.make_request(self.user)
+        upcycling_request = self.make_request(
+            self.user,
+            fabric_photo=SimpleUploadedFile(
+                "existing.png", TINY_PNG, content_type="image/png"
+            ),
+        )
         self.client.force_login(self.user)
         data = self.form_data | {
             "user": self.other_user.pk,

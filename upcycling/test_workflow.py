@@ -10,7 +10,7 @@ from PIL import Image
 
 from rewards.models import PointTransaction
 from .admin import UpcyclingRequestAdminForm
-from .models import ArtisanProfile, ProductType, UpcyclingRequest
+from .models import AdditionalFabricPhoto, ArtisanProfile, ProductType, UpcyclingRequest
 from .forms import UpcyclingRequestForm, get_product_options_by_category
 
 
@@ -65,7 +65,7 @@ class UpcyclingWorkflowTests(TestCase):
         }
         self.assertNotIn("NEW_DONATION", dict(UpcyclingRequest.FABRIC_CHOICES))
         self.assertFalse(UpcyclingRequestForm(data=data).is_valid())
-        form = UpcyclingRequestForm(data=data, files={"fabric_photo": make_png()})
+        form = UpcyclingRequestForm(data=data, files={"fabric_photos": [make_png()]})
         self.assertTrue(form.is_valid(), form.errors)
 
     def test_other_fabric_requires_a_description(self):
@@ -80,17 +80,17 @@ class UpcyclingWorkflowTests(TestCase):
             "address": "Depok",
             "whatsapp": "081234567890",
         }
-        form = UpcyclingRequestForm(data=data, files={"fabric_photo": make_png()})
+        form = UpcyclingRequestForm(data=data, files={"fabric_photos": [make_png()]})
         self.assertFalse(form.is_valid())
         self.assertIn("fabric_other_description", form.errors)
 
         data["fabric_other_description"] = "Kain kanvas"
-        form = UpcyclingRequestForm(data=data, files={"fabric_photo": make_png()})
+        form = UpcyclingRequestForm(data=data, files={"fabric_photos": [make_png()]})
         self.assertTrue(form.is_valid(), form.errors)
         self.assertEqual(form.cleaned_data["fabric_other_description"], "Kain kanvas")
 
         data.update(fabric="DENIM", fabric_other_description="Keterangan lama")
-        form = UpcyclingRequestForm(data=data, files={"fabric_photo": make_png()})
+        form = UpcyclingRequestForm(data=data, files={"fabric_photos": [make_png()]})
         self.assertTrue(form.is_valid(), form.errors)
         self.assertEqual(form.cleaned_data["fabric_other_description"], "")
 
@@ -162,7 +162,7 @@ class UpcyclingWorkflowTests(TestCase):
                 "delivery_method": "DROP_OFF",
                 "address": "Depok",
                 "whatsapp": "081234567890",
-                "fabric_photo": make_png(),
+                "fabric_photos": [make_png()],
             },
         )
         self.assertEqual(response.status_code, 302)
@@ -316,6 +316,34 @@ class UpcyclingWorkflowTests(TestCase):
         self.assertContains(response, "Lihat Detail →")
         self.assertNotContains(response, "Catatan hanya ditampilkan di detail.")
         self.assertNotContains(response, "quoted_price")
+
+    def test_artisan_dashboard_opens_all_fabric_photos_in_zoom_gallery(self):
+        request_obj = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.PENDING_REVIEW,
+            fabric_photo=make_png(),
+        )
+        for _ in range(2):
+            AdditionalFabricPhoto.objects.create(
+                request=request_obj,
+                image=make_png(),
+            )
+        self.client.force_login(self.artisan_user)
+
+        response = self.client.get(reverse("upcycling:artisan_dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content.count(b'data-fabric-photo-zoom='), 3)
+        self.assertEqual(response.content.count(b'data-photo-zoom-icon'), 3)
+        self.assertNotContains(response, "Zoom ⤢")
+        self.assertContains(response, 'id="artisan-photo-zoom"')
+        self.assertContains(response, 'id="artisan-photo-zoom-previous"')
+        self.assertContains(response, 'id="artisan-photo-zoom-next"')
+        self.assertContains(response, 'src="/static/js/upcycling-photo-zoom.js"')
+        self.assertContains(response, "Foto kain 1 dari 3")
+        self.assertContains(response, "Foto kain 2 dari 3")
+        self.assertContains(response, "Foto kain 3 dari 3")
 
     def test_artisan_detail_contains_status_specific_review_actions(self):
         request_obj = make_request(
