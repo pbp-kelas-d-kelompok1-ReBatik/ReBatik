@@ -6,8 +6,6 @@ from django.db.models import Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
-from django.db.models import Q, Sum
-from batik_custom.models import BatikOrder
 from .utils import get_user_role
 from donasi.models import DonasiKain
 from rewards.models import PointTransaction
@@ -33,15 +31,16 @@ def overview(request):
         "profile": profile,
     }
 
-    # ADMIN DASHBOARD
+    # ADMIN
     if role == "admin":
-        return render(request, "profiles/admin_overview.html", common_context,)
+        return render(request, "profiles/roles/admin_overview.html", common_context,)
 
     # ARTISAN
     if role == "artisan":
-        return render(request,"profiles/artisan_overview.html", common_context,)
+        return render(request,"profiles/roles/artisan_overview.html", common_context,)
 
     # ECO-MEMBER
+    donations = DonasiKain.objects.filter(user=request.user)
 
     upcycling_requests = UpcyclingRequest.objects.filter(user=request.user)
 
@@ -51,18 +50,20 @@ def overview(request):
 
     saved_weight_kg = donation_transactions.aggregate(total=Sum("weight_kg"))["total"] or Decimal("0")
 
-    orders = (
-        BatikOrder.objects
-        .filter(user=request.user)
-        .select_related(
-            "motif",
-            "palette",
-            "design_option",
-        )
-    )
+    # orders = (
+    #     BatikOrder.objects
+    #     .filter(user=request.user)
+    #     .select_related(
+    #         "motif",
+    #         "palette",
+    #         "design_option",
+    #     )
+    # )
 
     context = {
         **common_context,
+        "donation_count": donations.count(),
+        "recent_donations": donations.order_by("-created_at")[:3],
         "upcycling_count": upcycling_requests.count(),
         "completed_upcycling_count": (upcycling_requests.filter(status=UpcyclingRequest.Status.COMPLETED).count()),
         "available_points": get_available_points(request.user),
@@ -70,8 +71,8 @@ def overview(request):
         "saved_weight_kg": saved_weight_kg,
         "recent_upcycling": upcycling_requests[:3],
         "recent_transactions": transactions[:5],
-        "order_count": orders.count(),
-        "recent_orders": orders[:3],
+        # "order_count": orders.count(),
+        # "recent_orders": orders[:3],
     }
 
     return render(
@@ -95,9 +96,6 @@ def create_profile(request):
 
         if form.is_valid():
             profile = form.save(commit=False)
-
-            # Pemilik ditentukan dari session login,
-            # bukan dari input pengguna.
             profile.user = request.user
             profile.save()
 
@@ -191,36 +189,3 @@ def delete_profile(request):
         )
 
     return redirect("profiles:overview")
-
-
-@login_required
-def order_history(request):
-
-    query = request.GET.get("q", "").strip()[:100]
-
-    orders = (
-        BatikOrder.objects
-        .filter(user=request.user)
-        .select_related(
-            "motif",
-            "palette",
-            "design_option",
-        )
-    )
-
-    if query:
-        orders = orders.filter(
-            Q(motif__name__icontains=query)
-            | Q(product_type__icontains=query)
-            | Q(status__icontains=query)
-            | Q(style_name__icontains=query)
-        )
-
-    return render(
-        request,
-        "profiles/orders.html",
-        {
-            "orders": orders,
-            "query": query,
-        },
-    )

@@ -15,19 +15,13 @@
         </div>
 
         <div class="profile-account-info">
-            <p class="profile-eyebrow">AKUN REBATIK</p>
+            <p class="profile-eyebrow">{{ role|title }}</p>
             <h2>{{ profile.display_name }}</h2>
             <p>@{{ request.user.username }}</p>
         </div>
     </div>
 
     <div class="profile-details">
-
-        <div class="profile-detail-item">
-            <span>Email</span>
-            <p>{{ request.user.email|default:"Belum diisi" }}</p>
-        </div>
-
         <div class="profile-detail-item">
             <span>Nomor Telepon</span>
             <p>
