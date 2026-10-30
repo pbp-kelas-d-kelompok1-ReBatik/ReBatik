@@ -1580,3 +1580,30 @@ body.rb-no-scroll {
         font-size: 10px;
     }
 }
+
+
+/* Consistent outline icons for the account menu */
+.rb-nav .rb-menu-icon {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #70452b;
+}
+
+.rb-nav .rb-menu-icon svg {
+    display: block;
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.65;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.rb-nav .rb-user-menu li a:hover .rb-menu-icon {
+    color: #a45f32;
+}
