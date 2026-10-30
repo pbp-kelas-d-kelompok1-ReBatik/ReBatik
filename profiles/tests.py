@@ -16,5 +16,6 @@ class AdminDashboardVoucherLinksTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Kelola Katalog Voucher")
-        self.assertContains(response, reverse("admin:rewards_reward_changelist"))
-        self.assertContains(response, reverse("admin:rewards_reward_add"))
+        voucher_url = reverse("rewards:admin_vouchers")
+        self.assertContains(response, voucher_url)
+        self.assertContains(response, f"{voucher_url}#voucher-form")
