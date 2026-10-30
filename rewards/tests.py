@@ -1,10 +1,13 @@
 from datetime import datetime, timezone as datetime_timezone
 from decimal import Decimal
 from importlib import import_module
+from pathlib import Path
+import tempfile
 from types import SimpleNamespace
 
 from django.contrib.auth import get_user_model
-from django.test import SimpleTestCase, TestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import SimpleTestCase, TestCase, override_settings
 
 from .models import PointTransaction, Reward
 from .services import (
@@ -485,6 +488,40 @@ class RewardsPageTests(TestCase):
 
         catalog_response = self.client.get("/rewards/catalog/")
         self.assertEqual(catalog_response.context["rewards"].count(), 7)
+
+    def test_voucher_image_renders_as_a_small_thumbnail_on_both_catalog_pages(self):
+        self.client.force_login(self.user)
+        with tempfile.TemporaryDirectory() as media_root:
+            with override_settings(MEDIA_ROOT=media_root):
+                voucher = Reward.objects.create(
+                    name="Voucher bergambar",
+                    reward_type=Reward.Type.VOUCHER,
+                    points_required=100,
+                    stock=2,
+                    discount_value=5000,
+                    image=SimpleUploadedFile(
+                        "voucher.png",
+                        b"small test image",
+                        content_type="image/png",
+                    ),
+                )
+
+                for path in ("/rewards/", "/rewards/catalog/"):
+                    with self.subTest(path=path):
+                        response = self.client.get(path)
+                        self.assertEqual(response.status_code, 200)
+                        self.assertContains(response, 'class="voucher-thumbnail"')
+                        self.assertContains(response, voucher.image.url)
+
+        stylesheet = (
+            Path(__file__).resolve().parent.parent
+            / "static"
+            / "css"
+            / "rewards.css"
+        ).read_text(encoding="utf-8")
+        self.assertIn(".voucher-thumbnail", stylesheet)
+        self.assertIn("width: 64px;", stylesheet)
+        self.assertIn("height: 64px;", stylesheet)
 
     def test_points_overview_shows_balance_and_only_owners_recent_activity(self):
         """Show the signed-in user's balance and recent transactions only."""
