@@ -100,6 +100,7 @@ class StyleProfile(models.Model):
         return f"{self.user} - {self.style.name}"
 
 
+
 class FashionPreference(models.Model):
     name = models.CharField(max_length=20, unique=True)
 
@@ -110,6 +111,7 @@ class FashionPreference(models.Model):
 
     def __str__(self):
         return self.name
+
 
 
 class RecommendedMotif(ImageUrlMixin, models.Model):
