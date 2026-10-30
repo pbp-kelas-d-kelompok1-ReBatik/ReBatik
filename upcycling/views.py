@@ -825,33 +825,66 @@ def artisan_dashboard(request):
 
 @staff_member_required(login_url="/admin/login/")
 def admin_dashboard(request):
-    pending_requests = (
-        UpcyclingRequest.objects.filter(
-            status=UpcyclingRequest.Status.PENDING_ASSIGNMENT,
-            artisan__isnull=True,
-        )
-        .select_related("user")
+    assignment_status = UpcyclingRequest.Status.PENDING_ASSIGNMENT
+    available_statuses = (
+        assignment_status,
+        UpcyclingRequest.Status.PENDING_REVIEW,
+        UpcyclingRequest.Status.IN_PROGRESS,
+    )
+    selected_status = request.GET.get("status", assignment_status)
+    if selected_status not in available_statuses:
+        selected_status = assignment_status
+
+    status_requests = UpcyclingRequest.objects.filter(status=selected_status)
+    if selected_status == assignment_status:
+        status_requests = status_requests.filter(artisan__isnull=True)
+    status_requests = (
+        status_requests.select_related("user", "artisan__user")
+        .prefetch_related("additional_fabric_photos")
         .order_by("created_at")
     )
+
     request_rows = [
         {
             "request": upcycling_request,
-            "candidates": eligible_artisans_for_request(upcycling_request),
+            "candidates": (
+                eligible_artisans_for_request(upcycling_request)
+                if selected_status == assignment_status
+                else []
+            ),
         }
-        for upcycling_request in pending_requests
+        for upcycling_request in status_requests
     ]
+    status_counts = {
+        status: UpcyclingRequest.objects.filter(status=status).count()
+        for status in available_statuses
+    }
+    status_tabs = [
+        {
+            "value": status,
+            "label": UpcyclingRequest.Status(status).label,
+            "count": status_counts[status],
+        }
+        for status in available_statuses
+    ]
+    status_empty_messages = {
+        assignment_status: "Tidak ada request menunggu penugasan.",
+        UpcyclingRequest.Status.PENDING_REVIEW: "Tidak ada request menunggu review artisan.",
+        UpcyclingRequest.Status.IN_PROGRESS: "Tidak ada request yang sedang diproduksi.",
+    }
     return render(
         request,
         "upcycling/admin_dashboard.html",
         {
             "request_rows": request_rows,
-            "pending_assignment_count": pending_requests.count(),
-            "pending_review_count": UpcyclingRequest.objects.filter(
-                status=UpcyclingRequest.Status.PENDING_REVIEW
-            ).count(),
-            "in_progress_count": UpcyclingRequest.objects.filter(
-                status=UpcyclingRequest.Status.IN_PROGRESS
-            ).count(),
+            "status_requests": status_requests,
+            "status_tabs": status_tabs,
+            "pending_assignment_count": status_counts[assignment_status],
+            "pending_review_count": status_counts[UpcyclingRequest.Status.PENDING_REVIEW],
+            "in_progress_count": status_counts[UpcyclingRequest.Status.IN_PROGRESS],
+            "selected_admin_status": selected_status,
+            "selected_admin_status_label": UpcyclingRequest.Status(selected_status).label,
+            "status_empty_message": status_empty_messages[selected_status],
         },
     )
 

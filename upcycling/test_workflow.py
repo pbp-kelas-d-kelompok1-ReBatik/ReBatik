@@ -518,16 +518,149 @@ class UpcyclingWorkflowTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertIn("/admin/login/", response.url)
 
-    def test_admin_dashboard_has_an_empty_queue_state(self):
+    def test_admin_dashboard_empty_statuses_match_member_empty_state_style(self):
         staff = User.objects.create_user(username="queue-empty-admin", is_staff=True)
+        self.client.force_login(staff)
+
+        dashboard_url = reverse("upcycling:admin_dashboard")
+        for status in (
+            UpcyclingRequest.Status.PENDING_ASSIGNMENT,
+            UpcyclingRequest.Status.PENDING_REVIEW,
+            UpcyclingRequest.Status.IN_PROGRESS,
+        ):
+            with self.subTest(status=status):
+                response = self.client.get(dashboard_url, {"status": status})
+
+                self.assertContains(response, "Belum ada permintaan")
+                self.assertContains(
+                    response,
+                    'class="h-40 w-40 object-contain sm:h-72 sm:w-72 lg:h-[26rem] lg:w-[26rem]"',
+                )
+                self.assertContains(response, "px-5 py-10 text-center sm:gap-6 sm:px-10 sm:py-16")
+                self.assertContains(response, "Lihat semua request →")
+
+    def test_admin_dashboard_status_tabs_filter_without_full_page_reload(self):
+        assignment_request = make_request(self.user)
+        review_request = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.PENDING_REVIEW,
+        )
+        production_request = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.IN_PROGRESS,
+        )
+        other_request = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.AWAITING_FABRIC,
+        )
+        staff = User.objects.create_user(username="admin-status-lists", is_staff=True)
+        self.client.force_login(staff)
+
+        dashboard_url = reverse("upcycling:admin_dashboard")
+        response = self.client.get(dashboard_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["selected_admin_status"],
+            UpcyclingRequest.Status.PENDING_ASSIGNMENT,
+        )
+        self.assertContains(response, 'hx-target="#admin-dashboard-live"')
+        self.assertContains(response, 'hx-select="#admin-dashboard-live"')
+        self.assertContains(response, 'hx-swap="outerHTML"')
+        self.assertContains(response, f'hx-get="{dashboard_url}?status=PENDING_REVIEW"')
+        self.assertContains(response, assignment_request.reference_code)
+        self.assertNotContains(response, review_request.reference_code)
+        self.assertNotContains(response, production_request.reference_code)
+
+        response = self.client.get(
+            dashboard_url,
+            {"status": UpcyclingRequest.Status.PENDING_REVIEW},
+        )
+        self.assertEqual(
+            list(response.context["status_requests"].values_list("pk", flat=True)),
+            [review_request.pk],
+        )
+        self.assertContains(response, review_request.reference_code)
+        self.assertContains(response, self.artisan_user.username)
+        self.assertContains(response, "Lihat Detail")
+        self.assertNotContains(response, assignment_request.reference_code)
+        self.assertNotContains(response, production_request.reference_code)
+
+        response = self.client.get(
+            dashboard_url,
+            {"status": UpcyclingRequest.Status.IN_PROGRESS},
+        )
+        self.assertEqual(
+            list(response.context["status_requests"].values_list("pk", flat=True)),
+            [production_request.pk],
+        )
+        self.assertContains(response, production_request.reference_code)
+        self.assertContains(response, self.artisan_user.username)
+        self.assertContains(response, "Lihat Detail")
+        self.assertNotContains(response, assignment_request.reference_code)
+        self.assertNotContains(response, review_request.reference_code)
+
+        response = self.client.get(
+            dashboard_url,
+            {"status": UpcyclingRequest.Status.AWAITING_FABRIC},
+        )
+        self.assertEqual(
+            response.context["selected_admin_status"],
+            UpcyclingRequest.Status.PENDING_ASSIGNMENT,
+        )
+        self.assertNotContains(response, other_request.reference_code)
+
+    def test_admin_dashboard_keeps_summary_counts_and_segmented_status_filter(self):
+        make_request(self.user)
+        make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.PENDING_REVIEW,
+        )
+        make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.IN_PROGRESS,
+        )
+        staff = User.objects.create_user(username="admin-summary-layout", is_staff=True)
         self.client.force_login(staff)
 
         response = self.client.get(reverse("upcycling:admin_dashboard"))
 
-        self.assertContains(response, "Tidak ada request menunggu penugasan")
-        self.assertContains(response, "crying.webp")
+        self.assertEqual(response.context["pending_assignment_count"], 1)
+        self.assertEqual(response.context["pending_review_count"], 1)
+        self.assertEqual(response.context["in_progress_count"], 1)
+        self.assertContains(response, 'aria-label="Ringkasan request"')
+        self.assertContains(response, 'id="admin-status-filter"')
+        self.assertContains(response, 'aria-label="Filter status request admin"')
+        self.assertContains(
+            response,
+            'class="mb-7 inline-flex w-fit max-w-full items-center gap-1 overflow-x-auto rounded-full',
+        )
+        self.assertContains(response, 'data-status-count="PENDING_ASSIGNMENT">1</p>')
 
-    def test_single_thumbnail_surfaces_use_only_the_primary_fabric_photo(self):
+    def test_admin_assignment_form_is_inside_the_request_card(self):
+        request_obj = make_request(self.user)
+        staff = User.objects.create_user(username="admin-assignment-layout", is_staff=True)
+        self.client.force_login(staff)
+
+        response = self.client.get(reverse("upcycling:admin_dashboard"))
+        page = response.content.decode()
+        request_position = page.index(request_obj.reference_code)
+        card_start = page.rfind("<article", 0, request_position)
+        card_end = page.index("</article>", card_start)
+        detail_link = page.index("Lihat Detail →", card_start)
+        assignment_form = page.index('action="/upcycling/admin-dashboard/assign/')
+
+        self.assertLess(card_start, assignment_form)
+        self.assertLess(detail_link, assignment_form)
+        self.assertLess(assignment_form, card_end)
+        self.assertContains(response, "Lihat Detail →")
+
+    def test_admin_request_card_uses_single_preview_and_keeps_all_photos_in_zoom_gallery(self):
         request_obj = make_request(
             self.user,
             fabric_photo=make_png(),
@@ -554,7 +687,14 @@ class UpcyclingWorkflowTests(TestCase):
 
         self.assertContains(admin_dashboard, primary_photo_url)
         for photo in extra_photos:
-            self.assertNotContains(admin_dashboard, photo.image.url)
+            self.assertContains(admin_dashboard, photo.image.url)
+        self.assertEqual(admin_dashboard.content.count(b'data-fabric-photo-zoom='), 3)
+        self.assertEqual(admin_dashboard.content.count(b'data-photo-zoom-icon'), 1)
+        self.assertContains(admin_dashboard, 'lg:grid-cols-[16.5rem_minmax(0,1fr)_auto]')
+        self.assertContains(admin_dashboard, 'class="hidden"')
+        self.assertNotContains(admin_dashboard, f'Pemohon: {self.user.username}')
+        self.assertContains(admin_dashboard, 'id="artisan-photo-zoom"')
+        self.assertContains(admin_dashboard, 'src="/static/js/upcycling-photo-zoom.js"')
 
     def test_admin_dashboard_only_shows_eligible_artisans_for_unassigned_requests(self):
         request_obj = make_request(self.user)
