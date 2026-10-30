@@ -215,12 +215,22 @@
                         {% for photo in fabric_photos %}
                             <img
                                 src="{{ photo.url }}"
-                                alt="Foto kain {{ forloop.counter }} dari {{ fabric_photos|length }}"
+                                alt="Foto barang atau kain {{ forloop.counter }} dari {{ fabric_photos|length }}"
                                 loading="lazy"
                                 decoding="async"
                                 class="aspect-[1.4] w-full rounded-xl bg-[var(--upcycling-soft)] object-cover"
                             >
                         {% endfor %}
+                    </div>
+                {% endif %}
+                {% if reference_photos %}
+                    <div class="mt-6">
+                        <h4 class="text-lg font-bold">Foto referensi produk/desain</h4>
+                        <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                            {% for photo in reference_photos %}
+                                <img src="{{ photo.image.url }}" alt="Foto referensi produk atau desain {{ forloop.counter }}" loading="lazy" decoding="async" class="aspect-square w-full rounded-xl bg-[var(--upcycling-soft)] object-cover">
+                            {% endfor %}
+                        </div>
                     </div>
                 {% endif %}
 
@@ -230,6 +240,8 @@
                         <dt class="font-semibold">Kain</dt>
                         <dd>{{ upcycling_request.get_fabric_display }}{% if upcycling_request.fabric_other_description %} · {{ upcycling_request.fabric_other_description }}{% endif %}</dd>
                     </div>
+                    {% if upcycling_request.current_item_form %}<div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]"><dt class="font-semibold">Barang awal</dt><dd>{{ upcycling_request.get_current_item_form_display }}{% if upcycling_request.current_item_form_other %}: {{ upcycling_request.current_item_form_other }}{% endif %}</dd></div>{% endif %}
+                    <div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]"><dt class="font-semibold">Motif batik</dt><dd>{{ upcycling_request.get_has_batik_pattern_display }}</dd></div>
                     {% if upcycling_request.fabric_composition %}<div class="grid grid-cols-[8.5rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)]"><dt class="font-semibold">Komposisi bahan</dt><dd>{{ upcycling_request.fabric_composition }}</dd></div>{% endif %}
                     {% if upcycling_request.wants_batik_accent %}
                         <div class="border-t border-[var(--border)] pt-3">

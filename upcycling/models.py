@@ -77,10 +77,23 @@ class UpcyclingRequest(models.Model):
         RETURNED = "RETURNED", "Kain sudah dikembalikan"
 
     class FabricType(models.TextChoices):
-        DENIM = "DENIM", "Jeans/denim"
-        COTTON = "COTTON", "Katun (misalnya kaos)"
-        BATIK = "BATIK", "Kain bermotif batik"
+        DENIM = "DENIM", "Denim/jeans"
+        COTTON = "COTTON", "Katun"
+        SYNTHETIC = "SYNTHETIC", "Sintetis (misalnya polyester)"
         MIXED = "MIXED", "Bahan campuran"
+        OTHER = "OTHER", "Lainnya"
+        UNKNOWN = "UNKNOWN", "Tidak tahu"
+
+    class BatikPatternStatus(models.TextChoices):
+        YES = "YES", "Ya, bermotif batik"
+        NO = "NO", "Tidak"
+        UNSURE = "UNSURE", "Tidak yakin"
+
+    class CurrentItemForm(models.TextChoices):
+        PANTS = "PANTS", "Celana"
+        TOP = "TOP", "Kaos / Kemeja"
+        JACKET = "JACKET", "Jaket / Outer"
+        FABRIC = "FABRIC", "Kain lembaran / Potongan kain"
         OTHER = "OTHER", "Lainnya"
 
     class FabricCondition(models.TextChoices):
@@ -151,8 +164,19 @@ class UpcyclingRequest(models.Model):
     )
     fabric = models.CharField(max_length=20, choices=FABRIC_CHOICES)
     fabric_other_description = models.CharField(max_length=100, blank=True)
+    current_item_form = models.CharField(
+        max_length=20,
+        choices=CurrentItemForm.choices,
+        blank=True,
+    )
+    current_item_form_other = models.CharField(max_length=120, blank=True)
     fabric_photo = models.ImageField(upload_to="upcycling/fabric/", blank=True, null=True)
     fabric_composition = models.CharField(max_length=120, blank=True)
+    has_batik_pattern = models.CharField(
+        max_length=10,
+        choices=BatikPatternStatus.choices,
+        default=BatikPatternStatus.UNSURE,
+    )
     wants_batik_accent = models.BooleanField(default=False)
     batik_motif = models.CharField(max_length=150, blank=True)
     motif_placement = models.CharField(max_length=150, blank=True)
@@ -295,6 +319,22 @@ class AdditionalFabricPhoto(models.Model):
 
     def __str__(self):
         return f"Foto tambahan · {self.request.reference_code}"
+
+
+class AdditionalReferencePhoto(models.Model):
+    request = models.ForeignKey(
+        UpcyclingRequest,
+        on_delete=models.CASCADE,
+        related_name="reference_photos",
+    )
+    image = models.ImageField(upload_to="upcycling/references/")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ("created_at", "pk")
+
+    def __str__(self):
+        return f"Foto referensi · {self.request.reference_code}"
 
 
 class UpcyclingStatusHistory(models.Model):

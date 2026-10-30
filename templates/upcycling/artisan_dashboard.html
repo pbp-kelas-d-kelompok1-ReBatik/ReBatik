@@ -38,8 +38,8 @@
                             {% if item.fabric_photos %}
                                 <div class="grid h-full w-full gap-1 {% if item.fabric_photos|length > 1 %}grid-cols-2{% else %}grid-cols-1{% endif %}">
                                     {% for photo in item.fabric_photos %}
-                                        <button type="button" data-fabric-photo-zoom="{{ item.pk }}" data-photo-src="{{ photo.url }}" data-photo-alt="Foto kain {{ forloop.counter }} dari {{ item.fabric_photos|length }} · {{ item.get_product_name }}" aria-label="Zoom foto kain {{ forloop.counter }} dari {{ item.fabric_photos|length }}" title="Zoom foto" class="group relative min-h-0 min-w-0 overflow-hidden rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]">
-                                            <img src="{{ photo.url }}" alt="Foto kain {{ forloop.counter }} dari {{ item.fabric_photos|length }}" loading="lazy" decoding="async" class="h-full w-full object-cover transition duration-200 group-hover:scale-105">
+                                        <button type="button" data-fabric-photo-zoom="{{ item.pk }}" data-photo-src="{{ photo.url }}" data-photo-alt="Foto barang atau kain {{ forloop.counter }} dari {{ item.fabric_photos|length }} · {{ item.get_product_name }}" aria-label="Zoom foto barang atau kain {{ forloop.counter }} dari {{ item.fabric_photos|length }}" title="Zoom foto" class="group relative min-h-0 min-w-0 overflow-hidden rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]">
+                                            <img src="{{ photo.url }}" alt="Foto barang atau kain {{ forloop.counter }} dari {{ item.fabric_photos|length }}" loading="lazy" decoding="async" class="h-full w-full object-cover transition duration-200 group-hover:scale-105">
                                             <span data-photo-zoom-icon aria-hidden="true" class="absolute bottom-1 right-1 grid size-7 place-items-center rounded-full bg-black/65 text-white shadow-md sm:size-8">
                                                 <svg viewBox="0 0 24 24" fill="none" class="size-5" aria-hidden="true">
                                                     <circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="2"></circle>
@@ -50,7 +50,7 @@
                                     {% endfor %}
                                 </div>
                             {% else %}
-                                <img src="{% static 'img/mascot/thinking.webp' %}" alt="Foto kain belum tersedia" loading="lazy" decoding="async" class="h-full w-full bg-[var(--upcycling-soft)] object-contain p-3">
+                                <img src="{% static 'img/mascot/thinking.webp' %}" alt="Foto barang atau kain belum tersedia" loading="lazy" decoding="async" class="h-full w-full bg-[var(--upcycling-soft)] object-contain p-3">
                             {% endif %}
                         </div>
 
@@ -84,7 +84,7 @@
                     </article>
                 {% endfor %}
             </div>
-            <dialog id="artisan-photo-zoom" aria-label="Foto kain ukuran besar" class="fixed inset-0 m-auto max-h-[96dvh] max-w-[96vw] overflow-visible rounded-2xl bg-transparent p-0 text-white backdrop:bg-black/85">
+            <dialog id="artisan-photo-zoom" aria-label="Foto barang atau kain ukuran besar" class="fixed inset-0 m-auto max-h-[96dvh] max-w-[96vw] overflow-visible rounded-2xl bg-transparent p-0 text-white backdrop:bg-black/85">
                 <div class="relative flex max-h-[96dvh] max-w-[96vw] flex-col items-center rounded-2xl bg-[var(--brown)] p-3 shadow-2xl sm:p-5">
                     <div class="mb-3 flex w-full items-center justify-between gap-4">
                         <p id="artisan-photo-zoom-counter" class="font-semibold" aria-live="polite"></p>

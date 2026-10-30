@@ -24,6 +24,7 @@ from .forms import (
 )
 from .models import (
     AdditionalFabricPhoto,
+    AdditionalReferencePhoto,
     ArtisanProfile,
     NOTES_MAX_LENGTH,
     UpcyclingRateLimitBucket,
@@ -167,6 +168,11 @@ def request_list(request):
             in " ".join(value.casefold().replace("_", " ").split())
             or normalized_query in label.casefold()
         ]
+        matching_pattern_values = [
+            value
+            for value, label in UpcyclingRequest.BatikPatternStatus.choices
+            if normalized_query in label.casefold()
+        ]
         search_filter = (
             Q(custom_product__icontains=selected_query)
             | Q(notes__icontains=selected_query)
@@ -175,6 +181,8 @@ def request_list(request):
             search_filter |= Q(product__in=matching_products)
         if matching_fabrics:
             search_filter |= Q(fabric__in=matching_fabrics)
+        if matching_pattern_values:
+            search_filter |= Q(has_batik_pattern__in=matching_pattern_values)
         requests = requests.filter(search_filter)
     if selected_from:
         start_at = timezone.make_aware(
@@ -264,6 +272,10 @@ def request_create(request):
                         upcycling_request,
                         form.cleaned_data["fabric_photos"],
                     )
+                    _save_reference_photos(
+                        upcycling_request,
+                        form.cleaned_data["reference_photos"],
+                    )
                     UpcyclingStatusHistory.objects.create(
                         request=upcycling_request,
                         to_status=upcycling_request.status,
@@ -315,6 +327,16 @@ def _save_fabric_photos(upcycling_request, photos):
         )
 
 
+def _save_reference_photos(upcycling_request, photos):
+    """Append optional product and design reference images to a request."""
+    AdditionalReferencePhoto.objects.bulk_create(
+        [
+            AdditionalReferencePhoto(request=upcycling_request, image=photo)
+            for photo in photos
+        ]
+    )
+
+
 @login_required
 def request_success(request, pk):
     """Show the confirmation page for the signed-in user's new request."""
@@ -343,7 +365,7 @@ def request_detail(request, pk):
 
     accessible_requests = UpcyclingRequest.objects.select_related(
         "user", "artisan__user"
-    ).prefetch_related("additional_fabric_photos")
+    ).prefetch_related("additional_fabric_photos", "reference_photos")
     if artisan:
         upcycling_request = get_object_or_404(
             accessible_requests.filter(Q(user=request.user) | Q(artisan=artisan)),
@@ -489,6 +511,7 @@ def request_detail(request, pk):
                 )
                 if image
             ],
+            "reference_photos": list(upcycling_request.reference_photos.all()),
             "reference_code": upcycling_request.reference_code,
             "timeline_steps": timeline_steps,
             "status_history": status_history,
@@ -617,6 +640,10 @@ def request_update(request, pk):
                 _save_fabric_photos(
                     current_request,
                     form.cleaned_data["fabric_photos"],
+                )
+                _save_reference_photos(
+                    current_request,
+                    form.cleaned_data["reference_photos"],
                 )
 
             messages.success(request, "Permintaan berhasil diperbarui.")

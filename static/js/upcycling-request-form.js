@@ -9,21 +9,29 @@ const initializeUpcyclingForm = () => {
 
     const errorList = document.getElementById("form-error-list");
     const validationMessages = {
-        fabric: ["Kain", "Pilih kain yang ingin digunakan."],
-        fabric_other_description: ["Jenis kain lainnya", "Tuliskan jenis kain yang akan digunakan."],
-        fabric_photos: ["Foto kain", "Unggah 1 sampai 3 foto kain."],
-        fabric_condition: ["Kondisi kain", "Pilih kondisi kain jika diketahui."],
-        fabric_dimensions: ["Ukuran kain", "Isi perkiraan ukuran atau jumlah kain."],
+        fabric: ["Jenis bahan", "Pilih jenis bahan yang paling mendekati."],
+        current_item_form: ["Bentuk barang", "Pilih bentuk barang atau kain yang Anda miliki."],
+        current_item_form_other: ["Bentuk lainnya", "Sebutkan bentuk barang atau kain."],
+        fabric_other_description: ["Bahan lainnya", "Sebutkan bahan lainnya."],
+        has_batik_pattern: ["Motif batik", "Pilih apakah barang atau kain sudah memiliki motif batik."],
+        fabric_photos: ["Foto barang atau kain", "Unggah 1 sampai 3 foto barang atau kain."],
+        reference_photos: ["Foto referensi", "Pilih maksimal 3 gambar referensi."],
+        fabric_condition: ["Kondisi barang atau kain", "Pilih kondisi barang atau kain jika diketahui."],
+        fabric_dimensions: ["Ukuran atau jumlah barang/bahan", "Isi perkiraan ukuran atau jumlah barang/bahan."],
         category: ["Kategori produk", "Pilih kategori produk."],
-        product: ["Model produk", "Pilih model produk."],
+        product: ["Produk yang ingin dibuat", "Pilih produk yang ingin dibuat."],
         custom_product: ["Produk yang diinginkan", "Tuliskan produk yang Anda inginkan."],
         quantity: ["Jumlah produk", "Masukkan jumlah antara 1 dan 20."],
         whatsapp: ["Nomor WhatsApp", "Masukkan nomor HP Indonesia yang valid, misalnya +6281234567890."],
     };
     const validationTargets = {
         fabric: "#pilih-kain",
+        current_item_form: "#current-item-form-options",
+        current_item_form_other: "#id_current_item_form_other",
         fabric_other_description: "#id_fabric_other_description",
+        has_batik_pattern: "#has-batik-pattern",
         fabric_photos: "#id_fabric_photos",
+        reference_photos: "#id_reference_photos",
         fabric_condition: "#id_fabric_condition",
         fabric_dimensions: "#id_fabric_dimensions",
         category: "#pilih-produk",
@@ -98,8 +106,47 @@ const initializeUpcyclingForm = () => {
         fabricPhotoCount.classList.remove("hidden");
     });
 
+    const referencePhotoField = document.getElementById("id_reference_photos");
+    const referencePhotoPlaceholder = document.getElementById("reference-photo-placeholder");
+    const referencePhotoMascot = document.getElementById("reference-photo-mascot");
+    const referencePhotoPreviews = document.getElementById("reference-photo-previews");
+    const referencePhotoCount = document.getElementById("reference-photo-count");
+    let referencePhotoPreviewUrls = [];
+    referencePhotoField?.addEventListener("change", () => {
+        const photos = Array.from(referencePhotoField.files).filter((photo) => photo.type.startsWith("image/"));
+        referencePhotoPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+        referencePhotoPreviewUrls = [];
+        referencePhotoPreviews.replaceChildren();
+        if (!photos.length) {
+            referencePhotoPreviews.classList.add("hidden");
+            referencePhotoPreviews.classList.remove("grid");
+            referencePhotoPlaceholder.classList.remove("hidden");
+            referencePhotoMascot.classList.remove("hidden");
+            referencePhotoCount.classList.add("hidden");
+            return;
+        }
+        photos.forEach((photo) => {
+            const image = document.createElement("img");
+            const url = URL.createObjectURL(photo);
+            referencePhotoPreviewUrls.push(url);
+            image.src = url;
+            image.alt = "Pratinjau foto referensi";
+            image.className = "h-full min-h-0 w-full rounded-lg object-cover";
+            referencePhotoPreviews.append(image);
+        });
+        referencePhotoPreviews.classList.remove("hidden");
+        referencePhotoPreviews.classList.add("grid");
+        referencePhotoPlaceholder.classList.add("hidden");
+        referencePhotoMascot.classList.add("hidden");
+        referencePhotoCount.textContent = `${photos.length} foto referensi dipilih. Maksimal 3 foto.`;
+        referencePhotoCount.classList.remove("hidden");
+    });
+
     const categoryFields = form.querySelectorAll('[name="category"]');
     const fabricFields = form.querySelectorAll('[name="fabric"]');
+    const currentItemFormFields = form.querySelectorAll('[name="current_item_form"]');
+    const currentItemFormOther = document.getElementById("id_current_item_form_other");
+    const otherItemFormContainer = document.getElementById("other-item-form-field");
     const otherFabricField = document.getElementById("id_fabric_other_description");
     const otherFabricContainer = document.getElementById("other-fabric-field");
     const productField = document.getElementById("id_product");
@@ -112,6 +159,8 @@ const initializeUpcyclingForm = () => {
         document.getElementById("product-options-data").textContent
     );
     const fabricSummary = document.getElementById("summary-fabric");
+    const itemFormSummary = document.getElementById("summary-item-form");
+    const patternSummary = document.getElementById("summary-pattern");
     const categorySummary = document.getElementById("summary-category");
     const productSummary = document.getElementById("summary-product");
     const batikSummary = document.getElementById("summary-batik");
@@ -129,11 +178,19 @@ const initializeUpcyclingForm = () => {
     }
 
     function updateSummary() {
+        const selectedItemForm = form.querySelector('input[name="current_item_form"]:checked')?.value;
+        itemFormSummary.textContent = selectedItemForm === "OTHER" && currentItemFormOther.value.trim()
+            ? currentItemFormOther.value.trim()
+            : getRadioLabel("current_item_form", "Pilih bentuk barang");
         const selectedFabric = form.querySelector('input[name="fabric"]:checked')?.value;
         const selectedFabricLabel = getRadioLabel("fabric", "Pilih kain");
         fabricSummary.textContent = selectedFabric === "OTHER" && otherFabricField.value.trim()
             ? `${selectedFabricLabel}: ${otherFabricField.value.trim()}`
             : selectedFabricLabel;
+        patternSummary.textContent = getRadioLabel(
+            "has_batik_pattern",
+            "Motif batik belum dipilih"
+        );
         categorySummary.textContent = getRadioLabel("category", "Pilih kategori produk");
         const selectedProduct = productField.selectedOptions[0];
         if (productField.value === "LAINNYA") {
@@ -151,6 +208,15 @@ const initializeUpcyclingForm = () => {
         } else {
             batikSummary.textContent = "Tanpa tambahan batik";
         }
+    }
+
+    function updateOtherItemFormField() {
+        const isOtherItemForm = form.querySelector('input[name="current_item_form"]:checked')?.value === "OTHER";
+        otherItemFormContainer.classList.toggle("hidden", !isOtherItemForm);
+        currentItemFormOther.required = isOtherItemForm;
+        currentItemFormOther.setAttribute("aria-required", String(isOtherItemForm));
+        if (!isOtherItemForm) currentItemFormOther.value = "";
+        updateSummary();
     }
 
     function updateBatikAccentFields() {
@@ -254,6 +320,7 @@ const initializeUpcyclingForm = () => {
     }
 
     fabricFields.forEach((field) => field.addEventListener("change", updateOtherFabricField));
+    currentItemFormFields.forEach((field) => field.addEventListener("change", updateOtherItemFormField));
     categoryFields.forEach((field) => field.addEventListener("change", () => {
         customProductField.value = "";
         loadProducts();
@@ -266,11 +333,13 @@ const initializeUpcyclingForm = () => {
     });
     customProductField.addEventListener("input", updateSummary);
     otherFabricField.addEventListener("input", updateSummary);
+    currentItemFormOther.addEventListener("input", updateSummary);
     batikAccentToggle.addEventListener("change", updateBatikAccentFields);
     batikPreferenceFields.forEach((field) => {
         field.addEventListener("input", updateSummary);
     });
     updateBatikAccentFields();
+    updateOtherItemFormField();
     updateOtherFabricField();
     loadProducts(true);
 

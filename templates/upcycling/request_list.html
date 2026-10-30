@@ -314,7 +314,7 @@
                     >
                         <div class="aspect-[1.35] w-full overflow-hidden rounded-xl">
                             {% if item.fabric_photo %}
-                                <img src="{{ item.fabric_photo.url }}" alt="Foto kain" loading="lazy" decoding="async" class="h-full w-full object-cover">
+                                <img src="{{ item.fabric_photo.url }}" alt="Foto barang atau kain" loading="lazy" decoding="async" class="h-full w-full object-cover">
                             {% elif item.fabric == "PARANG" %}
                                 <img
                                     src="{% static 'img/catalog/batik/parang.webp' %}"
@@ -343,7 +343,7 @@
                             {% else %}
                                 <img
                                     src="{% static 'img/mascot/thinking.webp' %}"
-                                    alt="Foto kain belum tersedia"
+                                    alt="Foto barang atau kain belum tersedia"
                                     loading="lazy"
                                     decoding="async"
                                     class="h-full w-full bg-[var(--upcycling-soft)] object-contain p-3"

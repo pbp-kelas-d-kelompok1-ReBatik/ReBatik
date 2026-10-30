@@ -53,6 +53,7 @@ def get_product_options_by_category():
 
 class UpcyclingRequestForm(forms.ModelForm):
     fabric_photos = MultipleImageField(required=False)
+    reference_photos = MultipleImageField(required=False)
 
     def __init__(self, *args, **kwargs):
         """Configure request choices and labels."""
@@ -61,17 +62,19 @@ class UpcyclingRequestForm(forms.ModelForm):
         choices_by_field = {
             "fabric": UpcyclingRequest.FABRIC_CHOICES,
             "category": UpcyclingRequest.CATEGORY_CHOICES,
+            "has_batik_pattern": UpcyclingRequest.BatikPatternStatus.choices,
+            "current_item_form": UpcyclingRequest.CurrentItemForm.choices,
         }
         for field_name, choices in choices_by_field.items():
             self.fields[field_name].choices = choices
 
-        self.fields["fabric_photos"].label = "Foto kain (1–3 foto)"
+        self.fields["fabric_photos"].label = "Foto barang atau kain (1–3 foto)"
         self.fields["fabric_photos"].widget.attrs.update(
             {
                 "accept": "image/*",
                 "multiple": True,
                 "class": "upcycling-photo-input",
-                "aria-label": "Pilih 1 hingga 3 foto kain",
+                "aria-label": "Pilih 1 hingga 3 foto barang atau kain",
             }
         )
         self.existing_fabric_photo_count = (
@@ -80,24 +83,78 @@ class UpcyclingRequestForm(forms.ModelForm):
             if not self.instance._state.adding
             else 0
         )
-        self.fields["fabric"].label = "Jenis kain atau barang yang akan diolah"
-        self.fields["fabric_condition"].label = "Kondisi kain menurut Anda"
+        self.fields["reference_photos"].label = "Foto referensi produk/desain (opsional)"
+        self.fields["reference_photos"].widget.attrs.update(
+            {
+                "accept": "image/*",
+                "multiple": True,
+                "class": "upcycling-photo-input",
+                "aria-label": "Pilih hingga 3 foto referensi produk atau desain",
+            }
+        )
+        self.existing_reference_photo_count = (
+            self.instance.reference_photos.count()
+            if not self.instance._state.adding
+            else 0
+        )
+        self.fields["fabric"].label = "Jenis bahan utama yang akan diolah"
+        self.fields["has_batik_pattern"].label = (
+            "Apakah barang atau kain Anda sudah memiliki motif batik?"
+        )
+        self.fields["has_batik_pattern"].choices = [
+            ("", "Pilih jawaban"),
+            *UpcyclingRequest.BatikPatternStatus.choices,
+        ]
+        self.fields["has_batik_pattern"].widget.choices = self.fields[
+            "has_batik_pattern"
+        ].choices
+        self.fields["has_batik_pattern"].required = True
+        if self.instance._state.adding and not self.is_bound:
+            self.fields["has_batik_pattern"].initial = ""
+        self.fields["current_item_form"].label = (
+            "Barang atau kain apa yang ingin Anda olah?"
+        )
+        self.fields["current_item_form"].choices = [
+            *UpcyclingRequest.CurrentItemForm.choices,
+        ]
+        self.fields["current_item_form"].widget = forms.RadioSelect(
+            attrs={"class": "sr-only"}
+        )
+        self.fields["current_item_form"].widget.choices = self.fields[
+            "current_item_form"
+        ].choices
+        self.fields["current_item_form"].required = True
+        if self.instance._state.adding and not self.is_bound:
+            self.fields["current_item_form"].initial = ""
+        self.fields["current_item_form_other"].label = "Sebutkan bentuk lainnya"
+        self.fields["current_item_form_other"].widget.attrs.update(
+            {"placeholder": "Contoh: tas kain lama atau taplak meja"}
+        )
+        self.fields["fabric_condition"].label = (
+            "Bagaimana kondisi barang atau kain Anda?"
+        )
         self.fields["fabric_condition"].choices = [
-            ("", "Pilih kondisi kain (opsional)"),
+            ("", "Pilih kondisi (opsional)"),
             *UpcyclingRequest.FabricCondition.choices,
         ]
-        self.fields["fabric_dimensions"].label = "Perkiraan ukuran atau jumlah kain"
+        self.fields["fabric_dimensions"].label = (
+            "Perkiraan ukuran atau jumlah barang/bahan"
+        )
+        self.fields["fabric_dimensions"].help_text = (
+            "Tidak perlu mengukur secara tepat. Informasi ini membantu artisan "
+            "memperkirakan kecukupan bahan."
+        )
         self.fields["fabric_composition"].label = "Komposisi bahan (opsional)"
         self.fields["fabric_composition"].help_text = (
             "Jika diketahui, tulis serat penyusun kain, misalnya katun 95% dan elastane 5%."
         )
         self.fields["wants_batik_accent"].label = (
-            "Tambahkan kain bermotif batik dari ReBatik"
+            "Kombinasikan bahan saya dengan kain batik dari ReBatik"
         )
         self.fields["batik_motif"].label = "Motif batik yang diinginkan (opsional)"
         self.fields["motif_placement"].label = "Penempatan motif (opsional)"
         self.fields["design_notes"].label = "Catatan desain tambahan (opsional)"
-        self.fields["fabric_other_description"].label = "Jenis kain lainnya"
+        self.fields["fabric_other_description"].label = "Sebutkan bahan lainnya"
         self.fields["fabric_other_description"].widget.attrs.update(
             {"placeholder": "Contoh: kanvas, corduroy, atau linen"}
         )
@@ -107,6 +164,9 @@ class UpcyclingRequestForm(forms.ModelForm):
         fields = [
             "fabric",
             "fabric_other_description",
+            "current_item_form",
+            "current_item_form_other",
+            "has_batik_pattern",
             "fabric_condition",
             "fabric_dimensions",
             "fabric_composition",
@@ -122,16 +182,17 @@ class UpcyclingRequestForm(forms.ModelForm):
             "whatsapp",
         ]
         labels = {
-            "fabric": "Jenis kain atau barang yang akan diolah",
+            "fabric": "Jenis bahan utama yang akan diolah",
+            "has_batik_pattern": "Apakah barang atau kain Anda sudah memiliki motif batik?",
             "category": "Kategori Produk",
-            "product": "Model Produk",
+            "product": "Pilih produk yang ingin dibuat",
             "custom_product": "Produk yang diinginkan",
-            "wants_batik_accent": "Tambahkan kain bermotif batik dari ReBatik",
+            "wants_batik_accent": "Kombinasikan bahan saya dengan kain batik dari ReBatik",
             "batik_motif": "Motif batik yang diinginkan (opsional)",
             "motif_placement": "Penempatan motif (opsional)",
             "design_notes": "Catatan desain tambahan (opsional)",
             "quantity": "Jumlah Produk",
-            "notes": "Deskripsi dan Catatan Khusus (opsional)",
+            "notes": "Catatan tambahan untuk artisan (opsional)",
             "whatsapp": "Nomor WhatsApp",
         }
         error_messages = {
@@ -142,7 +203,12 @@ class UpcyclingRequestForm(forms.ModelForm):
         widgets = {
             "fabric": forms.RadioSelect(attrs={"class": "sr-only"}),
             "fabric_other_description": forms.TextInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "maxlength": 100}),
-            "fabric_dimensions": forms.TextInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "placeholder": "Contoh: 1 celana jeans atau kain 1 × 2 m"}),
+            "current_item_form": forms.RadioSelect(attrs={"class": "sr-only"}),
+            "current_item_form_other": forms.TextInput(
+                attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "maxlength": 120}
+            ),
+            "has_batik_pattern": forms.RadioSelect(attrs={"class": "sr-only"}),
+            "fabric_dimensions": forms.TextInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "placeholder": "Contoh: 1 celana jeans ukuran L, 2 kaos, atau kain 1 × 2 m"}),
             "fabric_composition": forms.TextInput(
                 attrs={
                     "class": f"{FIELD_CLASSES} upcycling-field upcycling-input",
@@ -223,14 +289,25 @@ class UpcyclingRequestForm(forms.ModelForm):
     def clean_fabric_photos(self):
         photos = self.cleaned_data.get("fabric_photos", [])
         if self.existing_fabric_photo_count + len(photos) < 1:
-            raise forms.ValidationError("Unggah minimal 1 foto kain.")
+            raise forms.ValidationError("Unggah minimal 1 foto barang atau kain.")
         if self.existing_fabric_photo_count + len(photos) > 3:
             raise forms.ValidationError(
-                "Jumlah foto kain maksimal 3. Foto yang sudah tersimpan tetap dihitung."
+                "Jumlah foto barang atau kain maksimal 3. Foto yang sudah tersimpan tetap dihitung."
             )
         for photo in photos:
             if photo.size > 5 * 1024 * 1024:
-                raise forms.ValidationError("Ukuran setiap foto kain maksimal 5 MB.")
+                raise forms.ValidationError("Ukuran setiap foto barang atau kain maksimal 5 MB.")
+        return photos
+
+    def clean_reference_photos(self):
+        photos = self.cleaned_data.get("reference_photos", [])
+        if self.existing_reference_photo_count + len(photos) > 3:
+            raise forms.ValidationError("Foto referensi maksimal 3 gambar.")
+        for photo in photos:
+            if photo.size > 5 * 1024 * 1024:
+                raise forms.ValidationError(
+                    "Ukuran setiap foto referensi maksimal 5 MB."
+                )
         return photos
 
     def clean_whatsapp(self):
@@ -261,12 +338,19 @@ class UpcyclingRequestForm(forms.ModelForm):
         if fabric == UpcyclingRequest.FabricType.OTHER and not other_fabric:
             self.add_error(
                 "fabric_other_description",
-                "Tuliskan jenis kain yang akan digunakan.",
+                "Sebutkan bahan lainnya.",
             )
         elif fabric != UpcyclingRequest.FabricType.OTHER:
             cleaned_data["fabric_other_description"] = ""
         else:
             cleaned_data["fabric_other_description"] = other_fabric
+        item_form_other = cleaned_data.get("current_item_form_other", "").strip()
+        if cleaned_data.get("current_item_form") == UpcyclingRequest.CurrentItemForm.OTHER:
+            if not item_form_other:
+                self.add_error("current_item_form_other", "Sebutkan bentuk barang lainnya.")
+            cleaned_data["current_item_form_other"] = item_form_other
+        else:
+            cleaned_data["current_item_form_other"] = ""
 
         if product == "LAINNYA" and not custom_product:
             self.add_error(

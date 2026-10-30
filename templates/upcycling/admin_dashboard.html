@@ -45,9 +45,9 @@
                     <article class="grid gap-4 rounded-2xl border border-[var(--upcycling-card-border)] bg-[var(--upcycling-surface)] p-4 text-[var(--brown)] shadow-md sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-5 sm:p-5 lg:grid-cols-[11rem_minmax(0,1fr)]">
                         <div class="aspect-[1.35] w-full overflow-hidden rounded-xl">
                             {% if row.request.fabric_photo %}
-                                <img src="{{ row.request.fabric_photo.url }}" alt="Foto kain untuk {{ row.request.get_product_name }}" loading="lazy" decoding="async" class="h-full w-full object-cover">
+                                <img src="{{ row.request.fabric_photo.url }}" alt="Foto barang atau kain untuk {{ row.request.get_product_name }}" loading="lazy" decoding="async" class="h-full w-full object-cover">
                             {% else %}
-                                <img src="{% static 'img/mascot/thinking.webp' %}" alt="Foto kain belum tersedia" loading="lazy" decoding="async" class="h-full w-full bg-[var(--upcycling-soft)] object-contain p-3">
+                                <img src="{% static 'img/mascot/thinking.webp' %}" alt="Foto barang atau kain belum tersedia" loading="lazy" decoding="async" class="h-full w-full bg-[var(--upcycling-soft)] object-contain p-3">
                             {% endif %}
                         </div>
 

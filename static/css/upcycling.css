@@ -228,6 +228,27 @@
         transition: filter 0.2s ease;
     }
 
+    .upcycling-fabric-card-title {
+        color: var(--brown);
+        font-family: "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .upcycling-fabric-card-description {
+        font-family: "Garamond", Georgia, "Times New Roman", serif;
+        font-size: 0.875rem;
+        line-height: 1.25;
+    }
+
+    .upcycling-fabric-card-action {
+        font-family: "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
+        font-size: 0.75rem;
+        font-weight: 700;
+        line-height: 1.1;
+    }
+
     .upcycling-status-badge {
         display: inline-flex;
         min-width: 7rem;
