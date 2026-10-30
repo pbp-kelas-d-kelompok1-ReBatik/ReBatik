@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+{% load static marketplace_format %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/marketplace.css' %}">
+{% endblock css %}
+
+{% block content %}
+<section id="marketplace-page-content" class="mp-page-shell relative overflow-hidden">
+    <header class="mp-hero-header relative mx-auto mb-8 max-w-3xl text-center text-[var(--brown)]">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--brown-muted)]">Marketplace · Pemesanan</p>
+        <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">Checkout Karya</h1>
+        <p class="mt-3 text-base text-[var(--brown-dark)] sm:text-lg">
+            Lengkapi metode penerimaan dan nomor WhatsApp untuk konfirmasi pesanan.
+        </p>
+    </header>
+
+    <div
+        class="mp-panel-box mx-auto max-w-6xl rounded-2xl border-2 border-[var(--mp-accent)]/60
+               bg-[var(--mp-panel)] p-5 text-[var(--brown)] shadow-2xl
+               sm:rounded-3xl sm:p-8 lg:p-10"
+    >
+        <a
+            href="{% url 'marketplace:product_detail' product.pk %}"
+            class="inline-flex items-center rounded-lg px-1 py-2 font-semibold text-[var(--brown)]
+                   underline decoration-[var(--mp-accent)] underline-offset-4 hover:text-[var(--button-hover)]"
+        >
+            ← Kembali ke Detail Produk
+        </a>
+
+        {% if form.non_field_errors %}
+            <div
+                role="alert"
+                class="mt-4 rounded-xl border border-[var(--danger)] bg-[var(--mp-surface)] p-4 font-semibold text-[var(--danger)]"
+            >
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form
+            method="post"
+            action="{% url 'marketplace:checkout' product.pk %}"
+            hx-post="{% url 'marketplace:checkout' product.pk %}"
+            hx-target="#marketplace-page-content"
+            hx-select="#marketplace-page-content"
+            hx-swap="outerHTML"
+            hx-disabled-elt="button[type='submit']"
+            novalidate
+            class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]"
+        >
+            {% csrf_token %}
+
+            <div class="space-y-6">
+                <section class="rounded-2xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-5 sm:p-6">
+                    <h2 class="flex items-center gap-3 text-xl font-bold sm:text-2xl">
+                        <span class="grid size-8 shrink-0 place-items-center rounded-full bg-[var(--brown)] text-sm text-[var(--cream-light)]">1</span>
+                        Jumlah Produk
+                    </h2>
+                    <div class="mt-4 max-w-xs space-y-1">
+                        <label for="{{ form.quantity.id_for_label }}" class="font-semibold">
+                            {{ form.quantity.label }}
+                        </label>
+                        {{ form.quantity }}
+                        <p class="text-sm text-[var(--brown-muted)]">
+                            Stok tersedia: {{ product.stock }} buah (maksimal {{ max_order_qty }} per pesanan).
+                        </p>
+                        {% if form.quantity.errors %}
+                            <p class="text-sm font-semibold text-[var(--danger)]">{{ form.quantity.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+                </section>
+
+                <section class="rounded-2xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-5 sm:p-6">
+                    <h2 class="flex items-center gap-3 text-xl font-bold sm:text-2xl">
+                        <span class="grid size-8 shrink-0 place-items-center rounded-full bg-[var(--brown)] text-sm text-[var(--cream-light)]">2</span>
+                        Metode Penerimaan Produk
+                    </h2>
+
+                    <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                        {% for radio in form.delivery_method %}
+                            <label class="mp-delivery-card cursor-pointer p-4">
+                                {{ radio.tag }}
+                                <span class="block text-lg font-bold text-[var(--brown)]">
+                                    {% if radio.data.value == 'DROP_OFF' %}📍 Ambil di Drop-off Point{% else %}🚚 Dikirim Kurir{% endif %}
+                                </span>
+                                <span class="mt-1 block text-sm text-[var(--brown-muted)]">
+                                    {% if radio.data.value == 'DROP_OFF' %}
+                                        Ambil langsung di titik pengumpulan ReBatik pilihan Anda.
+                                    {% else %}
+                                        Dikirim ke alamat rumah atau kantor Anda.
+                                    {% endif %}
+                                </span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    {% if form.delivery_method.errors %}
+                        <p class="mt-2 text-sm font-semibold text-[var(--danger)]">{{ form.delivery_method.errors|striptags }}</p>
+                    {% endif %}
+
+                    <div id="mp-dropoff-field" class="mt-5 space-y-1">
+                        <label for="{{ form.dropoff_point.id_for_label }}" class="font-semibold">
+                            {{ form.dropoff_point.label }}
+                        </label>
+                        {{ form.dropoff_point }}
+                        <p class="text-sm text-[var(--brown-muted)]">
+                            Pilih titik Drop-off Point tempat Anda akan mengambil karya.
+                        </p>
+                        {% if form.dropoff_point.errors %}
+                            <p class="text-sm font-semibold text-[var(--danger)]">{{ form.dropoff_point.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div id="mp-address-field" class="mt-5 space-y-3">
+                        <div class="grid gap-3 sm:grid-cols-2">
+                            <div>
+                                <label for="mp-prov-select" class="text-sm font-semibold">Provinsi</label>
+                                <select id="mp-prov-select" class="mt-1 block min-h-11 w-full rounded-xl border border-[var(--border)] bg-white px-3 py-2 text-sm text-[var(--brown)]">
+                                    <option value="">-- Pilih Provinsi --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="mp-city-select" class="text-sm font-semibold">Kota / Kabupaten</label>
+                                <select id="mp-city-select" disabled class="mt-1 block min-h-11 w-full rounded-xl border border-[var(--border)] bg-white px-3 py-2 text-sm text-[var(--brown)] disabled:opacity-50">
+                                    <option value="">-- Pilih Kota/Kabupaten --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label for="{{ form.address.id_for_label }}" class="font-semibold">
+                                {{ form.address.label }}
+                            </label>
+                            {{ form.address }}
+                            <p class="text-sm text-[var(--brown-muted)]">
+                                Tuliskan jalan, nomor rumah, kecamatan, kota, dan kode pos.
+                            </p>
+                            {% if form.address.errors %}
+                                <p class="text-sm font-semibold text-[var(--danger)]">{{ form.address.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </section>
+
+                <section class="rounded-2xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-5 sm:p-6">
+                    <h2 class="flex items-center gap-3 text-xl font-bold sm:text-2xl">
+                        <span class="grid size-8 shrink-0 place-items-center rounded-full bg-[var(--brown)] text-sm text-[var(--cream-light)]">3</span>
+                        Kontak &amp; Catatan
+                    </h2>
+
+                    <div class="mt-4 space-y-4">
+                        <div class="space-y-1">
+                            <label for="{{ form.whatsapp.id_for_label }}" class="font-semibold">
+                                {{ form.whatsapp.label }}
+                            </label>
+                            {{ form.whatsapp }}
+                            <p class="text-sm text-[var(--brown-muted)]">
+                                Admin ReBatik akan menghubungi nomor ini untuk konfirmasi pembayaran manual.
+                            </p>
+                            {% if form.whatsapp.errors %}
+                                <p class="text-sm font-semibold text-[var(--danger)]">{{ form.whatsapp.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="space-y-1">
+                            <label for="{{ form.notes.id_for_label }}" class="font-semibold">
+                                {{ form.notes.label }}
+                            </label>
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                                <p class="text-sm font-semibold text-[var(--danger)]">{{ form.notes.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="h-fit rounded-2xl border border-[var(--mp-card-border)] bg-[var(--mp-summary)] p-5 sm:p-6 lg:sticky lg:top-6">
+                <h2 class="text-xl font-bold">Ringkasan Pesanan</h2>
+                <div class="mt-4 flex items-center gap-3">
+                    <div class="size-20 shrink-0 overflow-hidden rounded-xl border border-[var(--mp-card-border)] mp-img-placeholder">
+                        {% if product.image_url %}
+                            <img src="{{ product.image_url }}" alt="{{ product.name }}" class="h-full w-full object-cover">
+                        {% else %}
+                            <div class="grid h-full w-full place-items-center text-2xl">🧶</div>
+                        {% endif %}
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-xs uppercase tracking-wider text-[var(--brown-muted)]">{{ product.motif }}</p>
+                        <p class="font-bold leading-snug text-[var(--brown)]">{{ product.name }}</p>
+                        <p class="text-sm text-[var(--brown-muted)]">{{ product.artisan_origin }}</p>
+                    </div>
+                </div>
+
+                <dl class="mt-5 space-y-2 border-t border-[var(--mp-card-border)] pt-4 text-sm sm:text-base">
+                    <div class="flex justify-between">
+                        <dt>Harga satuan</dt>
+                        <dd class="font-semibold">{{ product.price|rupiah }}</dd>
+                    </div>
+                    <div class="flex justify-between">
+                        <dt>Jumlah</dt>
+                        <dd id="mp-summary-qty" class="font-semibold">× {{ form.quantity.value|default:1 }}</dd>
+                    </div>
+                    <div class="flex justify-between border-t border-[var(--mp-card-border)] pt-3 text-lg font-bold">
+                        <dt>Total Harga</dt>
+                        <dd id="mp-summary-total" data-unit-price="{{ product.price }}">
+                            {{ product.price|rupiah }}
+                        </dd>
+                    </div>
+                </dl>
+
+                <button
+                    type="submit"
+                    class="primary-action-button mt-6 min-h-12 w-full px-6 py-3 text-base font-bold sm:text-lg"
+                >
+                    Buat Pesanan
+                </button>
+
+                <p class="mt-3 text-xs leading-relaxed text-[var(--brown-muted)] sm:text-sm">
+                    Pembayaran dilakukan secara manual setelah admin mengonfirmasi pesanan Anda melalui WhatsApp.
+                </p>
+            </aside>
+        </form>
+    </div>
+</section>
+
+<script>
+(() => {
+    const qtyInput = document.getElementById("{{ form.quantity.id_for_label }}");
+    const qtyLabel = document.getElementById("mp-summary-qty");
+    const totalEl = document.getElementById("mp-summary-total");
+    const dropField = document.getElementById("mp-dropoff-field");
+    const addrField = document.getElementById("mp-address-field");
+    const unitPrice = parseInt(totalEl?.dataset.unitPrice || "0", 10);
+
+    const updateSummary = () => {
+        const q = Math.max(1, parseInt(qtyInput?.value || "1", 10) || 1);
+        if (qtyLabel) qtyLabel.textContent = "× " + q;
+        if (totalEl && unitPrice) {
+            totalEl.textContent = "Rp " + (unitPrice * q).toLocaleString("id-ID");
+        }
+    };
+
+    const updateDeliveryFields = () => {
+        const checked = document.querySelector("input[name='delivery_method']:checked");
+        const method = checked ? checked.value : "";
+        if (dropField && addrField) {
+            dropField.classList.toggle("hidden", method === "KURIR");
+            addrField.classList.toggle("hidden", method === "DROP_OFF");
+        }
+    };
+
+    qtyInput?.addEventListener("input", updateSummary);
+    document.querySelectorAll("input[name='delivery_method']").forEach((el) => {
+        el.addEventListener("change", updateDeliveryFields);
+    });
+
+    const provSelect = document.getElementById("mp-prov-select");
+    const citySelect = document.getElementById("mp-city-select");
+    const addrInput = document.getElementById("{{ form.address.id_for_label }}");
+    const regionsEndpoint = "{% url 'marketplace:regions_api' %}";
+
+    if (provSelect && citySelect) {
+        fetch(regionsEndpoint)
+            .then((res) => (res.ok ? res.json() : { items: [] }))
+            .then((payload) => {
+                (payload.items || []).forEach((p) => {
+                    provSelect.add(new Option(p.name, p.id));
+                });
+            })
+            .catch(() => {});
+
+        provSelect.addEventListener("change", () => {
+            citySelect.innerHTML = '<option value="">-- Pilih Kota/Kabupaten --</option>';
+            citySelect.disabled = true;
+            if (!provSelect.value) return;
+            fetch(`${regionsEndpoint}?province_id=${encodeURIComponent(provSelect.value)}`)
+                .then((res) => (res.ok ? res.json() : { items: [] }))
+                .then((payload) => {
+                    (payload.items || []).forEach((c) => citySelect.add(new Option(c.name, c.name)));
+                    citySelect.disabled = false;
+                })
+                .catch(() => {});
+        });
+
+        citySelect.addEventListener("change", () => {
+            const provName = provSelect.options[provSelect.selectedIndex]?.text || "";
+            if (citySelect.value && addrInput && !addrInput.value.includes(citySelect.value)) {
+                const prefix = addrInput.value.trim() ? addrInput.value.trim() + ", " : "";
+                addrInput.value = `${prefix}${citySelect.value}, ${provName}`;
+            }
+        });
+    }
+
+    const checkoutForm = qtyInput?.closest("form");
+    checkoutForm?.addEventListener("submit", () => {
+        const submitBtn = checkoutForm.querySelector("button[type='submit']");
+        if (submitBtn) submitBtn.textContent = "Memproses Pesanan…";
+    });
+
+    updateSummary();
+    updateDeliveryFields();
+})();
+</script>
+{% endblock content %}
+

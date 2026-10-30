@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/marketplace.css' %}">
+{% endblock css %}
+
+{% block content %}
+<section id="marketplace-page-content" class="mp-page-shell relative overflow-hidden">
+    <header class="mp-hero-header relative mx-auto mb-8 max-w-3xl text-center text-[var(--brown)]">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--brown-muted)]">Khusus Staff · Marketplace</p>
+        <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">
+            {% if is_update %}Edit Produk{% else %}Tambah Produk{% endif %}
+        </h1>
+    </header>
+
+    <div
+        class="mp-panel-box mx-auto max-w-3xl rounded-2xl border border-[var(--mp-card-border)]
+               bg-[var(--mp-panel)] p-5 text-[var(--brown)] shadow-2xl
+               sm:rounded-3xl sm:p-8 lg:p-10"
+    >
+        <a
+            href="{% url 'marketplace:manage_product_list' %}"
+            class="inline-flex items-center font-semibold text-[var(--brown)] underline decoration-[var(--mp-accent)] underline-offset-4"
+        >
+            ← Kembali ke Daftar Produk
+        </a>
+
+        {% if form.non_field_errors %}
+            <div role="alert" class="mt-4 rounded-xl border border-[var(--danger)] bg-[var(--mp-surface)] p-4 font-semibold text-[var(--danger)]">
+                {{ form.non_field_errors|striptags }}
+            </div>
+        {% endif %}
+
+        <form method="post" 
+            hx-post= "{{ request.path }}"
+            hx-target = "#marketplace-page-content"
+            hx-select = "#marketplace-page-content"
+            hx-swap = "outerHTML"
+            hx-disabled-elt="button[type='submit']"    
+            novalidate 
+            class="mt-6 grid gap-5 sm:grid-cols-2">
+            {% csrf_token %}
+
+            <div class="space-y-1 sm:col-span-2">
+                <label for="{{ form.name.id_for_label }}" class="font-semibold">{{ form.name.label }}</label>
+                {{ form.name }}
+                {% if form.name.errors %}<p class="text-sm font-semibold text-[var(--danger)]">{{ form.name.errors|striptags }}</p>{% endif %}
+            </div>
+
+            <div class="space-y-1">
+                <label for="{{ form.motif.id_for_label }}" class="font-semibold">{{ form.motif.label }}</label>
+                {{ form.motif }}
+                {% if form.motif.errors %}<p class="text-sm font-semibold text-[var(--danger)]">{{ form.motif.errors|striptags }}</p>{% endif %}
+            </div>
+
+            <div class="space-y-1">
+                <label for="{{ form.category.id_for_label }}" class="font-semibold">{{ form.category.label }}</label>
+                {{ form.category }}
+                {% if form.category.errors %}<p class="text-sm font-semibold text-[var(--danger)]">{{ form.category.errors|striptags }}</p>{% endif %}
+            </div>
+
+            <div class="space-y-1">
+                <label for="{{ form.price.id_for_label }}" class="font-semibold">{{ form.price.label }}</label>
+                {{ form.price }}
+                {% if form.price.errors %}<p class="text-sm font-semibold text-[var(--danger)]">{{ form.price.errors|striptags }}</p>{% endif %}
+            </div>
+
+            <div class="space-y-1">
+                <label for="{{ form.stock.id_for_label }}" class="font-semibold">{{ form.stock.label }}</label>
+                {{ form.stock }}
+                {% if form.stock.errors %}<p class="text-sm font-semibold text-[var(--danger)]">{{ form.stock.errors|striptags }}</p>{% endif %}
+            </div>
+
+            <div class="space-y-1">
+                <label for="{{ form.material_source.id_for_label }}" class="font-semibold">{{ form.material_source.label }}</label>
+                {{ form.material_source }}
+                {% if form.material_source.errors %}<p class="text-sm font-semibold text-[var(--danger)]">{{ form.material_source.errors|striptags }}</p>{% endif %}
+            </div>
+
+            <div class="space-y-1">
+                <label for="{{ form.artisan_origin.id_for_label }}" class="font-semibold">{{ form.artisan_origin.label }}</label>
+                {{ form.artisan_origin }}
+                {% if form.artisan_origin.errors %}<p class="text-sm font-semibold text-[var(--danger)]">{{ form.artisan_origin.errors|striptags }}</p>{% endif %}
+            </div>
+
+            <div class="space-y-1">
+                <label for="{{ form.badge_status.id_for_label }}" class="font-semibold">{{ form.badge_status.label }}</label>
+                {{ form.badge_status }}
+                {% if form.badge_status.errors %}<p class="text-sm font-semibold text-[var(--danger)]">{{ form.badge_status.errors|striptags }}</p>{% endif %}
+            </div>
+
+            <div class="space-y-1">
+                <label for="{{ form.image_url.id_for_label }}" class="font-semibold">{{ form.image_url.label }}</label>
+                {{ form.image_url }}
+                <p class="text-xs text-[var(--brown-muted)]">Gunakan tautan https:// agar gambar tetap tersimpan di PWS.</p>
+                {% if form.image_url.errors %}<p class="text-sm font-semibold text-[var(--danger)]">{{ form.image_url.errors|striptags }}</p>{% endif %}
+            </div>
+
+            <div class="space-y-1 sm:col-span-2">
+                <label for="{{ form.description.id_for_label }}" class="font-semibold">{{ form.description.label }}</label>
+                {{ form.description }}
+                {% if form.description.errors %}<p class="text-sm font-semibold text-[var(--danger)]">{{ form.description.errors|striptags }}</p>{% endif %}
+            </div>
+
+            <div class="flex flex-col-reverse gap-3 pt-2 sm:col-span-2 sm:flex-row sm:justify-end">
+                <a
+                    href="{% url 'marketplace:manage_product_list' %}"
+                    class="inline-flex min-h-12 items-center justify-center rounded-full border-2 border-[var(--brown)] px-6 py-3 font-bold text-[var(--brown)] hover:bg-[var(--mp-soft)]"
+                >
+                    Batal
+                </a>
+                <button
+                    type="submit"
+                    class="primary-action-button min-h-12 px-8 py-3 font-bold"
+                >
+                    {% if is_update %}Simpan Perubahan{% else %}Tambah ke Katalog{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock content %}
+

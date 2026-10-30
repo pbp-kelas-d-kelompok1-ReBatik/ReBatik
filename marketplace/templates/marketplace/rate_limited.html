@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/marketplace.css' %}">
+{% endblock css %}
+
+{% block content %}
+<section id="marketplace-page-content" class="mp-page-shell relative overflow-hidden">
+    <header class="mp-hero-header relative mx-auto mb-8 max-w-3xl text-center text-[var(--brown)]">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--brown-muted)]">Perlindungan Endpoint · HTTP 429</p>
+        <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">Terlalu Banyak Permintaan</h1>
+    </header>
+
+    <div
+        role="alert"
+        class="mp-panel-box mx-auto max-w-2xl rounded-2xl border-2 border-[var(--mp-accent)]
+               bg-[var(--mp-panel)] p-6 text-center text-[var(--brown)] shadow-2xl
+               sm:rounded-3xl sm:p-8"
+    >
+        <h2 class="text-2xl font-bold sm:text-3xl">
+            Mohon Tunggu Sebentar (429 Too Many Requests)
+        </h2>
+        <p class="mx-auto mt-3 max-w-lg text-base leading-relaxed text-[var(--brown-muted)]">
+            Anda mengirim terlalu banyak permintaan <strong>{{ action_label }}</strong> dalam waktu singkat.
+            Demi keamanan transaksi dan stok, silakan coba kembali setelah <strong>{{ retry_after }} detik</strong>.
+        </p>
+
+        <div class="mt-7 flex justify-center">
+            <a
+                href="{% url 'marketplace:home' %}"
+                class="primary-action-button min-h-12 px-6 py-3 font-bold"
+            >
+                ← Kembali ke Marketplace
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock content %}
+
