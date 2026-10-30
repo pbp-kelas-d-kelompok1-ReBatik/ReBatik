@@ -221,6 +221,20 @@ class UpcyclingWorkflowTests(TestCase):
         self.assertIsNone(request_obj.artisan_id)
         self.assertEqual(request_obj.status_history.count(), 1)
 
+    def test_request_detail_uses_one_timeline_with_stage_descriptions(self):
+        request_obj = make_request(self.user)
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("upcycling:request_detail", args=[request_obj.pk]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Langkah berikutnya")
+        self.assertNotContains(response, "Riwayat Status")
+        self.assertNotContains(response, "upcycling-status-badge")
+        self.assertContains(response, "Admin sedang mencocokkan permintaan dengan keahlian dan kapasitas artisan.")
+        self.assertContains(response, "Artisan meninjau model produk dan informasi kain yang Anda kirim.")
+        self.assertContains(response, 'data-status-description')
+
     def test_admin_candidate_filter_matches_skill_availability_and_capacity(self):
         request_obj = make_request(self.user)
         full_user = User.objects.create_user(username="full-artisan")
@@ -288,7 +302,7 @@ class UpcyclingWorkflowTests(TestCase):
 
         self.client.post(
             reverse("upcycling:artisan_update_request", args=[request_obj.pk]),
-            {"action": "inspection_pass", "quoted_price": "75000", "notes": "Kain layak."},
+            {"action": "inspection_pass", "work_price": "75000", "notes": "Kain layak."},
         )
         request_obj.refresh_from_db()
         self.assertEqual(request_obj.status, UpcyclingRequest.Status.AWAITING_APPROVAL)
@@ -422,7 +436,7 @@ class UpcyclingWorkflowTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Dashboard Artisan")
-        self.assertContains(response, "Rp75555")
+        self.assertContains(response, "Rp75.555")
         self.assertNotContains(response, "Setujui harga")
         self.assertNotContains(response, "Tolak penawaran")
         self.assertNotContains(response, "Batalkan permintaan")
@@ -513,6 +527,35 @@ class UpcyclingWorkflowTests(TestCase):
         self.assertContains(response, "Tidak ada request menunggu penugasan")
         self.assertContains(response, "crying.webp")
 
+    def test_single_thumbnail_surfaces_use_only_the_primary_fabric_photo(self):
+        request_obj = make_request(
+            self.user,
+            fabric_photo=make_png(),
+        )
+        extra_photos = [
+            AdditionalFabricPhoto.objects.create(
+                request=request_obj,
+                image=make_png(),
+            )
+            for _ in range(2)
+        ]
+        primary_photo_url = request_obj.fabric_photo.url
+        self.client.force_login(self.user)
+
+        member_list = self.client.get(reverse("upcycling:request_list"))
+
+        self.assertContains(member_list, primary_photo_url)
+        for photo in extra_photos:
+            self.assertNotContains(member_list, photo.image.url)
+
+        staff = User.objects.create_user(username="thumbnail-admin", is_staff=True)
+        self.client.force_login(staff)
+        admin_dashboard = self.client.get(reverse("upcycling:admin_dashboard"))
+
+        self.assertContains(admin_dashboard, primary_photo_url)
+        for photo in extra_photos:
+            self.assertNotContains(admin_dashboard, photo.image.url)
+
     def test_admin_dashboard_only_shows_eligible_artisans_for_unassigned_requests(self):
         request_obj = make_request(self.user)
         full_user = User.objects.create_user(username="admin-queue-full")
@@ -539,6 +582,9 @@ class UpcyclingWorkflowTests(TestCase):
         self.assertContains(response, request_obj.reference_code)
         self.assertContains(response, "Dashboard Admin")
         self.assertContains(response, self.artisan_user.username)
+        self.assertContains(response, 'hx-target="#admin-dashboard-live"')
+        self.assertContains(response, 'hx-select="#admin-dashboard-live"')
+        self.assertContains(response, 'hx-swap="outerHTML show:none"')
         self.assertNotContains(response, full_user.username)
         self.assertNotContains(response, wrong_user.username)
         self.assertNotContains(response, ungrouped_user.username)
@@ -659,10 +705,14 @@ class UpcyclingWorkflowTests(TestCase):
 
         response = self.client.get(reverse("upcycling:request_detail", args=[request_obj.pk]))
 
-        self.assertContains(response, 'name="quoted_price" type="number" min="1" max="99999999" step="1"')
+        self.assertContains(response, 'name="work_price" type="text" inputmode="numeric"')
+        self.assertContains(response, 'data-rupiah-input')
+        self.assertContains(response, 'name="additional_fee_type"')
+        self.assertContains(response, 'name="additional_fee_amount"')
+        self.assertNotContains(response, 'name="batik_material_price"')
         response = self.client.post(
             reverse("upcycling:artisan_update_request", args=[request_obj.pk]),
-            {"action": "inspection_pass", "quoted_price": "75555", "notes": "Layak."},
+            {"action": "inspection_pass", "work_price": "75555", "notes": "Layak."},
         )
 
         request_obj.refresh_from_db()
@@ -684,12 +734,99 @@ class UpcyclingWorkflowTests(TestCase):
 
                 self.client.post(
                     reverse("upcycling:artisan_update_request", args=[request_obj.pk]),
-                    {"action": "inspection_pass", "quoted_price": price, "notes": "Layak."},
+                    {"action": "inspection_pass", "work_price": price, "notes": "Layak."},
                 )
 
                 request_obj.refresh_from_db()
                 self.assertEqual(request_obj.status, UpcyclingRequest.Status.INSPECTION)
                 self.assertIsNone(request_obj.quoted_price)
+
+    def test_artisan_quote_includes_requested_batik_and_described_additional_fee(self):
+        request_obj = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.INSPECTION,
+            fabric_received_at=timezone.now(),
+            wants_batik_accent=True,
+        )
+        self.client.force_login(self.artisan_user)
+
+        response = self.client.get(reverse("upcycling:request_detail", args=[request_obj.pk]))
+        self.assertContains(response, 'name="batik_material_price"')
+
+        response = self.client.post(
+            reverse("upcycling:artisan_update_request", args=[request_obj.pk]),
+            {
+                "action": "inspection_pass",
+                "work_price": "75.000",
+                "batik_material_price": "15.000",
+                "additional_fee_type": "Penyesuaian desain khusus",
+                "additional_fee_amount": "5.000",
+                "notes": "Kain layak.",
+            },
+        )
+
+        request_obj.refresh_from_db()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(str(request_obj.work_price), "75000.00")
+        self.assertEqual(str(request_obj.batik_material_price), "15000.00")
+        self.assertEqual(request_obj.additional_fee_type, "Penyesuaian desain khusus")
+        self.assertEqual(str(request_obj.additional_fee_amount), "5000.00")
+        self.assertEqual(str(request_obj.quoted_price), "95000.00")
+
+    def test_additional_fee_requires_both_description_and_amount(self):
+        request_obj = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.INSPECTION,
+            fabric_received_at=timezone.now(),
+        )
+        self.client.force_login(self.artisan_user)
+
+        response = self.client.post(
+            reverse("upcycling:artisan_update_request", args=[request_obj.pk]),
+            {
+                "action": "inspection_pass",
+                "work_price": "45000",
+                "additional_fee_type": "Aksesori tambahan",
+                "additional_fee_amount": "",
+                "notes": "Layak.",
+            },
+        )
+
+        self.assertRedirects(
+            response,
+            reverse("upcycling:request_detail", args=[request_obj.pk]),
+        )
+        request_obj.refresh_from_db()
+        self.assertEqual(request_obj.status, UpcyclingRequest.Status.INSPECTION)
+        self.assertIsNone(request_obj.quoted_price)
+
+    def test_member_sees_quote_price_breakdown_and_total(self):
+        request_obj = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.AWAITING_APPROVAL,
+            wants_batik_accent=True,
+            work_price=75000,
+            batik_material_price=15000,
+            additional_fee_type="Penyesuaian desain khusus",
+            additional_fee_amount=5000,
+            quoted_price=95000,
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("upcycling:request_detail", args=[request_obj.pk]))
+
+        self.assertContains(response, "Harga pengerjaan")
+        self.assertContains(response, "Biaya kain batik tambahan")
+        self.assertContains(response, "Penyesuaian desain khusus")
+        self.assertContains(response, "Total penawaran artisan")
+        self.assertContains(response, "Rp95.000")
+        self.assertContains(
+            response,
+            'class="upcycling-danger-action-button min-h-12 w-full px-5 py-3 sm:w-auto"',
+        )
 
     def test_non_artisan_cannot_submit_artisan_actions(self):
         ArtisanProfile.objects.create(user=self.user)
@@ -807,7 +944,7 @@ class UpcyclingWorkflowTests(TestCase):
         self.assertIsNotNone(request_obj.approved_at)
         self.assertContains(response, "Pilih metode penerimaan produk dan isi alamat")
 
-    def test_user_can_cancel_after_quote_approval_before_production(self):
+    def test_user_cannot_cancel_after_approving_quote_before_production(self):
         request_obj = make_request(
             self.user,
             artisan=self.artisan,
@@ -819,12 +956,44 @@ class UpcyclingWorkflowTests(TestCase):
         )
         self.client.force_login(self.user)
 
-        response = self.client.post(reverse("upcycling:cancel_request", args=[request_obj.pk]))
+        detail = self.client.get(reverse("upcycling:request_detail", args=[request_obj.pk]))
+        self.assertNotContains(detail, "Batalkan permintaan")
+        self.assertContains(detail, "Harga sudah disetujui. Permintaan tidak dapat dibatalkan mandiri")
+
+        response = self.client.post(
+            reverse("upcycling:cancel_request", args=[request_obj.pk]),
+            follow=True,
+        )
 
         request_obj.refresh_from_db()
-        self.assertRedirects(response, reverse("upcycling:request_detail", args=[request_obj.pk]))
+        self.assertEqual(request_obj.status, UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS)
+        self.assertEqual(request_obj.return_status, UpcyclingRequest.ReturnStatus.NOT_REQUIRED)
+        self.assertContains(response, "Harga sudah disetujui")
+
+    def test_user_can_reject_quote_before_approving_it_after_fabric_received(self):
+        request_obj = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.AWAITING_APPROVAL,
+            quoted_price="75000",
+            fabric_received_at=timezone.now(),
+            fabric_received_by=self.artisan_user,
+        )
+        self.client.force_login(self.user)
+
+        detail = self.client.get(reverse("upcycling:request_detail", args=[request_obj.pk]))
+        self.assertContains(detail, "Tolak penawaran")
+
+        response = self.client.post(
+            reverse("upcycling:cancel_request", args=[request_obj.pk]),
+            {"action": "reject_quote"},
+            follow=True,
+        )
+
+        request_obj.refresh_from_db()
         self.assertEqual(request_obj.status, UpcyclingRequest.Status.CANCELLED)
         self.assertEqual(request_obj.return_status, UpcyclingRequest.ReturnStatus.PENDING_RETURN)
+        self.assertContains(response, "Penawaran ditolak. Kain akan dikembalikan.")
 
     def test_user_completion_awards_points_only_once(self):
         request_obj = make_request(
@@ -847,3 +1016,28 @@ class UpcyclingWorkflowTests(TestCase):
             ).count(),
             1,
         )
+
+    def test_completion_actions_share_one_row_with_approval_note_below(self):
+        request_obj = make_request(
+            self.user,
+            artisan=self.artisan,
+            status=UpcyclingRequest.Status.READY,
+            quoted_price="75000",
+            approved_at=timezone.now(),
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("upcycling:request_detail", args=[request_obj.pk]))
+        page = response.content.decode()
+        summary_position = page.index('id="summary-heading"')
+        actions_position = page.index('id="completion-contact-actions"')
+        confirm_position = page.index("Konfirmasi produk diterima")
+        whatsapp_position = page.index("Hubungi Tim via WhatsApp")
+        approval_note_position = page.index(
+            "Harga sudah disetujui. Permintaan tidak dapat dibatalkan mandiri"
+        )
+
+        self.assertLess(summary_position, actions_position)
+        self.assertLess(actions_position, confirm_position)
+        self.assertLess(confirm_position, whatsapp_position)
+        self.assertLess(whatsapp_position, approval_note_position)

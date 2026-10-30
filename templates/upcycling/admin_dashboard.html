@@ -17,6 +17,7 @@
     </header>
 
     <main class="mx-auto max-w-6xl rounded-2xl border border-[var(--upcycling-card-border)] bg-[var(--upcycling-panel)] p-5 text-[var(--brown)] shadow-2xl sm:rounded-3xl sm:p-8 lg:p-10">
+        <div id="admin-dashboard-live">
         {% include "upcycling/_toast_messages.html" %}
 
         <section aria-label="Ringkasan request" class="mb-8 grid gap-3 sm:grid-cols-3">
@@ -76,7 +77,15 @@
                             <a href="{% url 'admin:upcycling_upcyclingrequest_change' row.request.pk %}" class="mt-4 inline-flex font-semibold text-[var(--button-hover)] underline decoration-[var(--gold)] underline-offset-4">Lihat detail request di admin →</a>
 
                             {% if row.candidates %}
-                                <form method="post" action="{% url 'upcycling:admin_assign_artisan' row.request.pk %}" class="mt-5 space-y-3 border-t border-[var(--border)] pt-5">
+                                <form
+                                    method="post"
+                                    action="{% url 'upcycling:admin_assign_artisan' row.request.pk %}"
+                                    hx-post="{% url 'upcycling:admin_assign_artisan' row.request.pk %}"
+                                    hx-target="#admin-dashboard-live"
+                                    hx-select="#admin-dashboard-live"
+                                    hx-swap="outerHTML show:none"
+                                    class="mt-5 space-y-3 border-t border-[var(--border)] pt-5"
+                                >
                                     {% csrf_token %}
                                     <label for="artisan-{{ row.request.pk }}" class="block font-semibold">Tugaskan artisan</label>
                                     <select id="artisan-{{ row.request.pk }}" name="artisan" required class="w-full rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 text-[var(--brown)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--brown)]">
@@ -104,6 +113,7 @@
                 <p class="mx-auto max-w-xl text-[var(--brown-muted)]">Request baru yang belum memiliki artisan akan muncul di sini.</p>
             </div>
         {% endif %}
+        </div>
     </main>
 </section>
 {% endblock %}

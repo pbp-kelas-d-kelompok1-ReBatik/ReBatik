@@ -1,4 +1,5 @@
 import json
+import re
 from datetime import datetime, time, timedelta
 from decimal import Decimal, InvalidOperation
 
@@ -53,6 +54,35 @@ def _parse_filter_date(value):
         return parse_date(value)
     except ValueError:
         return None
+
+
+def _parse_quote_component(value, label, *, required, allow_zero=False):
+    """Parse a quote line item as a whole-rupiah amount within the request limit."""
+    raw_value = str(value or "").strip()
+    if not raw_value:
+        if required:
+            raise ValueError(f"Isi nominal untuk {label}.")
+        return Decimal("0")
+    if raw_value.lower().startswith("rp"):
+        raw_value = raw_value[2:].strip()
+    raw_value = raw_value.replace(" ", "")
+    if "." in raw_value:
+        if not re.fullmatch(r"\d{1,3}(?:\.\d{3})+", raw_value):
+            raise ValueError(f"Masukkan nominal {label} dalam format rupiah yang valid.")
+        raw_value = raw_value.replace(".", "")
+    elif not raw_value.isdecimal():
+        raise ValueError(f"Masukkan nominal {label} dalam format rupiah yang valid.")
+    try:
+        amount = Decimal(raw_value)
+    except (InvalidOperation, TypeError, ValueError):
+        raise ValueError(f"Masukkan nominal {label} yang valid.") from None
+    if not amount.is_finite() or amount < 0 or (amount == 0 and not allow_zero):
+        raise ValueError(f"Nominal {label} harus lebih dari nol.")
+    if amount != amount.to_integral_value():
+        raise ValueError("Harga harus menggunakan nominal rupiah tanpa pecahan.")
+    if amount > Decimal("99999999"):
+        raise ValueError("Setiap nominal harga tidak boleh melebihi Rp99.999.999.")
+    return amount
 
 
 def _htmx_location_or_redirect(request, route_name, **route_kwargs):
@@ -391,9 +421,35 @@ def request_detail(request, pk):
         item.to_status: item.changed_at
         for item in status_history
     }
+    status_descriptions = {
+        UpcyclingRequest.Status.PENDING_ASSIGNMENT: "Admin sedang mencocokkan permintaan dengan keahlian dan kapasitas artisan.",
+        UpcyclingRequest.Status.PENDING_REVIEW: "Artisan meninjau model produk dan informasi kain yang Anda kirim.",
+        UpcyclingRequest.Status.AWAITING_FABRIC: "Serahkan kain sesuai rencana sebelum tenggat agar request tidak kedaluwarsa.",
+        UpcyclingRequest.Status.INSPECTION: "Artisan memeriksa kondisi fisik kain dan menyiapkan rincian penawaran.",
+        UpcyclingRequest.Status.AWAITING_APPROVAL: "Periksa rincian harga dan catatan artisan sebelum menyetujui atau menolak penawaran.",
+        UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS: "Harga sudah disetujui. Isi metode dan lokasi penerimaan sebelum produksi dimulai.",
+        UpcyclingRequest.Status.IN_PROGRESS: "Artisan sedang mengerjakan produk. Tunggu pembaruan saat produk siap diserahkan.",
+        UpcyclingRequest.Status.READY: "Konfirmasikan penerimaan produk untuk menyelesaikan request.",
+        UpcyclingRequest.Status.COMPLETED: "Produk telah diterima dan poin upcycling sudah tercatat.",
+        UpcyclingRequest.Status.REJECTED: "Periksa alasan penolakan dan status pengembalian kain pada ringkasan request.",
+        UpcyclingRequest.Status.CANCELLED: "Periksa status pengembalian kain pada ringkasan request jika kain sudah diterima.",
+        UpcyclingRequest.Status.EXPIRED: "Request kedaluwarsa karena kain belum diserahkan sebelum tenggat.",
+    }
+    if is_assigned_artisan:
+        status_descriptions.update({
+            UpcyclingRequest.Status.PENDING_REVIEW: "Tinjau kelayakan awal request dan tentukan apakah bisa diproses.",
+            UpcyclingRequest.Status.AWAITING_FABRIC: "Menunggu Eco-Member menyerahkan kain sebelum tenggat.",
+            UpcyclingRequest.Status.INSPECTION: "Periksa kondisi fisik kain dan isi rincian penawaran harga.",
+            UpcyclingRequest.Status.AWAITING_APPROVAL: "Menunggu Eco-Member menyetujui atau menolak penawaran harga.",
+            UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS: "Menunggu Eco-Member melengkapi metode dan lokasi penerimaan produk.",
+            UpcyclingRequest.Status.IN_PROGRESS: "Kerjakan produk setelah harga dan detail penerimaan disetujui.",
+            UpcyclingRequest.Status.READY: "Menunggu Eco-Member mengonfirmasi penerimaan produk.",
+        })
+
     timeline_steps = [
         {
             "label": "Diajukan",
+            "description": "Permintaan berhasil diajukan dan masuk ke antrean ReBatik.",
             "created_at": upcycling_request.created_at,
             "state": "done",
         },
@@ -415,85 +471,19 @@ def request_detail(request, pk):
         for index, value in enumerate(progression):
             timeline_steps.append({
                 "label": UpcyclingRequest.Status(value).label,
+                "description": status_descriptions[value],
+                "status": value,
                 "state": "done" if index < current_index else "current" if index == current_index else "upcoming",
-                    "created_at": status_dates.get(value),
+                "created_at": status_dates.get(value),
             })
     else:
-        timeline_steps.append({"label": upcycling_request.get_status_display(), "state": "cancelled"})
-
-    next_steps = {
-        UpcyclingRequest.Status.PENDING_ASSIGNMENT: {
-            "title": "Menunggu penugasan artisan",
-            "description": "Admin sedang mencocokkan permintaan dengan keahlian dan kapasitas artisan.",
-        },
-        UpcyclingRequest.Status.PENDING_REVIEW: {
-            "title": "Menunggu review awal",
-            "description": "Artisan meninjau model produk dan informasi kain yang Anda kirim.",
-        },
-        UpcyclingRequest.Status.AWAITING_FABRIC: {
-            "title": "Serahkan kain",
-            "description": "Serahkan kain dengan metode yang dipilih sebelum tenggat agar request tidak kedaluwarsa.",
-            "deadline": upcycling_request.fabric_deadline,
-        },
-        UpcyclingRequest.Status.INSPECTION: {
-            "title": "Menunggu hasil inspeksi",
-            "description": "Artisan sedang memeriksa kondisi fisik kain dan menyiapkan penawaran final.",
-        },
-        UpcyclingRequest.Status.AWAITING_APPROVAL: {
-            "title": "Tinjau penawaran harga",
-            "description": "Periksa harga dan catatan artisan. Anda dapat menyetujui atau menolak penawaran.",
-        },
-        UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS: {
-            "title": "Atur penerimaan produk",
-            "description": "Harga sudah disetujui. Isi metode dan alamat penerimaan sebelum produksi dimulai.",
-        },
-        UpcyclingRequest.Status.IN_PROGRESS: {
-            "title": "Produk sedang dibuat",
-            "description": "Artisan sedang mengerjakan produk. Tunggu pembaruan saat produk siap diserahkan.",
-        },
-        UpcyclingRequest.Status.READY: {
-            "title": "Konfirmasi penerimaan produk",
-            "description": "Setelah produk diterima, konfirmasikan penerimaannya untuk menyelesaikan request.",
-        },
-        UpcyclingRequest.Status.COMPLETED: {
-            "title": "Request selesai",
-            "description": "Produk telah diterima dan poin upcycling sudah tercatat.",
-        },
-        UpcyclingRequest.Status.REJECTED: {
-            "title": "Request ditolak",
-            "description": "Periksa alasan penolakan dan status pengembalian kain pada ringkasan request.",
-        },
-        UpcyclingRequest.Status.CANCELLED: {
-            "title": "Request dibatalkan",
-            "description": "Periksa status pengembalian kain pada ringkasan request jika kain sudah diterima.",
-        },
-        UpcyclingRequest.Status.EXPIRED: {
-            "title": "Batas penyerahan kain terlewati",
-            "description": "Request kedaluwarsa karena kain belum diserahkan sebelum tenggat.",
-        },
-    }
-    next_step = next_steps[status]
-    if is_assigned_artisan:
-        if status == UpcyclingRequest.Status.AWAITING_APPROVAL:
-            next_step = {
-                "title": "Menunggu persetujuan user",
-                "description": "Produksi hanya dapat dimulai setelah user menyetujui penawaran harga.",
-            }
-        elif status == UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS:
-            next_step = {
-                "title": "Menunggu detail penerimaan produk",
-                "description": "User sedang melengkapi metode dan lokasi penerimaan sebelum produksi dimulai.",
-            }
-        elif status == UpcyclingRequest.Status.READY:
-            next_step = {
-                "title": "Menunggu konfirmasi user",
-                "description": "User perlu mengonfirmasi penerimaan produk sebelum request selesai.",
-            }
-        elif status not in UpcyclingRequest.TERMINAL_STATUSES:
-            next_step = {
-                "title": "Tindakan Artisan",
-                "description": "Gunakan panel tindakan di bawah untuk memproses request sesuai statusnya.",
-            }
+        timeline_steps.append({
+            "label": upcycling_request.get_status_display(),
+            "description": status_descriptions[status],
+            "status": status,
+            "created_at": status_dates.get(status),
+            "state": "cancelled",
+        })
 
     return render(
         request,
@@ -514,8 +504,6 @@ def request_detail(request, pk):
             "reference_photos": list(upcycling_request.reference_photos.all()),
             "reference_code": upcycling_request.reference_code,
             "timeline_steps": timeline_steps,
-            "status_history": status_history,
-            "next_step": next_step,
             "is_assigned_artisan": is_assigned_artisan,
             "can_approve_quote": not is_assigned_artisan and status == UpcyclingRequest.Status.AWAITING_APPROVAL,
             "product_delivery_form": (
@@ -530,8 +518,12 @@ def request_detail(request, pk):
                 UpcyclingRequest.Status.PENDING_REVIEW,
                 UpcyclingRequest.Status.AWAITING_FABRIC,
                 UpcyclingRequest.Status.INSPECTION,
-                UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS,
             },
+            "show_no_cancel_after_approval_notice": (
+                not is_assigned_artisan
+                and bool(upcycling_request.approved_at)
+                and status not in UpcyclingRequest.TERMINAL_STATUSES
+            ),
             "fabric_handoff_form": (
                 FabricHandoffForm(instance=upcycling_request)
                 if not is_assigned_artisan and status == UpcyclingRequest.Status.AWAITING_FABRIC
@@ -782,7 +774,6 @@ def cancel_request(request, pk):
             UpcyclingRequest.Status.PENDING_REVIEW,
             UpcyclingRequest.Status.AWAITING_FABRIC,
             UpcyclingRequest.Status.INSPECTION,
-            UpcyclingRequest.Status.AWAITING_DELIVERY_DETAILS,
         }
         can_reject_quote = (
             reject_quote
@@ -792,7 +783,13 @@ def cancel_request(request, pk):
         if invalid_quote_rejection or (
             not reject_quote and upcycling_request.status not in cancellable_statuses
         ):
-            messages.error(request, "Request ini tidak dapat dibatalkan mandiri. Hubungi admin untuk bantuan.")
+            if upcycling_request.approved_at:
+                messages.error(
+                    request,
+                    "Harga sudah disetujui. Permintaan tidak dapat dibatalkan mandiri.",
+                )
+            else:
+                messages.error(request, "Request ini tidak dapat dibatalkan mandiri. Hubungi admin untuk bantuan.")
         else:
             old_status = upcycling_request.status
             upcycling_request.status = UpcyclingRequest.Status.CANCELLED
@@ -886,6 +883,7 @@ def artisan_update_request(request, pk):
         return redirect("upcycling:artisan_dashboard")
     artisan = _get_artisan_profile(request.user)
     action = request.POST.get("action", "")
+    action_failed = False
     with transaction.atomic():
         upcycling_request = get_object_or_404(
             UpcyclingRequest.objects.select_for_update(), pk=pk, artisan=artisan
@@ -914,17 +912,52 @@ def artisan_update_request(request, pk):
                 upcycling_request.status = UpcyclingRequest.Status.INSPECTION
             elif action in {"inspection_pass", "inspection_reject"} and old_status == UpcyclingRequest.Status.INSPECTION:
                 if action == "inspection_pass":
-                    try:
-                        price = Decimal(request.POST.get("quoted_price", ""))
-                    except (InvalidOperation, TypeError, ValueError):
-                        raise ValueError("Masukkan harga final yang valid.") from None
-                    if not price.is_finite() or price <= 0:
-                        raise ValueError("Harga final harus lebih dari nol.")
-                    if price != price.to_integral_value():
-                        raise ValueError("Harga final harus menggunakan nominal rupiah tanpa pecahan.")
-                    if price > Decimal("99999999"):
-                        raise ValueError("Harga final tidak boleh melebihi Rp99.999.999.")
-                    upcycling_request.quoted_price = price
+                    work_price = _parse_quote_component(
+                        request.POST.get("work_price"),
+                        "harga pengerjaan",
+                        required=True,
+                    )
+                    batik_material_price = (
+                        _parse_quote_component(
+                            request.POST.get("batik_material_price"),
+                            "biaya kain batik tambahan",
+                            required=True,
+                            allow_zero=True,
+                        )
+                        if upcycling_request.wants_batik_accent
+                        else Decimal("0")
+                    )
+                    additional_fee_type = request.POST.get(
+                        "additional_fee_type", ""
+                    ).strip()[:120]
+                    additional_fee_raw = str(
+                        request.POST.get("additional_fee_amount", "") or ""
+                    ).strip()
+                    if bool(additional_fee_type) != bool(additional_fee_raw):
+                        raise ValueError(
+                            "Isi jenis dan nominal biaya tambahan lain secara bersamaan."
+                        )
+                    additional_fee_amount = (
+                        _parse_quote_component(
+                            additional_fee_raw,
+                            "biaya tambahan lain",
+                            required=True,
+                        )
+                        if additional_fee_raw
+                        else Decimal("0")
+                    )
+                    total_price = (
+                        work_price + batik_material_price + additional_fee_amount
+                    )
+                    if total_price > Decimal("99999999"):
+                        raise ValueError(
+                            "Total penawaran tidak boleh melebihi Rp99.999.999."
+                        )
+                    upcycling_request.work_price = work_price
+                    upcycling_request.batik_material_price = batik_material_price
+                    upcycling_request.additional_fee_type = additional_fee_type
+                    upcycling_request.additional_fee_amount = additional_fee_amount
+                    upcycling_request.quoted_price = total_price
                     upcycling_request.quoted_at = now
                     upcycling_request.quotation_notes = note
                     upcycling_request.inspection_notes = note
@@ -944,8 +977,11 @@ def artisan_update_request(request, pk):
                 raise ValueError("Aksi ini tidak berlaku untuk status request sekarang.")
         except ValueError as exc:
             messages.error(request, str(exc))
+            action_failed = True
         else:
             upcycling_request.save()
             _record_user_status_change(upcycling_request, request.user, old_status)
             messages.success(request, "Status request berhasil diperbarui.")
+    if action_failed:
+        return redirect("upcycling:request_detail", pk=pk)
     return redirect("upcycling:artisan_dashboard")

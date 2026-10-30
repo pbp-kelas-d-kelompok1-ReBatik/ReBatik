@@ -234,6 +234,26 @@ class UpcyclingRequest(models.Model):
         blank=True,
         validators=[MinValueValidator(0)],
     )
+    work_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(0)],
+    )
+    batik_material_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        validators=[MinValueValidator(0)],
+    )
+    additional_fee_type = models.CharField(max_length=120, blank=True)
+    additional_fee_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        validators=[MinValueValidator(0)],
+    )
     quotation_notes = models.TextField(blank=True)
     quoted_at = models.DateTimeField(null=True, blank=True)
     approved_at = models.DateTimeField(null=True, blank=True)
