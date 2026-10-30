@@ -1,3 +1,4 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="id">
@@ -5,12 +6,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>ReBatik</title>
+    <link rel="icon" type="image/png" href="{% static 'img/logo-rebatik.png' %}">
 
     <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 
     <!-- JavaScript -->
     <script src="{% static 'js/htmx.min.js' %}" defer></script>
@@ -23,207 +25,531 @@
 </head>
 
 <body>
-    <div class="bg">
+<div class="bg">
 
-        <!-- NAVBAR -->
-        <header class="navbar">
+    {% with app=request.resolver_match.app_name view=request.resolver_match.view_name %}
 
-            <a href="{% url 'main:show_home' %}" class="logo">
-                ReBatik
+    <!-- NAVBAR -->
+    <header class="rb-nav" id="rbNav">
+        <div class="rb-nav__bar">
+
+            <span class="rb-nav__deco" aria-hidden="true"></span>
+
+            <!-- LOGO -->
+            <a href="{% url 'main:show_home' %}"
+               class="rb-nav__brand"
+               aria-label="ReBatik - Beranda">
+                <span class="rb-nav__logo">
+                    <img src="{% static 'img/logo-rebatik.png' %}"
+                         alt="" width="46" height="46">
+                </span>
+                <span class="rb-nav__brand-text">ReBatik</span>
             </a>
 
-            <nav class="nav-links">
+            <!-- MENU DESKTOP -->
+            <nav class="rb-nav__links" aria-label="Menu utama">
 
-                <a href="{% url 'main:show_home' %}">Home</a>
+                <a href="{% url 'main:show_home' %}"
+                   class="rb-nav__link{% if app == 'main' and view != 'main:login' and view != 'main:signup' %} is-active{% endif %}">
+                    Home
+                </a>
 
-                <a href="{% url 'batik_story:show_batik_story' %}">
+                <a href="{% url 'batik_story:show_batik_story' %}"
+                   class="rb-nav__link{% if app == 'batik_story' %} is-active{% endif %}">
                     Batik Story
                 </a>
 
-                {% if user.is_authenticated %}
+                <a href="{% url 'marketplace:home' %}"
+                   class="rb-nav__link{% if app == 'marketplace' %} is-active{% endif %}">
+                    Marketplace
+                </a>
 
-                <span class="nav-user-label">
-                    {{ user.username }}
-                </span>
-
-                <form method="post" action="{% url 'main:logout' %}" class="nav-logout-form">
-
-                    {% csrf_token %}
-
-                    <button type="submit" class="nav-logout-button">
-                        Logout
-                    </button>
-                </form>
-
-                {% else %}
-
-                <a href="{% url 'main:login' %}">Sign in</a>
-                <a href="{% url 'main:signup' %}">Sign up</a>
-
-                {% endif %}
-
-                <a href="{% url 'rewards:overview' %}">
+                <a href="{% url 'rewards:overview' %}"
+                   class="rb-nav__link{% if view == 'rewards:overview' %} is-active{% endif %}">
                     Reward
                 </a>
 
+                <a href="{% url 'rewards:history' %}"
+                   class="rb-nav__link{% if view == 'rewards:history' %} is-active{% endif %}">
+                    Riwayat
+                </a>
             </nav>
 
-            <!-- MOBILE MENU BUTTON -->
-            <button type="button" class="menu-btn" onclick="toggleMenu()" aria-label="Open menu" aria-controls="navMenu"
-                aria-expanded="false">
+            <!-- ACTIONS -->
+            <div class="rb-nav__actions">
 
-                <span></span>
-                <span></span>
-                <span></span>
+                <!-- SEARCH -->
+                <form class="rb-nav__search"
+                      role="search"
+                      method="get"
+                      action="{% url 'main:show_home' %}">
 
-            </button>
+                    <svg class="rb-ico" viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="11" cy="11" r="7"/>
+                        <path d="m20 20-3.5-3.5"/>
+                    </svg>
 
-            <!-- DROPDOWN MENU -->
-            <div class="nav-menu" id="navMenu">
-                {% if user.is_authenticated %}
-                <a href="{% url 'profiles:overview' %}">Profile ({{ user.username }})</a>
-                {% else %}
-                <a href="{% url 'profiles:overview' %}">Profile</a>
-                {% endif %}
-                <a href="{% url 'marketplace:home' %}">MarketPlace</a>
-                {% if user.is_authenticated %}
-                <a href="{% url 'marketplace:order_list' %}">Pesanan Saya</a>
-                {% endif %}
-                {% if user.is_staff or can_open_artisan_dashboard %}
-                <a href="{% url 'marketplace:manage_product_list' %}">Kelola Produk</a>
-                {% endif %}
-                <a href="{% url 'rewards:overview' %}">Points and Rewards</a>
-                <a href="{% url 'donasi:landing' %}">Donasi Kain</a>
-                <a href="{% url 'marketplace:dropoff' %}">Drop-off Point</a>
-                <a href="{% url 'upcycling:request_list' %}">Upcycling Request</a>
-                {% if can_open_artisan_dashboard %}
-                <a href="{% url 'upcycling:artisan_dashboard' %}">Dashboard Artisan</a>
-                {% endif %}
-                {% if user.is_staff %}
-                <a href="{% url 'upcycling:admin_dashboard' %}">Dashboard Admin</a>
-                {% endif %}
-                <a href="{% url 'batik_custom:show_home' %}">Custom Batik</a>
-                <a href="{% url 'impact_tracker:dashboard' %}">Impact Tracker</a>
-                <a href="{% url 'landing:index' %}">Landing page</a>
-                {% if user.is_authenticated %}
-
-                <form method="post" action="{% url 'main:logout' %}" class="nav-menu-logout-form">
-
-                    {% csrf_token %}
-
-                    <button type="submit" class="nav-menu-logout-button">
-                        Logout
-                    </button>
-
+                    <input type="search"
+                           name="q"
+                           placeholder="Cari di ReBatik..."
+                           aria-label="Cari di ReBatik"
+                           autocomplete="off">
                 </form>
 
+                {% if user.is_authenticated %}
+
+                <!-- NOTIFICATION -->
+                <button type="button"
+                        class="rb-nav__icon-btn rb-nav__bell"
+                        aria-label="Notifikasi">
+
+                    <svg class="rb-ico" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/>
+                        <path d="M10.3 20a1.9 1.9 0 0 0 3.4 0"/>
+                    </svg>
+
+                    {% if notif_count %}
+                    <span class="rb-badge">{{ notif_count }}</span>
+                    {% endif %}
+                </button>
+
+                <span class="rb-nav__sep" aria-hidden="true"></span>
+
+                <!-- USER DROPDOWN -->
+                <div class="rb-nav__user">
+
+                    <button type="button"
+                            class="rb-nav__user-btn"
+                            id="rbUserTrigger"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                            aria-controls="rbUserMenu">
+
+                        <span class="rb-avatar" aria-hidden="true">
+                            {{ user.username|slice:":1"|upper }}
+                        </span>
+
+                        <svg class="rb-ico rb-chev" viewBox="0 0 24 24">
+                            <path d="m6 9 6 6 6-6"/>
+                        </svg>
+
+                        <span class="rb-sr">
+                            Menu akun {{ user.username }}
+                        </span>
+                    </button>
+
+                    <div class="rb-user-menu" id="rbUserMenu" hidden>
+
+                        <a class="rb-user-menu__head"
+                           href="{% url 'profiles:overview' %}">
+
+                            <span class="rb-avatar rb-avatar--lg">
+                                {{ user.username|slice:":1"|upper }}
+                            </span>
+
+                            <span>
+                                <strong>Hai, {{ user.username }}</strong>
+                                <small>Lihat profil kamu</small>
+                            </span>
+                        </a>
+
+                        <ul>
+                            <li>
+                                <a href="{% url 'profiles:overview' %}"
+                                   {% if app == 'profiles' %}class="is-active"{% endif %}>
+                                    Profile ({{ user.username }})
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'rewards:history' %}">
+                                    Riwayat
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'marketplace:home' %}">
+                                    Marketplace
+                                </a>
+                            </li>
+
+                            {% if user.is_authenticated %}
+                            <li>
+                                <a href="{% url 'marketplace:order_list' %}">
+                                    Pesanan Saya
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            {% if user.is_staff or can_open_artisan_dashboard %}
+                            <li>
+                                <a href="{% url 'marketplace:manage_product_list' %}">
+                                    Kelola Produk
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            <li>
+                                <a href="{% url 'rewards:overview' %}">
+                                    Points and Rewards
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'donasi:landing' %}">
+                                    Donasi Kain
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'marketplace:dropoff' %}">
+                                    Drop-off Point
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'upcycling:request_list' %}">
+                                    Upcycling Request
+                                </a>
+                            </li>
+
+                            {% if can_open_artisan_dashboard %}
+                            <li>
+                                <a href="{% url 'upcycling:artisan_dashboard' %}">
+                                    Dashboard Artisan
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            {% if user.is_staff %}
+                            <li>
+                                <a href="{% url 'upcycling:admin_dashboard' %}">
+                                    Dashboard Admin
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            <li>
+                                <a href="{% url 'batik_custom:show_home' %}">
+                                    Custom Batik
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'impact_tracker:dashboard' %}">
+                                    Impact Tracker
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'landing:index' %}">
+                                    Landing Page
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="#">
+                                    Pengaturan
+                                </a>
+                            </li>
+                        </ul>
+
+                        <!-- LOGOUT -->
+                        <form method="post"
+                              action="{% url 'main:logout' %}"
+                              class="nav-menu-logout-form rb-user-menu__logout">
+
+                            {% csrf_token %}
+
+                            <button type="submit">
+                                <svg class="rb-ico" viewBox="0 0 24 24">
+                                    <path d="M10 4H5v16h5M15 8l4 4-4 4M19 12H9"/>
+                                </svg>
+                                Sign out
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+
                 {% else %}
 
-                <a href="{% url 'main:login' %}">
+                <a href="{% url 'main:login' %}"
+                   class="rb-btn rb-btn--ghost rb-hide-mobile">
                     Sign in
                 </a>
 
-                <a href="{% url 'main:signup' %}">
+                <a href="{% url 'main:signup' %}"
+                   class="rb-btn rb-btn--solid rb-hide-mobile">
                     Sign up
                 </a>
 
                 {% endif %}
 
+                <!-- MOBILE BUTTON -->
+                <button type="button"
+                        class="rb-nav__burger"
+                        id="rbBurger"
+                        aria-label="Buka menu"
+                        aria-controls="rbDrawer"
+                        aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
             </div>
-        </header>
-
-        <!-- MAIN CONTENT -->
-        <main>
-            {% block content %}{% endblock content %}
-        </main>
-
-    </div>
-
-    <!-- FOOTER -->
-    <footer class="site-footer">
-        <p>
-            © 2026 ReBatik. Fakultas Ilmu Komputer,
-            Universitas Indonesia.
-        </p>
-    </footer>
-
-
-    <!-- =================================
-         LOGOUT CONFIRMATION MODAL
-    ================================== -->
-    <div id="logoutConfirmModal" class="logout-modal" aria-hidden="true">
-
-        <!-- Background overlay -->
-        <div class="logout-modal-backdrop" data-logout-cancel>
         </div>
 
-        <!-- Modal dialog -->
-        <section class="logout-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="logoutModalTitle"
-            aria-describedby="logoutModalDescription">
+        <!-- MOBILE DRAWER -->
+        <div class="rb-drawer-backdrop"
+             id="rbDrawerBackdrop"
+             hidden>
+        </div>
 
-            <!-- Batik decorations -->
-            <div class="logout-batik-decoration logout-batik-top-left"></div>
-            <div class="logout-batik-decoration logout-batik-top-right"></div>
-            <div class="logout-batik-decoration logout-batik-bottom-left"></div>
-            <div class="logout-batik-decoration logout-batik-bottom-right"></div>
+        <aside class="rb-drawer"
+               id="rbDrawer"
+               aria-label="Menu navigasi"
+               aria-hidden="true">
 
-            <div class="logout-modal-content">
+            <div class="rb-drawer__head">
 
-                <!-- Crying mascot -->
-                <div class="logout-mascot">
-                    <img src="{% static 'img/mascot/crying.webp' %}" alt="Maskot ReBatik sedang menangis">
-                </div>
+                <a href="{% url 'main:show_home' %}"
+                   class="rb-nav__brand">
 
-                <!-- Confirmation text -->
-                <div class="logout-modal-text">
+                    <span class="rb-nav__logo">
+                        <img src="{% static 'img/logo-rebatik.png' %}"
+                             alt="" width="40" height="40">
+                    </span>
 
-                    <h2 id="logoutModalTitle">
-                        Yakin ingin logout?
-                    </h2>
+                    <span class="rb-nav__brand-text">ReBatik</span>
+                </a>
 
-                    <p id="logoutModalDescription">
-                        Kamu yakin ingin keluar dari akunmu?
-                    </p>
+                <button type="button"
+                        class="rb-drawer__close"
+                        id="rbDrawerClose"
+                        aria-label="Tutup menu">
 
-                    <!-- Action buttons -->
-                    <div class="logout-modal-actions">
-
-                        <button type="button" class="logout-btn logout-btn-cancel" id="cancelLogout">
-                            Batal
-                        </button>
-
-                        <button type="button" class="logout-btn logout-btn-confirm" id="confirmLogout">
-                            Ya, Logout
-                        </button>
-
-                    </div>
-                </div>
-
+                    <svg class="rb-ico" viewBox="0 0 24 24">
+                        <path d="M6 6l12 12M18 6 6 18"/>
+                    </svg>
+                </button>
             </div>
-        </section>
-    </div>
-    <!-- END LOGOUT CONFIRMATION MODAL -->
 
+            <!-- MOBILE SEARCH -->
+            <form class="rb-nav__search rb-nav__search--drawer"
+                  role="search"
+                  method="get"
+                  action="{% url 'main:show_home' %}">
 
-    <!-- MOBILE MENU SCRIPT -->
-    <script>
-        function toggleMenu() {
-            const menu = document.getElementById("navMenu");
-            const button = document.querySelector(".menu-btn");
+                <svg class="rb-ico" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="7"/>
+                    <path d="m20 20-3.5-3.5"/>
+                </svg>
 
-            menu.classList.toggle("active");
+                <input type="search"
+                       name="q"
+                       placeholder="Cari di ReBatik..."
+                       autocomplete="off">
+            </form>
 
-            button.setAttribute(
-                "aria-expanded",
-                menu.classList.contains("active")
-            );
-        }
-    </script>
+            <!-- MOBILE NAVIGATION -->
+            <nav class="rb-drawer__nav">
 
-    <!-- PAGE-SPECIFIC SCRIPTS -->
-    {% block extra_js %}{% endblock extra_js %}
-    {% block scripts %}{% endblock scripts %}
+                <a href="{% url 'main:show_home' %}">
+                    Home{% include "_nav_chevron.html" %}
+                </a>
+
+                <a href="{% url 'batik_story:show_batik_story' %}">
+                    Batik Story{% include "_nav_chevron.html" %}
+                </a>
+
+                {% if user.is_authenticated %}
+                <a href="{% url 'profiles:overview' %}">
+                    Profile ({{ user.username }}){% include "_nav_chevron.html" %}
+                </a>
+                {% else %}
+                <a href="{% url 'profiles:overview' %}">
+                    Profile{% include "_nav_chevron.html" %}
+                </a>
+                {% endif %}
+
+                <a href="{% url 'marketplace:home' %}">
+                    Marketplace{% include "_nav_chevron.html" %}
+                </a>
+
+                {% if user.is_authenticated %}
+                <a href="{% url 'marketplace:order_list' %}">
+                    Pesanan Saya{% include "_nav_chevron.html" %}
+                </a>
+                {% endif %}
+
+                {% if user.is_staff or can_open_artisan_dashboard %}
+                <a href="{% url 'marketplace:manage_product_list' %}">
+                    Kelola Produk{% include "_nav_chevron.html" %}
+                </a>
+                {% endif %}
+
+                <a href="{% url 'rewards:history' %}">
+                    Riwayat{% include "_nav_chevron.html" %}
+                </a>
+
+                <a href="{% url 'rewards:overview' %}">
+                    Points and Rewards{% include "_nav_chevron.html" %}
+                </a>
+
+                <a href="{% url 'donasi:landing' %}">
+                    Donasi Kain{% include "_nav_chevron.html" %}
+                </a>
+
+                <a href="{% url 'marketplace:dropoff' %}">
+                    Drop-off Point{% include "_nav_chevron.html" %}
+                </a>
+
+                <a href="{% url 'upcycling:request_list' %}">
+                    Upcycling Request{% include "_nav_chevron.html" %}
+                </a>
+
+                {% if can_open_artisan_dashboard %}
+                <a href="{% url 'upcycling:artisan_dashboard' %}">
+                    Dashboard Artisan{% include "_nav_chevron.html" %}
+                </a>
+                {% endif %}
+
+                {% if user.is_staff %}
+                <a href="{% url 'upcycling:admin_dashboard' %}">
+                    Dashboard Admin{% include "_nav_chevron.html" %}
+                </a>
+                {% endif %}
+
+                <a href="{% url 'batik_custom:show_home' %}">
+                    Custom Batik{% include "_nav_chevron.html" %}
+                </a>
+
+                <a href="{% url 'impact_tracker:dashboard' %}">
+                    Impact Tracker{% include "_nav_chevron.html" %}
+                </a>
+
+                <a href="{% url 'landing:index' %}">
+                    Landing Page{% include "_nav_chevron.html" %}
+                </a>
+
+            </nav>
+
+            <!-- MOBILE FOOTER -->
+            <div class="rb-drawer__foot">
+
+                {% if user.is_authenticated %}
+
+                <form method="post"
+                      action="{% url 'main:logout' %}"
+                      class="nav-menu-logout-form">
+
+                    {% csrf_token %}
+
+                    <button type="submit"
+                            class="rb-btn rb-btn--outline rb-btn--block">
+                        Sign out
+                    </button>
+                </form>
+
+                {% else %}
+
+                <a href="{% url 'main:login' %}"
+                   class="rb-btn rb-btn--outline rb-btn--block">
+                    Sign in
+                </a>
+
+                <a href="{% url 'main:signup' %}"
+                   class="rb-btn rb-btn--solid rb-btn--block">
+                    Sign up
+                </a>
+
+                {% endif %}
+            </div>
+
+        </aside>
+
+    </header>
+
+    {% endwith %}
+
+    <!-- MAIN CONTENT -->
+    <main>
+        {% block content %}{% endblock content %}
+    </main>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+    <p>
+        © 2026 ReBatik. Fakultas Ilmu Komputer,
+        Universitas Indonesia.
+    </p>
+</footer>
+
+<!-- LOGOUT CONFIRMATION MODAL -->
+<div id="logoutConfirmModal"
+     class="logout-modal"
+     aria-hidden="true">
+
+    <div class="logout-modal-backdrop" data-logout-cancel></div>
+
+    <section class="logout-modal-dialog"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="logoutModalTitle"
+             aria-describedby="logoutModalDescription">
+
+        <div class="logout-batik-decoration logout-batik-top-left"></div>
+        <div class="logout-batik-decoration logout-batik-top-right"></div>
+        <div class="logout-batik-decoration logout-batik-bottom-left"></div>
+        <div class="logout-batik-decoration logout-batik-bottom-right"></div>
+
+        <div class="logout-modal-content">
+
+            <div class="logout-mascot">
+                <img src="{% static 'img/mascot/crying.webp' %}"
+                     alt="Maskot ReBatik sedang menangis">
+            </div>
+
+            <div class="logout-modal-text">
+
+                <h2 id="logoutModalTitle">
+                    Yakin ingin logout?
+                </h2>
+
+                <p id="logoutModalDescription">
+                    Kamu yakin ingin keluar dari akunmu?
+                </p>
+
+                <div class="logout-modal-actions">
+
+                    <button type="button"
+                            class="logout-btn logout-btn-cancel"
+                            id="cancelLogout">
+                        Batal
+                    </button>
+
+                    <button type="button"
+                            class="logout-btn logout-btn-confirm"
+                            id="confirmLogout">
+                        Ya, Logout
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- NAVBAR SCRIPT -->
+<script src="{% static 'js/navbar.js' %}" defer></script>
+
+<!-- PAGE SCRIPTS -->
+{% block extra_js %}{% endblock extra_js %}
+{% block scripts %}{% endblock scripts %}
 
 </body>
-
 </html>
