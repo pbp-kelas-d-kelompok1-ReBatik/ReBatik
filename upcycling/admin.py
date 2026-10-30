@@ -234,9 +234,16 @@ class UpcyclingRequestAdmin(admin.ModelAdmin):
             obj.quoted_at = now
         if obj.status == UpcyclingRequest.Status.READY and not obj.ready_at:
             obj.ready_at = now
-        if obj.status in (UpcyclingRequest.Status.REJECTED, UpcyclingRequest.Status.CANCELLED) and obj.fabric_received_at:
+        if (
+            obj.status in (UpcyclingRequest.Status.REJECTED, UpcyclingRequest.Status.CANCELLED)
+            and obj.fabric_received_at
+            and (old is None or old.status != obj.status)
+        ):
             obj.return_status = UpcyclingRequest.ReturnStatus.PENDING_RETURN
-        if obj.return_status == UpcyclingRequest.ReturnStatus.RETURNED:
+        if (
+            obj.return_status == UpcyclingRequest.ReturnStatus.RETURNED
+            and (old is None or old.return_status != UpcyclingRequest.ReturnStatus.RETURNED)
+        ):
             obj.return_confirmed_by = request.user
             obj.return_confirmed_at = obj.return_confirmed_at or now
 

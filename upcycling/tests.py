@@ -10,6 +10,7 @@ from django.forms.models import model_to_dict
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from .admin import UpcyclingRequestAdminForm
 from .forms import FabricHandoffForm, UpcyclingRequestForm
@@ -559,6 +560,90 @@ class UpcyclingRequestAdminTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn("delivery_proof", form.errors)
         self.assertIn("completion_notes", form.errors)
+
+    def test_admin_can_mark_cancelled_request_fabric_returned_and_preserves_confirmer(self):
+        upcycling_request = UpcyclingRequest.objects.create(
+            user=self.user,
+            artisan=self.artisan,
+            fabric="DENIM",
+            category="TAS",
+            product="TOTE_BAG",
+            quantity=1,
+            delivery_method="DROP_OFF",
+            address="Depok",
+            whatsapp="081234567890",
+            status=UpcyclingRequest.Status.CANCELLED,
+            cancellation_reason="Dibatalkan setelah kain diterima.",
+            fabric_received_at=timezone.now(),
+            fabric_received_by=self.artisan_user,
+            return_status=UpcyclingRequest.ReturnStatus.PENDING_RETURN,
+        )
+        first_admin = User.objects.create_user(username="return-admin-first", is_staff=True)
+        second_admin = User.objects.create_user(username="return-admin-second", is_staff=True)
+        request_admin = admin.site._registry[UpcyclingRequest]
+
+        form_data = model_to_dict(upcycling_request)
+        form_data["return_status"] = UpcyclingRequest.ReturnStatus.RETURNED
+        form = UpcyclingRequestAdminForm(data=form_data, instance=upcycling_request)
+        self.assertTrue(form.is_valid(), form.errors)
+        admin_request = RequestFactory().post("/admin/upcycling/upcyclingrequest/")
+        admin_request.user = first_admin
+        request_admin.save_model(admin_request, upcycling_request, form, change=True)
+
+        upcycling_request.refresh_from_db()
+        self.assertEqual(upcycling_request.return_status, UpcyclingRequest.ReturnStatus.RETURNED)
+        self.assertEqual(upcycling_request.return_confirmed_by, first_admin)
+        first_confirmation_at = upcycling_request.return_confirmed_at
+
+        form_data = model_to_dict(upcycling_request)
+        form = UpcyclingRequestAdminForm(data=form_data, instance=upcycling_request)
+        self.assertTrue(form.is_valid(), form.errors)
+        admin_request.user = second_admin
+        request_admin.save_model(admin_request, upcycling_request, form, change=True)
+
+        upcycling_request.refresh_from_db()
+        self.assertEqual(upcycling_request.return_status, UpcyclingRequest.ReturnStatus.RETURNED)
+        self.assertEqual(upcycling_request.return_confirmed_by, first_admin)
+        self.assertEqual(upcycling_request.return_confirmed_at, first_confirmation_at)
+
+    def test_admin_terminal_transition_with_received_fabric_creates_return_obligation(self):
+        upcycling_request = UpcyclingRequest.objects.create(
+            user=self.user,
+            artisan=self.artisan,
+            fabric="DENIM",
+            category="TAS",
+            product="TOTE_BAG",
+            quantity=1,
+            delivery_method="DROP_OFF",
+            address="Depok",
+            whatsapp="081234567890",
+            status=UpcyclingRequest.Status.INSPECTION,
+            fabric_received_at=timezone.now(),
+            fabric_received_by=self.artisan_user,
+        )
+        form_data = model_to_dict(upcycling_request)
+        form_data.update(
+            status=UpcyclingRequest.Status.CANCELLED,
+            cancellation_reason="Proses dibatalkan.",
+        )
+        form = UpcyclingRequestAdminForm(data=form_data, instance=upcycling_request)
+        self.assertTrue(form.is_valid(), form.errors)
+        admin_request = RequestFactory().post("/admin/upcycling/upcyclingrequest/")
+        admin_request.user = self.user
+
+        admin.site._registry[UpcyclingRequest].save_model(
+            admin_request,
+            upcycling_request,
+            form,
+            change=True,
+        )
+
+        upcycling_request.refresh_from_db()
+        self.assertEqual(upcycling_request.status, UpcyclingRequest.Status.CANCELLED)
+        self.assertEqual(
+            upcycling_request.return_status,
+            UpcyclingRequest.ReturnStatus.PENDING_RETURN,
+        )
 
     def test_admin_save_without_status_change_does_not_add_history(self):
         """Test behavior: admin save without status change does not add history."""

@@ -1,4 +1,5 @@
 from io import BytesIO
+from pathlib import Path
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -507,8 +508,15 @@ class UpcyclingWorkflowTests(TestCase):
 
         self.assertContains(response, 'href="/upcycling/"')
         self.assertContains(response, "Upcycling Request")
-        self.assertContains(response, 'href="/upcycling/artisan/"')
-        self.assertContains(response, "Dashboard Artisan")
+        nav_menu_html = (
+            response.content.decode()
+            .split('<div class="nav-menu" id="navMenu">', 1)[1]
+            .split("</div>", 1)[0]
+        )
+        self.assertInHTML(
+            '<a href="/upcycling/artisan/">Dashboard Artisan</a>',
+            nav_menu_html,
+        )
         self.assertContains(response, "Buka dashboard artisan")
         self.assertContains(response, "primary-action-button mt-5 min-h-11 px-5 py-2 text-sm")
 
@@ -554,6 +562,23 @@ class UpcyclingWorkflowTests(TestCase):
                 self.assertEqual(response.status_code, 200)
                 self.assertContains(response, title)
                 self.assertContains(response, "text-center text-[var(--brown)]")
+
+    def test_photo_picker_restores_previous_images_after_non_image_selection(self):
+        script_path = Path(__file__).resolve().parent.parent / "static" / "js" / "upcycling-request-form.js"
+        script = script_path.read_text(encoding="utf-8")
+        for field_name, sync_function in (
+            ("fabricPhotoField", "syncSelectedFabricFiles"),
+            ("referencePhotoField", "syncSelectedReferenceFiles"),
+        ):
+            with self.subTest(field=field_name):
+                handler = script.split(
+                    f'{field_name}?.addEventListener("change", () => {{', 1
+                )[1].split("\n    });", 1)[0]
+                invalid_file_guard = handler.split(
+                    "if (!newlyPickedPhotos.length)", 1
+                )[1].split("\n\n", 1)[0]
+                self.assertIn(f"{sync_function}();", invalid_file_guard)
+                self.assertIn("return;", invalid_file_guard)
 
     def test_admin_dashboard_requires_staff_access(self):
         self.client.force_login(self.user)

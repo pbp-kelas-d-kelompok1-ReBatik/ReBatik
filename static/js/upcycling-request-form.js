@@ -165,7 +165,10 @@ const initializeUpcyclingForm = () => {
     fabricPhotoField?.addEventListener("change", () => {
         const newlyPickedPhotos = Array.from(fabricPhotoField.files)
             .filter((photo) => photo.type.startsWith("image/"));
-        if (!newlyPickedPhotos.length) return;
+        if (!newlyPickedPhotos.length) {
+            syncSelectedFabricFiles();
+            return;
+        }
 
         const isAlreadySelected = (candidate) => selectedFabricPhotos.some((photo) => (
             photo.name === candidate.name
@@ -260,7 +263,10 @@ const initializeUpcyclingForm = () => {
     referencePhotoField?.addEventListener("change", () => {
         const newlyPickedPhotos = Array.from(referencePhotoField.files)
             .filter((photo) => photo.type.startsWith("image/"));
-        if (!newlyPickedPhotos.length) return;
+        if (!newlyPickedPhotos.length) {
+            syncSelectedReferenceFiles();
+            return;
+        }
 
         const isAlreadySelected = (candidate) => selectedReferencePhotos.some((photo) => (
             photo.name === candidate.name
