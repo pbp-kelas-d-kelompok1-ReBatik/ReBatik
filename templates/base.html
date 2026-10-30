@@ -178,50 +178,50 @@
                             <li>
                                 <a href="{% url 'profiles:overview' %}"
                                    {% if app == 'profiles' %}class="is-active"{% endif %}>
-                                    Profile ({{ user.username }})
+                                    <span class="rb-menu-icon">♙</span><span>Profile ({{ user.username }})</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="{% url 'rewards:history' %}">
-                                    Riwayat
+                                    <span class="rb-menu-icon">◷</span><span>Riwayat</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="{% url 'marketplace:home' %}">
-                                    Marketplace
+                                    <span class="rb-menu-icon">▧</span><span>Marketplace</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="{% url 'rewards:overview' %}">
-                                    Points and Rewards
+                                    <span class="rb-menu-icon">🎁</span><span>Points and Rewards</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="{% url 'donasi:landing' %}">
-                                    Donasi Kain
+                                    <span class="rb-menu-icon">♡</span><span>Donasi Kain</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="{% url 'marketplace:dropoff' %}">
-                                    Drop-off Point
+                                    <span class="rb-menu-icon">⌖</span><span>Drop-off Point</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="{% url 'upcycling:request_list' %}">
-                                    Upcycling Request
+                                    <span class="rb-menu-icon">♻</span><span>Upcycling Request</span>
                                 </a>
                             </li>
 
                             {% if can_open_artisan_dashboard %}
                             <li>
                                 <a href="{% url 'upcycling:artisan_dashboard' %}">
-                                    Dashboard Artisan
+                                    <span class="rb-menu-icon">♧</span><span>Dashboard Artisan</span>
                                 </a>
                             </li>
                             {% endif %}
@@ -229,32 +229,32 @@
                             {% if user.is_staff %}
                             <li>
                                 <a href="{% url 'upcycling:admin_dashboard' %}">
-                                    Dashboard Admin
+                                    <span class="rb-menu-icon">▤</span><span>Dashboard Admin</span>
                                 </a>
                             </li>
                             {% endif %}
 
                             <li>
                                 <a href="{% url 'batik_custom:show_home' %}">
-                                    Custom Batik
+                                    <span class="rb-menu-icon">✎</span><span>Custom Batik</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="{% url 'impact_tracker:dashboard' %}">
-                                    Impact Tracker
+                                    <span class="rb-menu-icon">♧</span><span>Impact Tracker</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="{% url 'landing:index' %}">
-                                    Landing Page
+                                    <span class="rb-menu-icon">⌂</span><span>Landing Page</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="{% url 'profiles:settings' %}">
-                                    ⚙️ Pengaturan
+                                    <span class="rb-menu-icon">⚙</span><span>Pengaturan</span>
                                 </a>
                             </li>
                         </ul>

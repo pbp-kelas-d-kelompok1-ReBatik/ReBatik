@@ -1,9 +1,58 @@
-<section class="notification-panel">
-  <header><strong>Notifikasi</strong><span>{{ unread_count }} belum dibaca</span></header>
-  {% for item in notifications %}
-    <article class="notification-item {% if not item.is_read %}is-unread{% endif %}">
-      <div><strong>{{ item.title }}</strong><p>{{ item.message }}</p><time>{{ item.created_at|date:"d M Y, H:i" }} WIB</time></div>
-      {% if not item.is_read %}<form method="post" action="{% url 'main:notification_mark_read' item.pk %}">{% csrf_token %}<button type="submit" aria-label="Tandai telah dibaca">✓</button></form>{% endif %}
-    </article>
-  {% empty %}<p class="notification-empty">Belum ada notifikasi.</p>{% endfor %}
+<section class="notification-card" aria-label="Daftar notifikasi">
+    <header class="notification-card__header">
+        <strong>Notifikasi</strong>
+        <div class="notification-card__actions">
+            {% if unread_count %}
+            <form method="post"
+                  action="{% url 'main:notification_mark_all_read' %}"
+                  hx-post="{% url 'main:notification_mark_all_read' %}"
+                  hx-target="#rbNotificationPanel"
+                  hx-swap="innerHTML">
+                {% csrf_token %}
+                <button class="notification-mark-all" type="submit">Tandai semua dibaca</button>
+            </form>
+            {% endif %}
+            <a class="notification-settings" href="{% url 'profiles:settings' %}" aria-label="Pengaturan notifikasi" title="Pengaturan notifikasi">⚙</a>
+        </div>
+    </header>
+
+    <div class="notification-card__list">
+        {% for item in notifications %}
+        <article class="notification-item {% if not item.is_read %}is-unread{% endif %}">
+            <span class="notification-item__icon" aria-hidden="true">
+                {% if item.notification_type == "order_created" or item.notification_type == "order_updated" or item.notification_type == "order_cancelled" %}📦
+                {% elif item.notification_type == "login" or item.notification_type == "logout" %}⚙
+                {% elif item.notification_type == "donation_updated" %}♻
+                {% elif item.notification_type == "upcycling_updated" %}♻
+                {% elif item.notification_type == "points" %}🎁
+                {% else %}🏷{% endif %}
+            </span>
+            <div class="notification-item__body">
+                <strong>{{ item.title }}</strong>
+                <p>{{ item.message }}</p>
+            </div>
+            <div class="notification-item__meta">
+                <time datetime="{{ item.created_at|date:'c' }}">{{ item.created_at|timesince }} lalu</time>
+                {% if not item.is_read %}
+                <form method="post"
+                      action="{% url 'main:notification_mark_read' item.pk %}"
+                      hx-post="{% url 'main:notification_mark_read' item.pk %}"
+                      hx-target="#rbNotificationPanel"
+                      hx-swap="innerHTML">
+                    {% csrf_token %}
+                    <button type="submit" aria-label="Tandai sudah dibaca" title="Tandai sudah dibaca"><span></span></button>
+                </form>
+                {% endif %}
+            </div>
+        </article>
+        {% empty %}
+        <div class="notification-empty">
+            <span aria-hidden="true">♧</span>
+            <strong>Belum ada notifikasi</strong>
+            <p>Aktivitas pesanan dan akun kamu akan muncul di sini.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <a class="notification-see-all" href="{% url 'main:notifications' %}">Lihat semua notifikasi <span aria-hidden="true">→</span></a>
 </section>
