@@ -6,12 +6,12 @@ from django.db.models import Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
+from django.db.models import Q, Sum
+from batik_custom.models import BatikOrder
+from .utils import get_user_role
 from donasi.models import DonasiKain
 from rewards.models import PointTransaction
-from rewards.services import (
-    get_available_points,
-    get_lifetime_points,
-)
+from rewards.services import (get_available_points, get_lifetime_points,)
 from upcycling.models import UpcyclingRequest
 
 from .forms import UserProfileForm
@@ -23,48 +23,55 @@ def is_htmx_request(request):
 
 
 @login_required
+@login_required
 def overview(request):
-    profile = UserProfile.objects.filter(
-        user=request.user
-    ).first()
+    role = get_user_role(request.user)
+    profile = UserProfile.objects.filter(user=request.user).first()
 
-    # Semua data aktivitas dibatasi pada akun yang sedang login.
-    donations = DonasiKain.objects.filter(
-        user=request.user
+    common_context = {
+        "role": role,
+        "profile": profile,
+    }
+
+    # ADMIN DASHBOARD
+    if role == "admin":
+        return render(request, "profiles/admin_overview.html", common_context,)
+
+    # ARTISAN
+    if role == "artisan":
+        return render(request,"profiles/artisan_overview.html", common_context,)
+
+    # ECO-MEMBER
+
+    upcycling_requests = UpcyclingRequest.objects.filter(user=request.user)
+
+    transactions = PointTransaction.objects.filter(user=request.user)
+
+    donation_transactions = transactions.filter(kind=PointTransaction.Kind.DONATION)
+
+    saved_weight_kg = donation_transactions.aggregate(total=Sum("weight_kg"))["total"] or Decimal("0")
+
+    orders = (
+        BatikOrder.objects
+        .filter(user=request.user)
+        .select_related(
+            "motif",
+            "palette",
+            "design_option",
+        )
     )
-
-    upcycling_requests = UpcyclingRequest.objects.filter(
-        user=request.user
-    )
-
-    transactions = PointTransaction.objects.filter(
-        user=request.user
-    )
-
-    donation_transactions = transactions.filter(
-        kind=PointTransaction.Kind.DONATION
-    )
-
-    saved_weight_kg = donation_transactions.aggregate(
-        total=Sum("weight_kg")
-    )["total"]
-
-    if saved_weight_kg is None:
-        saved_weight_kg = Decimal("0")
 
     context = {
-        "profile": profile,
-        "donation_count": donations.count(),
+        **common_context,
         "upcycling_count": upcycling_requests.count(),
-        "completed_upcycling_count": upcycling_requests.filter(
-            status=UpcyclingRequest.Status.COMPLETED
-        ).count(),
+        "completed_upcycling_count": (upcycling_requests.filter(status=UpcyclingRequest.Status.COMPLETED).count()),
         "available_points": get_available_points(request.user),
         "lifetime_points": get_lifetime_points(request.user),
         "saved_weight_kg": saved_weight_kg,
-        "recent_donations": donations[:3],
         "recent_upcycling": upcycling_requests[:3],
         "recent_transactions": transactions[:5],
+        "order_count": orders.count(),
+        "recent_orders": orders[:3],
     }
 
     return render(
@@ -188,8 +195,6 @@ def delete_profile(request):
 
 @login_required
 def order_history(request):
-    # Marketplace belum mempunyai model pesanan.
-    # Jangan membuat data pesanan palsu.
     return render(
         request,
         "profiles/orders.html",
