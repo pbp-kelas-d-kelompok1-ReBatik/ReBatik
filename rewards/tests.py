@@ -30,9 +30,21 @@ class VoucherAdminPresentationTests(SimpleTestCase):
         form = RewardAdminForm()
 
         self.assertEqual(form["reward_type"].value(), Reward.Type.VOUCHER)
+        self.assertEqual(
+            [value for value, _label in form.fields["reward_type"].choices],
+            [Reward.Type.VOUCHER],
+        )
         self.assertEqual(form.fields["name"].label, "Nama voucher")
         self.assertIn("nama singkat", form.fields["name"].help_text)
         self.assertEqual(form.fields["image"].label, "Gambar voucher")
+
+    def test_legacy_physical_rewards_keep_their_existing_type_visible_for_cleanup(self):
+        form = RewardAdminForm(instance=Reward(pk=1, reward_type=Reward.Type.PHYSICAL))
+
+        self.assertIn(
+            Reward.Type.PHYSICAL,
+            [value for value, _label in form.fields["reward_type"].choices],
+        )
 
     def test_reward_admin_groups_fields_and_shows_catalog_images(self):
         model_admin = RewardAdmin(Reward, admin.site)
