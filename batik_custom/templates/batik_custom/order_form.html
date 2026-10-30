@@ -27,10 +27,8 @@
             <h2>Detail Desain</h2>
 
             <div class="order-motif">
-                {% if motif.static_image_path %}
-                    <img src="{% static motif.static_image_path %}" alt="{{ motif.name }}">
-                {% elif motif.image %}
-                    <img src="{{ motif.image.url }}" alt="{{ motif.name }}">
+                {% if motif.image_url %}
+                    <img src="{{ motif.image_url }}" alt="{{ motif.name }}">
                 {% else %}
                     <div class="order-image-placeholder">ReBatik</div>
                 {% endif %}

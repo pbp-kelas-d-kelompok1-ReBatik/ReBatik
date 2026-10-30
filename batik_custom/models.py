@@ -1,9 +1,43 @@
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator
+from django.templatetags.static import static
 
 
-class StyleOptions(models.Model):
+def resolve_image_url(image_field):
+    """Kembalikan URL gambar yang benar untuk semua jenis nilai ImageField.
+
+    - ``img/...``        -> file katalog di folder static (disajikan WhiteNoise)
+    - ``http(s)://...``  -> dipakai apa adanya
+    - lainnya            -> upload admin lewat storage (Cloudinary / media)
+    """
+    name = getattr(image_field, "name", "") or ""
+    if not name:
+        return ""
+    if name.startswith(("http://", "https://", "//")):
+        return name
+    if name.startswith("img/"):
+        return static(name)
+    try:
+        return image_field.url
+    except ValueError:
+        return ""
+
+
+class ImageUrlMixin:
+    @property
+    def static_image_path(self):
+        # Dipertahankan agar kode lama tetap jalan.
+        if self.image and self.image.name.startswith("img/"):
+            return self.image.name
+        return ""
+
+    @property
+    def image_url(self):
+        return resolve_image_url(self.image)
+
+
+class StyleOptions(ImageUrlMixin, models.Model):
     GENDER_CHOICES = [
         ("women", "Women"),
         ("men", "Men"),
@@ -25,17 +59,11 @@ class StyleOptions(models.Model):
     )
     is_active = models.BooleanField(default=True)
 
-    @property
-    def static_image_path(self):
-        if self.image and self.image.name.startswith("img/catalog/"):
-            return self.image.name
-        return ""
-
     def __str__(self):
         return f"{self.name} ({self.get_gender_display()})"
 
 
-class ColorPalette(models.Model):
+class ColorPalette(ImageUrlMixin, models.Model):
     name = models.CharField(max_length=70, unique=True)
     description = models.CharField(max_length=150, blank=True)
     colors = models.JSONField(default=list)
@@ -44,12 +72,6 @@ class ColorPalette(models.Model):
         upload_to="colorpalette/",
         blank=True,
     )
-
-    @property
-    def static_image_path(self):
-        if self.image and self.image.name.startswith("img/catalog/"):
-            return self.image.name
-        return ""
 
     def __str__(self):
         return self.name
@@ -90,7 +112,7 @@ class FashionPreference(models.Model):
         return self.name
 
 
-class RecommendedMotif(models.Model):
+class RecommendedMotif(ImageUrlMixin, models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True)
     image = models.ImageField(
@@ -119,12 +141,6 @@ class RecommendedMotif(models.Model):
         ordering = ["name"]
         verbose_name = "Recommended motif"
         verbose_name_plural = "Recommended motifs"
-
-    @property
-    def static_image_path(self):
-        if self.image and self.image.name.startswith("img/catalog/"):
-            return self.image.name
-        return ""
 
     def __str__(self):
         return self.name

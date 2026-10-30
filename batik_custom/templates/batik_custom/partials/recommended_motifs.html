@@ -12,10 +12,8 @@
         {% for motif in motifs %}
         <article class="motif-card">
             <div class="motif-image-wrapper">
-                {% if motif.static_image_path %}
-                <img src="{% static motif.static_image_path %}" alt="{{ motif.name }}" loading="lazy">
-                {% elif motif.image %}
-                <img src="{{ motif.image.url }}" alt="{{ motif.name }}" loading="lazy">
+                {% if motif.image_url %}
+                <img src="{{ motif.image_url }}" alt="{{ motif.name }}" loading="lazy">
                 {% else %}
                 <div class="motif-placeholder">ReBatik</div>
                 {% endif %}
@@ -32,9 +30,8 @@
                 <p class="motif-description">{{ motif.description }}</p>
 
                 <button type="button" class="motif-select" data-id="{{ motif.id }}" data-name="{{ motif.name }}"
-                    data-description="{{ motif.description }}" {% if motif.static_image_path %}
-                    data-image="{% static motif.static_image_path %}" {% elif motif.image %}
-                    data-image="{{ motif.image.url }}" {% else %} data-image="" {% endif %}>
+                    data-description="{{ motif.description }}"
+                    data-image="{{ motif.image_url }}">
                     Pilih Motif <span aria-hidden="true">→</span>
                 </button>
             </div>

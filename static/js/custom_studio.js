@@ -21,21 +21,38 @@ document.addEventListener("DOMContentLoaded", function () {
     const saveButton = get("btn-save");
     const generateButton = get("btn-generate");
 
-    const swatches = [
-        ...document.querySelectorAll("#swatches button[data-color]")
-    ];
-
     const user = app.dataset.userName || "Sahabat ReBatik";
     const style = app.dataset.styleName || "Personal Style";
     const palette = app.dataset.paletteName || "My Palette";
     const motif = app.dataset.motifName || "Batik Nusantara";
 
+    const defaultColors = ["#874a29", "#c99a52", "#716743", "#f1dfc4", "#542f1c"];
     const colors = (app.dataset.paletteColors || "")
         .split(",")
         .map(color => color.trim())
         .filter(Boolean);
 
-    let selectedColor = swatches[0]?.dataset.color || "#874a29";
+    // Keep the color picker usable even when no palette was passed from Django.
+    const swatchesContainer = get("swatches");
+    if (swatchesContainer && !swatchesContainer.querySelector("button[data-color]")) {
+        const fallbackColors = colors.length ? colors : defaultColors;
+        swatchesContainer.replaceChildren();
+        fallbackColors.forEach((color, index) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = `cs-swatch${index === 0 ? " active" : ""}`;
+            button.style.backgroundColor = color;
+            button.dataset.color = color;
+            button.setAttribute("aria-label", `Select color ${color}`);
+            button.setAttribute("aria-pressed", String(index === 0));
+            swatchesContainer.appendChild(button);
+        });
+    }
+
+    const swatches = [...document.querySelectorAll("#swatches button[data-color]")];
+    let selectedColor = swatches[0]?.dataset.color || defaultColors[0];
+    // Motif tetap memakai warna asli sampai pengguna memilih swatch.
+    let colorApplied = false;
 
     const orderButton = get("btn-order-batik");
     if (orderButton) {
@@ -55,6 +72,51 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     let imageReady = false;
+    let tintedCanvas = null;
+    let tintedColor = null;
+
+    // Recolor dark motif pixels while keeping near-white/transparent areas intact.
+    function getTintedMotif() {
+        if (!imageReady || !colorApplied) return motifImage;
+        if (tintedCanvas && tintedColor === selectedColor) return tintedCanvas;
+
+        const source = document.createElement("canvas");
+        source.width = motifImage.naturalWidth;
+        source.height = motifImage.naturalHeight;
+        const sourceCtx = source.getContext("2d", { willReadFrequently: true });
+        sourceCtx.drawImage(motifImage, 0, 0);
+
+        try {
+            const imageData = sourceCtx.getImageData(0, 0, source.width, source.height);
+            const data = imageData.data;
+            let hex = selectedColor || defaultColors[0];
+            if (/^#[0-9a-f]{3}$/i.test(hex)) {
+                hex = "#" + hex.slice(1).split("").map(ch => ch + ch).join("");
+            }
+            if (!/^#[0-9a-f]{6}$/i.test(hex)) hex = defaultColors[0];
+            const red = parseInt(hex.slice(1, 3), 16);
+            const green = parseInt(hex.slice(3, 5), 16);
+            const blue = parseInt(hex.slice(5, 7), 16);
+
+            for (let i = 0; i < data.length; i += 4) {
+                if (data[i + 3] === 0) continue;
+                const luminance = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+                if (luminance > 242) continue;
+                const shade = Math.max(0.22, Math.min(1, luminance / 255));
+                data[i] = Math.round(red * shade);
+                data[i + 1] = Math.round(green * shade);
+                data[i + 2] = Math.round(blue * shade);
+            }
+            sourceCtx.putImageData(imageData, 0, 0);
+            tintedCanvas = source;
+            tintedColor = selectedColor;
+            return tintedCanvas;
+        } catch (error) {
+            console.error("Gagal mewarnai motif:", error);
+            message("Warna motif gagal diterapkan. Periksa Console browser.");
+            return motifImage;
+        }
+    }
 
     function message(text) {
         if (status) status.textContent = text;
@@ -92,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 ctx.save();
                 ctx.translate(w / 2, h / 2);
                 ctx.rotate(angle);
-                ctx.drawImage(motifImage, -tw / 2, -th / 2, tw, th);
+                ctx.drawImage(getTintedMotif(), -tw / 2, -th / 2, tw, th);
                 ctx.restore();
             } else {
                 const tw = Math.max(70, 230 * s);
@@ -120,7 +182,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             ctx.scale(-1, 1);
                         }
 
-                        ctx.drawImage(motifImage, -tw / 2, -th / 2, tw, th);
+                        ctx.drawImage(getTintedMotif(), -tw / 2, -th / 2, tw, th);
                         ctx.restore();
                     }
 
@@ -288,8 +350,9 @@ document.addEventListener("DOMContentLoaded", function () {
         c.clip();
 
         if (imageReady) {
-            const sourceW = motifImage.naturalWidth;
-            const sourceH = motifImage.naturalHeight;
+            const coloredMotif = getTintedMotif();
+            const sourceW = coloredMotif.width || motifImage.naturalWidth;
+            const sourceH = coloredMotif.height || motifImage.naturalHeight;
 
             const sourceRatio = sourceW / sourceH;
             const targetRatio = targetW / targetH;
@@ -308,7 +371,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             c.drawImage(
-                motifImage,
+                coloredMotif,
                 sx, sy, sw, sh,
                 targetX, targetY, targetW, targetH
             );
@@ -334,7 +397,6 @@ document.addEventListener("DOMContentLoaded", function () {
         rounded(120, 940, 860, 168, 22, "#fbf3e6", "#ead9bf", 1.5);
         flower(195, 1022, 32, brown);
 
-        fitText(`${user}, style ${style}`, 250, 988, 690, "bold 27px Georgia", ink);
         fitText(`${user}, style ${style}`, 250, 988, 690, "bold 27px Georgia", ink);
         fitText(`dan color palette ${palette}`, 250, 1031, 690, "26px Georgia", ink);
 
@@ -367,7 +429,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (motifLines.length === 1) {
             c.fillStyle = muted;
             c.font = "italic 23px Georgia";
-            c.fillText("Your style. Your colors. Your batik.", 250, 2000);
+            c.fillText("Your style. Your colors. Your batik.", 250, 1100);
         }
         // Chip style
         rounded(120, 1125, 230, 62, 31, cream, "#e5cfad", 1.5);
@@ -853,8 +915,11 @@ document.addEventListener("DOMContentLoaded", function () {
     swatches.forEach(button => {
         button.addEventListener("click", () => {
             selectedColor = button.dataset.color || selectedColor;
+            colorApplied = true;
+            tintedCanvas = null;
+            tintedColor = null;
             draw();
-            message("Warna desain diperbarui.");
+            message("Warna motif berhasil diperbarui.");
         });
     });
 
@@ -885,7 +950,10 @@ document.addEventListener("DOMContentLoaded", function () {
             if (tint) tint.value = "plain";
             if (rotation) rotation.value = 0;
 
-            selectedColor = swatches[0]?.dataset.color || "#874a29";
+            selectedColor = swatches[0]?.dataset.color || defaultColors[0];
+            colorApplied = false;
+            tintedCanvas = null;
+            tintedColor = null;
 
             draw();
             message("Pengaturan berhasil direset.");
