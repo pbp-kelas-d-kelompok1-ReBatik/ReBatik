@@ -31,6 +31,7 @@ urlpatterns = [
     path('batik_custom/', include('batik_custom.urls')),
     path('impact-tracker/', include('impact_tracker.urls')),
 
+
     # Serve uploaded media files on PWS
     re_path(
         r'^media/(?P<path>.*)$',
