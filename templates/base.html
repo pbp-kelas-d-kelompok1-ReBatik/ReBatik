@@ -200,16 +200,28 @@
 
                             {% if user.is_authenticated %}
                             <li>
-                                <a href="{% url 'marketplace:order_list' %}">
-                                    Pesanan Saya
+                                <a href="/marketplace/orders/">
+                                    <span class="rb-menu-icon">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <rect x="5" y="4" width="14" height="17" rx="2"/>
+                                            <path d="M9 4.5h6M9 10h6M9 14h6M9 18h4"/>
+                                        </svg>
+                                    </span>
+                                    <span>Pesanan Saya</span>
                                 </a>
                             </li>
                             {% endif %}
 
                             {% if user.is_staff or can_open_artisan_dashboard %}
                             <li>
-                                <a href="{% url 'marketplace:manage_product_list' %}">
-                                    Kelola Produk
+                                <a href="/marketplace/manage/">
+                                    <span class="rb-menu-icon">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="m12 3 9 5-9 5-9-5 9-5Z"/>
+                                            <path d="m3 8v9l9 5 9-5V8M12 13v9"/>
+                                        </svg>
+                                    </span>
+                                    <span>Kelola Produk</span>
                                 </a>
                             </li>
                             {% endif %}
@@ -446,6 +458,12 @@
                 {% if user.is_staff %}
                 <a href="{% url 'upcycling:admin_dashboard' %}">
                     Dashboard Admin{% include "_nav_chevron.html" %}
+                </a>
+                {% endif %}
+
+                {% if user.is_staff and perms.rewards.view_reward or user.is_staff and perms.rewards.add_reward %}
+                <a href="{% url 'rewards:admin_vouchers' %}">
+                    Kelola Voucher{% include "_nav_chevron.html" %}
                 </a>
                 {% endif %}
 

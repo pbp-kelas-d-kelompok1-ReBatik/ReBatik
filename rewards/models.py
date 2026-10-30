@@ -10,15 +10,19 @@ class Reward(models.Model):
         PHYSICAL = "PHYSICAL", "Barang fisik"
 
     name = models.CharField(max_length=120)
+    code_prefix = models.CharField(max_length=20, default="RB")
     description = models.TextField(blank=True)
     reward_type = models.CharField(max_length=12, choices=Type.choices)
     points_required = models.PositiveIntegerField(validators=[MinValueValidator(1)])
     stock = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
     discount_value = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    image = models.ImageField(upload_to="rewards/vouchers/", blank=True)
 
     class Meta:
         ordering = ["points_required", "name"]
+        verbose_name = "voucher"
+        verbose_name_plural = "katalog voucher"
 
     def __str__(self):
         return self.name
@@ -41,6 +45,12 @@ class RewardRedemption(models.Model):
     )
     reward = models.ForeignKey(Reward, on_delete=models.PROTECT, related_name="redemptions")
     points_spent = models.PositiveIntegerField()
+    discount_value_snapshot = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+    )
     status = models.CharField(max_length=12, choices=Status.choices, default=Status.PENDING)
     voucher_code = models.CharField(max_length=40, unique=True, null=True, blank=True)
     voucher_status = models.CharField(

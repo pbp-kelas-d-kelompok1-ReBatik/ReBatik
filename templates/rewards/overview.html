@@ -16,10 +16,17 @@
     <section class="rewards-hero" aria-labelledby="rewards-title">
         <p class="rewards-eyebrow">Upcycle · Culture · Value</p>
         <h1 id="rewards-title">Points and Rewards</h1>
-        <p>Setiap kain yang Anda donasikan menjadi poin untuk hadiah.</p>
+        <p>Donasikan kain dan selesaikan upcycling untuk menukar poin dengan voucher Marketplace.</p>
     </section>
 
     <section class="rewards-panel" id="points-overview" aria-label="Ringkasan poin dan riwayat terbaru">
+        {% if messages %}
+            <div class="my-4 space-y-2">
+                {% for message in messages %}
+                    {% if message.tags != "success" %}<p class="rounded-lg border p-3" role="status">{{ message }}</p>{% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
         <section aria-labelledby="points-heading">
             <div class="rewards-section-heading">
                 <h2 id="points-heading">Poin Saya</h2>
@@ -28,10 +35,12 @@
 
             <div class="points-card">
                 <div class="points-card-content">
-                    <p class="points-label">POIN TERSEDIA</p>
-                    <p class="points-value">{{ available_points|intcomma_id }}</p>
-                    <span class="points-unit">poin</span>
-                    <span class="points-level">{{ current_level }}</span>
+                    <div class="points-card-summary">
+                        <p class="points-label">POIN TERSEDIA</p>
+                        <p class="points-value">{{ available_points|intcomma_id }}</p>
+                        <span class="points-unit">poin</span>
+                        <span class="points-level">{{ current_level }}</span>
+                    </div>
                     <div class="level-ladder-section" aria-label="Progres dan jenjang level">
                         {% if next_level %}
                             <div class="level-progress-copy">
@@ -204,7 +213,7 @@
 
             <div class="donate-fabric-action">
                 <a
-                    href="{% url 'marketplace:dropoff' %}"
+                    href="{% url 'donasi:create' %}"
                     class="primary-action-button min-h-12 px-6 py-3 font-semibold
                            focus-visible:outline focus-visible:outline-offset-2
                            focus-visible:outline-[var(--brown)]"
@@ -212,11 +221,56 @@
             </div>
         </section>
 
+        <section class="recent-history" aria-labelledby="voucher-catalog-heading">
+            <div class="rewards-section-heading">
+                <h2 id="voucher-catalog-heading">Katalog Voucher</h2>
+                <div class="flex flex-wrap gap-4">
+                    <a class="history-all-link" href="{% url 'rewards:catalog' %}">Selengkapnya →</a>
+                    <a class="history-all-link" href="{% url 'rewards:vouchers' %}">Voucher saya →</a>
+                </div>
+            </div>
+            <div class="voucher-card-grid">
+                {% for voucher in featured_vouchers %}
+                    <article class="voucher-card">
+                        <div class="voucher-card-media">
+                            {% if voucher.image %}
+                                <img class="voucher-thumbnail" src="{{ voucher.image.url }}" alt="Gambar {{ voucher.name }}">
+                            {% else %}
+                                <div class="voucher-card-placeholder" aria-label="Gambar voucher belum tersedia">ReBatik Voucher</div>
+                            {% endif %}
+                        </div>
+                        <h3 class="voucher-card-title">{{ voucher.name }}</h3>
+                        <p class="voucher-card-value">Diskon Rp{{ voucher.discount_value|intcomma_id }}</p>
+                        <div class="voucher-card-details">
+                            <span>{{ voucher.points_required|intcomma_id }} poin</span>
+                            <span>Kuota {{ voucher.stock }}</span>
+                        </div>
+                        {% if voucher.description %}<p class="voucher-card-description">{{ voucher.description }}</p>{% endif %}
+                        <form
+                            method="post"
+                            action="{% url 'rewards:redeem' voucher.id %}"
+                            class="space-y-2 voucher-redemption-trigger"
+                            data-voucher-name="{{ voucher.name }}"
+                            data-voucher-description="{{ voucher.description }}"
+                            data-voucher-discount="Rp{{ voucher.discount_value|intcomma_id }}"
+                            data-voucher-points="{{ voucher.points_required }}"
+                            data-voucher-balance="{{ available_points }}"
+                        >
+                            {% csrf_token %}
+                            <input type="hidden" name="return_to" value="overview">
+                            <button type="submit" {% if available_points < voucher.points_required %}disabled{% endif %} class="primary-action-button min-h-11 w-full px-4 py-2 font-bold disabled:cursor-not-allowed disabled:opacity-50">Tukar poin</button>
+                        </form>
+                    </article>
+                {% empty %}
+                    <p class="history-empty">Belum ada voucher aktif yang tersedia.</p>
+                {% endfor %}
+            </div>
+        </section>
+
         <section class="recent-history" aria-labelledby="recent-history-heading">
             <div class="rewards-section-heading">
                 <h2 id="recent-history-heading">Riwayat Poin</h2>
                 <div class="flex flex-wrap gap-4">
-                    <a class="history-all-link" href="{% url 'rewards:catalog' %}">Katalog reward →</a>
                     <a class="history-all-link" href="{% url 'rewards:history' %}">Lihat semua →</a>
                 </div>
             </div>
@@ -238,4 +292,10 @@
         </section>
     </section>
 </div>
+{% include "rewards/_voucher_confirmation_modal.html" %}
+{% include "rewards/_voucher_success_modal.html" %}
 {% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'js/rewards-vouchers.js' %}" defer></script>
+{% endblock scripts %}

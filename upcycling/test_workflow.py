@@ -591,7 +591,7 @@ class UpcyclingWorkflowTests(TestCase):
         staff = User.objects.create_user(username="header-contrast-admin", is_staff=True)
         self.client.force_login(staff)
         responses_and_titles.append(
-            (self.client.get(reverse("upcycling:admin_dashboard")), "Dashboard Admin")
+            (self.client.get(reverse("upcycling:admin_dashboard")), "Penugasan Upcycling")
         )
 
         for response, title in responses_and_titles:
@@ -827,7 +827,7 @@ class UpcyclingWorkflowTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, request_obj.reference_code)
-        self.assertContains(response, "Dashboard Admin")
+        self.assertContains(response, "Penugasan Upcycling")
         self.assertContains(response, self.artisan_user.username)
         self.assertContains(response, 'hx-target="#admin-dashboard-live"')
         self.assertContains(response, 'hx-select="#admin-dashboard-live"')
