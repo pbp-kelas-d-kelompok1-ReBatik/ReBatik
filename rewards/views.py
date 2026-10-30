@@ -5,7 +5,7 @@ from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.contrib import messages
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import redirect
 from django.db.models import Sum
 from django.shortcuts import render
 
@@ -105,41 +105,87 @@ def transaction_history(request):
 
 @login_required
 def reward_catalog(request):
-    """Show active, in-stock rewards, the user's balance, and five recent redemptions."""
-    redemptions = RewardRedemption.objects.filter(user=request.user).select_related("reward")[:5]
+    """Show active vouchers and a short preview of the user's recent redemptions."""
+    voucher_redemptions = RewardRedemption.objects.filter(
+        user=request.user,
+        reward__reward_type=Reward.Type.VOUCHER,
+        voucher_code__isnull=False,
+    ).select_related("reward")[:5]
     return render(
         request,
         "rewards/catalog.html",
         {
-            "rewards": Reward.objects.filter(is_active=True, stock__gt=0),
+            "rewards": Reward.objects.filter(
+                reward_type=Reward.Type.VOUCHER,
+                is_active=True,
+                stock__gt=0,
+            ),
             "available_points": get_available_points(request.user),
-            "recent_redemptions": redemptions,
+            "recent_redemptions": voucher_redemptions,
         },
     )
 
 
 @login_required
-def redeem_reward_view(request, reward_id):
-    """Redeem a reward on POST and redirect to the catalog with a result message.
+def my_vouchers(request):
+    """Show every voucher redemption belonging to the authenticated user."""
+    vouchers = (
+        RewardRedemption.objects.filter(
+            user=request.user,
+            reward__reward_type=Reward.Type.VOUCHER,
+            voucher_code__isnull=False,
+        )
+        .select_related("reward")
+        .order_by("-redeemed_at", "-pk")
+    )
+    return render(request, "rewards/vouchers.html", {"vouchers": vouchers})
 
-    Missing rewards and redemption ValueErrors are presented as error messages.
-    """
+
+@login_required
+def redeem_reward_view(request, reward_id):
+    """Confirm a voucher redemption, then atomically debit points and quota."""
     if request.method != "POST":
         return redirect("rewards:catalog")
-    shipping_address = request.POST.get("shipping_address", "")
-    try:
-        redemption = redeem_reward(
-            request.user,
-            reward_id,
-            shipping_address=shipping_address,
+
+    if request.POST.get("confirm") != "yes":
+        try:
+            reward = Reward.objects.get(
+                pk=reward_id,
+                reward_type=Reward.Type.VOUCHER,
+                is_active=True,
+            )
+        except Reward.DoesNotExist:
+            messages.error(request, "Voucher tidak tersedia.")
+            return redirect("rewards:catalog")
+
+        available_points = get_available_points(request.user)
+        if reward.stock < 1:
+            messages.error(request, "Voucher sedang habis.")
+            return redirect("rewards:catalog")
+        if reward.discount_value is None or reward.discount_value <= 0:
+            messages.error(request, "Voucher belum dikonfigurasi dengan benar.")
+            return redirect("rewards:catalog")
+        if available_points < reward.points_required:
+            messages.error(request, "Poin Anda belum mencukupi.")
+            return redirect("rewards:catalog")
+
+        return render(
+            request,
+            "rewards/confirm_redemption.html",
+            {
+                "reward": reward,
+                "available_points": available_points,
+                "remaining_points": available_points - reward.points_required,
+            },
         )
+
+    try:
+        redemption = redeem_reward(request.user, reward_id)
     except Reward.DoesNotExist:
-        messages.error(request, "Reward tidak tersedia.")
+        messages.error(request, "Voucher tidak tersedia.")
     except (InsufficientPoints, RewardUnavailable, ValueError) as exc:
         messages.error(request, str(exc))
     else:
-        if redemption.voucher_code:
-            messages.success(request, f"Penukaran berhasil. Kode voucher Anda: {redemption.voucher_code}")
-        else:
-            messages.success(request, "Penukaran berhasil. Reward fisik menunggu diproses admin.")
+        messages.success(request, f"Voucher berhasil ditukar: {redemption.voucher_code}")
+        return redirect("rewards:vouchers")
     return redirect("rewards:catalog")

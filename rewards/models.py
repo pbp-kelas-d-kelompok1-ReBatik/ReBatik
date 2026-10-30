@@ -41,6 +41,12 @@ class RewardRedemption(models.Model):
     )
     reward = models.ForeignKey(Reward, on_delete=models.PROTECT, related_name="redemptions")
     points_spent = models.PositiveIntegerField()
+    discount_value_snapshot = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+    )
     status = models.CharField(max_length=12, choices=Status.choices, default=Status.PENDING)
     voucher_code = models.CharField(max_length=40, unique=True, null=True, blank=True)
     voucher_status = models.CharField(

@@ -21,7 +21,6 @@ User = get_user_model()
 class RewardWorkflowTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="member", password="pw")
-        self.admin = User.objects.create_superuser("admin", "admin@example.com", "pw")
         PointTransaction.objects.create(
             user=self.user,
             kind=PointTransaction.Kind.UPCYCLING_COMPLETED,
@@ -87,6 +86,7 @@ class RewardWorkflowTests(TestCase):
             reward_type=Reward.Type.VOUCHER,
             points_required=500,
             stock=4,
+            discount_value="5000",
         )
 
         with self.assertRaises(InsufficientPoints):
@@ -144,6 +144,8 @@ class RewardWorkflowTests(TestCase):
             discount_value="20000",
         )
         own_redemption = redeem_reward(self.user, reward.pk)
+        reward.discount_value = Decimal("25000")
+        reward.save(update_fields=("discount_value",))
         other_user = User.objects.create_user(username="other", password="pw")
         PointTransaction.objects.create(
             user=other_user,

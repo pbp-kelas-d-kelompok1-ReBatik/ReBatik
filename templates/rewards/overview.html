@@ -16,7 +16,7 @@
     <section class="rewards-hero" aria-labelledby="rewards-title">
         <p class="rewards-eyebrow">Upcycle · Culture · Value</p>
         <h1 id="rewards-title">Points and Rewards</h1>
-        <p>Setiap kain yang Anda donasikan menjadi poin untuk hadiah.</p>
+        <p>Donasikan kain dan selesaikan upcycling untuk menukar poin dengan voucher Marketplace.</p>
     </section>
 
     <section class="rewards-panel" id="points-overview" aria-label="Ringkasan poin dan riwayat terbaru">
@@ -216,7 +216,8 @@
             <div class="rewards-section-heading">
                 <h2 id="recent-history-heading">Riwayat Poin</h2>
                 <div class="flex flex-wrap gap-4">
-                    <a class="history-all-link" href="{% url 'rewards:catalog' %}">Katalog reward →</a>
+                    <a class="history-all-link" href="{% url 'rewards:catalog' %}">Katalog voucher →</a>
+                    <a class="history-all-link" href="{% url 'rewards:vouchers' %}">Voucher saya →</a>
                     <a class="history-all-link" href="{% url 'rewards:history' %}">Lihat semua →</a>
                 </div>
             </div>
