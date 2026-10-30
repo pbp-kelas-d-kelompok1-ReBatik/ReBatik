@@ -150,6 +150,14 @@ class Order(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(MAX_ORDER_QUANTITY)],
     )
     total_price = models.PositiveIntegerField()
+    reward_redemption = models.ForeignKey(
+        "rewards.RewardRedemption",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="marketplace_orders",
+    )
+    discount_amount = models.PositiveIntegerField(default=0)
     delivery_method = models.CharField(
         max_length=10,
         choices=DELIVERY_CHOICES,
@@ -189,6 +197,10 @@ class Order(models.Model):
         """Return a short, stable public reference derived from the UUID."""
         short_id = self.pk.hex[:8].upper()
         return f"MP-{short_id}"
+
+    @property
+    def subtotal_price(self):
+        return self.unit_price * self.quantity
 
 
 ALLOWED_ORDER_STATUS_TRANSITIONS = {

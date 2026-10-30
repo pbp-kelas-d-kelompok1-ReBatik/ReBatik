@@ -1644,3 +1644,65 @@ body.logout-modal-active {
     overflow: hidden;
 }
 
+/* Shared page backdrop: match Marketplace while leaving cards and panels intact. */
+:root {
+    --rebatik-page-background:
+        radial-gradient(ellipse at 78% 48%,
+            rgba(255, 245, 220, 0.88) 0%,
+            rgba(255, 236, 208, 0.35) 34%,
+            transparent 61%),
+        radial-gradient(ellipse at 22% 22%,
+            #fff3df 0%,
+            transparent 55%),
+        linear-gradient(120deg,
+            #f9e8d2 0%,
+            #efc19e 52%,
+            #dba17d 100%);
+}
+
+.bg.bg {
+    background: var(--rebatik-page-background);
+}
+
+.bg :is(
+    .home-hero,
+    .mp-page-shell,
+    .landing-page,
+    .profile-page,
+    .impact-page,
+    .donasi-page,
+    .donasi-hero,
+    .donasi-form-page,
+    .riwayat-donasi-page,
+    .add-batik-page,
+    .order-page,
+    .fashion-page,
+    .vibe-page,
+    .colors-page,
+    .custom-studio-page,
+    .recommended-page,
+    .rewards-page,
+    .batik-page
+) {
+    background: var(--rebatik-page-background);
+}
+
+.bg .add-batik-page > section {
+    background: transparent;
+}
+
+/* Keep page titles readable against the lighter shared backdrop. */
+.bg .landing-eyebrow,
+.bg .landing-hero h1,
+.bg .landing-hero h2,
+.bg .landing-description,
+.bg .profile-heading,
+.bg .profile-heading h1,
+.bg .profile-eyebrow,
+.bg .riwayat-donasi-header,
+.bg .riwayat-donasi-header h1,
+.bg .riwayat-donasi-header .donasi-eyebrow,
+.bg .home-hero .title {
+    color: var(--brown-dark);
+}
+

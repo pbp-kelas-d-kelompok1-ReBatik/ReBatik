@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.db import router, transaction
 from django.db.models import F
+from rewards.models import RewardRedemption
 
 from .models import (
     ALLOWED_ORDER_STATUS_TRANSITIONS,
@@ -91,6 +92,8 @@ class OrderAdmin(admin.ModelAdmin):
         "product_name",
         "quantity",
         "total_price",
+        "reward_redemption",
+        "discount_amount",
         "user",
         "delivery_method",
         "status",
@@ -111,6 +114,8 @@ class OrderAdmin(admin.ModelAdmin):
         "unit_price",
         "quantity",
         "total_price",
+        "reward_redemption",
+        "discount_amount",
         "created_at",
         "updated_at",
     )
@@ -176,6 +181,12 @@ class OrderAdmin(admin.ModelAdmin):
                 Product.objects.select_for_update().filter(pk=obj.product_id).update(
                     stock=F("stock") + obj.quantity
                 )
+                if obj.reward_redemption_id:
+                    redemption = RewardRedemption.objects.select_for_update().get(
+                        pk=obj.reward_redemption_id
+                    )
+                    redemption.voucher_status = RewardRedemption.VoucherStatus.AVAILABLE
+                    redemption.save(update_fields=("voucher_status",))
             OrderStatusHistory.objects.create(
                 order=obj,
                 from_status=previous_status or "",

@@ -28,7 +28,14 @@ from .models import (
     Order,
     Product,
 )
-from .services import OrderTransitionNotAllowed, OutOfStock, cancel_order, place_order
+from .services import (
+    OrderTransitionNotAllowed,
+    OutOfStock,
+    VoucherUnavailable,
+    cancel_order,
+    place_order,
+)
+from rewards.models import Reward, RewardRedemption
 
 PRODUCTS_PER_PAGE = 12
 ORDERS_PER_PAGE = 10
@@ -215,7 +222,7 @@ def checkout(request, pk):
     product = get_object_or_404(Product.objects.available(), pk=pk)
 
     if request.method == "POST":
-        form = CheckoutForm(request.POST, product=product)
+        form = CheckoutForm(request.POST, product=product, user=request.user)
         if form.is_valid():
             try:
                 order = place_order(
@@ -227,7 +234,10 @@ def checkout(request, pk):
                     address=form.cleaned_data.get("address", ""),
                     whatsapp=form.cleaned_data["whatsapp"],
                     notes=form.cleaned_data.get("notes", ""),
+                    voucher_code=form.cleaned_data.get("voucher_code", ""),
                 )
+            except VoucherUnavailable as exc:
+                form.add_error("voucher_code", str(exc))
             except OutOfStock as exc:
                 product.refresh_from_db()
                 if exc.available_stock <= 0:
@@ -259,7 +269,14 @@ def checkout(request, pk):
                 1,
                 min(int(raw_qty), MAX_ORDER_QUANTITY, product.stock),
             )
-        form = CheckoutForm(product=product, initial=initial)
+        form = CheckoutForm(product=product, user=request.user, initial=initial)
+
+    available_vouchers = RewardRedemption.objects.filter(
+        user=request.user,
+        reward__reward_type=Reward.Type.VOUCHER,
+        status=RewardRedemption.Status.FULFILLED,
+        voucher_status=RewardRedemption.VoucherStatus.AVAILABLE,
+    ).select_related("reward")
 
     return render(
         request,
@@ -268,6 +285,7 @@ def checkout(request, pk):
             "product": product,
             "form": form,
             "max_order_qty": min(MAX_ORDER_QUANTITY, max(product.stock, 1)),
+            "available_vouchers": available_vouchers,
         },
     )
 
@@ -276,7 +294,7 @@ def checkout(request, pk):
 def order_success(request, pk):
     """Display confirmation details for a newly placed order."""
     order = get_object_or_404(
-        Order.objects.select_related("product", "dropoff_point"),
+        Order.objects.select_related("product", "dropoff_point", "reward_redemption"),
         pk=pk,
         user=request.user,
     )
@@ -389,7 +407,7 @@ def _build_order_timeline(order):
 def order_detail(request, pk):
     """Display one owned order with its progress timeline and status history."""
     order = get_object_or_404(
-        Order.objects.select_related("product", "dropoff_point"),
+        Order.objects.select_related("product", "dropoff_point", "reward_redemption"),
         pk=pk,
         user=request.user,
     )

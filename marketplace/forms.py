@@ -1,6 +1,7 @@
 from urllib.parse import urlparse
 
 from django import forms
+from rewards.models import Reward, RewardRedemption
 
 from .models import (
     DESCRIPTION_MAX_LENGTH,
@@ -182,8 +183,22 @@ class ProductForm(forms.ModelForm):
 
 
 class CheckoutForm(forms.ModelForm):
-    def __init__(self, *args, product=None, **kwargs):
+    voucher_code = forms.CharField(
+        label="Kode voucher",
+        required=False,
+        max_length=40,
+        widget=forms.TextInput(
+            attrs={
+                "autocomplete": "off",
+                "class": FIELD_CLASSES,
+                "placeholder": "Masukkan kode voucher Rewards",
+            }
+        ),
+    )
+
+    def __init__(self, *args, product=None, user=None, **kwargs):
         self.product = product
+        self.user = user
         super().__init__(*args, **kwargs)
 
         self.fields["delivery_method"].choices = Order.DELIVERY_CHOICES
@@ -271,6 +286,21 @@ class CheckoutForm(forms.ModelForm):
 
     def clean_whatsapp(self):
         return normalize_indonesian_whatsapp(self.cleaned_data["whatsapp"])
+
+    def clean_voucher_code(self):
+        code = self.cleaned_data["voucher_code"].strip().upper()
+        if not code:
+            return ""
+        valid = RewardRedemption.objects.filter(
+            user=self.user,
+            voucher_code__iexact=code,
+            reward__reward_type=Reward.Type.VOUCHER,
+            status=RewardRedemption.Status.FULFILLED,
+            voucher_status=RewardRedemption.VoucherStatus.AVAILABLE,
+        ).exists()
+        if not valid:
+            raise forms.ValidationError("Kode voucher tidak valid atau sudah digunakan.")
+        return code
 
     def clean(self):
         cleaned_data = super().clean()
