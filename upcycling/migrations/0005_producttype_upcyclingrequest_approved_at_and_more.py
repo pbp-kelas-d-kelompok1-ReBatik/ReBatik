@@ -280,7 +280,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='upcyclingrequest',
             name='artisan',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='upcycling_requests', to='upcycling.artisanprofile'),
+            field=models.ForeignKey(blank=True, db_index=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='upcycling_requests', to='upcycling.artisanprofile'),
         ),
         migrations.AddConstraint(
             model_name='upcyclingrequest',
