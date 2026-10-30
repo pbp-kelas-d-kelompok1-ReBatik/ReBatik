@@ -16,6 +16,7 @@ class Reward(models.Model):
     stock = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
     discount_value = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    image = models.ImageField(upload_to="rewards/vouchers/", blank=True)
 
     class Meta:
         ordering = ["points_required", "name"]

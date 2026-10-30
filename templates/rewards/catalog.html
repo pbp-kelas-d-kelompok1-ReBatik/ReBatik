@@ -22,11 +22,16 @@
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {% for reward in rewards %}
                 <article class="history-row flex-col items-stretch gap-3">
-                    <div>
-                        <h2 class="mt-1 text-xl font-bold">{{ reward.name }}</h2>
-                        {% if reward.description %}<p class="mt-2">{{ reward.description }}</p>{% endif %}
-                        <p class="mt-2">Diskon Rp{{ reward.discount_value|intcomma_id }}</p>
-                        <p class="mt-2 font-semibold">{{ reward.points_required }} poin · kuota {{ reward.stock }}</p>
+                    <div class="flex items-start gap-3">
+                        {% if reward.image %}
+                            <img class="voucher-thumbnail" src="{{ reward.image.url }}" alt="Gambar {{ reward.name }}">
+                        {% endif %}
+                        <div>
+                            <h2 class="mt-1 text-xl font-bold">{{ reward.name }}</h2>
+                            {% if reward.description %}<p class="mt-2">{{ reward.description }}</p>{% endif %}
+                            <p class="mt-2">Diskon Rp{{ reward.discount_value|intcomma_id }}</p>
+                            <p class="mt-2 font-semibold">{{ reward.points_required }} poin · kuota {{ reward.stock }}</p>
+                        </div>
                     </div>
                     <form
                         method="post"

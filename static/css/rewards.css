@@ -527,6 +527,16 @@
     font-weight: 700;
 }
 
+.voucher-thumbnail {
+    width: 64px;
+    height: 64px;
+    flex: 0 0 64px;
+    border: 1px solid var(--rewards-card-border);
+    border-radius: 10px;
+    background: var(--rewards-surface);
+    object-fit: cover;
+}
+
 .history-amount {
     flex: 0 0 auto;
     font-size: 1.55rem;

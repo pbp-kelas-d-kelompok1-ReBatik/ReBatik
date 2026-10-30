@@ -110,7 +110,10 @@
                 <p class="rewards-helper">Berikut hingga lima voucher aktif yang bisa ditukar dengan poin. Voucher Saya berisi kode yang sudah kamu tukar.</p>
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {% for voucher in featured_vouchers %}
-                        <article class="history-row flex-col items-start gap-2">
+                        <article class="history-row items-start gap-3">
+                            {% if voucher.image %}
+                                <img class="voucher-thumbnail" src="{{ voucher.image.url }}" alt="Gambar {{ voucher.name }}">
+                            {% endif %}
                             <div>
                                 <h3>{{ voucher.name }}</h3>
                                 <p class="mt-2">Diskon Rp{{ voucher.discount_value|intcomma_id }}</p>
