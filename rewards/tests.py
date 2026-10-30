@@ -131,6 +131,13 @@ class VoucherManagementDashboardTests(TestCase):
             reverse("rewards:admin_voucher_deactivate", args=[voucher.pk]),
         )
 
+        edit_response = self.client.get(
+            reverse("rewards:admin_voucher_edit", args=[voucher.pk]),
+        )
+        self.assertEqual(edit_response.status_code, 200)
+        self.assertContains(edit_response, "Edit voucher")
+        self.assertContains(edit_response, 'value="Voucher untuk dikelola"')
+
     def test_custom_admin_page_can_edit_voucher_details(self):
         voucher = Reward.objects.create(
             name="Voucher lama",
@@ -180,6 +187,34 @@ class VoucherManagementDashboardTests(TestCase):
         self.assertFalse(voucher.is_active)
         self.assertEqual(voucher.stock, 4)
         self.assertTrue(Reward.objects.filter(pk=voucher.pk).exists())
+
+    def test_staff_without_change_permission_cannot_edit_or_deactivate_vouchers(self):
+        voucher = Reward.objects.create(
+            name="Voucher dilindungi",
+            reward_type=Reward.Type.VOUCHER,
+            points_required=100,
+            stock=4,
+            discount_value=10000,
+        )
+        staff_user = get_user_model().objects.create_user(
+            username="voucher-viewer",
+            email="voucher-viewer@example.com",
+            password="test-password",
+            is_staff=True,
+        )
+        self.client.force_login(staff_user)
+
+        edit_response = self.client.get(
+            reverse("rewards:admin_voucher_edit", args=[voucher.pk]),
+        )
+        deactivate_response = self.client.post(
+            reverse("rewards:admin_voucher_deactivate", args=[voucher.pk]),
+        )
+
+        self.assertEqual(edit_response.status_code, 403)
+        self.assertEqual(deactivate_response.status_code, 403)
+        voucher.refresh_from_db()
+        self.assertTrue(voucher.is_active)
 
 
 class LegacyDonationWeightMigrationTests(SimpleTestCase):
