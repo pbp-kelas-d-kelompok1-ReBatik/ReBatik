@@ -6,10 +6,12 @@
 
 {% block content %}
 <main class="rewards-page">
+    <img class="rewards-cloud rewards-cloud-left" src="{% static 'img/shared/cloud-left.webp' %}" alt="" aria-hidden="true">
+    <img class="rewards-cloud rewards-cloud-right" src="{% static 'img/shared/cloud-right.webp' %}" alt="" aria-hidden="true">
     <section class="rewards-hero">
         <p class="rewards-eyebrow">DASHBOARD ADMIN</p>
         <h1>Kelola Katalog Voucher</h1>
-        <p>Tambahkan voucher diskon dan atur ketersediaannya di katalog Points and Rewards.</p>
+        <p>Atur voucher diskon yang tersedia untuk ditukar dengan poin.</p>
     </section>
 
     <section class="rewards-panel">
@@ -21,63 +23,15 @@
             </div>
         {% endif %}
 
-        {% if form %}
-            <section id="voucher-form" class="voucher-admin-form-panel" aria-labelledby="voucher-form-heading">
-                <h2 id="voucher-form-heading" class="text-2xl font-bold">{% if editing_voucher %}Edit voucher{% else %}Tambah voucher{% endif %}</h2>
-                <p class="mt-1 mb-5">Isi informasi diskon, biaya poin, kuota, dan gambar opsional.</p>
-                <form method="post" enctype="multipart/form-data" class="voucher-admin-form">
-                    {% csrf_token %}
-                    {{ form.reward_type.as_hidden }}
-                    {% if form.non_field_errors %}<div class="voucher-admin-errors">{{ form.non_field_errors }}</div>{% endif %}
-
-                    {% for field in form.visible_fields %}
-                        {% if field.name != "reward_type" %}
-                        <div class="voucher-admin-field{% if field.name == 'is_active' %} voucher-admin-checkbox-field{% endif %}">
-                            {% if field.name == "is_active" %}
-                                {{ field }}
-                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                            {% else %}
-                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                {{ field }}
-                            {% endif %}
-                            {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
-                            {% if field.errors %}<div class="voucher-admin-errors">{{ field.errors }}</div>{% endif %}
-                        </div>
-                        {% endif %}
-                    {% endfor %}
-
-                    <div class="flex flex-wrap gap-3">
-                        <button type="submit" class="primary-action-button px-6 py-3 font-bold">{% if editing_voucher %}Simpan perubahan{% else %}Simpan voucher{% endif %}</button>
-                        {% if editing_voucher %}<a href="{% url 'rewards:admin_vouchers' %}" class="history-all-link">Batal</a>{% endif %}
-                    </div>
-                </form>
-            </section>
+        {% if can_add %}
+            <a href="{% url 'rewards:admin_voucher_add' %}" class="primary-action-button voucher-admin-add-link">Tambah voucher</a>
         {% endif %}
 
         <section class="mt-9" aria-labelledby="voucher-list-heading">
             <h2 id="voucher-list-heading" class="text-2xl font-bold">Voucher yang terdaftar</h2>
-            <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="voucher-card-grid voucher-admin-card-grid">
                 {% for voucher in vouchers %}
-                    <article class="history-row items-start gap-3">
-                        {% if voucher.image %}<img class="voucher-thumbnail" src="{{ voucher.image.url }}" alt="Gambar {{ voucher.name }}">{% endif %}
-                        <div class="min-w-0">
-                            <h3>{{ voucher.name }}</h3>
-                            <p class="mt-2">Diskon Rp{{ voucher.discount_value|intcomma_id }}</p>
-                            <p class="mt-1">{{ voucher.points_required }} poin · kuota {{ voucher.stock }}</p>
-                            <p class="mt-1 font-semibold">{% if voucher.is_active %}Aktif{% else %}Tidak aktif{% endif %}</p>
-                            {% if can_change %}
-                                <div class="mt-3 flex flex-wrap items-center gap-3">
-                                    <a class="history-all-link" href="{% url 'rewards:admin_voucher_edit' voucher.pk %}">Edit voucher</a>
-                                    {% if voucher.is_active %}
-                                        <form method="post" action="{% url 'rewards:admin_voucher_deactivate' voucher.pk %}" onsubmit="return confirm('Nonaktifkan voucher ini?')">
-                                            {% csrf_token %}
-                                            <button class="history-all-link" type="submit">Nonaktifkan</button>
-                                        </form>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
-                        </div>
-                    </article>
+                    {% include "rewards/_admin_voucher_card.html" with voucher=voucher can_change=can_change %}
                 {% empty %}<p class="history-empty">Belum ada voucher terdaftar.</p>{% endfor %}
             </div>
         </section>

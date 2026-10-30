@@ -10,6 +10,7 @@ class Reward(models.Model):
         PHYSICAL = "PHYSICAL", "Barang fisik"
 
     name = models.CharField(max_length=120)
+    code_prefix = models.CharField(max_length=20, default="RB")
     description = models.TextField(blank=True)
     reward_type = models.CharField(max_length=12, choices=Type.choices)
     points_required = models.PositiveIntegerField(validators=[MinValueValidator(1)])

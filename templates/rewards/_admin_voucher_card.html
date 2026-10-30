@@ -1,0 +1,30 @@
+{% load rewards_format %}
+<article id="voucher-admin-card-{{ voucher.pk }}" class="voucher-card voucher-admin-card">
+    <div class="voucher-card-media">
+        {% if voucher.image %}
+            <img class="voucher-thumbnail" src="{{ voucher.image.url }}" alt="Gambar {{ voucher.name }}">
+        {% else %}
+            <div class="voucher-card-placeholder" aria-label="Gambar voucher belum tersedia">ReBatik Voucher</div>
+        {% endif %}
+    </div>
+    <h3 class="voucher-card-title">{{ voucher.name }}</h3>
+    <p class="voucher-card-value">Diskon Rp{{ voucher.discount_value|intcomma_id }}</p>
+    <div class="voucher-card-details">
+        <span>{{ voucher.points_required|intcomma_id }} poin</span>
+        <span>Kuota {{ voucher.stock }}</span>
+    </div>
+    <span class="voucher-admin-status {% if voucher.is_active %}is-active{% else %}is-inactive{% endif %}">
+        {% if voucher.is_active %}Aktif{% else %}Tidak aktif{% endif %}
+    </span>
+    {% if can_change %}
+        <div class="voucher-admin-actions">
+            <a href="{% url 'rewards:admin_voucher_edit' voucher.pk %}" class="voucher-admin-action-link">Edit voucher</a>
+            {% if voucher.is_active %}
+                <form method="post" action="{% url 'rewards:admin_voucher_deactivate' voucher.pk %}" onsubmit="return confirm('Nonaktifkan voucher ini?')">
+                    {% csrf_token %}
+                    <button class="voucher-admin-deactivate" type="submit">Nonaktifkan</button>
+                </form>
+            {% endif %}
+        </div>
+    {% endif %}
+</article>

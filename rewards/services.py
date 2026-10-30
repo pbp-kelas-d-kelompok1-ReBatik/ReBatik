@@ -1,6 +1,6 @@
 """Business rules for points, reward redemption, and balances."""
 
-import uuid
+import secrets
 from decimal import Decimal, InvalidOperation
 
 from django.contrib.auth import get_user_model
@@ -204,13 +204,21 @@ def redeem_reward(user, reward_id):
     if get_available_points(user) < reward.points_required:
         raise InsufficientPoints("Poin Anda belum mencukupi.")
 
+    alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+    prefix = reward.code_prefix.strip().upper() or "RB"
+    while True:
+        suffix = "".join(secrets.choice(alphabet) for _ in range(6))
+        voucher_code = f"{prefix}-{suffix}"
+        if not RewardRedemption.objects.filter(voucher_code=voucher_code).exists():
+            break
+
     redemption = RewardRedemption.objects.create(
         user=user,
         reward=reward,
         points_spent=reward.points_required,
         discount_value_snapshot=reward.discount_value,
         status=RewardRedemption.Status.FULFILLED,
-        voucher_code=uuid.uuid4().hex[:16].upper(),
+        voucher_code=voucher_code,
         voucher_status=RewardRedemption.VoucherStatus.AVAILABLE,
         fulfilled_at=timezone.now(),
     )

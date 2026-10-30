@@ -4,7 +4,7 @@ from django.urls import reverse
 
 
 class AdminDashboardVoucherLinksTests(TestCase):
-    def test_admin_dashboard_links_to_voucher_catalog_and_add_form(self):
+    def test_admin_dashboard_and_hamburger_link_to_voucher_management(self):
         admin_user = get_user_model().objects.create_superuser(
             username="admin-vouchers",
             email="admin-vouchers@example.com",
@@ -18,11 +18,14 @@ class AdminDashboardVoucherLinksTests(TestCase):
         self.assertContains(response, "Kelola Katalog Voucher")
         voucher_url = reverse("rewards:admin_vouchers")
         self.assertContains(response, voucher_url)
-        self.assertContains(response, f"{voucher_url}#voucher-form")
-        add_voucher_links = f'href="{voucher_url}#voucher-form"'.encode()
-        self.assertEqual(response.content.count(add_voucher_links), 2)
-        nav_links = response.content.decode().split('<nav class="nav-links">', 1)[1].split("</nav>", 1)[0]
-        self.assertNotIn(voucher_url, nav_links)
+        add_voucher_url = reverse("rewards:admin_voucher_add")
+        self.assertContains(response, add_voucher_url)
+        add_voucher_links = f'href="{add_voucher_url}"'.encode()
+        self.assertEqual(response.content.count(add_voucher_links), 1)
+        nav_links = response.content.decode().split('<div class="nav-menu" id="navMenu">', 1)[1].split("</div>", 1)[0]
+        self.assertIn(voucher_url, nav_links)
+        self.assertNotIn(add_voucher_url, nav_links)
+        self.assertIn("Kelola Voucher", nav_links)
         self.assertContains(response, "Penugasan Upcycling")
 
     def test_regular_user_does_not_see_add_voucher_navigation_link(self):

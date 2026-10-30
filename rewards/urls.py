@@ -12,6 +12,7 @@ urlpatterns = [
     path("catalog/", views.reward_catalog, name="catalog"),
     path("vouchers/", views.my_vouchers, name="vouchers"),
     path("admin/vouchers/", views.admin_vouchers, name="admin_vouchers"),
+    path("admin/vouchers/add/", views.admin_voucher_add, name="admin_voucher_add"),
     path("admin/vouchers/<int:voucher_id>/edit/", views.admin_voucher_edit, name="admin_voucher_edit"),
     path(
         "admin/vouchers/<int:voucher_id>/deactivate/",

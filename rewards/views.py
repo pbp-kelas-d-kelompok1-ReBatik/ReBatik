@@ -10,7 +10,7 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Sum
 from django.shortcuts import render
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from .models import PointTransaction, Reward, RewardRedemption
 from .forms import RewardAdminForm
@@ -72,7 +72,7 @@ def points_overview(request):
         reward_type=Reward.Type.VOUCHER,
         is_active=True,
         stock__gt=0,
-    )[:5]
+    )[:8]
     context = {
         "available_points": get_available_points(request.user),
         "lifetime_points": lifetime_points,
@@ -211,6 +211,7 @@ def redeem_reward_view(request, reward_id):
 
 
 @staff_member_required
+@require_GET
 def admin_vouchers(request):
     """Manage voucher catalog items from ReBatik's regular dashboard UI."""
     can_view = request.user.has_perm("rewards.view_reward")
@@ -219,32 +220,36 @@ def admin_vouchers(request):
     if not can_view and not can_add:
         return HttpResponseForbidden("Anda tidak memiliki izin untuk mengelola katalog voucher.")
 
+    vouchers = Reward.objects.filter(reward_type=Reward.Type.VOUCHER).order_by("-pk")
+    return render(
+        request,
+        "rewards/admin_vouchers.html",
+        {
+            "vouchers": vouchers,
+            "can_add": can_add,
+            "can_change": can_change,
+        },
+    )
+
+
+@staff_member_required
+def admin_voucher_add(request):
+    if not request.user.has_perm("rewards.add_reward"):
+        return HttpResponseForbidden("Anda tidak memiliki izin untuk menambah voucher.")
+
     if request.method == "POST":
-        if not can_add:
-            return HttpResponseForbidden("Anda tidak memiliki izin untuk menambah voucher.")
         form = RewardAdminForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, "Voucher berhasil ditambahkan ke katalog.")
             return redirect("rewards:admin_vouchers")
     else:
-        form = RewardAdminForm() if can_add else None
+        form = RewardAdminForm()
 
-    if form:
-        for field in form.fields.values():
-            field.widget.attrs["class"] = "voucher-admin-input"
+    for field in form.fields.values():
+        field.widget.attrs["class"] = "voucher-admin-input"
 
-    vouchers = Reward.objects.filter(reward_type=Reward.Type.VOUCHER).order_by("-pk")
-    return render(
-        request,
-        "rewards/admin_vouchers.html",
-        {
-            "form": form,
-            "vouchers": vouchers,
-            "can_add": can_add,
-            "can_change": can_change,
-        },
-    )
+    return render(request, "rewards/admin_voucher_form.html", {"form": form})
 
 
 @staff_member_required
@@ -271,16 +276,8 @@ def admin_voucher_edit(request, voucher_id):
 
     return render(
         request,
-        "rewards/admin_vouchers.html",
-        {
-            "form": form,
-            "vouchers": Reward.objects.filter(
-                reward_type=Reward.Type.VOUCHER
-            ).order_by("-pk"),
-            "can_add": request.user.has_perm("rewards.add_reward"),
-            "can_change": True,
-            "editing_voucher": voucher,
-        },
+        "rewards/admin_voucher_form.html",
+        {"form": form, "editing_voucher": voucher},
     )
 
 

@@ -9,6 +9,7 @@ class RewardAdminForm(forms.ModelForm):
         fields = "__all__"
         labels = {
             "name": "Nama voucher",
+            "code_prefix": "Awalan kode voucher",
             "description": "Deskripsi",
             "reward_type": "Jenis reward",
             "points_required": "Poin untuk menukar",
@@ -19,6 +20,7 @@ class RewardAdminForm(forms.ModelForm):
         }
         help_texts = {
             "name": "Gunakan nama singkat yang akan tampil di katalog.",
+            "code_prefix": "Contoh: BATIK. Sistem menambahkan 6 karakter unik pada setiap penukaran.",
             "description": "Jelaskan syarat atau cara menggunakan voucher.",
             "points_required": "Jumlah poin yang harus dimiliki pengguna untuk menukar voucher ini.",
             "stock": "Voucher hanya tampil di katalog jika jumlahnya lebih dari 0.",
@@ -49,6 +51,12 @@ class RewardAdminForm(forms.ModelForm):
         if self.instance.pk and self.instance.redemptions.exists() and reward_type != self.instance.reward_type:
             raise forms.ValidationError("Jenis reward tidak dapat diubah setelah pernah ditukar.")
         return reward_type
+
+    def clean_code_prefix(self):
+        prefix = self.cleaned_data["code_prefix"].strip().upper()
+        if not prefix or not prefix.isascii() or not prefix.isalnum():
+            raise forms.ValidationError("Awalan hanya boleh berisi huruf dan angka.")
+        return prefix
 
     def clean(self):
         cleaned = super().clean()

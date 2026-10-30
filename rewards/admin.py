@@ -9,7 +9,7 @@ from .models import PointTransaction, Reward, RewardRedemption
 class RewardAdmin(admin.ModelAdmin):
     form = RewardAdminForm
     fieldsets = (
-        ("Informasi voucher", {"fields": ("name", "description", "reward_type")}),
+        ("Informasi voucher", {"fields": ("name", "description", "reward_type", "code_prefix")}),
         ("Penukaran", {"fields": ("points_required", "discount_value", "stock", "is_active")}),
         ("Gambar katalog", {"fields": ("image",)}),
     )

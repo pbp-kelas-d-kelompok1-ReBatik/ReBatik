@@ -75,6 +75,23 @@ class RewardWorkflowTests(TestCase):
         )
         self.assertEqual(spend.points, -100)
 
+    def test_voucher_code_uses_admin_prefix_and_a_short_unique_suffix(self):
+        reward = Reward.objects.create(
+            name="Voucher kode pendek",
+            reward_type=Reward.Type.VOUCHER,
+            points_required=100,
+            stock=2,
+            discount_value="20000",
+            code_prefix="BATIK",
+        )
+
+        first = redeem_reward(self.user, reward.pk)
+        second = redeem_reward(self.user, reward.pk)
+
+        self.assertRegex(first.voucher_code, r"^BATIK-[A-Z0-9]{6}$")
+        self.assertRegex(second.voucher_code, r"^BATIK-[A-Z0-9]{6}$")
+        self.assertNotEqual(first.voucher_code, second.voucher_code)
+
     def test_physical_reward_cannot_be_redeemed(self):
         reward = Reward.objects.create(
             name="Scrunchie batik",

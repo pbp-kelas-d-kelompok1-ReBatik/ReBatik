@@ -35,10 +35,12 @@
 
             <div class="points-card">
                 <div class="points-card-content">
-                    <p class="points-label">POIN TERSEDIA</p>
-                    <p class="points-value">{{ available_points|intcomma_id }}</p>
-                    <span class="points-unit">poin</span>
-                    <span class="points-level">{{ current_level }}</span>
+                    <div class="points-card-summary">
+                        <p class="points-label">POIN TERSEDIA</p>
+                        <p class="points-value">{{ available_points|intcomma_id }}</p>
+                        <span class="points-unit">poin</span>
+                        <span class="points-level">{{ current_level }}</span>
+                    </div>
                     <div class="level-ladder-section" aria-label="Progres dan jenjang level">
                         {% if next_level %}
                             <div class="level-progress-copy">
@@ -227,7 +229,6 @@
                     <a class="history-all-link" href="{% url 'rewards:vouchers' %}">Voucher saya →</a>
                 </div>
             </div>
-            <p class="rewards-helper">Berikut hingga lima voucher aktif yang bisa ditukar dengan poin. Voucher Saya berisi kode yang sudah kamu tukar.</p>
             <div class="voucher-card-grid">
                 {% for voucher in featured_vouchers %}
                     <article class="voucher-card">

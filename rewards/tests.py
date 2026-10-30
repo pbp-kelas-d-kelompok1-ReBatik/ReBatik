@@ -37,7 +37,15 @@ class VoucherAdminPresentationTests(SimpleTestCase):
         )
         self.assertEqual(form.fields["name"].label, "Nama voucher")
         self.assertIn("nama singkat", form.fields["name"].help_text)
+        self.assertEqual(form.fields["code_prefix"].label, "Awalan kode voucher")
+        self.assertIn("6 karakter unik", form.fields["code_prefix"].help_text)
         self.assertEqual(form.fields["image"].label, "Gambar voucher")
+
+    def test_voucher_prefix_rejects_non_ascii_letters(self):
+        form = RewardAdminForm(data={"code_prefix": "BÁTIK"})
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("code_prefix", form.errors)
 
     def test_legacy_physical_rewards_keep_their_existing_type_visible_for_cleanup(self):
         form = RewardAdminForm(instance=Reward(pk=1, reward_type=Reward.Type.PHYSICAL))
@@ -62,7 +70,7 @@ class VoucherAdminPresentationTests(SimpleTestCase):
         self.assertEqual(
             model_admin.fieldsets,
             (
-                ("Informasi voucher", {"fields": ("name", "description", "reward_type")}),
+                ("Informasi voucher", {"fields": ("name", "description", "reward_type", "code_prefix")}),
                 ("Penukaran", {"fields": ("points_required", "discount_value", "stock", "is_active")}),
                 ("Gambar katalog", {"fields": ("image",)}),
             ),
@@ -79,20 +87,38 @@ class VoucherManagementDashboardTests(TestCase):
         )
         self.client.force_login(self.admin_user)
 
-    def test_custom_admin_page_lists_vouchers_and_provides_image_upload_form(self):
+    def test_custom_admin_page_lists_vouchers_and_opens_a_separate_add_page(self):
         response = self.client.get(reverse("rewards:admin_vouchers"))
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Kelola Katalog Voucher")
-        self.assertContains(response, 'enctype="multipart/form-data"')
-        self.assertContains(response, 'name="image"')
+        self.assertContains(response, reverse("rewards:admin_voucher_add"))
         self.assertContains(response, "Tambah voucher")
+        self.assertContains(response, 'class="rewards-cloud rewards-cloud-left"')
+        self.assertContains(response, 'class="rewards-cloud rewards-cloud-right"')
+        self.assertNotContains(response, 'class="voucher-admin-form-grid"')
+        Reward.objects.create(
+            name="Voucher lama",
+            reward_type=Reward.Type.VOUCHER,
+            points_required=100,
+            stock=1,
+            discount_value=5000,
+        )
+
+        add_response = self.client.get(reverse("rewards:admin_voucher_add"))
+        self.assertEqual(add_response.status_code, 200)
+        self.assertContains(add_response, 'class="rewards-cloud rewards-cloud-left"')
+        self.assertContains(add_response, 'class="rewards-cloud rewards-cloud-right"')
+        self.assertContains(add_response, 'enctype="multipart/form-data"')
+        self.assertContains(add_response, 'name="image"')
+        self.assertNotContains(add_response, "Voucher lama")
 
     def test_custom_admin_page_creates_a_voucher_and_redirects_back(self):
         response = self.client.post(
-            reverse("rewards:admin_vouchers"),
+            reverse("rewards:admin_voucher_add"),
             {
                 "name": "Voucher Admin Dashboard",
+                "code_prefix": "batik",
                 "description": "Diskon untuk pengujian",
                 "reward_type": Reward.Type.VOUCHER,
                 "points_required": 150,
@@ -106,6 +132,7 @@ class VoucherManagementDashboardTests(TestCase):
         self.assertTrue(
             Reward.objects.filter(
                 name="Voucher Admin Dashboard",
+                code_prefix="BATIK",
                 reward_type=Reward.Type.VOUCHER,
                 points_required=150,
                 stock=8,
@@ -122,6 +149,13 @@ class VoucherManagementDashboardTests(TestCase):
             stock=4,
             discount_value=10000,
         )
+        Reward.objects.create(
+            name="Voucher lain yang tidak terkait",
+            reward_type=Reward.Type.VOUCHER,
+            points_required=150,
+            stock=2,
+            discount_value=20000,
+        )
 
         response = self.client.get(reverse("rewards:admin_vouchers"))
 
@@ -137,6 +171,7 @@ class VoucherManagementDashboardTests(TestCase):
         self.assertEqual(edit_response.status_code, 200)
         self.assertContains(edit_response, "Edit voucher")
         self.assertContains(edit_response, 'value="Voucher untuk dikelola"')
+        self.assertNotContains(edit_response, "Voucher lain yang tidak terkait")
 
     def test_custom_admin_page_can_edit_voucher_details(self):
         voucher = Reward.objects.create(
@@ -146,11 +181,25 @@ class VoucherManagementDashboardTests(TestCase):
             stock=4,
             discount_value=10000,
         )
+        Reward.objects.create(
+            name="Voucher lain yang tidak terkait",
+            reward_type=Reward.Type.VOUCHER,
+            points_required=150,
+            stock=2,
+            discount_value=20000,
+        )
+
+        edit_url = reverse("rewards:admin_voucher_edit", args=[voucher.pk])
+        edit_page = self.client.get(edit_url)
+        self.assertEqual(edit_page.status_code, 200)
+        self.assertContains(edit_page, "Edit voucher")
+        self.assertNotContains(edit_page, "Voucher lain yang tidak terkait")
 
         response = self.client.post(
-            reverse("rewards:admin_voucher_edit", args=[voucher.pk]),
+            edit_url,
             {
                 "name": "Voucher diperbarui",
+                "code_prefix": "BARU",
                 "description": "Diskon terbaru",
                 "reward_type": Reward.Type.VOUCHER,
                 "points_required": 200,
@@ -163,6 +212,7 @@ class VoucherManagementDashboardTests(TestCase):
         self.assertRedirects(response, reverse("rewards:admin_vouchers"))
         voucher.refresh_from_db()
         self.assertEqual(voucher.name, "Voucher diperbarui")
+        self.assertEqual(voucher.code_prefix, "BARU")
         self.assertEqual(voucher.description, "Diskon terbaru")
         self.assertEqual(voucher.points_required, 200)
         self.assertEqual(voucher.stock, 7)
@@ -215,6 +265,38 @@ class VoucherManagementDashboardTests(TestCase):
         self.assertEqual(deactivate_response.status_code, 403)
         voucher.refresh_from_db()
         self.assertTrue(voucher.is_active)
+
+    def test_admin_voucher_list_uses_rebatik_cards_with_grouped_actions(self):
+        voucher = Reward.objects.create(
+            name="Voucher preview admin",
+            reward_type=Reward.Type.VOUCHER,
+            points_required=125,
+            stock=3,
+            discount_value=15000,
+        )
+
+        response = self.client.get(reverse("rewards:admin_vouchers"))
+
+        self.assertContains(response, 'class="voucher-card-grid voucher-admin-card-grid"')
+        self.assertContains(response, 'class="voucher-card voucher-admin-card"')
+        self.assertContains(response, 'class="voucher-admin-actions"')
+        self.assertContains(response, f'href="/rewards/admin/vouchers/{voucher.pk}/edit/"')
+        self.assertNotContains(response, "hx-get")
+        self.assertContains(response, 'class="primary-action-button voucher-admin-add-link"')
+        self.assertNotContains(response, 'class="voucher-admin-form-grid"')
+        rewards_stylesheet = (
+            Path(__file__).resolve().parent.parent
+            / "static"
+            / "css"
+            / "rewards.css"
+        ).read_text(encoding="utf-8")
+        add_button_rule = rewards_stylesheet.split(
+            ".voucher-admin-add-link {", 1
+        )[1].split("}", 1)[0]
+        self.assertIn("margin: 4px auto 26px;", add_button_rule)
+        self.assertIn("width: min(100%, 320px);", add_button_rule)
+        self.assertIn("justify-content: center;", add_button_rule)
+        self.assertContains(response, "Nonaktifkan")
 
 
 class LegacyDonationWeightMigrationTests(SimpleTestCase):
@@ -643,8 +725,8 @@ class RewardsPageTests(TestCase):
 
         self.assertRedirects(response, "/login/?next=/rewards/")
 
-    def test_points_overview_shows_five_vouchers_and_links_to_the_full_catalog(self):
-        for index in range(7):
+    def test_points_overview_shows_eight_vouchers_and_links_to_the_full_catalog(self):
+        for index in range(10):
             Reward.objects.create(
                 name=f"Voucher utama {index + 1}",
                 reward_type=Reward.Type.VOUCHER,
@@ -671,19 +753,21 @@ class RewardsPageTests(TestCase):
         response = self.client.get("/rewards/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["featured_vouchers"]), 5)
-        self.assertEqual(response.content.count(b'class="voucher-card"'), 5)
-        for index in range(1, 6):
+        self.assertEqual(len(response.context["featured_vouchers"]), 8)
+        self.assertEqual(response.content.count(b'class="voucher-card"'), 8)
+        self.assertNotContains(response, "Berikut hingga delapan voucher")
+        for index in range(1, 9):
             self.assertContains(response, f"Voucher utama {index}")
-        self.assertNotContains(response, "Voucher utama 6")
+        self.assertNotContains(response, "Voucher utama 9")
+        self.assertNotContains(response, "Voucher utama 10")
         self.assertNotContains(response, "Voucher nonaktif")
         self.assertNotContains(response, "Reward fisik lama")
         self.assertContains(response, "Selengkapnya")
         self.assertContains(response, 'href="/rewards/catalog/"')
 
         catalog_response = self.client.get("/rewards/catalog/")
-        self.assertEqual(catalog_response.context["rewards"].count(), 7)
-        self.assertEqual(catalog_response.content.count(b'class="voucher-card"'), 7)
+        self.assertEqual(catalog_response.context["rewards"].count(), 10)
+        self.assertEqual(catalog_response.content.count(b'class="voucher-card"'), 10)
 
     def test_voucher_image_renders_as_a_small_thumbnail_on_both_catalog_pages(self):
         self.client.force_login(self.user)
@@ -943,6 +1027,24 @@ class RewardsPageTests(TestCase):
         self.assertContains(response, "Penenun Mahir")
         self.assertContains(response, "Penenun Ahli")
         self.assertNotContains(response, "level-tier-step")
+
+    def test_mobile_points_card_places_mascot_above_level_content_without_overlap(self):
+        stylesheet = (
+            Path(__file__).resolve().parent.parent
+            / "static"
+            / "css"
+            / "rewards.css"
+        ).read_text(encoding="utf-8")
+        mobile_styles = stylesheet.split("@media (max-width: 639px)", 1)[1]
+        mobile_mascot_rule = mobile_styles.split(".points-mascot {", 1)[1].split("}", 1)[0]
+        mobile_content_rule = mobile_styles.split(".points-card-content {", 1)[1].split("}", 1)[0]
+        mobile_summary_rule = mobile_styles.split(".points-card-summary {", 1)[1].split("}", 1)[0]
+
+        self.assertIn("position: absolute;", mobile_mascot_rule)
+        self.assertIn("top: 16px;", mobile_mascot_rule)
+        self.assertIn("width: 100%;", mobile_content_rule)
+        self.assertIn("padding-right: 88px;", mobile_summary_rule)
+        self.assertNotIn("width: calc(100% + 30px);", mobile_styles)
 
     def test_expert_level_keeps_progress_full_and_shows_total_past_threshold(self):
         """Keep the highest-tier bar full and show lifetime points above its cap."""
