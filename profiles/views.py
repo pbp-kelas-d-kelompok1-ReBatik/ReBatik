@@ -13,8 +13,8 @@ from rewards.services import (get_available_points, get_lifetime_points,)
 from upcycling.models import UpcyclingRequest
 from batik_custom.models import BatikOrder
 
-from .forms import UserProfileForm
-from .models import UserProfile
+from .forms import UserProfileForm, UserSettingsForm
+from .models import UserProfile, UserSettings
 
 
 def is_htmx_request(request):
@@ -141,11 +141,10 @@ def edit_profile(request):
             )
 
             if is_htmx_request(request):
-                return render(
-                    request,
-                    "profiles/partials/profile_card.html",
-                    {"profile": profile},
-                )
+                from django.http import HttpResponse
+                response = HttpResponse(status=204)
+                response["HX-Refresh"] = "true"
+                return response
 
             return redirect("profiles:overview")
 
@@ -185,3 +184,23 @@ def delete_profile(request):
         )
 
     return redirect("profiles:overview")
+
+
+@login_required
+def settings_view(request):
+    preferences, _ = UserSettings.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        form = UserSettingsForm(request.POST, instance=preferences)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Pengaturan berhasil disimpan.")
+            return redirect("profiles:settings")
+    else:
+        form = UserSettingsForm(instance=preferences)
+
+    return render(
+        request,
+        "profiles/settings.html",
+        {"form": form, "preferences": preferences},
+    )

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<title>Pengaturan | ReBatik</title>
+{% endblock meta %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+{% endblock css %}
+
+{% block content %}
+<div class="profile-page">
+    <header class="profile-heading">
+        <p class="profile-eyebrow">PREFERENSI AKUN</p>
+        <h1>Pengaturan</h1>
+        <p>Atur notifikasi dan preferensi akun ReBatik kamu.</p>
+    </header>
+
+    <section class="profile-shell settings-shell">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="profile-message">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="profile-card">
+            <div class="profile-section-heading">
+                <div class="settings-heading-row">
+                    <span class="settings-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M10 21h4"/></svg>
+                    </span>
+                    <h2>Pengaturan Notifikasi</h2>
+                </div>
+            </div>
+            <p class="settings-description">Pilih informasi yang ingin kamu terima di dalam aplikasi.</p>
+            <form method="post" class="settings-form">
+                {% csrf_token %}
+                {% for field in form %}
+                    <label class="settings-option" for="{{ field.id_for_label }}">
+                        <span>
+                            <strong>{{ field.label }}</strong>
+                            {% if field.name == "order_notifications" %}<small>Konfirmasi, perubahan status, dan pembatalan pesanan.</small>
+                            {% elif field.name == "activity_notifications" %}<small>Status pengajuan donasi kain dan upcycling.</small>
+                            {% elif field.name == "promotional_notifications" %}<small>Promo marketplace dan informasi ReBatik.</small>
+                            {% else %}<small>Preferensi pengiriman melalui email. Perlu konfigurasi email server agar aktif.</small>{% endif %}
+                        </span>
+                        {{ field }}
+                    </label>
+                {% endfor %}
+                <div class="profile-card-actions settings-form-actions">
+                    <button class="profile-button" type="submit">Simpan Pengaturan</button>
+                    <a class="profile-button profile-button-secondary" href="{% url 'profiles:overview' %}">Kembali ke Profil</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="profile-card">
+            <div class="profile-section-heading">
+                <div class="settings-heading-row">
+                    <span class="settings-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>
+                    </span>
+                    <h2>Profil dan Foto</h2>
+                </div>
+            </div>
+            <p class="settings-description">Foto profil dapat diganti kapan saja. Setelah disimpan, foto baru akan tampil di navbar dan halaman profil.</p>
+            <a class="profile-button" href="{% url 'profiles:edit' %}">Ubah Profil / Foto</a>
+        </div>
+    </section>
+</div>
+{% endblock content %}

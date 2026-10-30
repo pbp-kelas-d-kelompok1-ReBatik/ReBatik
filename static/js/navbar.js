@@ -13,6 +13,8 @@
     var drawer = document.getElementById("rbDrawer");
     var backdrop = document.getElementById("rbDrawerBackdrop");
     var closeBtn = document.getElementById("rbDrawerClose");
+    var notificationTrigger = document.getElementById("rbNotificationTrigger");
+    var notificationPanel = document.getElementById("rbNotificationPanel");
 
     var canHover = window.matchMedia("(hover: hover) and (pointer: fine)");
     var hoverTimer = null;
@@ -89,6 +91,56 @@
             userMenu && !userMenu.contains(e.target) && !(userTrigger && userTrigger.contains(e.target))
         ) {
             closePanels();
+        }
+    });
+
+    /* ---------- Notification dropdown (content loaded by HTMX) ---------- */
+    if (notificationTrigger && notificationPanel) {
+        notificationTrigger.addEventListener("click", function () {
+            var willOpen = notificationPanel.hidden;
+            notificationPanel.hidden = !willOpen;
+            notificationTrigger.setAttribute("aria-expanded", willOpen ? "true" : "false");
+        });
+
+        document.addEventListener("click", function (event) {
+            if (
+                !notificationPanel.contains(event.target) &&
+                !notificationTrigger.contains(event.target)
+            ) {
+                notificationPanel.hidden = true;
+                notificationTrigger.setAttribute("aria-expanded", "false");
+            }
+        });
+    }
+
+    /* ---------- Live search dropdown ---------- */
+    document.querySelectorAll(".rb-search-wrap").forEach(function (wrapper) {
+        var input = wrapper.querySelector('input[name="q"]');
+        var results = wrapper.querySelector(".rb-search-results");
+        if (!input || !results) return;
+
+        input.addEventListener("focus", function () {
+            if (results.innerHTML.trim()) results.classList.add("is-visible");
+        });
+        input.addEventListener("input", function () {
+            results.classList.add("is-visible");
+        });
+        document.addEventListener("click", function (event) {
+            if (!wrapper.contains(event.target)) {
+                results.classList.remove("is-visible");
+            }
+        });
+        input.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") {
+                results.classList.remove("is-visible");
+                input.blur();
+            }
+        });
+    });
+
+    document.body.addEventListener("htmx:afterSwap", function (event) {
+        if (event.detail.target && event.detail.target.classList.contains("rb-search-results")) {
+            event.detail.target.classList.add("is-visible");
         }
     });
 

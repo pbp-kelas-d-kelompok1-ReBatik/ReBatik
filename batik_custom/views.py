@@ -6,7 +6,7 @@ from django.views.decorators.http import require_POST
 from django.db.models import Q
 from .forms import DesignCreateForm, DesignSettingsForm, BatikOrderForm
 from .models import SavedDesign, StyleOptions, StyleProfile, ColorPalette, RecommendedMotif, BatikOrder
-from main.models import Notification
+from main.views import create_notification
 
 @login_required
 def show_home(request):
@@ -304,10 +304,10 @@ def batik_order_create(request):
                     total_price=unit_price * data["quantity"],
                 )
 
-                Notification.objects.create(
-                    user=request.user,
-                    title="Pesanan berhasil dibuat",
-                    message=f"Pesanan custom batik #{order.pk} berhasil dikirim pada {order.created_at.strftime('%d %B %Y pukul %H:%M')}. Status: {order.get_status_display()}.",
+                create_notification(
+                    request.user,
+                    "Pesanan berhasil dibuat",
+                    f"Pesanan custom batik #{order.pk} berhasil dikirim pada {order.created_at.strftime('%d %B %Y pukul %H:%M')}. Status: {order.get_status_display()}.",
                     notification_type="order_created",
                     target_url=f"/batik_custom/order/{order.pk}/confirmation/",
                 )

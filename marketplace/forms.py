@@ -12,6 +12,7 @@ from .models import (
 )
 from .validators import normalize_indonesian_whatsapp
 
+
 MIN_PRODUCT_PRICE = 1_000
 MAX_PRODUCT_PRICE = 100_000_000
 MAX_PRODUCT_STOCK = 10_000
@@ -21,11 +22,16 @@ FIELD_CLASSES = (
     "focus:outline-none focus:ring-2 focus:ring-[var(--gold)] "
     "mp-field mp-input"
 )
+
 TEXTAREA_CLASSES = (
     "block w-full px-4 py-3 text-[var(--brown)] "
     "focus:outline-none focus:ring-2 focus:ring-[var(--gold)] "
     "mp-field mp-textarea"
 )
+
+
+
+# PRODUCT FORM (fitur dari main)
 
 
 class ProductForm(forms.ModelForm):
@@ -49,6 +55,7 @@ class ProductForm(forms.ModelForm):
             "invalid": "Masukkan harga berupa angka bulat.",
         },
     )
+
     stock = forms.IntegerField(
         label="Stok",
         min_value=0,
@@ -108,9 +115,7 @@ class ProductForm(forms.ModelForm):
                 }
             ),
             "category": forms.Select(
-                attrs={
-                    "class": FIELD_CLASSES,
-                }
+                attrs={"class": FIELD_CLASSES}
             ),
             "description": forms.Textarea(
                 attrs={
@@ -173,12 +178,17 @@ class ProductForm(forms.ModelForm):
         url = (self.cleaned_data.get("image_url") or "").strip()
         if not url:
             return None
+
         parsed = urlparse(url)
         if parsed.scheme.lower() != "https" or not parsed.netloc:
             raise forms.ValidationError(
                 "Masukkan URL gambar yang valid dengan protokol https://."
             )
         return url
+
+
+
+# CHECKOUT FORM (fitur dari main)
 
 
 class CheckoutForm(forms.ModelForm):
@@ -189,12 +199,15 @@ class CheckoutForm(forms.ModelForm):
         self.fields["delivery_method"].choices = Order.DELIVERY_CHOICES
         self.fields["dropoff_point"].queryset = DropOffPoint.objects.all()
         self.fields["dropoff_point"].required = False
-        self.fields["dropoff_point"].empty_label = "Pilih titik Drop-off Point"
+        self.fields["dropoff_point"].empty_label = (
+            "Pilih titik Drop-off Point"
+        )
         self.fields["address"].required = False
 
         max_qty = MAX_ORDER_QUANTITY
         if self.product is not None and self.product.stock > 0:
             max_qty = min(MAX_ORDER_QUANTITY, self.product.stock)
+
         self.fields["quantity"].widget.attrs["max"] = max_qty
 
     class Meta:
@@ -217,7 +230,9 @@ class CheckoutForm(forms.ModelForm):
         }
         error_messages = {
             "notes": {
-                "max_length": f"Catatan maksimal {NOTES_MAX_LENGTH} karakter."
+                "max_length": (
+                    f"Catatan maksimal {NOTES_MAX_LENGTH} karakter."
+                )
             }
         }
         widgets = {
@@ -228,8 +243,12 @@ class CheckoutForm(forms.ModelForm):
                     "class": FIELD_CLASSES,
                 }
             ),
-            "delivery_method": forms.RadioSelect(attrs={"class": "sr-only"}),
-            "dropoff_point": forms.Select(attrs={"class": FIELD_CLASSES}),
+            "delivery_method": forms.RadioSelect(
+                attrs={"class": "sr-only"}
+            ),
+            "dropoff_point": forms.Select(
+                attrs={"class": FIELD_CLASSES}
+            ),
             "address": forms.TextInput(
                 attrs={
                     "maxlength": 255,
@@ -256,24 +275,33 @@ class CheckoutForm(forms.ModelForm):
 
     def clean_quantity(self):
         quantity = self.cleaned_data["quantity"]
+
         if quantity < 1 or quantity > MAX_ORDER_QUANTITY:
             raise forms.ValidationError(
                 f"Jumlah produk harus antara 1 dan {MAX_ORDER_QUANTITY}."
             )
+
         if self.product is not None:
             if self.product.stock <= 0:
-                raise forms.ValidationError("Stok produk ini sedang habis.")
+                raise forms.ValidationError(
+                    "Stok produk ini sedang habis."
+                )
+
             if quantity > self.product.stock:
                 raise forms.ValidationError(
                     f"Jumlah melebihi stok tersedia ({self.product.stock})."
                 )
+
         return quantity
 
     def clean_whatsapp(self):
-        return normalize_indonesian_whatsapp(self.cleaned_data["whatsapp"])
+        return normalize_indonesian_whatsapp(
+            self.cleaned_data["whatsapp"]
+        )
 
     def clean(self):
         cleaned_data = super().clean()
+
         delivery_method = cleaned_data.get("delivery_method")
         dropoff_point = cleaned_data.get("dropoff_point")
         address = (cleaned_data.get("address") or "").strip()
@@ -284,15 +312,17 @@ class CheckoutForm(forms.ModelForm):
                     "dropoff_point",
                     "Pilih lokasi Drop-off Point pengambilan produk.",
                 )
+
             cleaned_data["address"] = ""
+
         elif delivery_method == Order.DeliveryMethod.KURIR:
             if not address:
                 self.add_error(
                     "address",
                     "Masukkan alamat pengiriman produk.",
                 )
+
             cleaned_data["address"] = address
             cleaned_data["dropoff_point"] = None
 
         return cleaned_data
-

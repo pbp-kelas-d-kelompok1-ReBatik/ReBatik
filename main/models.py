@@ -2,7 +2,17 @@ from django.conf import settings
 from django.db import models
 
 class Notification(models.Model):
-    TYPE_CHOICES = [("login", "Login"), ("order_created", "Pesanan berhasil"), ("order_updated", "Pembaruan pesanan"), ("general", "Informasi")]
+    TYPE_CHOICES = [
+        ("login", "Login"),
+        ("logout", "Logout"),
+        ("register", "Pendaftaran"),
+        ("order_created", "Pesanan berhasil"),
+        ("order_updated", "Pembaruan pesanan"),
+        ("order_cancelled", "Pesanan dibatalkan"),
+        ("donation_updated", "Pembaruan donasi"),
+        ("upcycling_updated", "Pembaruan upcycling"),
+        ("general", "Informasi"),
+    ]
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications")
     title = models.CharField(max_length=160)
     message = models.TextField()
