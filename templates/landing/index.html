@@ -1,0 +1,229 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<title>ReBatik | Menghidupkan Kembali Kain Tak Terpakai</title>
+
+<meta
+    name="description"
+    content="ReBatik menghidupkan kembali kain tak terpakai melalui upcycling, seni, dan budaya batik Nusantara."
+>
+{% endblock meta %}
+
+
+{% block css %}
+
+<link rel="stylesheet" href="{% static 'css/landing.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap"
+    rel="stylesheet"
+>
+
+{% endblock css %}
+
+
+{% block content %}
+
+<div class="landing-page">
+
+    <!-- HERO SECTION -->
+
+    <section class="landing-hero">
+
+        <div class="landing-hero-content">
+
+            <p class="landing-eyebrow">
+                UPCYCLE <span>•</span>
+                CULTURE <span>•</span>
+                VALUE
+            </p>
+
+            <h1>Re-Batik</h1>
+
+            <h2>
+                Menghidupkan Kembali Kain Tak Terpakai
+            </h2>
+
+            <p class="landing-description">
+                Platform upcycling yang memadukan kain tak
+                terpakai dengan seni dan budaya batik Nusantara.
+            </p>
+
+            <a href="#about-rebatik" class="landing-button">
+                ↓ More About ReBatik
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- ABOUT REBATIK -->
+
+    <section
+        class="landing-panel landing-about"
+        id="about-rebatik"
+    >
+
+        <div class="landing-about-content">
+
+            <p class="landing-section-label">
+                ABOUT REBATIK
+            </p>
+
+            <h2>What Is ReBatik?</h2>
+
+            <p>
+                ReBatik adalah platform yang memadukan konsep
+                upcycling dengan kreativitas seni dan warisan
+                budaya Indonesia.
+
+                Kain dan pakaian yang sudah tidak terpakai
+                dapat diolah kembali menjadi karya yang memiliki
+                nilai estetika, budaya, dan ekonomi.
+            </p>
+
+        </div>
+
+
+        <div class="landing-values">
+
+            <article class="landing-value-card">
+
+                <div class="landing-value-icon">
+                    ♻
+                </div>
+
+                <h3>UPCYCLE</h3>
+
+                <p>
+                    Memanfaatkan kembali kain yang
+                    sudah tidak digunakan.
+                </p>
+
+            </article>
+
+
+            <article class="landing-value-card">
+
+                <div class="landing-value-icon">
+                    ✿
+                </div>
+
+                <h3>CULTURE</h3>
+
+                <p>
+                    Melestarikan seni dan budaya
+                    batik Nusantara.
+                </p>
+
+            </article>
+
+
+            <article class="landing-value-card">
+
+                <div class="landing-value-icon">
+                    ✧
+                </div>
+
+                <h3>VALUE</h3>
+
+                <p>
+                    Menciptakan nilai baru melalui
+                    kreativitas dan inovasi.
+                </p>
+
+            </article>
+
+        </div>
+
+    </section>
+
+
+    <!-- THE PROBLEM -->
+
+    <section class="landing-panel landing-problem">
+
+        <!-- Decorative batik ornaments -->
+
+        <img
+            src="{% static 'img/shared/cloud-right.webp' %}"
+            alt=""
+            class="landing-decoration landing-decoration-top"
+            aria-hidden="true"
+        >
+
+        <img
+            src="{% static 'img/shared/cloud-left.webp' %}"
+            alt=""
+            class="landing-decoration landing-decoration-bottom"
+            aria-hidden="true"
+        >
+
+
+        <div class="landing-problem-content">
+
+            <div class="landing-problem-label">
+
+                <p class="landing-section-label">
+                    THE PROBLEM
+                </p>
+
+                <span></span>
+
+            </div>
+
+
+            <h2>
+                Limbah Tekstil Yang Terus Bertambah
+            </h2>
+
+            <p>
+                Pakaian dan kain yang sudah tidak digunakan
+                dapat berakhir sebagai limbah tekstil.
+
+                Ketika material tersebut tidak lagi
+                dimanfaatkan, potensi penggunaan kembali
+                dan nilai yang dimilikinya ikut terabaikan.
+            </p>
+
+        </div>
+
+
+        <div class="landing-problem-image">
+
+            <img
+                src="{% static 'img/bgbatik.webp' %}"
+                alt="Kumpulan kain batik yang memiliki potensi untuk dimanfaatkan kembali"
+            >
+
+            <p>
+                ReBatik percaya bahwa material tekstil
+                masih memiliki potensi untuk diolah kembali.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- IMPACT TRACKER -->
+
+    <section class="landing-impact">
+
+        <a
+            href="{% url 'impact_tracker:dashboard' %}"
+            class="landing-button landing-impact-button"
+        >
+            ↓ View Our Impact Tracker
+        </a>
+
+    </section>
+
+
+</div>
+
+{% endblock content %}
