@@ -125,7 +125,9 @@
                 <a href="{% url 'impact_tracker:dashboard' %}">
                     Impact Tracker
                 </a>
-                <a href="#">Landing page</a>
+                <a href="{% url 'landing:index' %}">
+                    Landing page
+                </a>
 
                 {% if user.is_authenticated %}
 
