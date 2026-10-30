@@ -41,7 +41,6 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         "whatsapp": "081234567890",
         "fabric_condition": "GOOD",
         "fabric_dimensions": "1 celana",
-        "fabric_composition": "Katun 95%, elastane 5%",
     }
 
     def form(self, data):
@@ -54,10 +53,8 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         """Test behavior: valid request form."""
         form = self.form(self.valid_data)
         self.assertTrue(form.is_valid(), form.errors)
-        self.assertEqual(
-            form.cleaned_data["fabric_composition"],
-            "Katun 95%, elastane 5%",
-        )
+        self.assertNotIn("fabric_composition", form.fields)
+        self.assertNotIn("design_notes", form.fields)
 
     def test_batik_pattern_requires_an_explicit_choice_on_new_request(self):
         empty_form = UpcyclingRequestForm()
@@ -143,10 +140,10 @@ class UpcyclingRequestFormTests(SimpleTestCase):
                 self.assertFalse(form.is_valid())
                 self.assertIn("fabric_photos", form.errors)
 
-    def test_fabric_composition_is_optional_and_prompt_explains_the_choices(self):
-        form = self.form({**self.valid_data, "fabric_composition": ""})
+    def test_material_choices_remain_without_technical_composition_field(self):
+        form = self.form(self.valid_data)
 
-        self.assertFalse(form.fields["fabric_composition"].required)
+        self.assertNotIn("fabric_composition", form.fields)
         self.assertEqual(
             form.fields["fabric"].label,
             "Jenis bahan utama yang akan diolah",
@@ -211,7 +208,6 @@ class UpcyclingRequestFormTests(SimpleTestCase):
             **self.valid_data,
             "batik_motif": "Parang",
             "motif_placement": "Bagian depan",
-            "design_notes": "Ukuran kecil dan warna biru",
         }
         form = self.form(data)
 
@@ -219,7 +215,7 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         self.assertFalse(form.cleaned_data["wants_batik_accent"])
         self.assertEqual(form.cleaned_data["batik_motif"], "")
         self.assertEqual(form.cleaned_data["motif_placement"], "")
-        self.assertEqual(form.cleaned_data["design_notes"], "")
+        self.assertNotIn("design_notes", form.fields)
 
     def test_user_can_request_an_optional_batik_accent(self):
         data = {
@@ -227,7 +223,6 @@ class UpcyclingRequestFormTests(SimpleTestCase):
             "wants_batik_accent": "on",
             "batik_motif": "Mega Mendung",
             "motif_placement": "Bagian depan tote bag",
-            "design_notes": "Aksen kecil berwarna biru muda",
         }
         form = self.form(data)
 
@@ -602,11 +597,9 @@ class UpcyclingRequestViewTests(TestCase):
         "has_batik_pattern": "NO",
         "fabric_condition": "GOOD",
         "fabric_dimensions": "1 celana jeans",
-        "fabric_composition": "Katun 95%, elastane 5%",
         "wants_batik_accent": "on",
         "batik_motif": "Mega Mendung",
         "motif_placement": "Bagian depan tote bag",
-        "design_notes": "Aksen kecil berwarna biru muda",
         "category": "TAS",
         "product": "TOTE_BAG",
         "quantity": 1,
@@ -696,10 +689,7 @@ class UpcyclingRequestViewTests(TestCase):
             reverse("upcycling:request_success", args=[upcycling_request.pk]),
         )
         self.assertEqual(upcycling_request.status, "PENDING_ASSIGNMENT")
-        self.assertEqual(
-            upcycling_request.fabric_composition,
-            "Katun 95%, elastane 5%",
-        )
+        self.assertEqual(upcycling_request.fabric_composition, "")
         self.assertEqual(upcycling_request.has_batik_pattern, "NO")
         self.assertEqual(upcycling_request.current_item_form, "PANTS")
         self.assertTrue(upcycling_request.wants_batik_accent)
@@ -743,7 +733,7 @@ class UpcyclingRequestViewTests(TestCase):
         self.assertContains(response, "Pilih 1–3 foto")
         self.assertContains(response, 'id="reference-photo-upload"')
         self.assertContains(response, 'name="reference_photos"')
-        self.assertContains(response, "Foto referensi produk/desain (opsional)")
+        self.assertContains(response, "Foto contoh hasil yang Anda inginkan (opsional)")
 
     def test_create_request_saves_each_uploaded_fabric_photo(self):
         self.client.force_login(self.user)

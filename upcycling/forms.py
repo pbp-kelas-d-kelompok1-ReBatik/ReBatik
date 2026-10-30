@@ -83,7 +83,7 @@ class UpcyclingRequestForm(forms.ModelForm):
             if not self.instance._state.adding
             else 0
         )
-        self.fields["reference_photos"].label = "Foto referensi produk/desain (opsional)"
+        self.fields["reference_photos"].label = "Foto contoh hasil yang Anda inginkan (opsional)"
         self.fields["reference_photos"].widget.attrs.update(
             {
                 "accept": "image/*",
@@ -138,22 +138,23 @@ class UpcyclingRequestForm(forms.ModelForm):
             *UpcyclingRequest.FabricCondition.choices,
         ]
         self.fields["fabric_dimensions"].label = (
-            "Perkiraan ukuran atau jumlah barang/bahan"
+            "Berapa banyak barang atau bahan yang ingin diolah?"
         )
         self.fields["fabric_dimensions"].help_text = (
-            "Tidak perlu mengukur secara tepat. Informasi ini membantu artisan "
-            "memperkirakan kecukupan bahan."
-        )
-        self.fields["fabric_composition"].label = "Komposisi bahan (opsional)"
-        self.fields["fabric_composition"].help_text = (
-            "Jika diketahui, tulis serat penyusun kain, misalnya katun 95% dan elastane 5%."
+            "Tidak perlu mengukur tepat. Contoh: 1 celana jeans ukuran L, 2 kaos, "
+            "atau kain sekitar 1 × 2 m. Informasi ini membantu artisan memperkirakan kecukupan bahan."
         )
         self.fields["wants_batik_accent"].label = (
             "Kombinasikan bahan saya dengan kain batik dari ReBatik"
         )
         self.fields["batik_motif"].label = "Motif batik yang diinginkan (opsional)"
-        self.fields["motif_placement"].label = "Penempatan motif (opsional)"
-        self.fields["design_notes"].label = "Catatan desain tambahan (opsional)"
+        self.fields["motif_placement"].label = (
+            "Di bagian mana Anda ingin kain batik ditambahkan? (opsional)"
+        )
+        self.fields["quantity"].label = "Berapa produk baru yang ingin dibuat?"
+        self.fields["notes"].help_text = (
+            "Tuliskan preferensi warna, ukuran produk, atau permintaan lain untuk artisan."
+        )
         self.fields["fabric_other_description"].label = "Sebutkan bahan lainnya"
         self.fields["fabric_other_description"].widget.attrs.update(
             {"placeholder": "Contoh: kanvas, corduroy, atau linen"}
@@ -169,14 +170,12 @@ class UpcyclingRequestForm(forms.ModelForm):
             "has_batik_pattern",
             "fabric_condition",
             "fabric_dimensions",
-            "fabric_composition",
             "category",
             "product",
             "custom_product",
             "wants_batik_accent",
             "batik_motif",
             "motif_placement",
-            "design_notes",
             "quantity",
             "notes",
             "whatsapp",
@@ -190,8 +189,7 @@ class UpcyclingRequestForm(forms.ModelForm):
             "wants_batik_accent": "Kombinasikan bahan saya dengan kain batik dari ReBatik",
             "batik_motif": "Motif batik yang diinginkan (opsional)",
             "motif_placement": "Penempatan motif (opsional)",
-            "design_notes": "Catatan desain tambahan (opsional)",
-            "quantity": "Jumlah Produk",
+            "quantity": "Berapa produk baru yang ingin dibuat?",
             "notes": "Catatan tambahan untuk artisan (opsional)",
             "whatsapp": "Nomor WhatsApp",
         }
@@ -209,13 +207,6 @@ class UpcyclingRequestForm(forms.ModelForm):
             ),
             "has_batik_pattern": forms.RadioSelect(attrs={"class": "sr-only"}),
             "fabric_dimensions": forms.TextInput(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input", "placeholder": "Contoh: 1 celana jeans ukuran L, 2 kaos, atau kain 1 × 2 m"}),
-            "fabric_composition": forms.TextInput(
-                attrs={
-                    "class": f"{FIELD_CLASSES} upcycling-field upcycling-input",
-                    "maxlength": 120,
-                    "placeholder": "Contoh: katun 95%, elastane 5%",
-                }
-            ),
             "fabric_condition": forms.Select(attrs={"class": f"{FIELD_CLASSES} upcycling-field upcycling-input"}),
             "wants_batik_accent": forms.CheckboxInput(
                 attrs={"class": "upcycling-checkbox"}
@@ -232,14 +223,6 @@ class UpcyclingRequestForm(forms.ModelForm):
                     "class": f"{FIELD_CLASSES} upcycling-field upcycling-input",
                     "maxlength": 150,
                     "placeholder": "Contoh: bagian depan tote bag",
-                }
-            ),
-            "design_notes": forms.Textarea(
-                attrs={
-                    "rows": 3,
-                    "maxlength": NOTES_MAX_LENGTH,
-                    "class": f"{FIELD_CLASSES} upcycling-field upcycling-textarea",
-                    "placeholder": "Warna, ukuran aksen, atau detail desain lainnya",
                 }
             ),
             "category": forms.RadioSelect(attrs={"class": "sr-only"}),
@@ -372,7 +355,6 @@ class UpcyclingRequestForm(forms.ModelForm):
         if not cleaned_data.get("wants_batik_accent"):
             cleaned_data["batik_motif"] = ""
             cleaned_data["motif_placement"] = ""
-            cleaned_data["design_notes"] = ""
 
         return cleaned_data
 

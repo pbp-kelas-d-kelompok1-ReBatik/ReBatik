@@ -342,14 +342,6 @@
                     <p class="text-sm text-[var(--brown-muted)]">{{ form.fabric_dimensions.help_text }}</p>
                     {{ form.fabric_dimensions.errors }}
                 </div>
-                <div class="space-y-2 sm:col-span-2">
-                    <label for="{{ form.fabric_composition.id_for_label }}" class="block text-base font-semibold sm:text-lg">
-                        {{ form.fabric_composition.label }}
-                    </label>
-                    {{ form.fabric_composition }}
-                    <p class="text-sm text-[var(--brown-muted)]">{{ form.fabric_composition.help_text }}</p>
-                    {{ form.fabric_composition.errors }}
-                </div>
             </div>
         </section>
 
@@ -461,13 +453,6 @@
                         {{ form.motif_placement }}
                         {{ form.motif_placement.errors }}
                     </div>
-                    <div class="space-y-2 sm:col-span-2">
-                        <label for="{{ form.design_notes.id_for_label }}" class="block font-semibold">
-                            {{ form.design_notes.label }}
-                        </label>
-                        {{ form.design_notes }}
-                        {{ form.design_notes.errors }}
-                    </div>
                 </div>
             </fieldset>
         </section>
@@ -532,6 +517,7 @@
                         {{ form.notes.label }}
                     </label>
                     {{ form.notes }}
+                    <p class="text-sm text-[var(--brown-muted)]">{{ form.notes.help_text }}</p>
                     {{ form.notes.errors }}
                 </div>
 
@@ -541,7 +527,7 @@
                         {{ form.reference_photos }}
                         <div id="reference-photo-placeholder" class="upcycling-photo-placeholder">
                             <span class="upcycling-photo-add"></span>
-                            <span class="font-bold">Tambah foto referensi</span>
+                            <span class="font-bold">Tambah foto contoh hasil</span>
                             <span>Contoh produk, model, atau detail desain yang Anda inginkan</span>
                             <span class="text-sm">Pilih hingga 3 gambar · maksimal 5 MB per gambar</span>
                         </div>
@@ -549,7 +535,7 @@
                         <div id="reference-photo-previews" class="absolute inset-0 z-10 hidden grid-cols-2 gap-2 p-3 sm:grid-cols-3"></div>
                     </div>
                     <p id="reference-photo-count" class="hidden text-sm font-semibold text-[var(--brown-muted)]" aria-live="polite"></p>
-                    <p class="text-sm text-[var(--brown-muted)]">Opsional; foto kain yang akan diolah diunggah terpisah pada langkah pertama.</p>
+                    <p class="text-sm text-[var(--brown-muted)]">Unggah gambar produk atau desain yang ingin dijadikan acuan. Foto barang atau kain yang akan diolah diunggah terpisah pada Step 1.</p>
                     {{ form.reference_photos.errors }}
                 </div>
             </div>
@@ -577,10 +563,10 @@
                     <span id="summary-batik">Tanpa tambahan batik</span>
                 </p>
                 <p class="mt-2 text-base text-[var(--brown-muted)]">
-                    Setelah kain diterima dan diperiksa, artisan akan mengirim penawaran harga. Jika Anda menyetujuinya,
-                    isi metode dan alamat atau lokasi penerimaan produk. Tim ReBatik akan menginformasikan langkah selanjutnya sebelum produksi dimulai.
-                    Cara penyerahan kain akan diatur setelah artisan menyetujui review awal. Kain pribadi tidak otomatis menjadi donasi.
+                    Setelah bahan diperiksa, artisan akan mengirim penawaran harga. Jika Anda menyetujuinya, isi metode dan lokasi penerimaan produk.
+                    Tim ReBatik akan menginformasikan langkah berikutnya sebelum produksi dimulai.
                 </p>
+                <p class="mt-2 text-sm text-[var(--brown-muted)]">Bahan pribadi tetap milik Anda dan tidak otomatis menjadi donasi.</p>
             </aside>
             <img
                 src="{% static 'img/mascot/shirt.webp' %}"

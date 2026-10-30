@@ -15,9 +15,9 @@ const initializeUpcyclingForm = () => {
         fabric_other_description: ["Bahan lainnya", "Sebutkan bahan lainnya."],
         has_batik_pattern: ["Motif batik", "Pilih apakah barang atau kain sudah memiliki motif batik."],
         fabric_photos: ["Foto barang atau kain", "Unggah 1 sampai 3 foto barang atau kain."],
-        reference_photos: ["Foto referensi", "Pilih maksimal 3 gambar referensi."],
+        reference_photos: ["Foto contoh hasil", "Pilih maksimal 3 gambar referensi."],
         fabric_condition: ["Kondisi barang atau kain", "Pilih kondisi barang atau kain jika diketahui."],
-        fabric_dimensions: ["Ukuran atau jumlah barang/bahan", "Isi perkiraan ukuran atau jumlah barang/bahan."],
+        fabric_dimensions: ["Jumlah barang atau bahan", "Isi perkiraan jumlah barang atau bahan yang ingin diolah."],
         category: ["Kategori produk", "Pilih kategori produk."],
         product: ["Produk yang ingin dibuat", "Pilih produk yang ingin dibuat."],
         custom_product: ["Produk yang diinginkan", "Tuliskan produk yang Anda inginkan."],
@@ -169,7 +169,6 @@ const initializeUpcyclingForm = () => {
     const batikPreferenceFields = [
         document.getElementById("id_batik_motif"),
         document.getElementById("id_motif_placement"),
-        document.getElementById("id_design_notes"),
     ];
     function getRadioLabel(name, fallback) {
         const selectedRadio = form.querySelector(`input[name="${name}"]:checked`);
