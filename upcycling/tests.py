@@ -32,6 +32,8 @@ TINY_PNG = b64decode(
 class UpcyclingRequestFormTests(SimpleTestCase):
     valid_data = {
         "fabric": "DENIM",
+        "current_item_form": "PANTS",
+        "has_batik_pattern": "NO",
         "category": "TAS",
         "product": "TOTE_BAG",
         "quantity": 1,
@@ -56,6 +58,17 @@ class UpcyclingRequestFormTests(SimpleTestCase):
             form.cleaned_data["fabric_composition"],
             "Katun 95%, elastane 5%",
         )
+
+    def test_batik_pattern_requires_an_explicit_choice_on_new_request(self):
+        empty_form = UpcyclingRequestForm()
+        form = UpcyclingRequestForm(
+            data={**self.valid_data, "has_batik_pattern": ""}
+        )
+
+        self.assertEqual(empty_form.fields["has_batik_pattern"].initial, "")
+        self.assertTrue(form.fields["has_batik_pattern"].required)
+        self.assertFalse(form.is_valid())
+        self.assertIn("has_batik_pattern", form.errors)
 
     def test_fabric_upload_accepts_up_to_three_images(self):
         files = [
@@ -83,6 +96,37 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         self.assertFalse(form.is_valid())
         self.assertIn("fabric_photos", form.errors)
 
+    def test_reference_photos_are_optional_and_limited_to_three_images(self):
+        no_references = UpcyclingRequestForm(
+            data=self.valid_data,
+            files={"fabric_photos": [SimpleUploadedFile("fabric.png", TINY_PNG, content_type="image/png")]},
+        )
+        self.assertTrue(no_references.is_valid(), no_references.errors)
+
+        files = [
+            SimpleUploadedFile(f"reference-{index}.png", TINY_PNG, content_type="image/png")
+            for index in range(3)
+        ]
+        valid_form = UpcyclingRequestForm(
+            data=self.valid_data,
+            files={"fabric_photos": [SimpleUploadedFile("fabric.png", TINY_PNG, content_type="image/png")] , "reference_photos": files},
+        )
+        self.assertTrue(valid_form.is_valid(), valid_form.errors)
+        self.assertEqual(len(valid_form.cleaned_data["reference_photos"]), 3)
+
+        too_many = UpcyclingRequestForm(
+            data=self.valid_data,
+            files={
+                "fabric_photos": [SimpleUploadedFile("fabric.png", TINY_PNG, content_type="image/png")],
+                "reference_photos": [
+                    SimpleUploadedFile(f"reference-{index}.png", TINY_PNG, content_type="image/png")
+                    for index in range(4)
+                ],
+            },
+        )
+        self.assertFalse(too_many.is_valid())
+        self.assertIn("reference_photos", too_many.errors)
+
     def test_fabric_upload_rejects_non_images_and_files_over_five_mb(self):
         invalid_files = [
             SimpleUploadedFile("fabric.txt", b"not an image", content_type="text/plain"),
@@ -105,16 +149,62 @@ class UpcyclingRequestFormTests(SimpleTestCase):
         self.assertFalse(form.fields["fabric_composition"].required)
         self.assertEqual(
             form.fields["fabric"].label,
-            "Jenis kain atau barang yang akan diolah",
+            "Jenis bahan utama yang akan diolah",
         )
         self.assertEqual(
             dict(form.fields["fabric"].choices)["DENIM"],
-            "Jeans/denim",
+            "Denim/jeans",
         )
         self.assertEqual(
-            dict(form.fields["fabric"].choices)["BATIK"],
-            "Kain bermotif batik",
+            dict(form.fields["fabric"].choices)["SYNTHETIC"],
+            "Sintetis (misalnya polyester)",
         )
+        self.assertIn("UNKNOWN", dict(form.fields["fabric"].choices))
+        self.assertNotIn("BATIK", dict(form.fields["fabric"].choices))
+
+    def test_batik_pattern_question_is_separate_from_material_and_optional_addition(self):
+        form = self.form({**self.valid_data, "has_batik_pattern": "YES"})
+
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["has_batik_pattern"], "YES")
+        self.assertFalse(form.cleaned_data["wants_batik_accent"])
+        self.assertEqual(
+            {value for value, _ in form.fields["has_batik_pattern"].choices if value},
+            {"YES", "NO", "UNSURE"},
+        )
+        self.assertTrue(form.fields["current_item_form"].required)
+
+    def test_current_item_form_is_a_separate_required_choice_with_other_details(self):
+        form = self.form({**self.valid_data, "current_item_form": "OTHER"})
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("current_item_form_other", form.errors)
+        self.assertEqual(
+            {value for value, _ in form.fields["current_item_form"].choices},
+            {"PANTS", "TOP", "JACKET", "FABRIC", "OTHER"},
+        )
+
+        form = self.form({
+            **self.valid_data,
+            "current_item_form": "OTHER",
+            "current_item_form_other": "Tas kain lama",
+        })
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["current_item_form_other"], "Tas kain lama")
+
+    def test_current_item_form_must_be_selected(self):
+        form = self.form({**self.valid_data, "current_item_form": ""})
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("current_item_form", form.errors)
+
+    def test_unknown_material_does_not_require_other_material_description(self):
+        form = self.form(
+            {**self.valid_data, "fabric": "UNKNOWN", "fabric_other_description": ""}
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["fabric_other_description"], "")
 
     def test_batik_addition_preferences_are_optional_and_cleared_when_not_requested(self):
         data = {
@@ -155,7 +245,7 @@ class UpcyclingRequestFormTests(SimpleTestCase):
 
         self.assertEqual(
             form.fields["fabric_condition"].choices[0],
-            ("", "Pilih kondisi kain (opsional)"),
+            ("", "Pilih kondisi (opsional)"),
         )
 
     def test_request_form_defers_fabric_handoff_details_until_review_approval(self):
@@ -508,6 +598,8 @@ class UpcyclingRequestViewTests(TestCase):
 
     form_data = {
         "fabric": "DENIM",
+        "current_item_form": "PANTS",
+        "has_batik_pattern": "NO",
         "fabric_condition": "GOOD",
         "fabric_dimensions": "1 celana jeans",
         "fabric_composition": "Katun 95%, elastane 5%",
@@ -608,6 +700,8 @@ class UpcyclingRequestViewTests(TestCase):
             upcycling_request.fabric_composition,
             "Katun 95%, elastane 5%",
         )
+        self.assertEqual(upcycling_request.has_batik_pattern, "NO")
+        self.assertEqual(upcycling_request.current_item_form, "PANTS")
         self.assertTrue(upcycling_request.wants_batik_accent)
         self.assertEqual(upcycling_request.batik_motif, "Mega Mendung")
         self.assertEqual(
@@ -641,12 +735,15 @@ class UpcyclingRequestViewTests(TestCase):
 
         self.assertContains(response, 'id="fabric-photo-upload"')
         self.assertContains(response, 'class="upcycling-photo-input"')
-        self.assertContains(response, "Tambah foto kain")
+        self.assertContains(response, "Tambah foto barang atau kain")
         self.assertContains(response, 'id="fabric-photo-preview"')
         self.assertContains(response, 'src="/static/img/mascot/pointing.webp"')
         self.assertContains(response, 'class="upcycling-photo-add"')
         self.assertContains(response, 'name="fabric_photos"')
         self.assertContains(response, "Pilih 1–3 foto")
+        self.assertContains(response, 'id="reference-photo-upload"')
+        self.assertContains(response, 'name="reference_photos"')
+        self.assertContains(response, "Foto referensi produk/desain (opsional)")
 
     def test_create_request_saves_each_uploaded_fabric_photo(self):
         self.client.force_login(self.user)
@@ -668,6 +765,28 @@ class UpcyclingRequestViewTests(TestCase):
             reverse("upcycling:request_detail", args=[upcycling_request.pk])
         )
         self.assertEqual(len(detail_response.context["fabric_photos"]), 3)
+
+    def test_create_request_saves_and_displays_reference_photos_separately(self):
+        self.client.force_login(self.user)
+        payload = self.form_data.copy()
+        payload["fabric_photos"] = [
+            SimpleUploadedFile("fabric.png", TINY_PNG, content_type="image/png")
+        ]
+        payload["reference_photos"] = [
+            SimpleUploadedFile(f"reference-{index}.png", TINY_PNG, content_type="image/png")
+            for index in range(2)
+        ]
+
+        response = self.client.post(reverse("upcycling:request_create"), payload)
+
+        self.assertEqual(response.status_code, 302)
+        upcycling_request = UpcyclingRequest.objects.get(user=self.user)
+        self.assertEqual(upcycling_request.reference_photos.count(), 2)
+        detail_response = self.client.get(
+            reverse("upcycling:request_detail", args=[upcycling_request.pk])
+        )
+        self.assertEqual(len(detail_response.context["reference_photos"]), 2)
+        self.assertContains(detail_response, "Foto referensi produk/desain")
 
     def test_edit_request_can_add_photos_only_up_to_three_total(self):
         upcycling_request = self.make_request(
@@ -695,7 +814,7 @@ class UpcyclingRequestViewTests(TestCase):
         response = self.client.post(edit_url, payload)
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Jumlah foto kain maksimal 3")
+        self.assertContains(response, "Jumlah foto barang atau kain maksimal 3")
 
     def test_form_keeps_batik_preferences_visible_after_validation_error(self):
         self.client.force_login(self.user)
@@ -941,7 +1060,8 @@ class UpcyclingRequestViewTests(TestCase):
         matching_request = self.make_request(
             self.user,
             product="TOTE_BAG",
-            fabric="BATIK",
+            fabric="UNKNOWN",
+            has_batik_pattern="YES",
         )
         self.make_request(self.user, product="POUCH", fabric="COTTON")
         self.client.force_login(self.user)
@@ -1276,6 +1396,8 @@ class UpcyclingRequestViewTests(TestCase):
         upcycling_request = self.make_request(
             self.user,
             fabric_composition="Katun 95%, elastane 5%",
+            current_item_form="TOP",
+            has_batik_pattern="YES",
         )
         self.client.force_login(self.user)
 
@@ -1285,6 +1407,8 @@ class UpcyclingRequestViewTests(TestCase):
 
         self.assertContains(response, "Komposisi bahan")
         self.assertContains(response, "Katun 95%, elastane 5%")
+        self.assertContains(response, "Kaos / Kemeja")
+        self.assertContains(response, "Ya, bermotif batik")
 
     def test_detail_timeline_shows_when_completed_steps_changed(self):
         """Test behavior: completed timeline steps show their status dates."""

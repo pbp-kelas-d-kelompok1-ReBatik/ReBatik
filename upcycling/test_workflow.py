@@ -54,6 +54,8 @@ class UpcyclingWorkflowTests(TestCase):
     def test_request_form_requires_private_fabric_photo_and_no_donation_option(self):
         data = {
             "fabric": "DENIM",
+            "current_item_form": "PANTS",
+            "has_batik_pattern": "NO",
             "fabric_condition": "GOOD",
             "category": "TAS",
             "product": "TOTE_BAG",
@@ -71,6 +73,8 @@ class UpcyclingWorkflowTests(TestCase):
     def test_other_fabric_requires_a_description(self):
         data = {
             "fabric": "OTHER",
+            "current_item_form": "PANTS",
+            "has_batik_pattern": "UNSURE",
             "fabric_condition": "GOOD",
             "category": "TAS",
             "product": "TOTE_BAG",
@@ -98,12 +102,47 @@ class UpcyclingWorkflowTests(TestCase):
         self.client.force_login(self.user)
         response = self.client.get(reverse("upcycling:request_create"))
 
-        self.assertContains(response, "Jenis Kain atau Barang yang Akan Diolah")
-        self.assertContains(response, "Pilih kategori yang paling mendekati.")
-        self.assertContains(response, "Pilih Produk")
-        self.assertContains(response, 'class="grid gap-4 grid-cols-2 lg:grid-cols-3"')
+        self.assertContains(response, "Jenis bahan utama yang akan diolah")
+        self.assertContains(response, "Barang &amp; Bahan")
+        self.assertContains(response, "Apakah barang atau kain Anda sudah memiliki motif batik?")
+        self.assertContains(response, "Barang atau kain apa yang ingin Anda olah?")
+        self.assertContains(response, "Apa jenis bahan utama barang atau kain Anda?")
+        self.assertNotContains(response, "Apa jenis bahan utamanya?")
+        self.assertContains(response, "Pilih bentuk barang yang Anda miliki saat ini.")
+        self.assertContains(response, 'class="text-base leading-relaxed text-[var(--brown-muted)] sm:text-lg"')
+        self.assertContains(response, "Celana")
+        self.assertContains(response, "Kaos / Kemeja")
+        self.assertContains(response, "Kain lembaran / Potongan kain")
+        self.assertContains(response, "Pilih kategori dan produk akhir yang ingin dibuat.")
+        self.assertContains(response, "Produk &amp; Desain")
+        self.assertContains(response, "Detail &amp; Konfirmasi")
+        self.assertContains(response, "Pilih produk yang ingin dibuat")
+        self.assertContains(response, "Kombinasikan bahan saya dengan kain batik dari ReBatik")
+        self.assertContains(response, "Catatan tambahan untuk artisan (opsional)")
+        self.assertContains(response, "Foto barang atau kain")
+        self.assertContains(response, "Bagaimana kondisi barang atau kain Anda?")
+        self.assertContains(response, "Perkiraan ukuran atau jumlah barang/bahan")
+        self.assertContains(response, "Tidak perlu mengukur secara tepat.")
+        self.assertContains(response, "Jumlah akhir bergantung pada kecukupan bahan setelah inspeksi artisan.")
+        self.assertContains(response, "Ubah barang atau kain bekas milik Anda menjadi karya baru")
+        self.assertContains(response, "Celana atau jaket jeans")
+        self.assertContains(response, "Kemeja atau kain katun")
+        self.assertContains(response, "Misalnya polyester")
+        self.assertContains(response, "Gabungan beberapa bahan")
+        self.assertContains(response, "Artisan akan memeriksa")
+        self.assertContains(response, 'class="grid gap-3 grid-cols-2 md:grid-cols-3"')
+        self.assertContains(response, 'class="upcycling-fabric-card-title block"')
+        self.assertContains(response, 'class="upcycling-fabric-card-description mt-1 block')
+        self.assertNotContains(response, 'class="grid aspect-[2] place-items-center overflow-hidden bg-[var(--upcycling-soft)]"')
+        page = response.content.decode()
+        self.assertLess(
+            page.index("Sebutkan bahan lainnya"),
+            page.index("Apakah barang atau kain Anda sudah memiliki motif batik?"),
+        )
         self.assertContains(response, 'id="id_wants_batik_accent"')
-        self.assertContains(response, "Tambahkan kain bermotif batik dari ReBatik")
+        self.assertContains(response, "Kombinasikan bahan saya dengan kain batik dari ReBatik")
+        self.assertContains(response, "Tim ReBatik akan menginformasikan langkah selanjutnya sebelum produksi dimulai.")
+        self.assertNotContains(response, "Produksi dimulai setelah detail tersebut disimpan.")
 
     def test_product_catalog_includes_practical_upcycling_products(self):
         options = get_product_options_by_category()
@@ -153,6 +192,8 @@ class UpcyclingWorkflowTests(TestCase):
             reverse("upcycling:request_create"),
             data={
                 "fabric": "DENIM",
+                "current_item_form": "PANTS",
+                "has_batik_pattern": "NO",
                 "fabric_condition": "GOOD",
                 "fabric_dimensions": "1 celana jeans",
                 "category": "TAS",
@@ -341,9 +382,9 @@ class UpcyclingWorkflowTests(TestCase):
         self.assertContains(response, 'id="artisan-photo-zoom-previous"')
         self.assertContains(response, 'id="artisan-photo-zoom-next"')
         self.assertContains(response, 'src="/static/js/upcycling-photo-zoom.js"')
-        self.assertContains(response, "Foto kain 1 dari 3")
-        self.assertContains(response, "Foto kain 2 dari 3")
-        self.assertContains(response, "Foto kain 3 dari 3")
+        self.assertContains(response, "Foto barang atau kain 1 dari 3")
+        self.assertContains(response, "Foto barang atau kain 2 dari 3")
+        self.assertContains(response, "Foto barang atau kain 3 dari 3")
 
     def test_artisan_detail_contains_status_specific_review_actions(self):
         request_obj = make_request(
