@@ -34,7 +34,15 @@ class UpcyclingMigrationStructureTests(SimpleTestCase):
         migration_0022_indexes = {index.name for index in request_at_0022._meta.indexes}
         self.assertNotIn(index_name, migration_0005_indexes)
         self.assertIn(index_name, migration_0022_indexes)
-        self.assertFalse(request_at_0005._meta.get_field("artisan").db_index)
+        for field_name in (
+            "artisan",
+            "completed_by",
+            "fabric_received_by",
+            "payment_confirmed_by",
+            "return_confirmed_by",
+        ):
+            with self.subTest(field=field_name):
+                self.assertFalse(request_at_0005._meta.get_field(field_name).db_index)
 
 
 def make_png():

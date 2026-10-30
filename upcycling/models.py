@@ -227,6 +227,7 @@ class UpcyclingRequest(models.Model):
         blank=True,
         on_delete=models.SET_NULL,
         related_name="fabric_receipts_confirmed",
+        db_index=False,
     )
     fabric_receipt_notes = models.TextField(blank=True)
     inspection_notes = models.TextField(blank=True)
@@ -276,6 +277,7 @@ class UpcyclingRequest(models.Model):
         blank=True,
         on_delete=models.SET_NULL,
         related_name="fabric_returns_confirmed",
+        db_index=False,
     )
     return_confirmed_at = models.DateTimeField(null=True, blank=True)
     return_notes = models.TextField(blank=True)
@@ -286,6 +288,7 @@ class UpcyclingRequest(models.Model):
         blank=True,
         on_delete=models.SET_NULL,
         related_name="upcycling_completions_confirmed",
+        db_index=False,
     )
     completed_at = models.DateTimeField(null=True, blank=True)
     completion_notes = models.TextField(blank=True)
