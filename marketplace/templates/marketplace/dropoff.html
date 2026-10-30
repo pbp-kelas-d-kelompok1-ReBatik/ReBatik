@@ -45,83 +45,48 @@
             </a>
         </div>
 
-        <div class="mp-filter-bar grid gap-4 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-center">
-            {% if cities %}
-                <nav
-                    aria-label="Filter kota drop-off"
-                    class="mp-chip-scroll rounded-full border border-[var(--border)] bg-[var(--card)] p-1.5 shadow-sm"
-                >
+        {% if cities %}
+            <nav
+                aria-label="Filter kota drop-off"
+                class="mp-chip-scroll mb-4 w-full rounded-full border border-[var(--border)] bg-[var(--card)] p-1.5 shadow-sm"
+            >
+                <a
+                    href="{% url 'marketplace:dropoff' %}"
+                    hx-get="{% url 'marketplace:dropoff' %}"
+                    hx-target="#marketplace-page-content"
+                    hx-select="#marketplace-page-content"
+                    hx-swap="outerHTML"
+                    aria-current="{% if not selected_city %}page{% else %}false{% endif %}"
+                    class="mp-chip rounded-full px-4 py-2 text-sm transition sm:px-5
+                           {% if not selected_city %}
+                               bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]
+                           {% else %}
+                               text-[var(--brown)] hover:bg-[var(--mp-soft)]
+                           {% endif %}"
+                >Semua Kota</a>
+                {% for city in cities %}
                     <a
-                        href="{% url 'marketplace:dropoff' %}"
-                        hx-get="{% url 'marketplace:dropoff' %}"
+                        href="{% querystring city=city %}"
+                        hx-get="{% url 'marketplace:dropoff' %}{% querystring city=city %}"
                         hx-target="#marketplace-page-content"
                         hx-select="#marketplace-page-content"
                         hx-swap="outerHTML"
-                        aria-current="{% if not selected_city and not selected_query %}page{% else %}false{% endif %}"
+                        aria-current="{% if selected_city == city %}page{% else %}false{% endif %}"
                         class="mp-chip rounded-full px-4 py-2 text-sm transition sm:px-5
-                               {% if not selected_city and not selected_query %}
+                               {% if selected_city == city %}
                                    bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]
                                {% else %}
                                    text-[var(--brown)] hover:bg-[var(--mp-soft)]
                                {% endif %}"
-                    >Semua Kota</a>
-                    {% for city in cities %}
-                        <a
-                            href="{% querystring city=city q=None %}"
-                            hx-get="{% url 'marketplace:dropoff' %}{% querystring city=city q=None %}"
-                            hx-target="#marketplace-page-content"
-                            hx-select="#marketplace-page-content"
-                            hx-swap="outerHTML"
-                            aria-current="{% if selected_city == city %}page{% else %}false{% endif %}"
-                            class="mp-chip rounded-full px-4 py-2 text-sm transition sm:px-5
-                                   {% if selected_city == city %}
-                                       bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]
-                                   {% else %}
-                                       text-[var(--brown)] hover:bg-[var(--mp-soft)]
-                                   {% endif %}"
-                        >{{ city }}</a>
-                    {% endfor %}
-                </nav>
-            {% else %}
-                <div></div>
-            {% endif %}
-
-            <form
-                method="get"
-                action="{% url 'marketplace:dropoff' %}"
-                hx-get="{% url 'marketplace:dropoff' %}"
-                hx-target="#dropoff-results"
-                hx-select="#dropoff-results"
-                hx-swap="outerHTML"
-                class="flex justify-end"
-            >
-                {% if selected_city %}
-                    <input type="hidden" name="city" value="{{ selected_city }}">
-                {% endif %}
-                <label for="mp-drop-search" class="sr-only">Cari titik drop-off</label>
-                <input
-                    id="mp-drop-search"
-                    type="search"
-                    name="q"
-                    value="{{ selected_query }}"
-                    placeholder="Cari nama titik atau alamat…"
-                    hx-get="{% url 'marketplace:dropoff' %}"
-                    hx-trigger="input changed delay:400ms, search"
-                    hx-target="#dropoff-results"
-                    hx-select="#dropoff-results"
-                    hx-swap="outerHTML"
-                    hx-include="closest form"
-                    class="block min-h-11 w-full rounded-full border border-[var(--border)] bg-white
-                           px-4 py-2.5 text-[var(--brown)] sm:max-w-xs
-                           focus:border-[var(--gold)] focus:outline-none focus:ring-2 focus:ring-[var(--gold)]"
-                >
-            </form>
-        </div>
+                    >{{ city }}</a>
+                {% endfor %}
+            </nav>
+        {% endif %}
 
         <div class="mt-4 grid gap-3 rounded-2xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-4 sm:grid-cols-2">
             <div>
                 <label for="mp-drop-prov" class="text-xs font-bold uppercase tracking-wider text-[var(--brown-muted)]">
-                    Cek Wilayah Provinsi (API Emsifa)
+                    Provinsi
                 </label>
                 <select
                     id="mp-drop-prov"
@@ -145,13 +110,25 @@
         </div>
 
         <div id="dropoff-results" class="mt-6">
-            <p class="mb-4 text-sm text-[var(--brown-muted)]">
-                Menampilkan <strong class="text-[var(--brown)]">{{ drop_points.count }}</strong> titik aktif
-            </p>
+            <div class="mb-4 flex flex-wrap items-center justify-between gap-2 text-sm text-[var(--brown-muted)]">
+                <p>
+                    Menampilkan <strong class="text-[var(--brown)]">{{ total_drop_points }}</strong> titik aktif
+                    {% if selected_city %}<span class="text-xs text-[var(--brown-muted)]">di <strong>{{ selected_city }}</strong></span>{% endif %}
+                </p>
+                <a
+                    href="{% url 'marketplace:dropoff_points_api' %}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="mp-api-link"
+                >
+                    { } Lihat Dummy API JSON ↗
+                </a>
+            </div>
 
-            {% if drop_points %}
-                <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                    {% for drop in drop_points %}
+            {% if page_obj %}
+                <div id="dropoff-grid" class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                    <div id="dropoff-cards-batch" class="contents">
+                        {% for drop in page_obj %}
                         <article
                             class="flex flex-col justify-between rounded-2xl border border-[var(--mp-card-border)]
                                    bg-[var(--mp-surface)] p-5 text-[var(--brown)] shadow-md"
@@ -167,28 +144,85 @@
                                 </div>
 
                                 <h3 class="mt-3 text-xl font-bold leading-snug">{{ drop.name }}</h3>
+                                {% if drop.province %}
+                                    <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-[var(--brown-muted)]">
+                                        {{ drop.province }}
+                                    </p>
+                                {% endif %}
                                 <p class="mt-2 text-sm text-[var(--brown-muted)]">{{ drop.address }}</p>
+
+                                {% if drop.accepted_items_list %}
+                                    <div class="mt-3 flex flex-wrap gap-2" aria-label="Jenis kain yang diterima">
+                                        {% for item in drop.accepted_items_list %}
+                                            <span class="mp-drop-chip">{{ item }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
                             </div>
 
                             <div class="mt-5 border-t border-[var(--mp-card-border)] pt-4">
                                 <p class="text-sm font-semibold text-[var(--brown)]">
                                     🕒 {{ drop.operating_hours }}
                                 </p>
-                                {% if drop.latitude and drop.longitude %}
-                                    <a
-                                        href="https://www.google.com/maps?q={{ drop.latitude }},{{ drop.longitude }}"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        class="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full
-                                               border border-[var(--brown)] px-4 py-2 text-sm font-bold
-                                               text-[var(--brown)] transition hover:bg-[var(--mp-soft)]"
-                                    >
-                                        Petunjuk Rute Peta ↗
-                                    </a>
+                                {% if drop.phone %}
+                                    <p class="mt-1 text-sm text-[var(--brown-muted)]">📞 {{ drop.phone }}</p>
                                 {% endif %}
+                                <div class="mt-3 grid grid-cols-2 gap-2">
+                                    {% if drop.latitude and drop.longitude %}
+                                        <a
+                                            href="https://www.google.com/maps?q={{ drop.latitude }},{{ drop.longitude }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="inline-flex min-h-10 items-center justify-center rounded-full
+                                                   border border-[var(--brown)] px-3 py-2 text-sm font-bold
+                                                   text-[var(--brown)] transition hover:bg-[var(--mp-soft)]
+                                                   {% if not drop.whatsapp_url %}col-span-2{% endif %}"
+                                        >
+                                            Rute Peta ↗
+                                        </a>
+                                    {% endif %}
+                                    {% if drop.whatsapp_url %}
+                                        <a
+                                            href="{{ drop.whatsapp_url }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="primary-action-button min-h-10 px-3 py-2 text-sm font-bold
+                                                   {% if not drop.latitude or not drop.longitude %}col-span-2{% endif %}"
+                                        >
+                                            Hubungi WA
+                                        </a>
+                                    {% endif %}
+                                </div>
                             </div>
                         </article>
                     {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <div
+                                id="dropoff-infinite-sentinel"
+                                hx-get="{% url 'marketplace:dropoff' %}?city={{ selected_city }}&page={{ page_obj.next_page_number }}"
+                                hx-trigger="revealed, click"
+                                hx-target="#dropoff-infinite-sentinel"
+                                hx-swap="outerHTML"
+                                hx-select="#dropoff-cards-batch"
+                                class="col-span-full my-6 text-center"
+                            >
+                                <button
+                                    type="button"
+                                    class="inline-flex cursor-pointer items-center gap-3 rounded-full border border-[var(--mp-card-border)]
+                                           bg-[var(--mp-surface)] px-6 py-3 text-sm font-bold text-[var(--brown)]
+                                           shadow-md transition hover:bg-[var(--mp-soft)] active:scale-95"
+                                >
+                                    <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-[var(--gold)] border-t-transparent"></span>
+                                    <span>Memuat titik drop-off lainnya (scroll ke bawah atau klik di sini)…</span>
+                                </button>
+                            </div>
+                        {% else %}
+                            <div class="col-span-full my-6 text-center text-xs font-semibold text-[var(--brown-muted)]">
+                                ✦ Seluruh {{ total_drop_points }} titik drop-off telah ditampilkan ✦
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
             {% else %}
                 <div class="rounded-2xl border border-[var(--mp-card-border)] bg-[var(--mp-surface)] p-8 text-center">
@@ -240,13 +274,22 @@
         });
 
         regSelect.addEventListener("change", () => {
-            if (!searchInput) return;
             const cleaned = regSelect.value
                 .replace(/^(KOTA|KABUPATEN)\s+/i, "")
                 .replace(/^SURAKARTA$/i, "Solo")
                 .trim();
-            searchInput.value = cleaned;
-            searchInput.dispatchEvent(new Event("search", { bubbles: true }));
+            if (cleaned) {
+                const targetUrl = "{% url 'marketplace:dropoff' %}?city=" + encodeURIComponent(cleaned);
+                if (window.htmx) {
+                    window.htmx.ajax("GET", targetUrl, {
+                        target: "#marketplace-page-content",
+                        select: "#marketplace-page-content",
+                        swap: "outerHTML"
+                    });
+                } else {
+                    window.location.href = targetUrl;
+                }
+            }
         });
     };
 
