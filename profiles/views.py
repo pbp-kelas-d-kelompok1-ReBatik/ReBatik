@@ -195,7 +195,32 @@ def delete_profile(request):
 
 @login_required
 def order_history(request):
+
+    query = request.GET.get("q", "").strip()[:100]
+
+    orders = (
+        BatikOrder.objects
+        .filter(user=request.user)
+        .select_related(
+            "motif",
+            "palette",
+            "design_option",
+        )
+    )
+
+    if query:
+        orders = orders.filter(
+            Q(motif__name__icontains=query)
+            | Q(product_type__icontains=query)
+            | Q(status__icontains=query)
+            | Q(style_name__icontains=query)
+        )
+
     return render(
         request,
         "profiles/orders.html",
+        {
+            "orders": orders,
+            "query": query,
+        },
     )
