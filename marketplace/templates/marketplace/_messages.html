@@ -1,0 +1,57 @@
+<div
+    data-mp-toast-region
+    class="pointer-events-none fixed right-4 top-20 z-[110] flex w-[calc(100%-2rem)] max-w-sm flex-col gap-3"
+    aria-live="polite"
+    aria-relevant="additions"
+    aria-atomic="false"
+></div>
+
+{% if messages %}
+    <template data-mp-toast-template>
+        {% for message in messages %}
+            <div
+                data-mp-toast
+                data-message-tags="{{ message.tags }}"
+                class="pointer-events-auto flex items-start gap-3 rounded-xl border-2
+                       border-[var(--mp-accent)] bg-[var(--mp-surface)] p-4
+                       text-[var(--brown)] shadow-xl transition-[opacity,transform] duration-200 ease-out"
+                {% if 'error' in message.tags %}role="alert"{% else %}role="status"{% endif %}
+                tabindex="0"
+            >
+                <span
+                    class="grid size-7 shrink-0 place-items-center rounded-full font-bold
+                           {% if 'success' in message.tags %}bg-green-100 text-green-800
+                           {% elif 'error' in message.tags %}bg-red-100 text-red-800
+                           {% elif 'warning' in message.tags %}bg-amber-100 text-amber-900
+                           {% else %}bg-[var(--mp-accent)] text-[var(--brown)]{% endif %}"
+                    aria-hidden="true"
+                >
+                    {% if 'success' in message.tags %}
+                        ✓
+                    {% elif 'error' in message.tags or 'warning' in message.tags %}
+                        !
+                    {% else %}
+                        i
+                    {% endif %}
+                </span>
+                <p class="flex-1 pt-0.5 font-semibold">{{ message }}</p>
+            </div>
+        {% endfor %}
+    </template>
+    <script>
+        (() => {
+            const toastRegion = document.querySelector("[data-mp-toast-region]");
+            const toastTemplate = document.querySelector("[data-mp-toast-template]");
+            if (toastRegion && toastTemplate) {
+                toastRegion.append(toastTemplate.content.cloneNode(true));
+                toastRegion.querySelectorAll("[data-mp-toast]").forEach((toast) => {
+                    window.setTimeout(() => {
+                        toast.classList.add("translate-y-2", "opacity-0");
+                        window.setTimeout(() => toast.remove(), 200);
+                    }, 5000);
+                });
+            }
+        })();
+    </script>
+{% endif %}
+

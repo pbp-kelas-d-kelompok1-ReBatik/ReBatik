@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+{% block meta %}<title>Notifikasi | ReBatik</title>{% endblock meta %}
+{% block css %}<link rel="stylesheet" href="{% static 'css/profiles.css' %}">{% endblock css %}
+{% block content %}
+<div class="profile-page">
+    <header class="profile-heading">
+        <p class="profile-eyebrow">PEMBARUAN AKUN</p>
+        <h1>Notifikasi</h1>
+        <p>Semua informasi terbaru tentang aktivitas ReBatik kamu.</p>
+    </header>
+    <section class="profile-shell">
+        <div id="rbNotificationPanel">
+            {% include "partials/notification_panel.html" %}
+        </div>
+    </section>
+</div>
+{% endblock content %}

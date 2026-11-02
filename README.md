@@ -39,11 +39,57 @@ ReBatik adalah platform yang menghadirkan konsep upcycling dengan mengolah pakai
 
 ## Sumber/Dokumentasi API
 
-### Public API
+### 1. Public API Eksternal
 
 | Layanan | Endpoint / Metode | Kegunaan | Dokumentasi |
 |---|---|---|---|
 | API Wilayah Indonesia (emsifa) | `GET https://www.emsifa.com/api-wilayah-indonesia/v2/provinces.json`<br>`GET https://www.emsifa.com/api-wilayah-indonesia/v2/regencies/{province_id}.json`<br>`GET https://www.emsifa.com/api-wilayah-indonesia/v2/districts/{regency_id}.json`<br>`GET https://www.emsifa.com/api-wilayah-indonesia/v2/villages/{district_id}.json` | Dropdown provinsi sampai kelurahan beserta kode pos pada form alamat (Drop-Off Point, Donasi, Upcycling Request). Ganti placeholder ID dengan ID wilayah yang dipilih. | [Dokumentasi emsifa](https://www.emsifa.com/api-wilayah-indonesia/)|
+
+### 2. Mock API ReBatik (Internal Drop-off Point API — 52 Lokasi Spesifik)
+
+Untuk memenuhi kebutuhan data lokasi pengumpulan kain secara spesifik dan terintegrasi lintas platform (Web & Mobile Flutter kelompok), ReBatik menyediakan Mock API titik pengumpulan (*Drop-off Point*) dengan **52 data lokasi riil** di berbagai kota Indonesia. API ini mendukung CORS (`Access-Control-Allow-Origin: *`) dan respons JSON standar.
+
+| Sumber / Lingkungan | Tautan Mock API | Keterangan & Parameter |
+|---|---|---|
+| **Production (PWS Live)** | `GET https://alisa-selvia-rebatik.pws.cs.ui.ac.id/marketplace/api/dropoff-points/` | Endpoint live seluruh daftar 52 titik drop-off point. |
+| **PWS Filter Kota** | `GET https://alisa-selvia-rebatik.pws.cs.ui.ac.id/marketplace/api/dropoff-points/?city=Depok` | Filter titik berdasarkan kota (contoh: `Depok`, `Bandung`, `Solo`, `Jakarta Selatan`, dll). |
+| **PWS Filter Pencarian** | `GET https://alisa-selvia-rebatik.pws.cs.ui.ac.id/marketplace/api/dropoff-points/?q=Margonda` | Pencarian teks bebas nama titik / alamat / provinsi. |
+| **PWS Detail Titik** | `GET https://alisa-selvia-rebatik.pws.cs.ui.ac.id/marketplace/api/dropoff-points/{code}/` | Detail titik spesifik berdasarkan kode unik (contoh: `rbt-dpk-01`, `rbt-jkt-01`). |
+| **Local Development** | `GET http://127.0.0.1:8000/marketplace/api/dropoff-points/` | Digunakan saat pengujian di server lokal Django. |
+| **GitHub Raw Mock API** | `https://raw.githubusercontent.com/alisa-selvia/ReBatik/main/marketplace/data/dropoff_points.json` | Mock static JSON direct link tanpa perlu server aktif (cocok untuk integrasi Flutter kelompok). |
+
+<details>
+<summary>Contoh Payload JSON Mock API Drop-off Point</summary>
+
+```json
+{
+  "status": "success",
+  "total": 52,
+  "filters": { "city": "Depok", "query": "" },
+  "data": [
+    {
+      "code": "rbt-dpk-01",
+      "name": "Drop-off ReBatik Margonda Creative Hub",
+      "address": "Jl. Margonda No. 240, Kemiri Muka, Kecamatan Beji",
+      "city": "Depok",
+      "province": "Jawa Barat",
+      "operating_hours": "08:30 - 20:00 WIB",
+      "latitude": -6.372841,
+      "longitude": 106.831518,
+      "phone": "+6281299881101",
+      "accepted_items": ["Kain Perca Batik", "Baju Batik Bekas", "Sarung & Selendang"],
+      "maps_url": "https://www.google.com/maps?q=-6.372841,106.831518",
+      "detail_url": "/marketplace/api/dropoff-points/rbt-dpk-01/"
+    }
+  ]
+}
+```
+</details>
+
+### 3. Data Awal Deployment (Initial Seed Data ≥ 50 Data Utama)
+
+Sesuai ketentuan rubrik PBP (minimal 50 data utama saat dideploy ke PWS), aplikasi ReBatik telah dilengkapi dengan dataset inisial yang otomatis diisi ke database saat `python manage.py migrate` dijalankan:
+- **52 Titik Drop-off Point**: Termuat di `marketplace/data/dropoff_points.json`, ter-seed via migrasi `0004_seed_dummy_dropoff_points.py` atau command `python manage.py sync_dropoff_points`.
 
 ## Jenis/Peran Pengguna Aplikasi
 
@@ -211,6 +257,79 @@ Pastikan repository GitHub memiliki secret `PWS_URL` di **Settings → Secrets a
 
 Push ke `main` menjalankan tes dan membangun Tailwind. Setelah tes lulus, workflow membuat commit deployment yang menyertakan `static/css/tailwind.css`, lalu mengirimnya ke PWS. File CSS tersebut hanya ada di riwayat PWS, bukan di GitHub. Karena itu, deploy ke PWS dilakukan melalui GitHub Actions; jangan melakukan push manual ke remote PWS.
 
+Workflow deployment tidak menjalankan migration database production. Setelah rilis yang menambah migration tiba di PWS, jalankan `python manage.py migrate` dari console PWS dengan konfigurasi environment production, lalu pastikan migration terkait tercatat melalui `python manage.py showmigrations rewards`. Jangan menjalankan migration production dari komputer lokal karena `.env` lokal menggunakan database SQLite yang terpisah.
+
 Sebelum merge, workflow dapat dijalankan manual dari tab **Actions**. Pemicu manual menjalankan tes, membangun CSS, lalu melakukan dry run push ke PWS. Ini memeriksa alur push tanpa memperbarui branch PWS atau melakukan deployment.
 
 Jika PowerShell menampilkan pesan bahwa `npm` tidak bisa dijalankan karena execution policy, gunakan `npm.cmd` sebagai pengganti `npm` pada perintah di atas, misalnya `npm.cmd ci` atau `npm.cmd run tailwind:build`.
+
+## AI Disclosure (Pengungkapan Penggunaan AI)
+
+### 1. Alat AI yang Digunakan
+
+Selama proses pengembangan ReBatik, tim menggunakan beberapa alat berbasis Artificial Intelligence (AI) sebagai alat bantu dalam proses perancangan, pengembangan, pemecahan masalah, dan penyusunan dokumentasi.
+
+| Alat | Penggunaan |
+|------|------------|
+| **ChatGPT (OpenAI)** | Membantu memahami konsep Django, mendiskusikan struktur aplikasi, memberikan saran kode, menjelaskan implementasi Python, HTML, CSS, dan JavaScript, serta membantu menganalisis dan memperbaiki error selama pengembangan. |
+| **Claude (Anthropic)** | Mengeksplorasi ide desain antarmuka (UI/UX), menyusun konsep tampilan halaman, serta memberikan saran implementasi komponen antarmuka, termasuk halaman Impact Tracker. |
+| **CodeRabbit** | Digunakan secara terbatas untuk membantu proses pengujian deployment. |
+| **GitHub AI** | Digunakan secara terbatas untuk membantu proses pengujian deployment. |
+
+### 2. Bentuk Penggunaan AI dalam Pengembangan
+
+Penggunaan AI difokuskan pada beberapa aspek pengembangan ReBatik, yaitu:
+
+- **Perencanaan dan Desain:** Membantu mengeksplorasi ide tampilan halaman, rancangan fitur, serta alur interaksi pengguna sebelum implementasi.
+- **Pengembangan Frontend:** Memberikan referensi struktur HTML, penyesuaian CSS, pengembangan layout responsif, dan interaksi menggunakan JavaScript.
+- **Pengembangan Backend:** Membantu memahami dan mengimplementasikan konsep Django, termasuk Models, Forms, Views, URL Routing, serta pengelolaan data melalui database.
+- **Debugging:** Membantu menganalisis pesan error, memahami traceback, mengidentifikasi kemungkinan penyebab masalah, dan memberikan alternatif penyelesaian.
+- **Dokumentasi:** Membantu menyusun penjelasan teknis dan merapikan dokumentasi penggunaan aplikasi.
+- **Pengujian Deployment:** CodeRabbit dan GitHub AI hanya digunakan untuk membantu proses pengujian deployment, dan tidak digunakan untuk menulis kode atau fitur aplikasi.
+
+### 3. Strategi Penyusunan Prompt
+
+Dalam menggunakan AI, tim menerapkan pendekatan bertahap dan iteratif. AI tidak hanya diberikan instruksi umum untuk membuat keseluruhan aplikasi, tetapi juga diberikan konteks dan permasalahan yang lebih spesifik.
+
+Tahapan yang dilakukan meliputi:
+
+1. Menjelaskan kebutuhan fitur, tujuan implementasi, dan hasil yang diharapkan.
+2. Memberikan konteks berupa potongan kode, struktur folder proyek, tangkapan layar desain, atau pesan error yang ditemukan.
+3. Meminta saran, penjelasan, atau alternatif penyelesaian sesuai permasalahan yang sedang dihadapi.
+4. Meninjau dan menyesuaikan hasil yang diberikan agar sesuai dengan struktur aplikasi ReBatik yang sudah ada.
+5. Melakukan pengujian dan perbaikan secara bertahap apabila implementasi belum berjalan sesuai harapan.
+
+Prompt juga disesuaikan kembali berdasarkan hasil implementasi, terutama ketika saran yang diberikan belum sesuai dengan kebutuhan atau struktur proyek.
+
+### 4. Keterbatasan AI dan Penyesuaian Manual
+
+Hasil yang diberikan AI tidak selalu dapat langsung diterapkan. Beberapa saran memerlukan penyesuaian karena AI tidak selalu memiliki konteks lengkap mengenai struktur proyek, konfigurasi, dependensi, dan implementasi yang telah dibuat sebelumnya.
+
+Beberapa keterbatasan yang ditemukan selama pengembangan antara lain:
+
+- **Integrasi Proyek:** Saran kode terkadang menggunakan nama fungsi, import, URL, atau lokasi template yang berbeda dari struktur aplikasi yang sebenarnya. Oleh karena itu, diperlukan penyesuaian secara manual.
+- **Styling Frontend:** Beberapa saran CSS tidak langsung sesuai dengan stylesheet dan konfigurasi Tailwind CSS yang digunakan. Tim perlu memeriksa kembali pemanggilan stylesheet, selector, serta hasil kompilasi CSS.
+- **Database dan Migration:** Perubahan pada model memerlukan pemeriksaan migration agar struktur database tetap sesuai dengan implementasi model terbaru.
+- **Integrasi JavaScript dan HTML:** Penggunaan ID elemen, selector, dan event handler perlu disesuaikan dengan struktur HTML yang sebenarnya agar interaksi berjalan dengan baik.
+- **Proses Debugging:** Solusi yang diberikan AI tidak selalu langsung menyelesaikan masalah. Beberapa error memerlukan pemeriksaan tambahan terhadap kode dan konfigurasi proyek.
+
+Oleh karena itu, setiap saran yang diperoleh dari AI ditinjau dan disesuaikan kembali oleh tim. Keputusan akhir terkait implementasi, integrasi, dan perbaikan tetap menjadi tanggung jawab tim pengembang.
+
+### 5. Verifikasi dan Pengujian
+
+Implementasi yang memperoleh bantuan AI diperiksa dan diuji kembali dalam lingkungan pengembangan lokal sebelum digunakan sebagai bagian dari aplikasi ReBatik.
+
+Proses verifikasi meliputi:
+
+- Menjalankan pemeriksaan aplikasi menggunakan `python manage.py check`.
+- Menjalankan migration ketika terdapat perubahan pada model database.
+- Menguji pengiriman form dan memastikan data berhasil tersimpan ke database.
+- Memeriksa URL routing dan proses rendering template.
+- Memeriksa tampilan frontend, termasuk pemanggilan CSS dan interaksi JavaScript.
+- Menguji integrasi setiap fitur dengan aplikasi ReBatik secara keseluruhan.
+
+### 6. Transparansi dan Tanggung Jawab Pengembangan
+
+AI digunakan sebagai alat bantu selama proses pengembangan, bukan sebagai pengganti pemahaman dan tanggung jawab tim.
+
+Tim tetap bertanggung jawab dalam meninjau, menyesuaikan, mengintegrasikan, serta menguji hasil implementasi sebelum digunakan dalam aplikasi. Seluruh keputusan akhir mengenai fungsionalitas, desain, dan integrasi kode berada di bawah tanggung jawab tim pengembang.

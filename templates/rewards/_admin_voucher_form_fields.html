@@ -1,0 +1,20 @@
+{{ form.reward_type.as_hidden }}
+{% if form.non_field_errors %}<div class="voucher-admin-errors">{{ form.non_field_errors }}</div>{% endif %}
+
+<div class="voucher-admin-form-grid">
+    {% for field in form.visible_fields %}
+        {% if field.name != "reward_type" %}
+            <div class="voucher-admin-field{% if field.name == 'name' or field.name == 'description' or field.name == 'image' or field.name == 'is_active' %} voucher-admin-field--wide{% endif %}{% if field.name == 'is_active' %} voucher-admin-checkbox-field{% endif %}">
+                {% if field.name == "is_active" %}
+                    {{ field }}
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {% else %}
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                {% endif %}
+                {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+                {% if field.errors %}<div class="voucher-admin-errors">{{ field.errors }}</div>{% endif %}
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>

@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import UserProfile
+from .models import UserProfile, UserSettings
 
 
 class UserProfileForm(forms.ModelForm):
@@ -49,3 +49,19 @@ class UserProfileForm(forms.ModelForm):
             )
 
         return avatar
+
+class UserSettingsForm(forms.ModelForm):
+    class Meta:
+        model = UserSettings
+        fields = [
+            "order_notifications",
+            "activity_notifications",
+            "promotional_notifications",
+            "email_notifications",
+        ]
+        labels = {
+            "order_notifications": "Pesanan dan pembayaran",
+            "activity_notifications": "Aktivitas donasi dan upcycling",
+            "promotional_notifications": "Promo dan informasi ReBatik",
+            "email_notifications": "Kirim notifikasi melalui email",
+        }

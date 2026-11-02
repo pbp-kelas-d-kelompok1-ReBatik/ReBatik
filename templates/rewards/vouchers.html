@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static rewards_format %}
+
+{% block meta %}<meta name="description" content="Lihat voucher diskon Marketplace yang sudah ditukar dengan poin ReBatik.">{% endblock %}
+{% block css %}<link rel="stylesheet" href="{% static 'css/rewards.css' %}">{% endblock %}
+
+{% block content %}
+<main class="rewards-page history-page">
+    <section class="rewards-hero history-hero" aria-labelledby="vouchers-title">
+        <p class="rewards-eyebrow">POINTS AND REWARDS</p>
+        <h1 id="vouchers-title">Voucher Saya</h1>
+        <p>Kode voucher yang kamu tukarkan tercatat di sini.</p>
+    </section>
+
+    <section class="rewards-panel history-panel" aria-label="Daftar voucher saya">
+        <nav class="mb-6 flex flex-wrap gap-4" aria-label="Navigasi Points and Rewards">
+            <a class="history-all-link" href="{% url 'rewards:catalog' %}">Katalog Voucher</a>
+            <a class="history-all-link" href="{% url 'rewards:vouchers' %}" aria-current="page">Voucher Saya</a>
+            <a class="history-all-link" href="{% url 'rewards:history' %}">Riwayat Poin</a>
+        </nav>
+
+        <div class="history-list">
+            {% for voucher in vouchers %}
+                <article class="history-row">
+                    <div class="history-row-info">
+                        <h2>{{ voucher.reward.name }}</h2>
+                        <p>Diskon Rp{{ voucher.discount_value_snapshot|intcomma_id }} · ditukar {{ voucher.redeemed_at|id_short_date }}</p>
+                        <p>Kode voucher: <strong>{{ voucher.voucher_code }}</strong></p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold">{{ voucher.get_voucher_status_display }}</p>
+                        <p class="history-amount is-out">−{{ voucher.points_spent }} poin</p>
+                    </div>
+                </article>
+            {% empty %}
+                <p class="history-empty">Kamu belum menukar voucher.</p>
+                <a class="primary-action-button inline-flex min-h-11 items-center px-4 py-2 font-bold" href="{% url 'rewards:catalog' %}">Lihat katalog voucher</a>
+            {% endfor %}
+        </div>
+
+        <p class="rewards-footnote">Voucher dapat digunakan setelah integrasi checkout Marketplace tersedia.</p>
+        <p class="mt-4"><a class="history-back-link" href="{% url 'rewards:overview' %}">← Kembali ke saldo poin</a></p>
+    </section>
+</main>
+{% endblock %}

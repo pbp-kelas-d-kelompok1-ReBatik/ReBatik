@@ -53,3 +53,24 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.display_name} ({self.user.username})"
+
+class UserSettings(models.Model):
+    """Preferensi notifikasi yang tersimpan untuk setiap pengguna."""
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="user_settings",
+    )
+    order_notifications = models.BooleanField(default=True)
+    activity_notifications = models.BooleanField(default=True)
+    promotional_notifications = models.BooleanField(default=True)
+    email_notifications = models.BooleanField(default=False)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Pengaturan pengguna"
+        verbose_name_plural = "Pengaturan pengguna"
+
+    def __str__(self):
+        return f"Pengaturan {self.user.username}"

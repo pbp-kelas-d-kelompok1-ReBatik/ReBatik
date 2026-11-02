@@ -13,8 +13,8 @@ from rewards.services import (get_available_points, get_lifetime_points,)
 from upcycling.models import UpcyclingRequest
 from batik_custom.models import BatikOrder
 
-from .forms import UserProfileForm
-from .models import UserProfile
+from .forms import UserProfileForm, UserSettingsForm
+from .models import UserProfile, UserSettings
 
 
 def is_htmx_request(request):
@@ -22,9 +22,13 @@ def is_htmx_request(request):
 
 
 @login_required
-@login_required
 def overview(request):
     role = get_user_role(request.user)
+
+    # FIX: di halaman "Profil Saya", akun admin ditampilkan sebagai eco_member.
+    if role == "admin":
+        role = "eco_member"
+
     profile = UserProfile.objects.filter(user=request.user).first()
 
     common_context = {
@@ -32,15 +36,14 @@ def overview(request):
         "profile": profile,
     }
 
-    # ADMIN
-    if role == "admin":
-        return render(request, "profiles/roles/admin_overview.html", common_context,)
+    # FIX: cabang ADMIN dihapus supaya admin juga melihat halaman "Profil Saya".
+    # Dashboard admin tetap bisa dibuka lewat menu "Dashboard Admin" di navbar.
 
     # ARTISAN
     if role == "artisan":
-        return render(request,"profiles/roles/artisan_overview.html", common_context,)
+        return render(request, "profiles/roles/artisan_overview.html", common_context,)
 
-    # ECO-MEMBER
+    # ECO-MEMBER & ADMIN (tampilan "Profil Saya")
     donations = DonasiKain.objects.filter(user=request.user)
 
     upcycling_requests = UpcyclingRequest.objects.filter(user=request.user)
@@ -138,11 +141,10 @@ def edit_profile(request):
             )
 
             if is_htmx_request(request):
-                return render(
-                    request,
-                    "profiles/partials/profile_card.html",
-                    {"profile": profile},
-                )
+                from django.http import HttpResponse
+                response = HttpResponse(status=204)
+                response["HX-Refresh"] = "true"
+                return response
 
             return redirect("profiles:overview")
 
@@ -182,3 +184,23 @@ def delete_profile(request):
         )
 
     return redirect("profiles:overview")
+
+
+@login_required
+def settings_view(request):
+    preferences, _ = UserSettings.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        form = UserSettingsForm(request.POST, instance=preferences)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Pengaturan berhasil disimpan.")
+            return redirect("profiles:settings")
+    else:
+        form = UserSettingsForm(instance=preferences)
+
+    return render(
+        request,
+        "profiles/settings.html",
+        {"form": form, "preferences": preferences},
+    )

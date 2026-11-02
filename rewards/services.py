@@ -1,6 +1,6 @@
 """Business rules for points, reward redemption, and balances."""
 
-import uuid
+import secrets
 from decimal import Decimal, InvalidOperation
 
 from django.contrib.auth import get_user_model
@@ -175,8 +175,6 @@ def award_upcycling_completion(user, *, request_reference, upcycling_request=Non
         upcycling_request=upcycling_request,
     )
     return record
-
-
 def get_available_points(user):
     """Return the sum of the user's ledger entries, or zero if there are none."""
     return PointTransaction.objects.filter(user=user).aggregate(total=Sum("points"))["total"] or 0
@@ -193,45 +191,36 @@ def get_lifetime_points(user):
 
 
 @transaction.atomic
-def redeem_reward(user, reward_id, *, shipping_address=""):
-    """Redeem an active reward, deducting points and one unit of stock.
-
-    Vouchers are fulfilled immediately with a code; physical rewards remain
-    pending and require a nonblank shipping address. Return the redemption.
-    Raise Reward.DoesNotExist for a missing or inactive reward,
-    RewardUnavailable for depleted stock, InsufficientPoints for a shortfall,
-    and ValueError for a missing or overlong physical shipping address or
-    conflicting ledger data. Database lookup errors for the user can propagate.
-    """
-    shipping_address = shipping_address.strip()
+def redeem_reward(user, reward_id):
+    """Redeem an active, configured voucher and record its value at issuance."""
     get_user_model().objects.select_for_update().get(pk=user.pk)
     reward = Reward.objects.select_for_update().get(pk=reward_id, is_active=True)
+    if reward.reward_type != Reward.Type.VOUCHER:
+        raise RewardUnavailable("Reward tidak tersedia.")
     if reward.stock < 1:
         raise RewardUnavailable("Reward sedang habis.")
+    if reward.discount_value is None or reward.discount_value <= 0:
+        raise RewardUnavailable("Voucher belum dikonfigurasi dengan benar.")
     if get_available_points(user) < reward.points_required:
         raise InsufficientPoints("Poin Anda belum mencukupi.")
-    if reward.reward_type == Reward.Type.PHYSICAL and not shipping_address:
-        raise ValueError("Alamat pengiriman wajib diisi untuk barang fisik.")
-    if len(shipping_address) > 255:
-        raise ValueError("Alamat pengiriman maksimal 255 karakter.")
+
+    alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+    prefix = reward.code_prefix.strip().upper() or "RB"
+    while True:
+        suffix = "".join(secrets.choice(alphabet) for _ in range(6))
+        voucher_code = f"{prefix}-{suffix}"
+        if not RewardRedemption.objects.filter(voucher_code=voucher_code).exists():
+            break
 
     redemption = RewardRedemption.objects.create(
         user=user,
         reward=reward,
         points_spent=reward.points_required,
-        status=(
-            RewardRedemption.Status.FULFILLED
-            if reward.reward_type == Reward.Type.VOUCHER
-            else RewardRedemption.Status.PENDING
-        ),
-        voucher_code=uuid.uuid4().hex[:16].upper() if reward.reward_type == Reward.Type.VOUCHER else None,
-        voucher_status=(
-            RewardRedemption.VoucherStatus.AVAILABLE
-            if reward.reward_type == Reward.Type.VOUCHER
-            else None
-        ),
-        shipping_address=shipping_address,
-        fulfilled_at=timezone.now() if reward.reward_type == Reward.Type.VOUCHER else None,
+        discount_value_snapshot=reward.discount_value,
+        status=RewardRedemption.Status.FULFILLED,
+        voucher_code=voucher_code,
+        voucher_status=RewardRedemption.VoucherStatus.AVAILABLE,
+        fulfilled_at=timezone.now(),
     )
     reward.stock -= 1
     reward.save(update_fields=("stock",))
@@ -240,7 +229,7 @@ def redeem_reward(user, reward_id, *, shipping_address=""):
         kind=PointTransaction.Kind.REDEMPTION,
         reference=f"redemption:{redemption.pk}:spend",
         points=-redemption.points_spent,
-        description=f"Penukaran reward: {reward.name}",
+        description=f"Tukar voucher: {reward.name}",
         reward_redemption=redemption,
     )
     return redemption
@@ -284,37 +273,3 @@ def redeem_points(user, *, redemption_reference, reward_name, points_cost):
         description=reward_name,
     )
     return record
-
-
-@transaction.atomic
-def cancel_physical_redemption(redemption, *, admin_user, reason):
-    """Cancel a pending physical redemption and restore its stock and points.
-
-    Record admin_user and a nonblank reason, then return the redemption.
-    Raise ValueError for an ineligible redemption, blank reason, or conflicting
-    ledger data. Missing database records propagate their lookup errors.
-    """
-    redemption = RewardRedemption.objects.select_for_update().select_related("reward", "user").get(pk=redemption.pk)
-    if redemption.status != RewardRedemption.Status.PENDING:
-        raise ValueError("Hanya penukaran barang fisik yang masih menunggu dapat dibatalkan.")
-    if redemption.reward.reward_type != Reward.Type.PHYSICAL:
-        raise ValueError("Voucher yang sudah diterbitkan tidak dapat dibatalkan.")
-    if not reason.strip():
-        raise ValueError("Alasan pembatalan wajib diisi.")
-    redemption.status = RewardRedemption.Status.CANCELLED
-    redemption.cancelled_at = timezone.now()
-    redemption.cancelled_by = admin_user
-    redemption.cancellation_reason = reason.strip()
-    redemption.save(update_fields=("status", "cancelled_at", "cancelled_by", "cancellation_reason"))
-    reward = Reward.objects.select_for_update().get(pk=redemption.reward_id)
-    reward.stock += 1
-    reward.save(update_fields=("stock",))
-    _existing_or_create(
-        redemption.user,
-        kind=PointTransaction.Kind.REWARD_REFUNDED,
-        reference=f"redemption:{redemption.pk}:refund",
-        points=redemption.points_spent,
-        description=f"Pengembalian poin: {reward.name}",
-        reward_redemption=redemption,
-    )
-    return redemption
