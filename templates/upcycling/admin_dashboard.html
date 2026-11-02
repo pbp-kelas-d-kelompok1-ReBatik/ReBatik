@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/upcycling.css' %}">
+{% endblock css %}
+
+{% block content %}
+<section class="relative isolate overflow-hidden px-4 pb-12 pt-10 sm:px-6 sm:pt-12">
+    <img src="{% static 'img/shared/cloud-left.webp' %}" alt="" aria-hidden="true" class="pointer-events-none absolute left-0 top-20 -z-10 w-24 -translate-x-1/3 sm:w-36">
+    <img src="{% static 'img/shared/cloud-right.webp' %}" alt="" aria-hidden="true" class="pointer-events-none absolute right-0 top-16 -z-10 w-24 translate-x-1/4 sm:w-36">
+
+    <header class="relative mx-auto mb-10 max-w-4xl text-center text-[var(--brown)]">
+        <p class="text-xs uppercase tracking-[0.3em]">Upcycle · Culture · Value</p>
+        <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">Dashboard Admin</h1>
+        <p class="mt-3 text-base sm:text-lg">Kelola antrean dan tugaskan request kepada artisan yang sesuai.</p>
+    </header>
+
+    <main class="mx-auto max-w-6xl rounded-2xl border border-[var(--upcycling-card-border)] bg-[var(--upcycling-panel)] p-5 text-[var(--brown)] shadow-2xl sm:rounded-3xl sm:p-8 lg:p-10">
+        <div id="admin-dashboard-live">
+        {% include "upcycling/_toast_messages.html" %}
+
+        <section aria-label="Ringkasan request" class="mb-7 grid gap-3 sm:grid-cols-3">
+            <article class="rounded-2xl border border-[var(--upcycling-card-border)] bg-[var(--upcycling-surface)] p-4 shadow-sm sm:p-5">
+                <p class="text-sm font-semibold text-[var(--brown-muted)]">Menunggu penugasan artisan</p>
+                <p class="mt-2 text-3xl font-bold" data-status-count="PENDING_ASSIGNMENT">{{ pending_assignment_count }}</p>
+            </article>
+            <article class="rounded-2xl border border-[var(--upcycling-card-border)] bg-[var(--upcycling-surface)] p-4 shadow-sm sm:p-5">
+                <p class="text-sm font-semibold text-[var(--brown-muted)]">Menunggu review artisan</p>
+                <p class="mt-2 text-3xl font-bold" data-status-count="PENDING_REVIEW">{{ pending_review_count }}</p>
+            </article>
+            <article class="rounded-2xl border border-[var(--upcycling-card-border)] bg-[var(--upcycling-surface)] p-4 shadow-sm sm:p-5">
+                <p class="text-sm font-semibold text-[var(--brown-muted)]">Sedang diproduksi</p>
+                <p class="mt-2 text-3xl font-bold" data-status-count="IN_PROGRESS">{{ in_progress_count }}</p>
+            </article>
+        </section>
+
+        <nav
+            id="admin-status-filter"
+            aria-label="Filter status request admin"
+            class="mb-7 inline-flex w-fit max-w-full items-center gap-1 overflow-x-auto rounded-full border border-[var(--border)] bg-[var(--card)] p-1.5 shadow-sm"
+        >
+            {% for tab in status_tabs %}
+                <a
+                    href="{% url 'upcycling:admin_dashboard' %}?status={{ tab.value }}"
+                    hx-get="{% url 'upcycling:admin_dashboard' %}?status={{ tab.value }}"
+                    hx-target="#admin-dashboard-live"
+                    hx-select="#admin-dashboard-live"
+                    hx-swap="outerHTML"
+                    hx-sync="#admin-dashboard-live:replace"
+                    hx-push-url="true"
+                    aria-current="{% if selected_admin_status == tab.value %}page{% else %}false{% endif %}"
+                    class="inline-flex min-h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-full px-5 py-2.5 text-center text-sm transition sm:px-7 sm:text-base
+                           {% if selected_admin_status == tab.value %}
+                               bg-[var(--brown)] font-bold text-[var(--cream-light)] ring-1 ring-[var(--gold)]
+                           {% else %}
+                               text-[var(--brown)] hover:bg-[var(--upcycling-soft)]
+                           {% endif %}"
+                >
+                    {{ tab.label }}
+                </a>
+            {% endfor %}
+        </nav>
+
+        {% if request_rows %}
+            {% include "upcycling/_admin_request_cards.html" with request_rows=request_rows selected_admin_status=selected_admin_status %}
+        {% else %}
+            <div class="flex flex-col items-center gap-5 rounded-2xl border border-[var(--border)] bg-[#f3ebe1] px-5 py-10 text-center sm:gap-6 sm:px-10 sm:py-16">
+                <img
+                    src="{% static 'img/mascot/crying.webp' %}"
+                    alt="Maskot ReBatik menangis karena belum ada permintaan"
+                    loading="lazy"
+                    decoding="async"
+                    class="h-40 w-40 object-contain sm:h-72 sm:w-72 lg:h-[26rem] lg:w-[26rem]"
+                >
+                <h2 class="text-2xl font-bold sm:text-3xl">Belum ada permintaan</h2>
+                <p class="mx-auto max-w-xl text-[var(--brown-muted)]">{{ status_empty_message }}</p>
+                <a
+                    href="{% url 'admin:upcycling_upcyclingrequest_changelist' %}"
+                    class="primary-action-button px-6 py-3 font-semibold focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]"
+                >Lihat semua request →</a>
+            </div>
+        {% endif %}
+        </div>
+    </main>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/upcycling-photo-zoom.js' %}" defer></script>
+{% endblock %}

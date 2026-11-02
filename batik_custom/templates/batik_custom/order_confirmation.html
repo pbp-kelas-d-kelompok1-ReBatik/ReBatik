@@ -1,0 +1,44 @@
+{% extends "base.html" %}{% load static %}{% block meta %}
+<meta name="viewport" content="width=device-width, initial-scale=1">{% endblock %}{% block css %}
+<link rel="stylesheet" href="{% static 'css/custom/custom_studio.css' %}">
+<link rel="stylesheet" href="{% static 'css/custom/batik_order.css' %}">{% endblock %}{% block content %}<main
+    class="order-page">
+    <header class="order-header">
+        <p class="order-eyebrow">REBatik · RINGKASAN</p>
+        <h1>Pesananmu Tercatat!</h1>
+        <p>Pesanan tersimpan dan menunggu konfirmasi. Pembayaran belum diproses otomatis.</p>
+    </header>
+    <section class="order-card confirmation-card">
+        <div class="confirmation-mark">✓</div>
+        <p class="order-eyebrow">NOMOR PESANAN</p>
+        <h2>#RB-{{ order.pk }}</h2><span class="order-status">{{ order.get_status_display }}</span>
+        <hr>
+        <div class="confirmation-grid">
+            <div>
+                <h3>Desain Batik</h3>
+                <p><b>Motif:</b> {{ order.motif.name }}</p>
+                <p><b>Palet:</b> {{ order.palette.name|default:"Palet pilihan" }}</p>
+                <p><b>Produk:</b> {{ order.get_product_type_display }}</p>
+                <p><b>Bahan:</b> {{ order.material }}</p>
+                <p><b>Jumlah:</b> {{ order.quantity }} {{ order.unit }}</p>
+                <p><b>Pembayaran:</b> {{ order.get_payment_method_display }}</p>
+            </div>
+            <div>
+                <h3>Pengiriman</h3>
+                <p>{{ order.recipient_name }}</p>
+                <p>{{ order.phone }}</p>
+                <p>{{ order.address }}</p>
+                <p>
+                    {{ order.district }}{% if order.district %}, {% endif %}
+                    {{ order.city }}, {{ order.province }} {{ order.postal_code }}
+                </p>
+            </div>
+        </div>
+        <div class="order-total"><span>Estimasi total</span><strong>Rp {{ order.total_price }}</strong></div>
+        <p class="order-note">Harga di bawah merupakan harga awal contoh untuk pengembangan. Sesuaikan dengan harga
+            katalog sebelum dipublikasikan.</p><div class="order-history-actions">
+            <a class="order-submit confirmation-link" href="{% url 'batik_custom:order_history' %}">Lihat Riwayat Pesanan</a>
+            <a class="order-back confirmation-link" href="{% url 'batik_custom:recommended_motifs' %}">Kembali ke ReBatik</a>
+        </div>
+    </section>
+</main>{% endblock %}

@@ -28,8 +28,8 @@
                     <input type="radio" name="palette" value="{{ palette.id }}" {% if palette.id|stringformat:"s" == selected_palette|stringformat:"s" %}checked{% endif %} required>
                     <div class="palette-card">
                         <span class="palette-check" aria-hidden="true">✓</span>
-                        {% if palette.image %}
-                        <img class="palette-image" src="{{ palette.image.url }}" alt="Palet batik {{ palette.name }}" loading="lazy">
+                        {% if palette.image_url %}
+                        <img class="palette-image" src="{{ palette.image_url }}" alt="Palet batik {{ palette.name }}" loading="lazy">
                         {% else %}
                         <div class="palette-image palette-placeholder">
                             <span>✿</span>

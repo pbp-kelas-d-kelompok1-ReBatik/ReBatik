@@ -1,0 +1,269 @@
+[
+    {
+        "name": "Retro",
+        "description": "Toska, hijau mint, oranye, dan merah bernuansa nostalgia.",
+        "colors": [
+            "#2EC4B6",
+            "#A8E6CF",
+            "#FF9F1C",
+            "#E63946"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Wedding",
+        "description": "Pink, blush, dan mauve yang lembut dan romantis.",
+        "colors": [
+            "#F8C8DC",
+            "#FADADD",
+            "#D8A7B1",
+            "#B5838D"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Warm",
+        "description": "Kuning, jingga, dan merah yang hangat dan energik.",
+        "colors": [
+            "#FFD166",
+            "#FF9F1C",
+            "#F4743B",
+            "#D62828"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Pastel",
+        "description": "Lavender, krem, dan peach yang manis dan kalem.",
+        "colors": [
+            "#C8B6FF",
+            "#FFF1D6",
+            "#FFCBA4",
+            "#E8DFF5"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Nature",
+        "description": "Hijau, biru muda, dan cokelat yang segar dan membumi.",
+        "colors": [
+            "#4F772D",
+            "#90A955",
+            "#A9D6E5",
+            "#8B5E3C"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Easter",
+        "description": "Lavender, cyan, pink, dan kuning yang ceria.",
+        "colors": [
+            "#CDB4DB",
+            "#7FDBDA",
+            "#FFC8DD",
+            "#FDFD96"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Dark",
+        "description": "Navy, teal gelap, dan ungu yang elegan dan dramatis.",
+        "colors": [
+            "#14213D",
+            "#0B525B",
+            "#3C1642",
+            "#1B263B"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Light",
+        "description": "Pink muda, krem, putih, dan biru pucat yang bersih.",
+        "colors": [
+            "#FFD6E0",
+            "#FFF4E0",
+            "#FFFFFF",
+            "#CDE7F0"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Valentine's Day",
+        "description": "Merah dan variasi pink yang penuh kasih.",
+        "colors": [
+            "#D90429",
+            "#EF476F",
+            "#FF8FAB",
+            "#FFC2D1"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Spring",
+        "description": "Hijau, kuning, pink, dan biru yang segar khas musim semi.",
+        "colors": [
+            "#7BC950",
+            "#FFE066",
+            "#FFA6C9",
+            "#8ECAE6"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Sunset",
+        "description": "Kuning keemasan, jingga, coral, dan ungu senja.",
+        "colors": [
+            "#FFC857",
+            "#FF8C42",
+            "#FF6F61",
+            "#6A4C93"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Summer",
+        "description": "Magenta, jingga, kuning, dan cyan yang cerah dan berani.",
+        "colors": [
+            "#E91E8C",
+            "#FF8C00",
+            "#FFD60A",
+            "#00C2D1"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Food",
+        "description": "Merah, oranye, kuning, hijau, dan ungu yang menggugah selera.",
+        "colors": [
+            "#D62828",
+            "#F77F00",
+            "#FCBF49",
+            "#6A994E",
+            "#7B2CBF"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Christmas",
+        "description": "Merah, oranye, krem, dan hijau bernuansa natal.",
+        "colors": [
+            "#C1121F",
+            "#F77F00",
+            "#FFF1D6",
+            "#2D6A4F"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Ocean",
+        "description": "Gradasi biru laut dari dalam hingga permukaan (nama dan warna perkiraan).",
+        "colors": [
+            "#03045E",
+            "#0077B6",
+            "#00B4D8",
+            "#90E0EF",
+            "#CAF0F8"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Neutral",
+        "description": "Putih hangat, beige, cokelat, dan abu-abu yang timeless.",
+        "colors": [
+            "#FAF3E8",
+            "#D8C3A5",
+            "#8B6F5A",
+            "#9A9A9A"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Cool",
+        "description": "Toska, teal, biru, dan ungu yang sejuk.",
+        "colors": [
+            "#40E0D0",
+            "#008080",
+            "#3A86FF",
+            "#7B2CBF"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Gradient",
+        "description": "Gradasi magenta hingga ungu gelap.",
+        "colors": [
+            "#E040A0",
+            "#B5179E",
+            "#7209B7",
+            "#3C096C",
+            "#240046"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Halloween",
+        "description": "Oranye, hitam, ungu, dan hijau neon yang misterius.",
+        "colors": [
+            "#FF7518",
+            "#1A1A1A",
+            "#6A0DAD",
+            "#39FF14"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Fall",
+        "description": "Cokelat, merah bata, jingga, dan hijau khas musim gugur.",
+        "colors": [
+            "#6F4E37",
+            "#B7410E",
+            "#E07A1F",
+            "#6B8E23"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Winter",
+        "description": "Lavender, mint, dan biru pucat yang dingin dan tenang.",
+        "colors": [
+            "#C8B6E2",
+            "#BDEFD8",
+            "#CFE8F7",
+            "#E8F1F8"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Thanksgiving",
+        "description": "Merah bata, oranye, kuning, dan cokelat yang hangat.",
+        "colors": [
+            "#B7410E",
+            "#E07A1F",
+            "#F2B134",
+            "#6F4E37"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Vintage",
+        "description": "Beige, cokelat lembut, dan dusty rose yang klasik.",
+        "colors": [
+            "#E8DCC4",
+            "#A68A64",
+            "#C9A9A6",
+            "#8C6E5D"
+        ],
+        "is_active": true
+    },
+    {
+        "name": "Neon",
+        "description": "Biru elektrik, pink, oranye, dan hijau neon yang mencolok.",
+        "colors": [
+            "#2979FF",
+            "#FF2E93",
+            "#FF6D00",
+            "#39FF14"
+        ],
+        "is_active": true
+    }
+]

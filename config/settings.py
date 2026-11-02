@@ -55,6 +55,7 @@ if PRODUCTION and not CLOUDINARY_URL:
         "CLOUDINARY_URL must be set when PRODUCTION=True."
     )
 
+
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
@@ -82,6 +83,7 @@ INSTALLED_APPS = [
     'donasi',
     'batik_custom',
     'impact_tracker',
+    'profiles',
 ]
 
 MIDDLEWARE = [
@@ -107,6 +109,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'upcycling.context_processors.upcycling_navigation',
             ],
         },
     },
@@ -191,6 +194,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Jakarta'
+UPCYCLING_FABRIC_DEADLINE_DAYS = 7
 
 USE_I18N = True
 
@@ -211,6 +215,13 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 WHITENOISE_USE_FINDERS = True
+
+# Beberapa gambar katalog berekstensi .jpe; pastikan dikirim sebagai JPEG
+# (X-Content-Type-Options: nosniff membuat browser menolak tipe yang salah).
+WHITENOISE_MIMETYPES = {
+    ".jpe": "image/jpeg",
+    ".webp": "image/webp",
+}
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'

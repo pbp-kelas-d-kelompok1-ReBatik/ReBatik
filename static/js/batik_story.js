@@ -210,3 +210,170 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const loveButtons = document.querySelectorAll(".love");
+
+    loveButtons.forEach(function (button) {
+        button.addEventListener("click", async function () {
+
+            // Cegah klik jika tombol dinonaktifkan
+            if (button.disabled) {
+                return;
+            }
+
+            // Periksa apakah pengguna sudah login
+            if (!window.BATIK_USER_AUTHENTICATED) {
+                const loginURL = window.BATIK_LOGIN_URL || "/accounts/login/";
+                window.location.href =
+                    loginURL + "?next=" +
+                    encodeURIComponent(window.location.pathname);
+                return;
+            }
+
+            const url = button.dataset.url;
+            const csrfInput = document.querySelector(
+                "#csrf-form [name=csrfmiddlewaretoken]"
+            );
+
+            if (!url || !csrfInput) {
+                console.error("URL favorit atau token CSRF tidak ditemukan.");
+                alert("Terjadi kesalahan. Periksa template Batik Story.");
+                return;
+            }
+
+            button.disabled = true;
+
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfInput.value,
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    credentials: "same-origin"
+                });
+
+                if (!response.ok) {
+                    throw new Error("Permintaan favorit gagal: " + response.status);
+                }
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error("Favorit tidak berhasil diperbarui.");
+                }
+
+                // Perbarui tampilan hati
+                const loveIcon = button.querySelector(".love-icon");
+                const favoriteCount = button.querySelector(".favorite-count");
+
+                if (data.is_favorited) {
+                    button.classList.add("is-favorited");
+                    button.setAttribute("aria-pressed", "true");
+                    loveIcon.textContent = "♥";
+                } else {
+                    button.classList.remove("is-favorited");
+                    button.setAttribute("aria-pressed", "false");
+                    loveIcon.textContent = "♡";
+                }
+
+                // Perbarui jumlah favorit
+                favoriteCount.textContent = data.favorite_count;
+
+            } catch (error) {
+                console.error("Error favorit:", error);
+                alert("Favorit gagal diperbarui. Silakan coba lagi.");
+            } finally {
+                button.disabled = false;
+            }
+        });
+    });
+});
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector(".story-search");
+    if (!form) return;
+
+    const searchInput = form.querySelector('[name="q"]');
+    const asalSelect = form.querySelector('[name="asal"]');
+    const sortSelect = form.querySelector('[name="sort"]');
+
+    let timer;
+    let controller;
+
+    async function updateResults() {
+        clearTimeout(timer);
+
+        timer = setTimeout(async () => {
+            controller?.abort();
+            controller = new AbortController();
+
+            const params = new URLSearchParams(new FormData(form));
+            const url = `${form.action}?${params.toString()}`;
+
+            try {
+                const response = await fetch(url, {
+                    signal: controller.signal,
+                    headers: { "X-Requested-With": "XMLHttpRequest" }
+                });
+
+                if (!response.ok) {
+                    throw new Error("Gagal mengambil hasil pencarian.");
+                }
+
+                const html = await response.text();
+                const parsed = new DOMParser().parseFromString(
+                    html, "text/html"
+                );
+
+                const newCards = parsed.querySelector(".story-cards");
+                const oldCards = document.querySelector(".story-cards");
+
+                if (newCards && oldCards) {
+                    oldCards.replaceWith(newCards);
+                }
+
+                const newStatus = parsed.querySelector(
+                    "#story-search-status"
+                );
+                const oldStatus = document.querySelector(
+                    "#story-search-status"
+                );
+
+                if (newStatus && oldStatus) {
+                    oldStatus.replaceWith(newStatus);
+                }
+
+                const newEmpty = parsed.querySelector(
+                    "#story-empty-state"
+                );
+                const oldEmpty = document.querySelector(
+                    "#story-empty-state"
+                );
+
+                if (newEmpty && oldEmpty) {
+                    oldEmpty.replaceWith(newEmpty);
+                }
+
+                window.history.replaceState({}, "", url);
+            } catch (error) {
+                if (error.name !== "AbortError") {
+                    console.error("Pencarian gagal:", error);
+                }
+            }
+        }, 300);
+    }
+
+    searchInput?.addEventListener("input", updateResults);
+    asalSelect?.addEventListener("change", updateResults);
+    sortSelect?.addEventListener("change", updateResults);
+
+    form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        clearTimeout(timer);
+        updateResults();
+    });
+});

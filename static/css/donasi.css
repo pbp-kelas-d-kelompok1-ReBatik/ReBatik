@@ -85,7 +85,7 @@
 
 .donasi-eyebrow {
     margin-bottom: 10px;
-    font-family: Arial, sans-serif;
+    font-family: Garamond, sans-serif;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 3px;
@@ -255,7 +255,7 @@
         #633b26
     );
     color: #fffaf4;
-    font-family: Arial, sans-serif;
+    font-family: Garamond, sans-serif;
     font-size: 14px;
     font-weight: 700;
     line-height: 1.4;
@@ -418,7 +418,7 @@
     border-radius: 13px;
     background: var(--donasi-white);
     color: #382519;
-    font-family: Arial, sans-serif;
+    font-family: Garamond, sans-serif;
     font-size: 14px;
     line-height: 1.5;
     transition:
@@ -441,7 +441,7 @@ textarea.donasi-input {
     display: block;
     margin-top: 6px;
     color: #714a32;
-    font-family: Arial, sans-serif;
+    font-family: Garamond, sans-serif;
     font-size: 12px;
     line-height: 1.5;
 }
@@ -537,7 +537,7 @@ textarea.donasi-input {
     width: 100%;
     max-width: 100%;
     color: #70452f;
-    font-family: Arial, sans-serif;
+    font-family: Garamond, sans-serif;
     font-size: 13px;
 }
 
@@ -565,7 +565,7 @@ textarea.donasi-input {
     margin-bottom: 20px;
     padding: 13px 16px;
     border-radius: 10px;
-    font-family: Arial, sans-serif;
+    font-family: Garamond, sans-serif;
     font-size: 14px;
     line-height: 1.6;
 }
@@ -586,7 +586,7 @@ textarea.donasi-input {
     margin: 7px 0 0;
     padding-left: 18px;
     color: #8b2727;
-    font-family: Arial, sans-serif;
+    font-family: Garamond, sans-serif;
     font-size: 12px;
 }
 
@@ -656,7 +656,7 @@ textarea.donasi-input {
     border-radius: 9px;
     background: white;
     color: #493123;
-    font-family: Arial, sans-serif;
+    font-family: Garamond, sans-serif;
     font-size: 14px;
 }
 
@@ -740,7 +740,7 @@ textarea.donasi-input {
     border-radius: 30px;
     background: #f5e2ca;
     color: #71472b;
-    font-family: Arial, sans-serif;
+    font-family: Garamond, sans-serif;
     font-size: 10px;
     font-weight: 700;
 }

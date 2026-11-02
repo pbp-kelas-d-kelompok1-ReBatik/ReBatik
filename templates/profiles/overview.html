@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<title>Profil Saya | ReBatik</title>
+
+<meta
+    name="description"
+    content="Kelola profil dan pantau kontribusimu bersama ReBatik."
+>
+{% endblock meta %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+{% endblock css %}
+
+
+{% block content %}
+<div class="profile-page">
+
+    <header class="profile-heading">
+        <p class="profile-eyebrow">RUANG PERSONAL REBATIK</p>
+        <h1>Profil Saya</h1>
+        <p>
+            Kenali perjalananmu dalam mengurangi limbah tekstil.
+        </p>
+    </header>
+
+    <div class="profile-shell">
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="profile-message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <section id="profile-content">
+
+            {% if profile %}
+
+                {% include "profiles/partials/profile_card.html" %}
+
+            {% else %}
+
+                <div class="profile-card profile-empty">
+                    <h2>Lengkapi Profilmu</h2>
+                    <a href="{% url 'profiles:create' %}" class="profile-button">Buat Profil</a>
+                </div>
+
+            {% endif %}
+
+        </section>
+
+        <section class="profile-stats">
+
+            <article class="profile-stat">
+                <p class="profile-stat-number">
+                    {{ donation_count }}
+                </p>
+                <h2>Total Pengajuan Donasi</h2>
+            </article>
+
+            <article class="profile-stat">
+                <p class="profile-stat-number">
+                    {{ completed_upcycling_count }}
+                </p>
+                <h2>Upcycling Selesai</h2>
+            </article>
+
+            <article class="profile-stat">
+                <p class="profile-stat-number">
+                    {{ available_points }}
+                </p>
+                <h2>Poin Tersedia</h2>
+            </article>
+
+        </section>
+
+        <div class="profile-grid">
+
+            <section class="profile-card">
+
+                <div class="profile-section-heading">
+                    <h2>Riwayat Donasi</h2>
+                    <a href="{% url 'donasi:history' %}">
+                        Lihat Semua →
+                    </a>
+                </div>
+
+                {% for donation in recent_donations %}
+
+                    <article class="profile-list-item">
+                        <div>
+                            <h3>{{ donation.item_name }}</h3>
+                            <p>
+                                {{ donation.get_donation_type_display }}
+                                · {{ donation.quantity }} pcs
+                            </p>
+                            <p>
+                                {{ donation.get_status_display }}
+                            </p>
+                            <p>
+                                {{ donation.created_at|date:"d M Y" }}
+                            </p>
+                        </div>
+                    </article>
+
+                {% empty %}
+
+                    <div class="profile-empty">
+                        <p>Belum ada donasi yang terhubung ke akunmu.</p>
+                        <a href="{% url 'donasi:create' %}">
+                            Donasikan kain →
+                        </a>
+                    </div>
+
+                {% endfor %}
+
+            </section>
+
+            <section class="profile-card">
+
+                <div class="profile-section-heading">
+                    <h2>Aktivitas Upcycling</h2>
+                    <a href="{% url 'upcycling:request_list' %}">
+                        Lihat Semua →
+                    </a>
+                </div>
+
+                {% for item in recent_upcycling %}
+
+                    <article class="profile-list-item">
+                        <div>
+                            <h3>{{ item.get_product_name }}</h3>
+                            <p>
+                                Referensi: {{ item.reference_code }}
+                            </p>
+                            <p>
+                                {{ item.get_status_display }}
+                            </p>
+                            <p>
+                                {{ item.created_at|date:"d M Y" }}
+                            </p>
+                        </div>
+                    </article>
+
+                {% empty %}
+
+                    <div class="profile-empty">
+                        <p>
+                            Belum ada permintaan upcycling dari akunmu.
+                        </p>
+                        <a href="{% url 'upcycling:request_create' %}">
+                            Buat permintaan →
+                        </a>
+                    </div>
+
+                {% endfor %}
+
+            </section>
+
+        </div>
+
+        <section class="profile-card">
+
+            <div class="profile-section-heading">
+                <h2>Kontribusi untuk ReBatik</h2>
+                <a href="{% url 'rewards:overview' %}">
+                    Lihat Rewards →
+                </a>
+            </div>
+
+            <div class="profile-contribution-stats">
+
+                <div>
+                    <p>Total Poin Diperoleh</p>
+                    <strong>{{ lifetime_points }}</strong>
+                </div>
+
+                <div>
+                    <p>Berat Kain Tercatat</p>
+                    <strong>{{ saved_weight_kg|floatformat:2 }} kg</strong>
+                </div>
+
+                <div>
+                    <p>Total Permintaan Upcycling</p>
+                    <strong>{{ upcycling_count }}</strong>
+                </div>
+
+            </div>
+
+            <h3 class="profile-subheading">
+                Aktivitas Poin Terbaru
+            </h3>
+
+            {% for transaction in recent_transactions %}
+
+                <article class="profile-list-item">
+                    <div>
+                        <h3>{{ transaction.description }}</h3>
+                        <p>
+                            {{ transaction.created_at|date:"d M Y" }}
+                        </p>
+                    </div>
+
+                    <strong>
+                        {% if transaction.points > 0 %}+{% endif %}
+                        {{ transaction.points }} poin
+                    </strong>
+                </article>
+
+            {% empty %}
+
+                <p class="profile-empty">
+                    Belum ada transaksi poin yang tercatat.
+                </p>
+
+            {% endfor %}
+
+        </section>
+
+        <section class="profile-card">
+
+            <div class="profile-section-heading">
+                <h2>Riwayat Pesanan</h2>
+
+                <a href="{% url 'batik_custom:order_history' %}">
+                    Lihat Semua →
+                </a>
+            </div>
+
+            {% for order in recent_orders %}
+
+                <article class="profile-list-item">
+                    <div class="profile-list-copy">
+
+                        <div class="profile-list-title">
+                            <h3>Pesanan Batik Custom #{{ order.pk }}</h3>
+
+                            <span class="profile-status">{{ order.get_status_display }}</span>
+                        </div>
+
+                        <p>Jenis Produk: {{ order.get_product_type_display }}</p>
+
+                        <p>
+                            Motif:
+                            {% if order.motif %}
+                                {{ order.motif.name }}
+                            {% else %}
+                                Belum ditentukan
+                            {% endif %}
+                        </p>
+
+                        <p>
+                            Tanggal Pesanan: 
+                            {{ order.created_at|date:"d M Y" }}
+                        </p>
+
+                    </div>
+
+                    <strong>Rp {{ order.total_price|floatformat:0 }}</strong>
+                </article>
+
+            {% empty %}
+
+                <div class="profile-empty">
+                    Belum ada pesanan.
+                </div>
+
+            {% endfor %}
+        </section>
+
+    </div>
+
+</div>
+
+{% endblock content %}

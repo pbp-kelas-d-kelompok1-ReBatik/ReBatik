@@ -2,8 +2,6 @@
    REBATIK - IMPACT TRACKER
    Semua selector memakai prefix "impact-" agar tidak
    bentrok dengan halaman lain.
-   Aset: static/img/impact/ (batik-cloud-top.png,
-   batik-cloud-bottom.png, batik-pattern.png)
    ===================================================== */
 
 .impact-page {
@@ -156,18 +154,6 @@
     padding: 84px 24px 92px;
     text-align: center;
     background: linear-gradient(135deg, var(--impact-peach) 0%, #efd3bb 55%, var(--impact-cream) 100%);
-}
-
-/* Tekstur batik: pseudo-element agar opacity tidak menurunkan keterbacaan teks. */
-.impact-hero::before,
-.impact-cta::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: url("../img/impact/batik-pattern.png") center / 380px auto repeat;
-    opacity: 0.12;
-    pointer-events: none;
 }
 
 .impact-cloud {

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}<meta name="description" content="Tukarkan poin ReBatik dengan voucher atau hadiah fisik.">{% endblock %}
+{% block css %}<link rel="stylesheet" href="{% static 'css/rewards.css' %}">{% endblock %}
+
+{% block content %}
+<main class="rewards-page">
+    <section class="rewards-hero">
+        <p class="rewards-eyebrow">Points and Rewards</p>
+        <h1>Katalog Reward</h1>
+        <p>Saldo Anda: <strong>{{ available_points }} poin</strong></p>
+    </section>
+    <section class="rewards-panel">
+        <p><a class="history-back-link" href="{% url 'rewards:overview' %}">← Kembali ke saldo poin</a></p>
+        {% if messages %}<div class="my-4 space-y-2">{% for message in messages %}<p class="rounded-lg border p-3" role="status">{{ message }}</p>{% endfor %}</div>{% endif %}
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {% for reward in rewards %}
+                <article class="history-row flex-col items-stretch gap-3">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider">{{ reward.get_reward_type_display }}</p>
+                        <h2 class="mt-1 text-xl font-bold">{{ reward.name }}</h2>
+                        {% if reward.description %}<p class="mt-2">{{ reward.description }}</p>{% endif %}
+                        {% if reward.discount_value %}<p class="mt-2">Diskon Rp{{ reward.discount_value|floatformat:0 }}</p>{% endif %}
+                        <p class="mt-2 font-semibold">{{ reward.points_required }} poin · stok {{ reward.stock }}</p>
+                    </div>
+                    <form method="post" action="{% url 'rewards:redeem' reward.id %}" class="space-y-2">
+                        {% csrf_token %}
+                        {% if reward.reward_type == 'PHYSICAL' %}
+                            <label class="block text-sm font-semibold" for="shipping-{{ reward.id }}">Alamat pengiriman</label>
+                            <input id="shipping-{{ reward.id }}" name="shipping_address" maxlength="255" required class="w-full rounded-lg border px-3 py-2" placeholder="Alamat lengkap penerima">
+                        {% endif %}
+                        <button type="submit" {% if available_points < reward.points_required %}disabled{% endif %} class="primary-action-button min-h-11 w-full px-4 py-2 font-bold disabled:cursor-not-allowed disabled:opacity-50">Tukar reward</button>
+                    </form>
+                </article>
+            {% empty %}
+                <p class="history-empty">Belum ada reward aktif yang tersedia.</p>
+            {% endfor %}
+        </div>
+        <section class="mt-8" aria-labelledby="redemptions-heading">
+            <h2 id="redemptions-heading" class="text-xl font-bold">Penukaran terbaru</h2>
+            <div class="history-list mt-3">
+                {% for redemption in recent_redemptions %}
+                    <article class="history-row">
+                        <div class="history-row-info">
+                            <h3>{{ redemption.reward.name }}</h3>
+                            <p>{{ redemption.get_status_display }} · {{ redemption.redeemed_at|date:"d M Y" }}</p>
+                            {% if redemption.voucher_code %}<p>Kode: <strong>{{ redemption.voucher_code }}</strong> ({{ redemption.get_voucher_status_display }})</p>{% endif %}
+                        </div>
+                        <p class="history-amount is-out">−{{ redemption.points_spent }}</p>
+                    </article>
+                {% empty %}<p class="history-empty">Belum ada penukaran.</p>{% endfor %}
+            </div>
+        </section>
+    </section>
+</main>
+{% endblock %}

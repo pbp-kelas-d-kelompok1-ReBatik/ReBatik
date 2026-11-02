@@ -1,7 +1,8 @@
 env/
 __pycache__/
 *.pyc
-db.sqlite3
+*.sqlite3
+*.sqlite3.backup-*
 .vscode/
 .idea/
 .env
@@ -11,3 +12,9 @@ db.sqlite3
 # Generated Tailwind CSS; build locally and in the deployment workflow.
 static/css/tailwind.css
 node_modules/
+
+# Uploaded donation photos are local/runtime data, not source assets.
+media/donasi_kain/
+
+# Uploaded upcycling and reference photos are local/runtime data, not source assets.
+media/upcycling/

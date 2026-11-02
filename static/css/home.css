@@ -1,0 +1,169 @@
+.hero {
+    min-height: calc(100vh - 100px);
+    padding: 40px 30px 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.title {
+    margin: 0;
+    color: var(--cream);
+    font-family: "Garamond", Georgia, serif;
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    font-style: italic;
+    font-weight: 700;
+    text-align: center;
+    text-shadow: 0 2px 3px rgba(80, 40, 20, 0.35);
+    text-transform: uppercase;
+}
+
+.intro {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
+    margin: 45px auto 0;
+}
+
+.mascot {
+    width: 500px;
+    height: auto;
+    flex-shrink: 0;
+}
+
+.intro-content {
+    display: flex;
+    width: 100%;
+    max-width: 750px;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.bubble {
+    position: relative;
+    width: 100%;
+    padding: 30px 45px;
+    border-radius: 45px;
+    background: var(--bubble);
+    color: #8a4a14;
+    font-family: "Garamond", Georgia, serif;
+    font-size: 38px;
+    font-style: italic;
+    font-weight: 700;
+    line-height: 1.25;
+    text-align: center;
+}
+
+.bubble::after {
+    position: absolute;
+    bottom: 20px;
+    left: -20px;
+    border: solid transparent;
+    border-width: 0 0 30px 30px;
+    border-bottom-color: var(--bubble);
+    content: "";
+}
+
+.actions {
+    display: flex;
+    width: 210px;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #bdbdbd;
+    border-radius: 4px;
+    background: var(--bubble);
+    color: var(--brown);
+    font-family: "Garamond", Georgia, serif;
+    font-size: 1.5rem;
+    font-style: italic;
+    font-weight: 700;
+    text-align: center;
+    transition: background 0.15s ease;
+}
+
+.btn:hover {
+    background: #ececec;
+}
+
+@media (max-width: 1100px) {
+    .intro {
+        max-width: 1000px;
+        gap: 35px;
+    }
+
+    .mascot {
+        width: 260px;
+    }
+
+    .intro-content {
+        max-width: 650px;
+    }
+
+    .bubble {
+        font-size: 34px;
+    }
+}
+
+@media (max-width: 850px) {
+    .intro {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .mascot {
+        width: 250px;
+        order: 2;
+    }
+
+    .intro-content {
+        max-width: 700px;
+    }
+
+    .bubble {
+        font-size: 32px;
+    }
+}
+
+@media (max-width: 720px) {
+    .hero {
+        padding: 30px 15px 50px;
+    }
+
+    .bubble {
+        padding: 25px;
+        font-size: 28px;
+    }
+
+    .bubble::after {
+        bottom: -18px;
+        left: 50%;
+        margin-left: -14px;
+        border-width: 20px 14px 0;
+        border-top-color: var(--bubble);
+        border-bottom-color: transparent;
+    }
+
+    .mascot {
+        width: 220px;
+    }
+}
+
+@media (max-width: 500px) {
+    .bubble {
+        font-size: 24px;
+    }
+
+    .actions {
+        width: 180px;
+    }
+}

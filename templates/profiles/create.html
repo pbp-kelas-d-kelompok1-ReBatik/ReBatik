@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<title>Buat Profil | ReBatik</title>
+{% endblock meta %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+{% endblock css %}
+
+{% block content %}
+
+<div class="profile-page">
+
+    <header class="profile-heading">
+        <p class="profile-eyebrow">REBATIK MEMBER</p>
+        <h1>Buat Profil</h1>
+        <p>Lengkapi data profilmu.</p>
+    </header>
+    <div>
+        <section class="profile-card profile-form-card">
+            <form
+                method="post"
+                action="{% url 'profiles:create' %}"
+                enctype="multipart/form-data"
+            >
+                {% csrf_token %}
+
+                {% include "profiles/partials/form_fields.html" %}
+
+                <div class="profile-card-actions">
+                    <button type="submit" class="profile-button">
+                        Simpan Profil
+                    </button>
+
+                    <a
+                        href="{% url 'profiles:overview' %}"
+                        class="profile-button profile-button-secondary"
+                    >
+                        Batal
+                    </a>
+                </div>
+
+            </form>
+
+        </section>
+    </div>
+    
+
+</div>
+
+{% endblock content %}
