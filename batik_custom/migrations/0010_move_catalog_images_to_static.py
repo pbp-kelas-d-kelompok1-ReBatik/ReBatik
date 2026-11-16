@@ -109,6 +109,12 @@ def move_catalog_references(apps, schema_editor):
                 queryset, "image", new_path
             )
 
+            # Skip image paths that are not used in the database.
+            rows = queryset.filter(image=old_path)
+
+            if not rows.exists():
+                continue
+
             # Keep existing uploaded media files unchanged.
             old_file = media_path(old_path)
 
@@ -125,9 +131,7 @@ def move_catalog_references(apps, schema_editor):
                     f"static image is missing: {new_file}"
                 )
 
-            queryset.filter(image=old_path).update(
-                image=new_path
-            )
+            rows.update(image=new_path)
 
 
 def restore_catalog_references(apps, schema_editor):
