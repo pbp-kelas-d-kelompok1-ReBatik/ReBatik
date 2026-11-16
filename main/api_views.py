@@ -6,6 +6,7 @@ GET csrf/ -> POST login/ -> kirim cookie sessionid + header X-CSRFToken.
 """
 from django.contrib.auth import authenticate, login, logout
 from django.middleware.csrf import get_token
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
@@ -16,6 +17,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from main.forms import SignUpForm
+from main.serializers import NotificationSerializer
 from main.views import create_notification
 from profiles.utils import get_user_role
 
@@ -96,6 +98,11 @@ def register_api(request):
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def logout_api(request):
+    create_notification(
+        request.user, "Logout berhasil",
+        f"Kamu telah logout pada {timezone.localtime().strftime('%d %B %Y pukul %H:%M WIB')}.",
+        "logout",
+    )
     logout(request._request)
     return Response({"csrfToken": get_token(request._request)})
 
@@ -107,3 +114,44 @@ def me(request):
     if not request.user.is_authenticated:
         return Response({"is_authenticated": False, "user": None})
     return Response({"is_authenticated": True, "user": _user_payload(request.user)})
+
+
+# ---------------------------------------------------------------------------
+# Notifikasi (milik pengguna login)
+# ---------------------------------------------------------------------------
+@api_view(["GET", "HEAD"])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def notification_list(request):
+    """Daftar notifikasi terbaru. ``?unread=true`` hanya yang belum dibaca,
+    ``?limit=N`` membatasi jumlah (default 30, maksimum 100)."""
+    notifications = request.user.notifications.all()
+    unread_count = notifications.filter(is_read=False).count()
+    if request.query_params.get("unread", "").lower() in ("1", "true", "yes"):
+        notifications = notifications.filter(is_read=False)
+    try:
+        limit = int(request.query_params.get("limit", 30))
+    except ValueError:
+        limit = 30
+    limit = max(1, min(limit, 100))
+    serializer = NotificationSerializer(notifications[:limit], many=True)
+    return Response({"unread_count": unread_count, "results": serializer.data})
+
+
+@api_view(["POST"])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def notification_read(request, pk):
+    notification = get_object_or_404(request.user.notifications, pk=pk)
+    if not notification.is_read:
+        notification.is_read = True
+        notification.save(update_fields=["is_read"])
+    return Response(NotificationSerializer(notification).data)
+
+
+@api_view(["POST"])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def notification_read_all(request):
+    updated = request.user.notifications.filter(is_read=False).update(is_read=True)
+    return Response({"updated": updated, "unread_count": 0})
