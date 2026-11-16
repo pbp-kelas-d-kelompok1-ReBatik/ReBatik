@@ -1,0 +1,423 @@
+@font-face {
+    font-family: "ReBatik Garamond";
+    src: url("../../font/Garamond.ttf") format("truetype");
+    font-display: swap;
+}
+
+.vibe-page {
+    --vibe-brown: #57331f;
+    --vibe-terracotta: #a85f35;
+    --vibe-gold: #c8954e;
+    --vibe-cream: #fff4e4;
+    --vibe-border: #e8c49d;
+
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 34px 24px;
+    background: linear-gradient(
+        120deg,
+        #ad8069 0%,
+        #c99b7c 50%,
+        #a87860 100%
+    );
+    color: var(--vibe-brown);
+    font-family: "ReBatik Garamond", Garamond, Georgia, serif;
+}
+
+.vibe-page *,
+.vibe-page *::before,
+.vibe-page *::after {
+    box-sizing: border-box;
+}
+
+.vibe-panel {
+    position: relative;
+    z-index: 0;
+    max-width: 1250px;
+    margin: 0 auto;
+    padding: 36px clamp(20px, 4vw, 54px) 24px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 22px;
+    background:
+        radial-gradient(
+            ellipse at 12% 10%,
+            rgba(255, 250, 235, 0.98),
+            transparent 48%
+        ),
+        linear-gradient(135deg, #fff1dc, #f2d1ad);
+    box-shadow: 0 18px 45px rgba(75, 42, 24, 0.12);
+}
+
+/* Ornamen dekoratif */
+.vibe-panel::before,
+.vibe-panel::after {
+    position: absolute;
+    z-index: -1;
+    color: rgba(160, 99, 54, 0.13);
+    font-size: clamp(100px, 17vw, 220px);
+    line-height: 1;
+    pointer-events: none;
+}
+
+.vibe-panel::before {
+    content: "❋";
+    top: 30px;
+    left: -55px;
+}
+
+.vibe-panel::after {
+    content: "❋";
+    right: -60px;
+    bottom: 35px;
+}
+
+.vibe-header {
+    margin: 0 auto 32px;
+    text-align: center;
+}
+
+.vibe-eyebrow {
+    margin: 0 0 14px;
+    color: #a25d34;
+    font-family: "Garamond", sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+}
+
+.vibe-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 8px;
+    color: var(--vibe-gold);
+}
+
+.vibe-divider span {
+    width: 90px;
+    height: 1px;
+    background: var(--vibe-gold);
+}
+
+.vibe-divider b {
+    font-size: 24px;
+    font-weight: normal;
+}
+
+.vibe-header h1 {
+    margin: 0;
+    color: #482719;
+    font-family: "ReBatik Garamond", Garamond, Georgia, serif;
+    font-size: clamp(36px, 5vw, 60px);
+    font-weight: 500;
+    line-height: 1.08;
+}
+
+.vibe-title-underline {
+    width: 65px;
+    height: 3px;
+    margin: 12px auto 10px;
+    border-radius: 10px;
+    background: #c58b43;
+}
+
+.vibe-subtitle {
+    margin: 0;
+    color: #806047;
+    font-size: 17px;
+    line-height: 1.5;
+}
+
+/* Grid kartu */
+.vibe-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.vibe-option {
+    position: relative;
+    display: block;
+    min-width: 0;
+    cursor: pointer;
+}
+
+.vibe-option input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.vibe-card {
+    position: relative;
+    height: 100%;
+    padding: 10px;
+    overflow: hidden;
+    border: 1.5px solid var(--vibe-border);
+    border-radius: 15px;
+    background: rgba(255, 251, 244, 0.86);
+    box-shadow: 0 4px 12px rgba(87, 51, 31, 0.035);
+    transition:
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.vibe-option:hover .vibe-card {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(87, 51, 31, 0.1);
+}
+
+.vibe-option input:checked + .vibe-card {
+    border: 2px solid #b95e26;
+    background: #fff8ed;
+    box-shadow: 0 0 0 3px rgba(185, 94, 38, 0.1);
+}
+
+.vibe-option input:focus-visible + .vibe-card {
+    outline: 3px solid #704126;
+    outline-offset: 4px;
+}
+
+.vibe-image {
+    display: block;
+    width: 100%;
+    height: clamp(145px, 19vw, 225px);
+    margin: 0 0 12px;
+    border-radius: 10px;
+    object-fit: cover;
+    object-position: center;
+    background: #ead6bf;
+}
+
+.vibe-image-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #8b684b;
+    text-align: center;
+}
+
+.vibe-image-placeholder span {
+    font-size: 32px;
+}
+
+.vibe-image-placeholder p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.vibe-check {
+    position: absolute;
+    z-index: 2;
+    top: 18px;
+    right: 18px;
+    display: grid;
+    width: 31px;
+    height: 31px;
+    place-items: center;
+    border: 1px solid white;
+    border-radius: 50%;
+    color: white;
+    background: rgba(110, 72, 45, 0.55);
+    font-family: Garamond, sans-serif;
+    font-size: 17px;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.vibe-option input:checked + .vibe-card .vibe-check {
+    background: #b76531;
+    opacity: 1;
+    transform: scale(1);
+}
+
+.vibe-card-content {
+    padding: 0 4px 5px;
+}
+
+.vibe-card-content h2 {
+    margin: 0 0 7px;
+    color: #593621;
+    font-size: 23px;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.vibe-description {
+    margin: 0 0 5px;
+    color: #805d45;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+.vibe-detail {
+    margin: 0;
+    color: #876e5c;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.vibe-empty {
+    grid-column: 1 / -1;
+    padding: 32px;
+    border: 1px dashed var(--vibe-border);
+    border-radius: 14px;
+    color: #805d45;
+    text-align: center;
+}
+
+.vibe-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 26px;
+}
+
+.vibe-next {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    min-width: 250px;
+    padding: 15px 28px;
+    border: 1px solid rgba(255, 239, 216, 0.3);
+    border-radius: 50px;
+    color: #fff5e9;
+    background: #62371f;
+    box-shadow: 0 8px 18px rgba(87, 51, 31, 0.16);
+    font-family: "ReBatik Garamond", Garamond, Georgia, serif;
+    font-size: 17px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.vibe-next:hover {
+    background: #824b2b;
+    transform: translateY(-2px);
+}
+
+.vibe-next:focus-visible {
+    outline: 3px solid #c8954e;
+    outline-offset: 4px;
+}
+
+.vibe-next span:last-child {
+    font-family: Garamond, sans-serif;
+    font-size: 20px;
+}
+
+.vibe-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 26px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(160, 99, 54, 0.15);
+    color: #89664d;
+    font-family: Garamond, sans-serif;
+    font-size: 10px;
+    letter-spacing: 1.2px;
+}
+
+/* Tablet */
+@media (max-width: 850px) {
+    .vibe-page {
+        padding: 24px 16px;
+    }
+
+    .vibe-panel {
+        padding: 30px 22px 22px;
+    }
+
+    .vibe-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .vibe-image {
+        height: clamp(150px, 27vw, 210px);
+    }
+
+    .vibe-card-content h2 {
+        font-size: 21px;
+    }
+}
+
+/* HP */
+@media (max-width: 520px) {
+    .vibe-page {
+        padding: 14px 10px;
+    }
+
+    .vibe-panel {
+        padding: 27px 14px 18px;
+        border-radius: 16px;
+    }
+
+    .vibe-header {
+        margin-bottom: 24px;
+    }
+
+    .vibe-header h1 {
+        font-size: 36px;
+    }
+
+    .vibe-eyebrow {
+        font-size: 9px;
+        letter-spacing: 2px;
+    }
+
+    .vibe-subtitle {
+        font-size: 15px;
+    }
+
+    .vibe-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .vibe-card {
+        padding: 10px;
+    }
+
+    .vibe-image {
+        height: 220px;
+    }
+
+    .vibe-card-content h2 {
+        font-size: 22px;
+    }
+
+    .vibe-description {
+        font-size: 15px;
+    }
+
+    .vibe-detail {
+        font-size: 13px;
+    }
+
+    .vibe-next {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .vibe-footer {
+        font-size: 8px;
+        letter-spacing: 0.5px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vibe-card,
+    .vibe-check,
+    .vibe-next {
+        transition: none;
+    }
+}

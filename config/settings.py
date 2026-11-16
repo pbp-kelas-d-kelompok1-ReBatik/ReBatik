@@ -94,6 +94,7 @@ INSTALLED_APPS = [
     "impact_tracker",
     "profiles",
     "landing",
+    "rest_framework",
 ]
 
 
