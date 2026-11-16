@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static rewards_format %}
+
+{% block meta %}<title>Kelola Katalog Voucher | ReBatik</title>{% endblock %}
+{% block css %}<link rel="stylesheet" href="{% static 'css/rewards.css' %}">{% endblock %}
+
+{% block content %}
+<main class="rewards-page">
+    <img class="rewards-cloud rewards-cloud-left" src="{% static 'img/shared/cloud-left.webp' %}" alt="" aria-hidden="true">
+    <img class="rewards-cloud rewards-cloud-right" src="{% static 'img/shared/cloud-right.webp' %}" alt="" aria-hidden="true">
+    <section class="rewards-hero">
+        <p class="rewards-eyebrow">DASHBOARD ADMIN</p>
+        <h1>Kelola Katalog Voucher</h1>
+        <p>Atur voucher diskon yang tersedia untuk ditukar dengan poin.</p>
+    </section>
+
+    <section class="rewards-panel">
+        <p><a class="history-back-link" href="{% url 'profiles:overview' %}">← Kembali ke dashboard admin</a></p>
+
+        {% if messages %}
+            <div class="my-4 space-y-2">
+                {% for message in messages %}<p class="rounded-lg border p-3" role="status">{{ message }}</p>{% endfor %}
+            </div>
+        {% endif %}
+
+        {% if can_add %}
+            <a href="{% url 'rewards:admin_voucher_add' %}" class="primary-action-button voucher-admin-add-link">Tambah voucher</a>
+        {% endif %}
+
+        <section class="mt-9" aria-labelledby="voucher-list-heading">
+            <h2 id="voucher-list-heading" class="text-2xl font-bold">Voucher yang terdaftar</h2>
+            <div class="voucher-card-grid voucher-admin-card-grid">
+                {% for voucher in vouchers %}
+                    {% include "rewards/_admin_voucher_card.html" with voucher=voucher can_change=can_change %}
+                {% empty %}<p class="history-empty">Belum ada voucher terdaftar.</p>{% endfor %}
+            </div>
+        </section>
+    </section>
+</main>
+{% endblock %}

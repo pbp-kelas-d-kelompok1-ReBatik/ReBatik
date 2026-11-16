@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/upcycling.css' %}">
+{% endblock css %}
+
+{% block content %}
+<section class="relative isolate overflow-hidden px-4 pb-12 pt-10 sm:px-6 sm:pt-12">
+    <img src="{% static 'img/shared/cloud-left.webp' %}" alt="" aria-hidden="true" class="pointer-events-none absolute left-0 top-20 -z-10 w-24 -translate-x-1/3 sm:w-36">
+    <img src="{% static 'img/shared/cloud-right.webp' %}" alt="" aria-hidden="true" class="pointer-events-none absolute right-0 top-16 -z-10 w-24 translate-x-1/4 sm:w-36">
+
+    <header class="relative mx-auto mb-10 max-w-4xl text-center text-[var(--brown)]">
+        <p class="text-xs uppercase tracking-[0.3em]">Upcycle · Culture · Value</p>
+        <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">Dashboard Artisan</h1>
+        <p class="mt-3 text-base sm:text-lg">Tinjau permintaan dan kelola proses upcycling yang ditugaskan kepada Anda.</p>
+        <a href="{% url 'upcycling:request_list' %}" class="primary-action-button mt-5 min-h-11 px-5 py-2 text-sm focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[var(--gold)]">← Kembali ke Permintaan Saya</a>
+    </header>
+
+    <main class="mx-auto max-w-6xl rounded-2xl border border-[var(--upcycling-card-border)] bg-[var(--upcycling-panel)] p-5 text-[var(--brown)] shadow-2xl sm:rounded-3xl sm:p-8 lg:p-10">
+        {% include "upcycling/_toast_messages.html" %}
+
+        <div class="mb-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h2 class="text-2xl font-bold sm:text-3xl">Request yang Ditugaskan</h2>
+                <p class="mt-1 text-[var(--brown-dark)]">Buka detail request untuk meninjau informasi dan mengambil tindakan.</p>
+            </div>
+            <p class="w-fit rounded-full border border-[var(--upcycling-card-border)] bg-[var(--card)] px-5 py-3 font-semibold">
+                Kapasitas aktif <span class="font-bold">{{ artisan.active_request_count }}/{{ artisan.max_active_requests }}</span>
+            </p>
+        </div>
+
+        {% if requests %}
+            <div class="space-y-4">
+                {% for item in requests %}
+                    <article class="grid grid-cols-[5.5rem_minmax(0,1fr)] items-start gap-x-4 gap-y-3 rounded-2xl border border-[var(--upcycling-card-border)] bg-[var(--upcycling-surface)] p-2 text-[var(--brown)] shadow-md transition hover:shadow-lg sm:grid-cols-[7rem_minmax(0,1fr)] sm:gap-x-5 sm:p-4 lg:grid-cols-[11rem_minmax(0,1fr)_auto_auto] lg:gap-4">
+                        <div class="aspect-[1.35] w-full overflow-hidden rounded-xl">
+                            {% if item.fabric_photos %}
+                                <div class="grid h-full w-full gap-1 {% if item.fabric_photos|length > 1 %}grid-cols-2{% else %}grid-cols-1{% endif %}">
+                                    {% for photo in item.fabric_photos %}
+                                        <button type="button" data-fabric-photo-zoom="{{ item.pk }}" data-photo-src="{{ photo.url }}" data-photo-alt="Foto barang atau kain {{ forloop.counter }} dari {{ item.fabric_photos|length }} · {{ item.get_product_name }}" aria-label="Zoom foto barang atau kain {{ forloop.counter }} dari {{ item.fabric_photos|length }}" title="Zoom foto" class="group relative min-h-0 min-w-0 overflow-hidden rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brown)]">
+                                            <img src="{{ photo.url }}" alt="Foto barang atau kain {{ forloop.counter }} dari {{ item.fabric_photos|length }}" loading="lazy" decoding="async" class="h-full w-full object-cover transition duration-200 group-hover:scale-105">
+                                            <span data-photo-zoom-icon aria-hidden="true" class="absolute bottom-1 right-1 grid size-7 place-items-center rounded-full bg-black/65 text-white shadow-md sm:size-8">
+                                                <svg viewBox="0 0 24 24" fill="none" class="size-5" aria-hidden="true">
+                                                    <circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="2"></circle>
+                                                    <path d="m15.5 15.5 5 5m-10-13v6m-3-3h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                </svg>
+                                            </span>
+                                        </button>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <img src="{% static 'img/mascot/thinking.webp' %}" alt="Foto barang atau kain belum tersedia" loading="lazy" decoding="async" class="h-full w-full bg-[var(--upcycling-soft)] object-contain p-3">
+                            {% endif %}
+                        </div>
+
+                        <div class="min-w-0">
+                            <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
+                                <h3 class="break-words text-xl font-bold leading-tight sm:text-3xl">{{ item.get_product_name }}</h3>
+                                <span class="upcycling-status-badge min-h-11 w-fit shrink-0 rounded-full px-4 py-2 text-base font-bold lg:hidden
+                                    {% if item.status == 'COMPLETED' %}bg-[var(--upcycling-status-completed)] text-[var(--upcycling-status-completed-text)]
+                                    {% elif item.status == 'REJECTED' or item.status == 'CANCELLED' or item.status == 'EXPIRED' %}bg-[var(--upcycling-status-cancelled)] text-[var(--upcycling-status-cancelled-text)]
+                                    {% else %}bg-[var(--upcycling-status-pending)] text-[var(--upcycling-status-pending-text)]{% endif %}">
+                                    {{ item.get_status_display }}
+                                </span>
+                            </div>
+                            <p class="mt-1 break-words text-base leading-snug text-[var(--brown-muted)] sm:text-lg">{{ item.get_fabric_display }}</p>
+                            <p class="mt-1 break-words text-sm leading-snug text-[var(--brown-muted)] sm:text-base">
+                                #RB-{{ item.pk|stringformat:"s"|slice:":8"|upper }}
+                                <span aria-hidden="true"> · </span>{{ item.created_at|date:"d M Y" }}
+                            </p>
+                        </div>
+
+                        <span class="upcycling-status-badge hidden min-h-11 w-fit self-center rounded-full px-4 py-2 text-base font-bold lg:inline-flex
+                            {% if item.status == 'COMPLETED' %}bg-[var(--upcycling-status-completed)] text-[var(--upcycling-status-completed-text)]
+                            {% elif item.status == 'REJECTED' or item.status == 'CANCELLED' or item.status == 'EXPIRED' %}bg-[var(--upcycling-status-cancelled)] text-[var(--upcycling-status-cancelled-text)]
+                            {% else %}bg-[var(--upcycling-status-pending)] text-[var(--upcycling-status-pending-text)]{% endif %}">
+                            {{ item.get_status_display }}
+                        </span>
+
+                        <a href="{% url 'upcycling:request_detail' item.pk %}" class="primary-action-button col-span-2 min-h-11 px-5 py-2 text-sm focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[var(--gold)] lg:col-span-1 lg:self-center">
+                            Lihat Detail →
+                        </a>
+                    </article>
+                {% endfor %}
+            </div>
+            <dialog id="artisan-photo-zoom" aria-label="Foto barang atau kain ukuran besar" class="fixed inset-0 m-auto max-h-[96dvh] max-w-[96vw] overflow-visible rounded-2xl bg-transparent p-0 text-white backdrop:bg-black/85">
+                <div class="relative flex max-h-[96dvh] max-w-[96vw] flex-col items-center rounded-2xl bg-[var(--brown)] p-3 shadow-2xl sm:p-5">
+                    <div class="mb-3 flex w-full items-center justify-between gap-4">
+                        <p id="artisan-photo-zoom-counter" class="font-semibold" aria-live="polite"></p>
+                        <button id="artisan-photo-zoom-close" type="button" class="min-h-10 rounded-lg bg-white/15 px-4 font-bold hover:bg-white/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" aria-label="Tutup foto">Tutup ✕</button>
+                    </div>
+                    <div class="flex min-h-0 w-full items-center justify-center gap-2 sm:gap-4">
+                        <button id="artisan-photo-zoom-previous" type="button" class="min-h-11 shrink-0 rounded-full bg-white/15 px-3 text-xl font-bold hover:bg-white/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" aria-label="Foto sebelumnya">‹</button>
+                        <img id="artisan-photo-zoom-image" src="" alt="" class="max-h-[82dvh] min-w-0 max-w-[78vw] object-contain">
+                        <button id="artisan-photo-zoom-next" type="button" class="min-h-11 shrink-0 rounded-full bg-white/15 px-3 text-xl font-bold hover:bg-white/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" aria-label="Foto berikutnya">›</button>
+                    </div>
+                </div>
+            </dialog>
+        {% else %}
+            <div class="flex flex-col items-center gap-5 rounded-2xl border border-[var(--border)] bg-[#f3ebe1] px-5 py-10 text-center sm:gap-6 sm:px-10 sm:py-16">
+                <img src="{% static 'img/mascot/crying.webp' %}" alt="Maskot ReBatik menangis karena belum ada permintaan artisan" loading="lazy" decoding="async" class="h-40 w-40 object-contain sm:h-72 sm:w-72 lg:h-[26rem] lg:w-[26rem]">
+                <h3 class="text-2xl font-bold sm:text-3xl">Belum ada permintaan</h3>
+                <p class="mx-auto max-w-xl text-[var(--brown-muted)]">Request yang ditugaskan oleh admin akan muncul di sini.</p>
+            </div>
+        {% endif %}
+    </main>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/upcycling-photo-zoom.js' %}" defer></script>
+{% endblock %}

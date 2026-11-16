@@ -1,0 +1,14 @@
+{% for field in form %}
+    <div class="profile-form-field">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+
+        {% if field.help_text %}
+            <small>{{ field.help_text }}</small>
+        {% endif %}
+
+        {% for error in field.errors %}
+            <p class="profile-error">{{ error }}</p>
+        {% endfor %}
+    </div>
+{% endfor %}

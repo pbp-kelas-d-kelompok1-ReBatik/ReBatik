@@ -1,157 +1,96 @@
-
-
 .auth-page {
     min-height: calc(100vh - 100px);
-
     display: flex;
     justify-content: center;
     align-items: center;
-
     padding: 25px 20px;
-
     font-family: "Garamond", Georgia, serif;
 }
 
-
+.body{
+    background-color: #d8c6b8;
+}
 
 .auth-card {
     width: 100%;
     max-width: 520px;
-
     min-height: 620px;
-
     padding: 70px 75px;
-
     box-sizing: border-box;
-
-    background-color: #D2A98F;
-
+    background-color: #d8c6b8;
     border: 1px solid #2b2b2b;
     border-radius: 4px;
-
-    /*
-       Kalau gambar batik kamu adalah background,
-       masukkan URL gambarnya di sini.
-    */
-    background-image:
-        url("/static/img/auth-background.png");
-
+    background-image: url("/static/img/auth-background.webp");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
 }
 
-
-
 .auth-card h1 {
     margin: 0 0 25px;
-
     color: #4A2E23;
-
     font-family: "Garamond", Georgia, serif;
-
     font-size: 48px;
     font-weight: bold;
-
     text-align: center;
 }
-
-
 
 .auth-card form {
     display: flex;
     flex-direction: column;
 }
 
-
-
 .auth-card form p {
     margin: 0 0 12px;
 }
 
-
-
 .auth-card label {
     display: block;
-
     margin-bottom: 5px;
-
     color: #1f1713;
-
     font-family: "Garamond", Georgia, serif;
-
     font-size: 23px;
     font-style: italic;
 }
 
-
-
 .auth-card input {
     width: 100%;
-
     height: 50px;
-
     padding: 8px 16px;
-
     box-sizing: border-box;
-
     background-color: #ffffff;
-
     border: 1px solid #333;
-
     border-radius: 4px;
-
     font-family: "Garamond", Georgia, serif;
-
     font-size: 20px;
-
     color: #333;
-
     outline: none;
 }
 
-
-
-
 .auth-card input::placeholder {
     color: #888;
-
     font-family: "Garamond", Georgia, serif;
-
     font-size: 20px;
-
     font-style: italic;
-
     opacity: 0.8;
 }
 
-
-
 .auth-card input:focus {
     border-color: #5A3022;
-
     box-shadow: 0 0 0 2px rgba(90, 48, 34, 0.15);
 }
 
-
-
 .auth-card .auth-link {
     margin-top: 0;
-
     margin-bottom: 22px;
-
     color: #1f1713;
-
     font-family: "Garamond", Georgia, serif;
-
     font-size: 18px;
-
     font-style: normal;
 }
 
 .auth-card .auth-link a {
     color: #1f1713;
-
     text-decoration: underline;
 }
 
@@ -159,54 +98,35 @@
     color: #7D422D;
 }
 
-
-
 .auth-card button {
     width: 187px;
-
     padding: 10px 20px;
-
     background-color: #000000;
-
     color: #ffffff;
-
     border: none;
-
     border-radius: 4px;
-
     font-family: "Garamond", Georgia, serif;
-
     font-size: 26px;
     font-weight: bold;
-
     cursor: pointer;
-
     transition: 0.2s ease;
 }
 
 .auth-card button:hover {
     background-color: #4A2E23;
-
     transform: translateY(-1px);
 }
 
-
 .auth-card .errorlist {
     margin: 3px 0 8px;
-
     padding-left: 20px;
-
     color: #7a1f16;
-
     font-size: 15px;
 }
 
-
 @media (max-width: 600px) {
-
     .auth-card {
         padding: 45px 30px;
-
         min-height: 580px;
     }
 

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load static rewards_format %}
+
+{% block meta %}<meta name="description" content="Tukarkan poin ReBatik dengan voucher diskon Marketplace.">{% endblock %}
+{% block css %}<link rel="stylesheet" href="{% static 'css/rewards.css' %}">{% endblock %}
+
+{% block content %}
+<main class="rewards-page">
+    <section class="rewards-hero">
+        <p class="rewards-eyebrow">Points and Rewards</p>
+        <h1>Katalog Voucher</h1>
+        <p>Saldo Anda: <strong>{{ available_points }} poin</strong></p>
+    </section>
+    <section class="rewards-panel">
+        <p><a class="history-back-link" href="{% url 'rewards:overview' %}">← Kembali ke saldo poin</a></p>
+        <nav class="mb-6 flex flex-wrap gap-4" aria-label="Navigasi Points and Rewards">
+            <a class="history-all-link" href="{% url 'rewards:catalog' %}" aria-current="page">Katalog Voucher</a>
+            <a class="history-all-link" href="{% url 'rewards:vouchers' %}">Voucher Saya</a>
+            <a class="history-all-link" href="{% url 'rewards:history' %}">Riwayat Poin</a>
+        </nav>
+        {% if messages %}<div class="my-4 space-y-2">{% for message in messages %}{% if message.tags != "success" %}<p class="rounded-lg border p-3" role="status">{{ message }}</p>{% endif %}{% endfor %}</div>{% endif %}
+        <div class="voucher-card-grid">
+            {% for reward in rewards %}
+                <article class="voucher-card">
+                    <div class="voucher-card-media">
+                        {% if reward.image %}
+                            <img class="voucher-thumbnail" src="{{ reward.image.url }}" alt="Gambar {{ reward.name }}">
+                        {% else %}
+                            <div class="voucher-card-placeholder" aria-label="Gambar voucher belum tersedia">ReBatik Voucher</div>
+                        {% endif %}
+                    </div>
+                    <h2 class="voucher-card-title">{{ reward.name }}</h2>
+                    <p class="voucher-card-value">Diskon Rp{{ reward.discount_value|intcomma_id }}</p>
+                    <div class="voucher-card-details">
+                        <span>{{ reward.points_required|intcomma_id }} poin</span>
+                        <span>Kuota {{ reward.stock }}</span>
+                    </div>
+                    {% if reward.description %}<p class="voucher-card-description">{{ reward.description }}</p>{% endif %}
+                    <form
+                        method="post"
+                        action="{% url 'rewards:redeem' reward.id %}"
+                        class="space-y-2 voucher-redemption-trigger"
+                        data-voucher-name="{{ reward.name }}"
+                        data-voucher-description="{{ reward.description }}"
+                        data-voucher-discount="Rp{{ reward.discount_value|intcomma_id }}"
+                        data-voucher-points="{{ reward.points_required }}"
+                        data-voucher-balance="{{ available_points }}"
+                    >
+                        {% csrf_token %}
+                        <input type="hidden" name="return_to" value="catalog">
+                        <button type="submit" {% if available_points < reward.points_required %}disabled{% endif %} class="primary-action-button min-h-11 w-full px-4 py-2 font-bold disabled:cursor-not-allowed disabled:opacity-50">Tukar poin</button>
+                    </form>
+                </article>
+            {% empty %}
+                <p class="history-empty">Belum ada voucher aktif yang tersedia.</p>
+            {% endfor %}
+        </div>
+        <section class="mt-8" aria-labelledby="redemptions-heading">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <h2 id="redemptions-heading" class="text-xl font-bold">Voucher terbaru</h2>
+                <a class="history-all-link" href="{% url 'rewards:vouchers' %}">Lihat semua voucher →</a>
+            </div>
+            <div class="history-list mt-3">
+                {% for redemption in recent_redemptions %}
+                    <article class="history-row">
+                        <div class="history-row-info">
+                            <h3>{{ redemption.reward.name }}</h3>
+                            <p>Diskon Rp{{ redemption.discount_value_snapshot|intcomma_id }} · {{ redemption.redeemed_at|date:"d M Y" }}</p>
+                            <p>Kode: <strong>{{ redemption.voucher_code }}</strong> · {{ redemption.get_voucher_status_display }}</p>
+                        </div>
+                        <p class="history-amount is-out">−{{ redemption.points_spent }}</p>
+                    </article>
+                {% empty %}<p class="history-empty">Belum ada voucher yang ditukar.</p>{% endfor %}
+            </div>
+        </section>
+        <p class="rewards-footnote">Voucher dapat digunakan setelah integrasi checkout Marketplace tersedia.</p>
+    </section>
+</main>
+
+{% include "rewards/_voucher_confirmation_modal.html" %}
+{% include "rewards/_voucher_success_modal.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/rewards-vouchers.js' %}" defer></script>
+{% endblock scripts %}

@@ -1,0 +1,569 @@
+.recommended-page .recommended-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 48px 24px;
+}
+
+.recommended-page .recommended-heading {
+    margin-bottom: 32px;
+}
+
+.recommended-page .recommended-heading h2 {
+    margin: 0 0 10px;
+    color: #30271f;
+    font-size: clamp(26px, 3vw, 36px);
+    line-height: 1.2;
+}
+
+.recommended-page .recommended-heading > p:last-child {
+    color: #756b61;
+    line-height: 1.7;
+}
+
+.recommended-page .motif-image-wrapper {
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    background: #f2ede5;
+}
+
+.recommended-page .motif-image-wrapper img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.recommended-page .motif-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.recommended-page .motif-tag {
+    display: inline-block;
+    padding: 5px 10px;
+    color: #6e512e;
+    background: #f2e8d8;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+@media (max-width: 900px) {
+    .recommended-page .motif-image-wrapper {
+        height: 200px;
+    }
+}
+
+@media (max-width: 560px) {
+    .recommended-page .recommended-section {
+        padding: 32px 16px;
+    }
+
+    .recommended-page .motif-image-wrapper {
+        height: 230px;
+    }
+}
+
+.recommended-page {
+    --rb-brown: #654a38;
+    --rb-dark: #4d3629;
+    --rb-terracotta: #bd896e;
+    --rb-cream: #f7eee2;
+    --rb-card: #fffaf3;
+    --rb-gold: #c7a05d;
+    --rb-muted: #887361;
+    min-height: 100vh;
+    padding: 60px clamp(20px, 6vw, 90px) 90px;
+    background: var(--rb-cream);
+    color: var(--rb-brown);
+}
+/* HEADER */
+.recommended-header {
+    position: relative;
+    max-width: 850px;
+    margin: 0 auto 52px;
+    text-align: center;
+}
+.recommended-eyebrow {
+    margin: 0 0 18px;
+    color: #a77a48;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+.recommended-header h1 {
+    margin: 0;
+    color: var(--rb-dark);
+    font-family: Georgia, Garamond, serif;
+    font-size: clamp(34px, 4.5vw, 56px);
+    font-weight: 400;
+    line-height: 1.2;
+}
+.recommended-header > p:last-child {
+    max-width: 580px;
+    margin: 18px auto 0;
+    color: var(--rb-muted);
+    font-size: 14px;
+    line-height: 1.9;
+}
+.recommended-header::after {
+    display: block;
+    width: 65px;
+    height: 2px;
+    margin: 27px auto 0;
+    background: var(--rb-gold);
+    content: "";
+}
+/* MOTIF GRID */
+.motif-section {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+}
+.motif-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+    align-items: stretch;
+}
+/* MOTIF CARD */
+.motif-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid #e5d7c5;
+    background: var(--rb-card);
+    box-shadow: 0 5px 18px rgba(77, 54, 41, 0.035);
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+.motif-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 30px rgba(77, 54, 41, 0.11);
+}
+/* IMAGE */
+.motif-image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #e9d9c7;
+}
+.motif-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .45s ease;
+}
+.motif-card:hover .motif-image img {
+    transform: scale(1.04);
+}
+.motif-placeholder {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    place-items: center;
+    background: linear-gradient(135deg, #ead7c2, #d6b59a);
+    color: var(--rb-brown);
+    font-family: Georgia, Garamond, serif;
+    font-size: 25px;
+    letter-spacing: 3px;
+    font-weight: 600;
+}
+/* CARD CONTENT */
+.motif-card-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 23px;
+}
+.motif-label {
+    margin: 0 0 10px;
+    color: #a77a48;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+.motif-card-content h2,
+.motif-card-content h3 {
+    margin: 0 0 12px;
+    color: var(--rb-dark);
+    font-family: Georgia, Garamond, serif;
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1.35;
+}
+.motif-description,
+.motif-card-content > p:not(.motif-label) {
+    margin: 0;
+    color: var(--rb-muted);
+    font-size: 13px;
+    line-height: 1.9;
+}
+/* CHOOSE MOTIF BUTTON */
+.motif-select {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    width: 100%;
+    margin-top: 22px;
+    padding: 13px 16px;
+    border: 1px solid var(--rb-brown);
+    border-radius: 8px;
+    background: var(--rb-brown);
+    color: #fff7eb;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .3px;
+    text-decoration: none;
+    transition: background .2s ease, color .2s ease;
+}
+.motif-select:hover {
+    background: transparent;
+    color: var(--rb-brown);
+}
+/* EMPTY STATE */
+.motif-empty {
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 55px 30px;
+    border: 1px solid #e5d7c5;
+    border-radius: 12px;
+    background: var(--rb-card);
+    text-align: center;
+}
+.empty-symbol {
+    margin-bottom: 12px;
+    color: var(--rb-gold);
+    font-size: 36px;
+}
+.motif-empty h2,
+.motif-empty h3 {
+    margin: 0 0 15px;
+    color: var(--rb-dark);
+    font-family: Georgia, Garamond, serif;
+    font-size: 29px;
+    font-weight: 400;
+}
+.motif-empty p {
+    margin: 0;
+    color: var(--rb-muted);
+    font-size: 14px;
+    line-height: 1.9;
+}
+.motif-back {
+    display: inline-block;
+    margin-top: 24px;
+    padding: 12px 22px;
+    background: var(--rb-brown);
+    color: #fff7eb;
+    font-size: 13px;
+    text-decoration: none;
+    transition: background .2s ease;
+}
+.motif-back:hover {
+    background: var(--rb-terracotta);
+}
+/* TABLET */
+@media (max-width: 900px) {
+    .recommended-page {
+        padding-right: 28px;
+        padding-left: 28px;
+    }
+    .motif-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+    }
+}
+/* MOBILE */
+@media (max-width: 560px) {
+    .recommended-page {
+        padding: 42px 18px 60px;
+    }
+    .recommended-header {
+        margin-bottom: 35px;
+    }
+    .motif-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 22px;
+    }
+    .motif-card-content {
+        padding: 20px;
+    }
+    .motif-card-content h2,
+    .motif-card-content h3 {
+        font-size: 22px;
+    }
+}
+
+/* Grid rekomendasi motif */
+.story-cards,
+.recommended-motifs-grid,
+.motifs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    align-items: stretch;
+}
+
+/* Kartu motif */
+.story-card,
+.motif-card,
+.recommended-motif-card {
+    min-width: 0;
+    overflow: hidden;
+    background: #fffaf4;
+    border: 1px solid #e7d7c5;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Samakan ukuran gambar */
+.story-card img,
+.motif-card img,
+.recommended-motif-card img {
+    display: block;
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Isi kartu */
+.story-card > div,
+.motif-card > div,
+.recommended-motif-card > div {
+    padding: 16px;
+}
+
+.recommended-page .motif-card > .motif-image-wrapper {
+    padding: 0;
+}
+
+/* Responsif */
+@media (max-width: 900px) {
+    .story-cards,
+    .recommended-motifs-grid,
+    .motifs-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .story-cards,
+    .recommended-motifs-grid,
+    .motifs-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ===== REBATIK CONFIRMATION POPUP ===== */
+.motif-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.motif-modal.is-open {
+    display: flex;
+}
+
+.motif-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(35, 26, 19, 0.62);
+    backdrop-filter: blur(4px);
+}
+
+.motif-modal-card {
+    position: relative;
+    z-index: 1;
+    width: min(560px, 100%);
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 24px 26px;
+    background: #fff6e8;
+    border: 2px solid #e5c39e;
+    border-radius: 24px;
+    color: #68452f;
+    box-shadow: 0 16px 50px rgba(0, 0, 0, 0.18);
+}
+
+.motif-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 50%;
+    background: #fffaf2;
+    color: #68452f;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Maskot dan preview motif */
+.motif-modal-visual {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 16px;
+}
+
+.motif-modal-mascot {
+    display: block;
+    width: 100%;
+    max-width: 190px;
+    height: 170px;
+    object-fit: contain;
+    justify-self: center;
+}
+
+.motif-modal-image-wrap {
+    width: 100%;
+    aspect-ratio: 5 / 4;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 5px;
+    border: 2px solid white;
+    border-radius: 18px;
+    background: white;
+}
+
+.motif-modal-image-wrap img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+/* Teks popup */
+.motif-modal-content {
+    text-align: center;
+}
+
+.motif-modal-eyebrow {
+    margin: 0 0 10px;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+}
+
+.motif-modal-content h2 {
+    max-width: 480px;
+    margin: 8px auto 12px;
+    font-family: Garamond, Georgia, serif;
+    font-size: clamp(24px, 3vw, 30px);
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.motif-modal-flower {
+    margin: 8px 0;
+    font-size: 23px;
+}
+
+.motif-modal-content h3 {
+    margin: 8px 0;
+    font-family: Garamond, Georgia, serif;
+    font-size: 23px;
+}
+
+.motif-modal-content > p:last-of-type {
+    margin: 8px 0;
+    color: #8e7057;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Tombol */
+.motif-modal-actions {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.motif-modal-actions button {
+    min-height: 46px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-family: Garamond, Georgia, serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.motif-modal-cancel {
+    border: 1.5px solid #80583d;
+    background: transparent;
+    color: #68452f;
+}
+
+.motif-modal-confirm {
+    border: 1.5px solid #68452f;
+    background: #68452f;
+    color: white;
+}
+
+body.modal-open {
+    overflow: hidden;
+}
+
+/* Responsive HP */
+@media (max-width: 600px) {
+    .motif-modal {
+        padding: 12px;
+    }
+
+    .motif-modal-card {
+        width: 100%;
+        max-height: calc(100dvh - 24px);
+        padding: 48px 18px 20px;
+        border-radius: 22px;
+    }
+
+    .motif-modal-visual {
+        grid-template-columns: 1fr;
+        gap: 6px;
+        margin-bottom: 14px;
+    }
+
+    .motif-modal-mascot {
+        width: 170px;
+        max-width: 100%;
+        height: 125px;
+    }
+
+    .motif-modal-image-wrap {
+        aspect-ratio: 5 / 4;
+    }
+
+    .motif-modal-content h2 {
+        font-size: 25px;
+    }
+
+    .motif-modal-actions button {
+        min-height: 44px;
+        font-size: 15px;
+    }
+}
+

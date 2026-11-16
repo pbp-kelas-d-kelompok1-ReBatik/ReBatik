@@ -62,7 +62,6 @@ def move_restored_references(queryset, field_name, new_path):
     have been updated successfully.
     """
     rollback_path = f"{ROLLBACK_MEDIA_PREFIX}/{new_path}"
-
     rows = queryset.filter(**{field_name: rollback_path})
 
     if not rows.exists():
@@ -85,7 +84,6 @@ def move_restored_references(queryset, field_name, new_path):
 
 def move_catalog_references(apps, schema_editor):
     """
-    Forward migration:
     Move database references to static catalog images only when
     the original media file is missing.
     """
@@ -93,26 +91,29 @@ def move_catalog_references(apps, schema_editor):
     RecommendedMotif = apps.get_model(
         "batik_custom", "RecommendedMotif"
     )
+    MotifRecommendation = apps.get_model(
+        "batik_custom", "MotifRecommendation"
+    )
 
     database = schema_editor.connection.alias
 
     models_and_paths = (
         (StyleOptions, STYLE_IMAGE_PATHS),
         (RecommendedMotif, MOTIF_IMAGE_PATHS),
+        (MotifRecommendation, MOTIF_IMAGE_PATHS),
     )
 
     for model_class, paths in models_and_paths:
         queryset = model_class.objects.using(database)
 
         for old_path, new_path in paths.items():
-            # Recover references left by an earlier rollback.
             move_restored_references(
                 queryset, "image", new_path
             )
 
+            # Keep existing uploaded media files unchanged.
             old_file = media_path(old_path)
 
-            # Keep existing uploaded media files unchanged.
             if old_file.is_file():
                 continue
 
@@ -133,7 +134,6 @@ def move_catalog_references(apps, schema_editor):
 
 def restore_catalog_references(apps, schema_editor):
     """
-    Reverse migration:
     Copy static images into MEDIA_ROOT before changing references,
     so the referenced files continue to exist after rollback.
     """
@@ -141,12 +141,16 @@ def restore_catalog_references(apps, schema_editor):
     RecommendedMotif = apps.get_model(
         "batik_custom", "RecommendedMotif"
     )
+    MotifRecommendation = apps.get_model(
+        "batik_custom", "MotifRecommendation"
+    )
 
     database = schema_editor.connection.alias
 
     models_and_paths = (
         (StyleOptions, STYLE_IMAGE_PATHS),
         (RecommendedMotif, MOTIF_IMAGE_PATHS),
+        (MotifRecommendation, MOTIF_IMAGE_PATHS),
     )
 
     for model_class, paths in models_and_paths:

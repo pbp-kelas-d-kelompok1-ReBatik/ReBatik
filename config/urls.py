@@ -14,18 +14,38 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
-from django.conf.urls.static import static
+from django.views.static import serve
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
     path('batik_story/', include('batik_story.urls')),
     path('marketplace/', include('marketplace.urls')),
-    path("upcycling/", include("upcycling.urls")),
-    path("batik_custom/", include("batik_custom.urls")),
+    path('rewards/', include('rewards.urls')),
+    path('upcycling/', include('upcycling.urls')),
+    path('donasi/', include('donasi.urls')),
+    path('batik_custom/', include('batik_custom.urls')),
+    path('impact-tracker/', include('impact_tracker.urls')),
+    path('profile/', include('profiles.urls')),
+    path('landing/', include('landing.urls')),
+
+    # Web service Django REST Framework untuk aplikasi Flutter
+    path('api/v1/auth/', include('main.api_urls')),
+    path('api/v1/batik-story/', include('batik_story.api_urls')),
+    path('api/v1/batik-custom/', include('batik_custom.api_urls')),
+    path('api-auth/', include('rest_framework.urls')),
+
+    # Serve uploaded media files on PWS
+    re_path(
+        r'^media/(?P<path>.*)$',
+        serve,
+        {'document_root': settings.MEDIA_ROOT},
+    ),
 ]
 
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+

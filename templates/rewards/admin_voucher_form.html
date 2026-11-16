@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}<title>{% if editing_voucher %}Edit{% else %}Tambah{% endif %} Voucher | ReBatik</title>{% endblock %}
+{% block css %}<link rel="stylesheet" href="{% static 'css/rewards.css' %}">{% endblock %}
+
+{% block content %}
+<main class="rewards-page">
+    <img class="rewards-cloud rewards-cloud-left" src="{% static 'img/shared/cloud-left.webp' %}" alt="" aria-hidden="true">
+    <img class="rewards-cloud rewards-cloud-right" src="{% static 'img/shared/cloud-right.webp' %}" alt="" aria-hidden="true">
+    <section class="rewards-hero">
+        <p class="rewards-eyebrow">DASHBOARD ADMIN</p>
+        <h1>{% if editing_voucher %}Edit voucher{% else %}Tambah voucher{% endif %}</h1>
+        <p>{% if editing_voucher %}Perbarui informasi voucher ini.{% else %}Tambahkan voucher diskon baru untuk katalog Points and Rewards.{% endif %}</p>
+    </section>
+
+    <section class="rewards-panel">
+        <p><a class="history-back-link" href="{% url 'rewards:admin_vouchers' %}">← Kembali ke katalog voucher</a></p>
+
+        {% if messages %}
+            <div class="my-4 space-y-2">
+                {% for message in messages %}<p class="rounded-lg border p-3" role="status">{{ message }}</p>{% endfor %}
+            </div>
+        {% endif %}
+
+        <section id="voucher-form" class="voucher-admin-form-panel" aria-labelledby="voucher-form-heading">
+            <h2 id="voucher-form-heading" class="text-2xl font-bold">{% if editing_voucher %}Edit voucher{% else %}Informasi voucher{% endif %}</h2>
+            <p class="mt-1 mb-5">Isi informasi diskon, biaya poin, kuota, dan gambar opsional.</p>
+            <form method="post" enctype="multipart/form-data" class="voucher-admin-form">
+                {% csrf_token %}
+                {% include "rewards/_admin_voucher_form_fields.html" %}
+                <div class="voucher-admin-form-actions">
+                    <button type="submit" class="primary-action-button px-6 py-3 font-bold">{% if editing_voucher %}Simpan perubahan{% else %}Simpan voucher{% endif %}</button>
+                    <a href="{% url 'rewards:admin_vouchers' %}" class="history-all-link">Batal</a>
+                </div>
+            </form>
+        </section>
+    </section>
+</main>
+{% endblock %}

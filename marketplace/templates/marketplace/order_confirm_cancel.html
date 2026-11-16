@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static marketplace_format %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/marketplace.css' %}">
+{% endblock css %}
+
+{% block content %}
+<section id="marketplace-page-content" class="mp-page-shell relative overflow-hidden">
+    <header class="mp-hero-header relative mx-auto mb-8 max-w-3xl text-center text-[var(--brown)]">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--brown-muted)]">Marketplace · Pembatalan</p>
+        <h1 class="mt-2 text-4xl font-bold italic after:hidden sm:text-5xl">Batalkan Pesanan</h1>
+        <p class="mt-3 text-base text-[var(--brown-dark)] sm:text-lg">Periksa kembali pesanan yang ingin Anda batalkan.</p>
+    </header>
+
+    <div
+        class="mp-panel-box mx-auto max-w-2xl rounded-2xl border-2 border-[var(--mp-accent)]
+               bg-[var(--mp-panel)] p-5 text-[var(--brown)] shadow-2xl
+               sm:rounded-3xl sm:p-8"
+    >
+        <div class="rounded-2xl border border-[var(--mp-accent)] bg-[var(--mp-surface)] p-5 sm:p-7">
+            <p class="text-sm font-bold uppercase tracking-[0.18em] text-[var(--brown-muted)]">
+                Konfirmasi pembatalan #{{ reference_code }}
+            </p>
+            <h2 class="mt-3 text-2xl font-bold sm:text-3xl">{{ order.product_name }}</h2>
+            <dl class="mt-5 grid gap-3 border-t border-[var(--border)] pt-4 text-sm sm:grid-cols-2 sm:text-base">
+                <div>
+                    <dt class="font-semibold">Jumlah produk</dt>
+                    <dd class="text-[var(--brown-muted)]">{{ order.quantity }} buah</dd>
+                </div>
+                <div>
+                    <dt class="font-semibold">Total harga</dt>
+                    <dd class="font-bold text-[var(--brown-dark)]">{{ order.total_price|rupiah }}</dd>
+                </div>
+            </dl>
+        </div>
+
+        <p class="mt-6 text-center text-base text-[var(--brown-muted)] sm:text-lg">
+            Apakah Anda yakin ingin membatalkan pesanan ini? Stok produk akan dikembalikan ke katalog.
+        </p>
+
+        <form
+            method="post"
+            action="{% url 'marketplace:order_cancel' order.pk %}"
+            hx-post="{% url 'marketplace:order_cancel' order.pk %}"
+            hx-target="#marketplace-page-content"
+            hx-select="#marketplace-page-content"
+            hx-swap="outerHTML"
+            hx-disabled-elt="button[type='submit']"
+            class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center"
+        >
+            {% csrf_token %}
+            <a
+                href="{% url 'marketplace:order_detail' order.pk %}"
+                class="inline-flex min-h-12 items-center justify-center rounded-xl border-2
+                       border-[var(--brown)] px-6 py-3 font-bold text-[var(--brown)] transition
+                       hover:bg-[var(--mp-summary)]"
+            >
+                Kembali
+            </a>
+            <button
+                type="submit"
+                class="inline-flex min-h-12 items-center justify-center rounded-xl border-2
+                       border-[var(--danger)] bg-[var(--danger)] px-6 py-3 font-bold text-white
+                       transition hover:bg-[var(--danger-hover)]"
+            >
+                Ya, batalkan pesanan
+            </button>
+        </form>
+    </div>
+</section>
+{% endblock content %}
+

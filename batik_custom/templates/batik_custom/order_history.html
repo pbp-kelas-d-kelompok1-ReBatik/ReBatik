@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/custom/custom_studio.css' %}">
+<link rel="stylesheet" href="{% static 'css/custom/batik_order.css' %}">
+<style>
+.order-history-page { max-width: 1120px; margin: 0 auto; padding: 36px 20px 60px; }
+.order-history-top { display:flex; align-items:end; justify-content:space-between; gap:18px; margin-bottom:24px; }
+.order-history-top h1 { margin:0; color:#713d24; font-size:clamp(32px,4vw,48px); }
+.order-history-list { display:grid; gap:16px; }
+.order-history-item { background:#fffdf8; border:1px solid #e9ddcc; border-radius:18px; padding:22px; box-shadow:0 8px 28px #5939210d; }
+.order-history-item-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.order-history-item h2 { margin:0 0 8px; font-size:24px; color:#713d24; }
+.order-history-meta { color:#79685b; font-size:15px; }
+.order-history-status { display:inline-block; border-radius:20px; padding:7px 12px; background:#f8ead4; color:#874a29; font-size:14px; }
+.order-history-details { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:16px; }
+.order-history-details p { margin:5px 0; overflow-wrap:anywhere; }
+.order-history-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+.order-history-empty { padding:36px 22px; text-align:center; background:#fffdf8; border:1px dashed #d9c4aa; border-radius:18px; }
+.order-history-empty p { color:#79685b; }
+@media(max-width:700px) { .order-history-details { grid-template-columns:1fr; } .order-history-top { align-items:flex-start; flex-direction:column; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="order-history-page">
+    <header class="order-history-top">
+        <div>
+            <p class="order-eyebrow">REBatik · AKUNMU</p>
+            <h1>Riwayat Pesanan</h1>
+            <p class="muted">Lihat pesanan custom batik yang pernah kamu buat.</p>
+        </div>
+        <a class="order-submit" href="{% url 'batik_custom:recommended_motifs' %}">Buat Pesanan Baru</a>
+    </header>
+
+    {% if orders %}
+        <div class="order-history-list">
+            {% for order in orders %}
+                <article class="order-history-item">
+                    <div class="order-history-item-head">
+                        <div>
+                            <h2>Pesanan #RB-{{ order.pk }}</h2>
+                            <div class="order-history-meta">{{ order.created_at|date:"d M Y, H:i" }}</div>
+                        </div>
+                        <span class="order-history-status">{{ order.get_status_display }}</span>
+                    </div>
+
+                    <div class="order-history-details">
+                        <div>
+                            <p><strong>Motif</strong></p>
+                            <p>{{ order.motif.name }}</p>
+                            <p><strong>Produk</strong></p>
+                            <p>{{ order.get_product_type_display }}</p>
+                            {% if order.design_option %}
+                                <p>{{ order.design_option.name }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <p><strong>Jumlah</strong></p>
+                            <p>{{ order.quantity }} {{ order.unit }}</p>
+                            <p><strong>Palet warna</strong></p>
+                            <p>{{ order.palette.name|default:"Tidak dipilih" }}</p>
+                        </div>
+                        <div>
+                            <p><strong>Total estimasi</strong></p>
+                            <p><strong>Rp {{ order.total_price }}</strong></p>
+                            <p><strong>Penerima</strong></p>
+                            <p>{{ order.recipient_name }}</p>
+                        </div>
+                    </div>
+
+                    <div class="order-history-actions">
+                        <a class="order-back" href="{% url 'batik_custom:order_confirmation' order.pk %}">Lihat Detail Pesanan</a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <section class="order-history-empty">
+            <h2>Belum Ada Pesanan</h2>
+            <p>Pesanan custom batik yang kamu buat akan muncul di sini.</p>
+            <a class="order-submit" href="{% url 'batik_custom:recommended_motifs' %}">Jelajahi Motif Batik</a>
+        </section>
+    {% endif %}
+</main>
+{% endblock %}

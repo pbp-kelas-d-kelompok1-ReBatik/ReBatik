@@ -1,0 +1,945 @@
+
+/* =====================================================
+   REBATIK - DONASI KAIN
+   Palet warna terinspirasi batik dan desain Figma
+   ===================================================== */
+
+:root {
+    --donasi-brown: #70452f;
+    --donasi-brown-dark: #57321d;
+    --donasi-brown-light: #95674d;
+    --donasi-cream: #f1dfca;
+    --donasi-cream-light: #fff5e8;
+    --donasi-peach: #d9a27e;
+    --donasi-peach-light: #e9c6ab;
+    --donasi-border: #b78a6b;
+    --donasi-text: #603b25;
+    --donasi-white: #fffdf9;
+    --donasi-shadow: 0 8px 24px rgba(72, 42, 25, 0.13);
+}
+
+.donasi-page,
+.donasi-form-page,
+.riwayat-donasi-page {
+    color: var(--donasi-text);
+    font-family: "EB Garamond", Georgia, serif;
+    line-height: 1.6;
+}
+
+.donasi-page *,
+.donasi-form-page *,
+.riwayat-donasi-page * {
+    box-sizing: border-box;
+}
+
+.donasi-page h1,
+.donasi-page h2,
+.donasi-form-page h1,
+.riwayat-donasi-page h1,
+.riwayat-donasi-page h2,
+.donasi-page p,
+.donasi-form-page p,
+.riwayat-donasi-page p {
+    margin-top: 0;
+}
+
+.donasi-page a,
+.donasi-form-page a,
+.riwayat-donasi-page a {
+    text-decoration: none;
+}
+
+/* =====================================================
+   1. LANDING PAGE
+   ===================================================== */
+
+.donasi-hero {
+    position: relative;
+    min-height: 340px;
+    padding: 55px 24px 60px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background:
+        radial-gradient(
+            circle at 8% 15%,
+            rgba(255, 242, 220, 0.6),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #ead0b9 0%,
+            #d8b39a 50%,
+            #e9cdb8 100%
+        );
+}
+
+.donasi-hero-content {
+    position: relative;
+    z-index: 2;
+    width: min(100%, 760px);
+    margin: 0 auto;
+}
+
+.donasi-eyebrow {
+    margin-bottom: 10px;
+    font-family: Garamond, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--donasi-brown-light);
+}
+
+.donasi-hero h1 {
+    margin-bottom: 20px;
+    color: var(--donasi-brown-dark);
+    font-size: clamp(32px, 4vw, 46px);
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.donasi-hero-description {
+    max-width: 650px;
+    margin: 0 auto;
+    font-size: clamp(17px, 2vw, 21px);
+    line-height: 1.55;
+    color: #74472a;
+}
+
+/* Ornamen sementara menggunakan CSS.
+   Bisa diganti dengan file PNG dari Figma nanti. */
+
+.ornament {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    opacity: 0.42;
+    pointer-events: none;
+}
+
+.ornament::before,
+.ornament::after {
+    content: "";
+    position: absolute;
+    width: 85px;
+    height: 85px;
+    border: 3px solid #a77938;
+    border-radius: 8px 45px 8px 45px;
+    transform: rotate(45deg);
+}
+
+.ornament::after {
+    width: 45px;
+    height: 45px;
+    top: 25px;
+    left: 25px;
+    border-width: 2px;
+}
+
+.ornament-top-right {
+    top: -25px;
+    right: -20px;
+    transform: rotate(25deg);
+}
+
+.ornament-left {
+    bottom: -60px;
+    left: -40px;
+    transform: rotate(205deg);
+}
+
+/* Bagian ajakan donasi */
+
+.donasi-intro {
+    position: relative;
+    min-height: 370px;
+    padding: 55px clamp(24px, 6vw, 80px);
+    display: grid;
+    grid-template-columns: minmax(170px, 0.8fr) minmax(280px, 1.2fr);
+    align-items: center;
+    gap: 36px;
+    overflow: hidden;
+    background:
+        radial-gradient(
+            ellipse at 15% 30%,
+            rgba(255, 222, 191, 0.28),
+            transparent 35%
+        ),
+        linear-gradient(
+            120deg,
+            #c99576,
+            #d8a88a 55%,
+            #bd8c6f
+        );
+}
+
+.donasi-mascot {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.donasi-mascot img {
+    display: block;
+    width: 100%;
+    max-width: 290px;
+    max-height: 320px;
+    object-fit: contain;
+}
+
+.donasi-intro-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 470px;
+    margin: 0 auto;
+}
+
+.donasi-speech-bubble {
+    position: relative;
+    padding: 28px 30px;
+    margin-bottom: 24px;
+    border-radius: 28px;
+    background: var(--donasi-cream-light);
+    color: var(--donasi-brown-dark);
+    text-align: center;
+    box-shadow: var(--donasi-shadow);
+}
+
+.donasi-speech-bubble::after {
+    content: "";
+    position: absolute;
+    left: 35px;
+    bottom: -17px;
+    width: 0;
+    height: 0;
+    border-top: 20px solid var(--donasi-cream-light);
+    border-right: 22px solid transparent;
+}
+
+.donasi-speech-bubble h2 {
+    margin-bottom: 8px;
+    font-size: clamp(22px, 2.5vw, 29px);
+    line-height: 1.25;
+}
+
+.donasi-speech-bubble p {
+    margin-bottom: 0;
+    font-size: 16px;
+}
+
+.donasi-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Tombol */
+
+.donasi-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    min-height: 45px;
+    padding: 11px 24px;
+    border: 1px solid transparent;
+    border-radius: 30px;
+    background: linear-gradient(
+        135deg,
+        #87583e,
+        #633b26
+    );
+    color: #fffaf4;
+    font-family: Garamond, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: center;
+    cursor: pointer;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.donasi-button:hover {
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(73, 39, 22, 0.22);
+}
+
+.donasi-button:focus-visible {
+    outline: 3px solid #f4c97d;
+    outline-offset: 3px;
+}
+
+.donasi-button-secondary {
+    background: rgba(255, 245, 232, 0.92);
+    border-color: var(--donasi-brown-light);
+    color: var(--donasi-brown-dark);
+}
+
+.donasi-button-secondary:hover {
+    background: #fffaf4;
+    color: var(--donasi-brown-dark);
+}
+
+.donasi-button-outline {
+    background: transparent;
+    color: var(--donasi-brown-dark);
+    border-color: var(--donasi-brown-light);
+}
+
+.donasi-button-outline:hover {
+    background: var(--donasi-cream-light);
+    color: var(--donasi-brown-dark);
+}
+
+.donasi-decoration {
+    position: absolute;
+    width: 170px;
+    height: 170px;
+    border: 2px solid rgba(112, 69, 47, 0.23);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.donasi-decoration::before,
+.donasi-decoration::after {
+    content: "";
+    position: absolute;
+    inset: 20px;
+    border: 2px dashed rgba(112, 69, 47, 0.24);
+    border-radius: 45% 55% 45% 55%;
+    transform: rotate(45deg);
+}
+
+.donasi-decoration-left {
+    top: -65px;
+    left: -80px;
+}
+
+.donasi-decoration-bottom {
+    right: -70px;
+    bottom: -85px;
+}
+
+/* =====================================================
+   2. FORM DONASI
+   ===================================================== */
+
+.donasi-form-page {
+    padding: 42px 20px 60px;
+    background: #f5eee4;
+    background-image:
+        radial-gradient(
+            circle at 0 0,
+            rgba(190, 143, 101, 0.13) 2px,
+            transparent 3px
+        );
+    background-size: 30px 30px;
+}
+
+.donasi-form-card {
+    width: min(100%, 850px);
+    margin: 0 auto;
+    padding: clamp(24px, 5vw, 55px);
+    border: 1px solid rgba(112, 69, 47, 0.15);
+    border-radius: 28px;
+    background: linear-gradient(
+        145deg,
+        #e5b08b 0%,
+        #dba27d 45%,
+        #e8c6aa 100%
+    );
+    box-shadow: var(--donasi-shadow);
+}
+
+.donasi-form-heading {
+    margin-bottom: 35px;
+    text-align: center;
+}
+
+.donasi-form-heading h1 {
+    margin-bottom: 10px;
+    color: var(--donasi-brown-dark);
+    font-size: clamp(38px, 6vw, 58px);
+    font-style: italic;
+    line-height: 1.2;
+}
+
+.donasi-form-heading p {
+    max-width: 520px;
+    margin: 0 auto;
+    color: #70452f;
+    font-size: 17px;
+}
+
+.donasi-fieldset {
+    min-width: 0;
+    margin: 0 0 32px;
+    padding: 24px 0 0;
+    border: 0;
+    border-top: 1px solid rgba(112, 69, 47, 0.7);
+}
+
+.donasi-fieldset legend {
+    padding: 0 16px;
+    color: var(--donasi-brown-dark);
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.donasi-field {
+    margin-bottom: 21px;
+}
+
+.donasi-field > label,
+.donasi-label {
+    display: block;
+    margin-bottom: 7px;
+    color: #75482d;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.donasi-input {
+    display: block;
+    width: 100%;
+    min-height: 46px;
+    padding: 12px 15px;
+    border: 1px solid rgba(112, 69, 47, 0.1);
+    border-radius: 13px;
+    background: var(--donasi-white);
+    color: #382519;
+    font-family: Garamond, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.donasi-input:focus {
+    outline: none;
+    border-color: var(--donasi-brown);
+    box-shadow: 0 0 0 3px rgba(112, 69, 47, 0.13);
+}
+
+textarea.donasi-input {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.donasi-field small {
+    display: block;
+    margin-top: 6px;
+    color: #714a32;
+    font-family: Garamond, sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* Pilihan radio Django */
+
+.donasi-radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 5px 0;
+}
+
+.donasi-radio-vertical {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.donasi-radio-group ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.donasi-radio-vertical ul {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.donasi-radio-group li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.donasi-radio-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #70452f;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.donasi-radio-option input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--donasi-brown);
+    cursor: pointer;
+}
+
+.donasi-radio-option span {
+    line-height: 1.5;
+}
+
+/* Upload foto dan preview */
+
+.donasi-photo-preview {
+    display: flex;
+    min-height: 190px;
+    margin-bottom: 12px;
+    padding: 18px;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border: 2px dashed #b58b6d;
+    border-radius: 15px;
+    background: rgba(255, 253, 249, 0.85);
+    color: #8b6b54;
+    text-align: center;
+}
+
+.donasi-photo-preview img {
+    display: block;
+    max-width: 100%;
+    max-height: 320px;
+    border-radius: 10px;
+    object-fit: contain;
+}
+
+.donasi-photo-preview img[hidden] {
+    display: none;
+}
+
+.donasi-file-input {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    color: #70452f;
+    font-family: Garamond, sans-serif;
+    font-size: 13px;
+}
+
+.donasi-file-input::file-selector-button {
+    margin-right: 12px;
+    padding: 10px 15px;
+    border: 0;
+    border-radius: 20px;
+    background: #70452f;
+    color: white;
+    cursor: pointer;
+}
+
+.donasi-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 35px;
+}
+
+/* Pesan Django */
+
+.donasi-alert {
+    margin-bottom: 20px;
+    padding: 13px 16px;
+    border-radius: 10px;
+    font-family: Garamond, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.donasi-alert.success {
+    border: 1px solid #82a67b;
+    background: #edf7e9;
+    color: #315b2c;
+}
+
+.donasi-alert.error {
+    border: 1px solid #cf8585;
+    background: #fff0ee;
+    color: #8b2727;
+}
+
+.donasi-field ul.errorlist {
+    margin: 7px 0 0;
+    padding-left: 18px;
+    color: #8b2727;
+    font-family: Garamond, sans-serif;
+    font-size: 12px;
+}
+
+.donasi-field ul.errorlist li {
+    margin-bottom: 3px;
+}
+
+/* =====================================================
+   3. RIWAYAT DONASI
+   ===================================================== */
+
+.riwayat-donasi-page {
+    min-height: 620px;
+    padding: 45px clamp(16px, 4vw, 50px) 60px;
+    background: linear-gradient(
+        135deg,
+        #bb8d72,
+        #d1a187 50%,
+        #b9876c
+    );
+}
+
+.riwayat-donasi-header {
+    margin: 0 auto 30px;
+    text-align: center;
+    color: #fffaf4;
+}
+
+.riwayat-donasi-header .donasi-eyebrow {
+    color: #f6e0c9;
+}
+
+.riwayat-donasi-header h1 {
+    margin-bottom: 10px;
+    color: white;
+    font-size: clamp(34px, 5vw, 46px);
+    line-height: 1.2;
+}
+
+.riwayat-donasi-header p:last-child {
+    max-width: 600px;
+    margin: 0 auto;
+    font-size: 17px;
+}
+
+.riwayat-donasi-container {
+    width: min(100%, 1100px);
+    min-height: 360px;
+    margin: 0 auto;
+    padding: clamp(18px, 4vw, 35px);
+    border-radius: 12px;
+    background: #f4eee4;
+    box-shadow: var(--donasi-shadow);
+}
+
+.riwayat-search {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 28px;
+}
+
+.riwayat-search input {
+    flex: 1;
+    min-width: 0;
+    padding: 13px 17px;
+    border: 1px solid #ded0c0;
+    border-radius: 9px;
+    background: white;
+    color: #493123;
+    font-family: Garamond, sans-serif;
+    font-size: 14px;
+}
+
+.riwayat-search input:focus {
+    outline: 2px solid rgba(112, 69, 47, 0.35);
+    border-color: var(--donasi-brown);
+}
+
+.riwayat-search .donasi-button {
+    min-height: 44px;
+}
+
+.riwayat-donasi-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 20px;
+}
+
+.riwayat-donasi-card {
+    display: grid;
+    grid-template-columns: 125px minmax(0, 1fr);
+    gap: 16px;
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid #e7d9c9;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 3px 12px rgba(72, 42, 25, 0.05);
+}
+
+.riwayat-donasi-photo {
+    display: flex;
+    min-width: 0;
+    min-height: 150px;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 9px;
+    background: #f5ede3;
+}
+
+.riwayat-donasi-photo img {
+    display: block;
+    width: 100%;
+    height: 175px;
+    object-fit: contain;
+}
+
+.donasi-no-photo {
+    padding: 10px;
+    color: #9a7a62;
+    font-size: 13px;
+    text-align: center;
+}
+
+.riwayat-donasi-detail {
+    min-width: 0;
+}
+
+.riwayat-donasi-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 7px;
+}
+
+.riwayat-donasi-title h2 {
+    margin-bottom: 0;
+    color: var(--donasi-brown-dark);
+    font-size: 22px;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.donasi-status {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 30px;
+    background: #f5e2ca;
+    color: #71472b;
+    font-family: Garamond, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.status-dikonfirmasi {
+    background: #e4f0db;
+    color: #426535;
+}
+
+.status-selesai {
+    background: #dcece5;
+    color: #285d48;
+}
+
+.riwayat-donasi-category {
+    margin-bottom: 12px;
+    color: #986c4d;
+    font-size: 15px;
+}
+
+.riwayat-donasi-information {
+    padding: 10px 0;
+    border-top: 1px solid #eadfd3;
+    border-bottom: 1px solid #eadfd3;
+}
+
+.riwayat-donasi-information p {
+    margin-bottom: 5px;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.riwayat-donasi-information p:last-child {
+    margin-bottom: 0;
+}
+
+.riwayat-donasi-description {
+    padding-top: 12px;
+    color: #77604e;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.riwayat-donasi-description p {
+    margin-bottom: 0;
+}
+
+.riwayat-donasi-empty {
+    grid-column: 1 / -1;
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.riwayat-donasi-empty h2 {
+    color: var(--donasi-brown-dark);
+    font-size: 27px;
+}
+
+.riwayat-donasi-empty p {
+    max-width: 520px;
+    margin: 0 auto 22px;
+    color: #80634e;
+}
+
+.riwayat-donasi-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+/* =====================================================
+   4. RESPONSIVE - TABLET DAN HP
+   ===================================================== */
+
+@media (max-width: 800px) {
+    .donasi-hero {
+        min-height: 300px;
+        padding: 45px 22px;
+    }
+
+    .donasi-intro {
+        grid-template-columns: minmax(120px, 0.7fr) minmax(0, 1.3fr);
+        gap: 20px;
+        padding: 40px 22px;
+    }
+
+    .donasi-mascot img {
+        max-width: 230px;
+    }
+
+    .riwayat-donasi-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .donasi-hero {
+        min-height: auto;
+        padding: 55px 20px;
+    }
+
+    .donasi-hero h1 {
+        font-size: 34px;
+    }
+
+    .donasi-hero-description {
+        font-size: 17px;
+    }
+
+    .donasi-intro {
+        grid-template-columns: 1fr;
+        gap: 22px;
+        padding: 35px 20px 45px;
+    }
+
+    .donasi-mascot img {
+        max-width: 200px;
+        max-height: 220px;
+    }
+
+    .donasi-speech-bubble {
+        padding: 23px 20px;
+        border-radius: 23px;
+    }
+
+    .donasi-speech-bubble h2 {
+        font-size: 24px;
+    }
+
+    .donasi-form-page {
+        padding: 20px 12px 35px;
+    }
+
+    .donasi-form-card {
+        padding: 25px 18px;
+        border-radius: 20px;
+    }
+
+    .donasi-form-heading h1 {
+        font-size: 40px;
+    }
+
+    .donasi-fieldset {
+        padding-top: 20px;
+    }
+
+    .donasi-fieldset legend {
+        font-size: 18px;
+    }
+
+    .donasi-form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .donasi-form-actions .donasi-button {
+        width: 100%;
+    }
+
+    .riwayat-donasi-page {
+        padding: 30px 12px 40px;
+    }
+
+    .riwayat-donasi-container {
+        padding: 16px 12px;
+    }
+
+    .riwayat-search {
+        flex-direction: column;
+    }
+
+    .riwayat-search .donasi-button {
+        width: 100%;
+    }
+
+    .riwayat-donasi-card {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 13px;
+    }
+
+    .riwayat-donasi-photo {
+        min-height: 180px;
+    }
+
+    .riwayat-donasi-photo img {
+        height: 220px;
+    }
+
+    .riwayat-donasi-title h2 {
+        font-size: 21px;
+    }
+}
+
+/* Kurangi animasi bagi pengguna yang memintanya */
+
+@media (prefers-reduced-motion: reduce) {
+    .donasi-button {
+        transition: none;
+    }
+}

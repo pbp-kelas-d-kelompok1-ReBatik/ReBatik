@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+{% load static rewards_format %}
+
+{% block meta %}
+    <meta name="description" content="Lihat saldo, progres level, dan riwayat poin ReBatik Anda.">
+{% endblock meta %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/rewards.css' %}">
+{% endblock css %}
+
+{% block content %}
+<div class="rewards-page">
+    <img class="rewards-cloud rewards-cloud-left" src="{% static 'img/shared/cloud-left.webp' %}" alt="" aria-hidden="true">
+    <img class="rewards-cloud rewards-cloud-right" src="{% static 'img/shared/cloud-right.webp' %}" alt="" aria-hidden="true">
+    <section class="rewards-hero" aria-labelledby="rewards-title">
+        <p class="rewards-eyebrow">Upcycle · Culture · Value</p>
+        <h1 id="rewards-title">Points and Rewards</h1>
+        <p>Donasikan kain dan selesaikan upcycling untuk menukar poin dengan voucher Marketplace.</p>
+    </section>
+
+    <section class="rewards-panel" id="points-overview" aria-label="Ringkasan poin dan riwayat terbaru">
+        {% if messages %}
+            <div class="my-4 space-y-2">
+                {% for message in messages %}
+                    {% if message.tags != "success" %}<p class="rounded-lg border p-3" role="status">{{ message }}</p>{% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <section aria-labelledby="points-heading">
+            <div class="rewards-section-heading">
+                <h2 id="points-heading">Poin Saya</h2>
+            </div>
+            <p class="rewards-helper">Poin bertambah setiap donasi kain Anda diverifikasi tim ReBatik.</p>
+
+            <div class="points-card">
+                <div class="points-card-content">
+                    <div class="points-card-summary">
+                        <p class="points-label">POIN TERSEDIA</p>
+                        <p class="points-value">{{ available_points|intcomma_id }}</p>
+                        <span class="points-unit">poin</span>
+                        <span class="points-level">{{ current_level }}</span>
+                    </div>
+                    <div class="level-ladder-section" aria-label="Progres dan jenjang level">
+                        {% if next_level %}
+                            <div class="level-progress-copy">
+                                <span>Menuju level {{ next_level }}</span>
+                                <span>{{ level_progress|intcomma_id }} / {{ level_target|intcomma_id }} poin</span>
+                            </div>
+                        {% else %}
+                            <div class="level-progress-copy">
+                                <span>Level tertinggi tercapai</span>
+                                <span>{{ lifetime_points|intcomma_id }} / 5.000 poin</span>
+                            </div>
+                        {% endif %}
+                        <div class="level-progress-track" role="group" aria-label="Progres dan jenjang level">
+                            {% if current_level == 'Penenun Pemula' %}
+                                <span class="level-progress-segment is-current" role="progressbar" aria-label="Progres menuju {{ next_level }}" aria-valuemin="0" aria-valuemax="{{ level_target }}" aria-valuenow="{{ level_progress }}"><span style="width: {{ level_progress_percent }}%"></span></span>
+                                <span class="level-progress-segment" aria-hidden="true"><span style="width: 0%"></span></span>
+                                <span class="level-progress-segment" aria-hidden="true"><span style="width: 0%"></span></span>
+                            {% elif current_level == 'Penenun Mahir' %}
+                                <span class="level-progress-segment is-completed" aria-hidden="true"><span style="width: 100%"></span></span>
+                                <span class="level-progress-segment is-current" role="progressbar" aria-label="Progres menuju {{ next_level }}" aria-valuemin="0" aria-valuemax="{{ level_target }}" aria-valuenow="{{ level_progress }}"><span style="width: {{ level_progress_percent }}%"></span></span>
+                                <span class="level-progress-segment" aria-hidden="true"><span style="width: 0%"></span></span>
+                            {% else %}
+                                <span class="level-progress-segment is-completed" aria-hidden="true"><span style="width: 100%"></span></span>
+                                <span class="level-progress-segment is-completed" aria-hidden="true"><span style="width: 100%"></span></span>
+                                <span class="level-progress-segment is-completed" role="progressbar" aria-label="Level tertinggi tercapai" aria-valuemin="0" aria-valuemax="5000" aria-valuenow="5000"><span style="width: 100%"></span></span>
+                            {% endif %}
+                        </div>
+                        <ul class="level-ladder">
+                            <li class="level-tier {% if current_level == 'Penenun Pemula' %}is-current{% elif current_level == 'Penenun Mahir' or current_level == 'Penenun Ahli' %}is-completed{% endif %}" {% if current_level == 'Penenun Pemula' %}aria-current="step"{% endif %}>
+                                <span class="level-tier-name">Penenun Pemula</span>
+                                <span class="level-tier-range">0–1.999</span>
+                            </li>
+                            <li class="level-tier {% if current_level == 'Penenun Mahir' %}is-current{% elif current_level == 'Penenun Ahli' %}is-completed{% endif %}" {% if current_level == 'Penenun Mahir' %}aria-current="step"{% endif %}>
+                                <span class="level-tier-name">Penenun Mahir</span>
+                                <span class="level-tier-range">2.000–4.999</span>
+                            </li>
+                            <li class="level-tier {% if current_level == 'Penenun Ahli' %}is-current{% endif %}" {% if current_level == 'Penenun Ahli' %}aria-current="step"{% endif %}>
+                                <span class="level-tier-name">Penenun Ahli</span>
+                                <span class="level-tier-range">5.000+</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <img class="points-mascot" src="{% static 'img/mascot/pointing.webp' %}" alt="Maskot ReBatik menunjuk saldo poin">
+            </div>
+
+            <div class="rewards-stats" aria-label="Ringkasan aktivitas poin">
+                <article class="rewards-stat-card">
+                    <p>{{ donated_count|intcomma_id }}</p>
+                    <h3>Kain didonasikan</h3>
+                </article>
+                <article class="rewards-stat-card">
+                    <p>{{ upcycling_count|intcomma_id }}</p>
+                    <h3>Upcycling selesai</h3>
+                </article>
+                <article class="rewards-stat-card">
+                    <p>
+                        {% if donated_count and saved_weight_unknown_count %}
+                            {% if saved_weight_kg %}≥ {{ saved_weight_kg|decimal_comma_id }} kg{% else %}Belum tercatat{% endif %}
+                        {% else %}
+                            {{ saved_weight_kg|decimal_comma_id }} kg
+                        {% endif %}
+                    </p>
+                    <h3>Kain terselamatkan</h3>
+                </article>
+            </div>
+
+            <section class="earning-guide" aria-label="Panduan mendapatkan poin">
+                <details class="earning-guide-details">
+                    <summary>Cara Mendapatkan Poin</summary>
+                    <div class="earning-guide-content">
+                        <p class="earning-guide-intro">Tiga langkah sederhana, lalu poin masuk ke akun Anda setelah diverifikasi.</p>
+
+                        <div class="earning-guide-steps" aria-label="Alur memperoleh poin dari donasi kain">
+                            <article class="earning-guide-step">
+                                <span
+                                    class="earning-guide-step-number relative grid size-10 shrink-0 place-items-center
+                                           overflow-hidden rounded-full font-bold text-[var(--cream-light)]"
+                                    role="img"
+                                    aria-label="Langkah 1"
+                                >
+                                    <img
+                                        src="{% static 'img/upcycling/step-number.svg' %}"
+                                        alt=""
+                                        aria-hidden="true"
+                                        class="absolute left-0 top-0 origin-top-left scale-[0.097] max-w-none"
+                                    >
+                                    <span class="relative">1</span>
+                                </span>
+                                <h3>Donasikan kain</h3>
+                                <p>Ajukan donasi, lalu pilih drop-off atau kurir.</p>
+                            </article>
+                            <span class="earning-guide-step-arrow" aria-hidden="true">→</span>
+                            <article class="earning-guide-step">
+                                <span
+                                    class="earning-guide-step-number relative grid size-10 shrink-0 place-items-center
+                                           overflow-hidden rounded-full font-bold text-[var(--cream-light)]"
+                                    role="img"
+                                    aria-label="Langkah 2"
+                                >
+                                    <img
+                                        src="{% static 'img/upcycling/step-number.svg' %}"
+                                        alt=""
+                                        aria-hidden="true"
+                                        class="absolute left-0 top-0 origin-top-left scale-[0.097] max-w-none"
+                                    >
+                                    <span class="relative">2</span>
+                                </span>
+                                <h3>Verifikasi tim</h3>
+                                <p>Tim ReBatik menimbang dan memeriksa kondisi kain.</p>
+                            </article>
+                            <span class="earning-guide-step-arrow" aria-hidden="true">→</span>
+                            <article class="earning-guide-step">
+                                <span
+                                    class="earning-guide-step-number relative grid size-10 shrink-0 place-items-center
+                                           overflow-hidden rounded-full font-bold text-[var(--cream-light)]"
+                                    role="img"
+                                    aria-label="Langkah 3"
+                                >
+                                    <img
+                                        src="{% static 'img/upcycling/step-number.svg' %}"
+                                        alt=""
+                                        aria-hidden="true"
+                                        class="absolute left-0 top-0 origin-top-left scale-[0.097] max-w-none"
+                                    >
+                                    <span class="relative">3</span>
+                                </span>
+                                <h3>Poin masuk</h3>
+                                <p>Poin dihitung dari berat kain dan masuk setelah verifikasi.</p>
+                            </article>
+                        </div>
+
+                        <section class="earning-guide-points" aria-label="Aturan perolehan poin">
+                            <p class="earning-guide-kicker">ATURAN PEROLEHAN POIN</p>
+                            <ul class="earning-guide-point-list">
+                                <li class="earning-guide-point-row">
+                                    <span>Bonus donasi pertama bulan ini</span>
+                                    <strong>+25</strong>
+                                </li>
+                                <li class="earning-guide-point-row">
+                                    <span>Upcycling selesai</span>
+                                    <strong>+150</strong>
+                                </li>
+                            </ul>
+
+                            <p class="earning-guide-kicker earning-guide-tier-heading">POIN DONASI SESUAI BERAT (DITIMBANG SAAT VERIFIKASI)</p>
+                            <ul class="earning-guide-point-list">
+                                <li class="earning-guide-point-row">
+                                    <span>Kurang dari 0,5 kg</span>
+                                    <strong>+50</strong>
+                                </li>
+                                <li class="earning-guide-point-row">
+                                    <span>0,5–2 kg</span>
+                                    <strong>+100</strong>
+                                </li>
+                                <li class="earning-guide-point-row">
+                                    <span>Lebih dari 2 hingga 5 kg</span>
+                                    <strong>+200</strong>
+                                </li>
+                                <li class="earning-guide-point-row">
+                                    <span>Lebih dari 5 kg</span>
+                                    <strong>+300</strong>
+                                </li>
+                            </ul>
+                            <p class="earning-guide-note">Poin donasi dihitung berdasarkan berat akhir setelah ditimbang dan diverifikasi tim ReBatik. Bonus 25 poin berlaku untuk donasi pertama yang diverifikasi setiap bulan.</p>
+                        </section>
+                    </div>
+                </details>
+            </section>
+
+            <div class="donate-fabric-action">
+                <a
+                    href="{% url 'donasi:create' %}"
+                    class="primary-action-button min-h-12 px-6 py-3 font-semibold
+                           focus-visible:outline focus-visible:outline-offset-2
+                           focus-visible:outline-[var(--brown)]"
+                >Donasikan Kain Baru →</a>
+            </div>
+        </section>
+
+        <section class="recent-history" aria-labelledby="voucher-catalog-heading">
+            <div class="rewards-section-heading">
+                <h2 id="voucher-catalog-heading">Katalog Voucher</h2>
+                <div class="flex flex-wrap gap-4">
+                    <a class="history-all-link" href="{% url 'rewards:catalog' %}">Selengkapnya →</a>
+                    <a class="history-all-link" href="{% url 'rewards:vouchers' %}">Voucher saya →</a>
+                </div>
+            </div>
+            <div class="voucher-card-grid">
+                {% for voucher in featured_vouchers %}
+                    <article class="voucher-card">
+                        <div class="voucher-card-media">
+                            {% if voucher.image %}
+                                <img class="voucher-thumbnail" src="{{ voucher.image.url }}" alt="Gambar {{ voucher.name }}">
+                            {% else %}
+                                <div class="voucher-card-placeholder" aria-label="Gambar voucher belum tersedia">ReBatik Voucher</div>
+                            {% endif %}
+                        </div>
+                        <h3 class="voucher-card-title">{{ voucher.name }}</h3>
+                        <p class="voucher-card-value">Diskon Rp{{ voucher.discount_value|intcomma_id }}</p>
+                        <div class="voucher-card-details">
+                            <span>{{ voucher.points_required|intcomma_id }} poin</span>
+                            <span>Kuota {{ voucher.stock }}</span>
+                        </div>
+                        {% if voucher.description %}<p class="voucher-card-description">{{ voucher.description }}</p>{% endif %}
+                        <form
+                            method="post"
+                            action="{% url 'rewards:redeem' voucher.id %}"
+                            class="space-y-2 voucher-redemption-trigger"
+                            data-voucher-name="{{ voucher.name }}"
+                            data-voucher-description="{{ voucher.description }}"
+                            data-voucher-discount="Rp{{ voucher.discount_value|intcomma_id }}"
+                            data-voucher-points="{{ voucher.points_required }}"
+                            data-voucher-balance="{{ available_points }}"
+                        >
+                            {% csrf_token %}
+                            <input type="hidden" name="return_to" value="overview">
+                            <button type="submit" {% if available_points < voucher.points_required %}disabled{% endif %} class="primary-action-button min-h-11 w-full px-4 py-2 font-bold disabled:cursor-not-allowed disabled:opacity-50">Tukar poin</button>
+                        </form>
+                    </article>
+                {% empty %}
+                    <p class="history-empty">Belum ada voucher aktif yang tersedia.</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="recent-history" aria-labelledby="recent-history-heading">
+            <div class="rewards-section-heading">
+                <h2 id="recent-history-heading">Riwayat Poin</h2>
+                <div class="flex flex-wrap gap-4">
+                    <a class="history-all-link" href="{% url 'rewards:history' %}">Lihat semua →</a>
+                </div>
+            </div>
+            <p class="rewards-helper">Semua poin yang masuk dan keluar tercatat di sini.</p>
+            <div class="history-list">
+                {% for transaction in recent_transactions %}
+                    <article class="history-row">
+                        <div class="history-row-info">
+                            <time class="history-date" datetime="{{ transaction.created_at|date:'Y-m-d' }}">{{ transaction.created_at|id_short_date }}</time>
+                            <h3>{{ transaction.description }}</h3>
+                        </div>
+                        <p class="history-amount {% if transaction.points < 0 %}is-out{% else %}is-in{% endif %}" aria-label="{{ transaction.points|signed_intcomma_id }} poin">{{ transaction.points|signed_intcomma_id }}</p>
+                    </article>
+                {% empty %}
+                    <p class="history-empty">Belum ada aktivitas poin. Poin dari donasi dan upcycling akan tercatat di sini.</p>
+                {% endfor %}
+            </div>
+            <p class="rewards-footnote">Poin belum masuk setelah 3 hari kerja? Hubungi tim ReBatik lewat WhatsApp.</p>
+        </section>
+    </section>
+</div>
+{% include "rewards/_voucher_confirmation_modal.html" %}
+{% include "rewards/_voucher_success_modal.html" %}
+{% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'js/rewards-vouchers.js' %}" defer></script>
+{% endblock scripts %}
