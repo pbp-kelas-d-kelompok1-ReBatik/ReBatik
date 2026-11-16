@@ -1,11 +1,9 @@
-
 from pathlib import Path
 import filecmp
 import shutil
 
 from django.conf import settings
 from django.db import migrations
-
 
 STYLE_IMAGE_PATHS = {
     "style_options/bohemian.jpe": "img/catalog/style_options/bohemian.jpe",
@@ -19,8 +17,8 @@ STYLE_IMAGE_PATHS = {
     "style_options/minimalis.jpg": "img/catalog/style_options/minimalis.jpg",
     "style_options/natural.jpg": "img/catalog/style_options/natural.jpg",
     "style_options/natural1.jpg": "img/catalog/style_options/natural1.jpg",
-    "shared/creative1.png": "img/catalog/shared/creative1.png",
-    "shared/minimalis1.webp": "img/catalog/shared/minimalis1.webp",
+    "shared/creative1.png": "img/catalog/style_options/creative1.png",
+    "shared/minimalis1.webp": "img/catalog/style_options/minimalis1.png",
 }
 
 MOTIF_IMAGE_NAMES = (
