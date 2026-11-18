@@ -32,7 +32,7 @@ urlpatterns = [
     path('impact-tracker/', include('impact_tracker.urls')),
     path('profile/', include('profiles.urls')),
     path('landing/', include('landing.urls')),
-
+    path("api/v1/upcycling/", include("upcycling.api_urls")),
     # Serve uploaded media files on PWS
     re_path(
         r'^media/(?P<path>.*)$',

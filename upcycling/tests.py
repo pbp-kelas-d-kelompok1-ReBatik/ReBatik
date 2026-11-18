@@ -1488,7 +1488,7 @@ class UpcyclingRequestViewTests(TestCase):
         upcycling_request = self.make_request(
             self.user,
             status=UpcyclingRequest.Status.AWAITING_FABRIC,
-            fabric_deadline=datetime(2026, 11, 5, 12, tzinfo=datetime_timezone.utc),
+            fabric_deadline=timezone.now() + timedelta(days=7),
         )
         self.client.force_login(self.user)
 
