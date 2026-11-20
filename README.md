@@ -92,7 +92,7 @@ Awalan rute adalah `/api/v1/upcycling/`. Ganti `<id>` dengan UUID dari field `id
 | --- | --- | --- | --- |
 | `GET requests/` | Pengguna yang login | — | `200` · Array pengajuan sendiri, terbaru lebih dulu. |
 | `POST requests/` | Pengguna dengan kurang dari 10 pengajuan aktif | Multipart seperti contoh di bawah | `201` · Detail pengajuan dengan status `PENDING_ASSIGNMENT`. |
-| `GET requests/<id>/` | Pemilik | — | `200` · Detail, termasuk `fabric_photos`, `reference_photos`, dan `status_timeline`. |
+| `GET requests/<id>/` | Pemilik | — | `200` · Detail dengan `whatsapp` dan `custom_product` untuk mengisi form edit, serta `fabric_photos`, `reference_photos`, dan `status_timeline`. |
 | `PATCH requests/<id>/` | Pemilik saat `PENDING_ASSIGNMENT` | Field yang berubah, misalnya `{"quantity":2}`. Gunakan multipart untuk menambah foto. | `200` · Detail terbaru. Foto ditambahkan ke koleksi yang sudah ada. |
 | `POST requests/<id>/fabric-handoff/` | Pemilik saat `AWAITING_FABRIC`, sebelum tenggat | `fabric_delivery_method` berupa `DROP_OFF` atau `SELF_SHIP`. `fabric_delivery_location` opsional. | `200` · Rencana penyerahan kain tersimpan. |
 | `POST requests/<id>/approve-quote/` | Pemilik saat `AWAITING_APPROVAL` dan harga tersedia | Tanpa body | `200` · Status menjadi `AWAITING_DELIVERY_DETAILS`. |
