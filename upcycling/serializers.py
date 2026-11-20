@@ -6,7 +6,6 @@ from rest_framework import serializers
 from .models import (
     AdditionalFabricPhoto,
     AdditionalReferencePhoto,
-    ArtisanProfile,
     NOTES_MAX_LENGTH,
     UpcyclingRequest,
     UpcyclingStatusHistory,
