@@ -39,6 +39,7 @@ urlpatterns = [
     path('api/v1/rewards/', include('rewards.api_urls')),
     path('api/v1/batik-story/', include('batik_story.api_urls')),
     path('api/v1/batik-custom/', include('batik_custom.api_urls')),
+    path('api/v1/marketplace/', include('marketplace.api_urls')),
     path('api-auth/', include('rest_framework.urls')),
     path('api/v1/profile/', include('profiles.api_urls')),
     # Serve uploaded media files on PWS
