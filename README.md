@@ -74,6 +74,28 @@ Untuk memenuhi kebutuhan data lokasi pengumpulan kain secara spesifik dan terint
 Sesuai ketentuan rubrik PBP (minimal 50 data utama saat dideploy ke PWS), aplikasi ReBatik telah dilengkapi dengan dataset inisial yang otomatis diisi ke database saat `python manage.py migrate` dijalankan:
 - **52 Titik Drop-off Point**: Termuat di `marketplace/data/dropoff_points.json`, ter-seed via migrasi `0004_seed_dummy_dropoff_points.py` atau command `python manage.py sync_dropoff_points`.
 
+### 4. Web Service Django REST Framework — Marketplace & Drop-Off Point (Modul 3)
+
+Dipakai oleh aplikasi Flutter `ReBatik-Mobile`. Base URL: `/api/v1/marketplace/`. Autentikasi memakai session cookie dari `/api/v1/auth/login/`; request tulis (POST/PUT/PATCH/DELETE) perlu header `X-CSRFToken`.
+
+| Method | Endpoint | Akses | Keterangan |
+|---|---|---|---|
+| GET | `products/` | Publik | Katalog produk. Query: `q`, `category` (`TAS`/`POUCH`/`PAKAIAN`/`AKSESORIS`), `sort` (`newest`/`price_asc`/`price_desc`), `include_deleted=1` (Artisan/Admin) |
+| POST | `products/` | Artisan/Admin | Tambah produk (validasi sama dengan form web) |
+| GET | `products/{id}/` | Publik | Detail produk |
+| PUT/PATCH | `products/{id}/` | Artisan/Admin | Ubah produk |
+| DELETE | `products/{id}/` | Artisan/Admin | Sembunyikan produk (soft delete) |
+| POST | `products/{id}/restore/` | Artisan/Admin | Tampilkan kembali produk |
+| GET | `categories/` | Publik | Pilihan kategori `{value, label}` |
+| GET | `dropoff-points/` | Publik | Daftar Drop-Off Point. Query: `city`, `q` |
+| GET | `dropoff-points/cities/` | Publik | Daftar kota untuk filter |
+| GET | `dropoff-points/{id}/` | Publik | Detail Drop-Off Point |
+| GET | `orders/` | Login | Riwayat pesanan milik user. Query: `status` |
+| POST | `orders/` | Login | Checkout: `product`, `quantity`, `delivery_method` (`DROP_OFF`/`KURIR`), `dropoff_point` (id) atau `address`, `whatsapp`, `notes`, `voucher_code` |
+| GET | `orders/{uuid}/` | Login (pemilik) | Detail pesanan + riwayat status |
+| POST | `orders/{uuid}/cancel/` | Login (pemilik) | Batalkan pesanan berstatus `PENDING`; stok dan voucher dikembalikan |
+| GET | `vouchers/` | Login | Voucher Rewards yang masih bisa dipakai saat checkout |
+
 ## Jenis/Peran Pengguna Aplikasi
 
 1. **Guest (Pengunjung)**
