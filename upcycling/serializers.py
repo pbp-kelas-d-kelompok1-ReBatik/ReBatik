@@ -1,14 +1,18 @@
 import re
+from decimal import Decimal
 
 from rest_framework import serializers
 
 from .models import (
     AdditionalFabricPhoto,
     AdditionalReferencePhoto,
+    ArtisanProfile,
     NOTES_MAX_LENGTH,
     UpcyclingRequest,
     UpcyclingStatusHistory,
 )
+from .services import eligible_artisans_for_request
+from .views import _parse_quote_component
 
 
 class UpcyclingRequestCreateSerializer(serializers.ModelSerializer):
@@ -106,40 +110,62 @@ class UpcyclingRequestCreateSerializer(serializers.ModelSerializer):
                 {"notes": f"Catatan maksimal {NOTES_MAX_LENGTH} karakter."}
             )
 
-        fabric = attrs.get("fabric")
-        other_fabric = attrs.get("fabric_other_description", "").strip()
+        def current_value(field, default=""):
+            if field in attrs:
+                return attrs[field]
+            if self.instance is not None:
+                return getattr(self.instance, field)
+            return default
+
+        fabric = current_value("fabric")
+        other_fabric = current_value("fabric_other_description").strip()
         if fabric == UpcyclingRequest.FabricType.OTHER and not other_fabric:
             raise serializers.ValidationError(
                 {"fabric_other_description": "Sebutkan bahan lainnya."}
             )
-        attrs["fabric_other_description"] = (
-            other_fabric
-            if fabric == UpcyclingRequest.FabricType.OTHER
-            else ""
-        )
-
-        item_form_other = attrs.get("current_item_form_other", "").strip()
         if (
-            attrs.get("current_item_form") == UpcyclingRequest.CurrentItemForm.OTHER
+            self.instance is None
+            or "fabric" in attrs
+            or "fabric_other_description" in attrs
+        ):
+            attrs["fabric_other_description"] = (
+                other_fabric
+                if fabric == UpcyclingRequest.FabricType.OTHER
+                else ""
+            )
+
+        current_item_form = current_value("current_item_form")
+        item_form_other = current_value("current_item_form_other").strip()
+        if (
+            current_item_form == UpcyclingRequest.CurrentItemForm.OTHER
             and not item_form_other
         ):
             raise serializers.ValidationError(
                 {"current_item_form_other": "Sebutkan bentuk barang lainnya."}
             )
-        attrs["current_item_form_other"] = (
-            item_form_other
-            if attrs.get("current_item_form") == UpcyclingRequest.CurrentItemForm.OTHER
-            else ""
-        )
+        if (
+            self.instance is None
+            or "current_item_form" in attrs
+            or "current_item_form_other" in attrs
+        ):
+            attrs["current_item_form_other"] = (
+                item_form_other
+                if current_item_form == UpcyclingRequest.CurrentItemForm.OTHER
+                else ""
+            )
 
-        custom_product = attrs.get("custom_product", "").strip()
-        if attrs.get("product") == "LAINNYA" and not custom_product:
+        product = current_value("product")
+        custom_product = current_value("custom_product").strip()
+        if product == "LAINNYA" and not custom_product:
             raise serializers.ValidationError(
                 {"custom_product": "Tuliskan produk yang Anda inginkan."}
             )
-        attrs["custom_product"] = (
-            custom_product if attrs.get("product") == "LAINNYA" else ""
-        )
+        if (
+            self.instance is None
+            or "product" in attrs
+            or "custom_product" in attrs
+        ):
+            attrs["custom_product"] = custom_product if product == "LAINNYA" else ""
 
         products_by_category = {
             "TAS": ("TOTE_BAG", "SLING_BAG", "BACKPACK", "SHOULDER_BAG", "LAINNYA"),
@@ -149,12 +175,14 @@ class UpcyclingRequestCreateSerializer(serializers.ModelSerializer):
             "RUMAH_TANGGA": ("SARUNG_BANTAL", "LAINNYA"),
             "LAINNYA": ("LAINNYA",),
         }
-        if attrs.get("product") not in products_by_category.get(attrs.get("category"), ()):
+        category = current_value("category")
+        if product not in products_by_category.get(category, ()):
             raise serializers.ValidationError(
                 {"product": "Model produk tidak sesuai dengan kategori yang dipilih."}
             )
 
-        if not attrs.get("wants_batik_accent"):
+        wants_batik_accent = current_value("wants_batik_accent", False)
+        if not wants_batik_accent:
             attrs["batik_motif"] = ""
             attrs["motif_placement"] = ""
 
@@ -194,6 +222,179 @@ class UpcyclingRequestCreateSerializer(serializers.ModelSerializer):
             changed_by=user,
         )
         return upcycling_request
+
+
+class UpcyclingRequestUpdateSerializer(UpcyclingRequestCreateSerializer):
+    """Validate partial edits and append photos without removing old uploads."""
+
+    fabric_photos = serializers.ListField(
+        child=serializers.ImageField(),
+        write_only=True,
+        required=False,
+        max_length=3,
+    )
+
+    def validate_fabric_photos(self, photos):
+        super().validate_fabric_photos(photos)
+        existing_count = int(bool(self.instance.fabric_photo)) + (
+            self.instance.additional_fabric_photos.count()
+        )
+        if existing_count + len(photos) > 3:
+            raise serializers.ValidationError(
+                "Jumlah foto barang atau kain maksimal 3. Foto yang sudah tersimpan tetap dihitung."
+            )
+        return photos
+
+    def validate_reference_photos(self, photos):
+        super().validate_reference_photos(photos)
+        if self.instance.reference_photos.count() + len(photos) > 3:
+            raise serializers.ValidationError("Foto referensi maksimal 3 gambar.")
+        return photos
+
+    def update(self, instance, validated_data):
+        fabric_photos = validated_data.pop("fabric_photos", [])
+        reference_photos = validated_data.pop("reference_photos", [])
+
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        instance.save()
+
+        if fabric_photos:
+            if not instance.fabric_photo:
+                instance.fabric_photo = fabric_photos[0]
+                instance.save(update_fields=("fabric_photo", "updated_at"))
+                fabric_photos = fabric_photos[1:]
+            AdditionalFabricPhoto.objects.bulk_create(
+                [
+                    AdditionalFabricPhoto(request=instance, image=photo)
+                    for photo in fabric_photos
+                ]
+            )
+
+        AdditionalReferencePhoto.objects.bulk_create(
+            [
+                AdditionalReferencePhoto(request=instance, image=photo)
+                for photo in reference_photos
+            ]
+        )
+        return instance
+
+
+class FabricHandoffSerializer(serializers.Serializer):
+    fabric_delivery_method = serializers.ChoiceField(
+        choices=UpcyclingRequest.FabricDeliveryMethod.choices,
+    )
+    fabric_delivery_location = serializers.CharField(
+        max_length=255,
+        required=False,
+        allow_blank=True,
+    )
+
+
+class ProductDeliverySerializer(serializers.Serializer):
+    delivery_method = serializers.ChoiceField(
+        choices=UpcyclingRequest.DELIVERY_CHOICES,
+    )
+    address = serializers.CharField(max_length=255)
+
+
+class CancelUpcyclingRequestSerializer(serializers.Serializer):
+    action = serializers.ChoiceField(
+        choices=("cancel", "reject_quote"),
+        required=False,
+        default="cancel",
+    )
+
+
+class ArtisanRequestActionSerializer(serializers.Serializer):
+    action = serializers.ChoiceField(
+        choices=(
+            "review_accept",
+            "review_reject",
+            "receive_fabric",
+            "inspection_pass",
+            "inspection_reject",
+            "mark_ready",
+        )
+    )
+    notes = serializers.CharField(required=False, allow_blank=True)
+    work_price = serializers.CharField(required=False, allow_blank=True)
+    batik_material_price = serializers.CharField(required=False, allow_blank=True)
+    additional_fee_type = serializers.CharField(required=False, allow_blank=True)
+    additional_fee_amount = serializers.CharField(required=False, allow_blank=True)
+
+    def validate_notes(self, value):
+        return value.strip()[:NOTES_MAX_LENGTH]
+
+    def validate(self, attrs):
+        action = attrs["action"]
+        notes = attrs.get("notes", "")
+        if action in {"review_reject", "inspection_reject"} and not notes:
+            message = (
+                "Masukkan alasan penolakan."
+                if action == "review_reject"
+                else "Masukkan alasan kain tidak layak."
+            )
+            raise serializers.ValidationError({"notes": message})
+
+        if action != "inspection_pass":
+            return attrs
+
+        upcycling_request = self.context["upcycling_request"]
+        try:
+            work_price = _parse_quote_component(
+                attrs.get("work_price"),
+                "harga pengerjaan",
+                required=True,
+            )
+            batik_material_price = (
+                _parse_quote_component(
+                    attrs.get("batik_material_price"),
+                    "biaya kain batik tambahan",
+                    required=True,
+                    allow_zero=True,
+                )
+                if upcycling_request.wants_batik_accent
+                else Decimal("0")
+            )
+            fee_type = attrs.get("additional_fee_type", "").strip()[:120]
+            fee_raw = attrs.get("additional_fee_amount", "").strip()
+            if bool(fee_type) != bool(fee_raw):
+                raise ValueError(
+                    "Isi jenis dan nominal biaya tambahan lain secara bersamaan."
+                )
+            fee_amount = (
+                _parse_quote_component(
+                    fee_raw,
+                    "biaya tambahan lain",
+                    required=True,
+                )
+                if fee_raw
+                else Decimal("0")
+            )
+        except ValueError as exc:
+            raise serializers.ValidationError({"detail": str(exc)}) from exc
+
+        total_price = work_price + batik_material_price + fee_amount
+        if total_price > Decimal("99999999"):
+            raise serializers.ValidationError(
+                {"detail": "Total penawaran tidak boleh melebihi Rp99.999.999."}
+            )
+
+        attrs.update(
+            {
+                "work_price": work_price,
+                "batik_material_price": batik_material_price,
+                "additional_fee_type": fee_type,
+                "additional_fee_amount": fee_amount,
+                "quoted_price": total_price,
+            }
+        )
+        return attrs
+
+
+class ArtisanAssignmentSerializer(serializers.Serializer):
+    artisan_id = serializers.IntegerField(min_value=1)
 
 class UpcyclingRequestListSerializer(serializers.ModelSerializer):
     reference_code = serializers.CharField(read_only=True)
@@ -413,3 +614,42 @@ class UpcyclingRequestDetailSerializer(serializers.ModelSerializer):
             )
 
         return timeline
+
+
+class ArtisanUpcyclingRequestSerializer(UpcyclingRequestDetailSerializer):
+    class Meta(UpcyclingRequestDetailSerializer.Meta):
+        fields = UpcyclingRequestDetailSerializer.Meta.fields + [
+            "whatsapp",
+            "review_approved_at",
+            "fabric_receipt_notes",
+            "inspection_notes",
+            "rejection_stage",
+            "return_method",
+            "return_cost_bearer",
+            "return_notes",
+            "ready_at",
+            "completed_at",
+        ]
+
+
+class AdminQueueRowSerializer(serializers.Serializer):
+    request = ArtisanUpcyclingRequestSerializer(source="*")
+    artisan_candidates = serializers.SerializerMethodField()
+
+    def get_artisan_candidates(self, upcycling_request):
+        if (
+            upcycling_request.status != UpcyclingRequest.Status.PENDING_ASSIGNMENT
+            or upcycling_request.artisan_id is not None
+        ):
+            return []
+        candidates = eligible_artisans_for_request(upcycling_request)
+        return [
+            {
+                "id": artisan.pk,
+                "username": artisan.user.get_username(),
+                "display_name": artisan.user.get_full_name(),
+                "active_requests": artisan.active_request_count(),
+                "max_active_requests": artisan.max_active_requests,
+            }
+            for artisan in candidates
+        ]
