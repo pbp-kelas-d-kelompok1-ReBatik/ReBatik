@@ -1,26 +1,61 @@
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.db.models import Count, Q
 
 from .models import ArtisanProfile, UpcyclingRequest, UpcyclingStatusHistory
 
 
 def eligible_artisans_for_request(upcycling_request):
     """Return eligible artisan profiles with matching skills and spare capacity."""
+    return eligible_artisans_for_requests([upcycling_request]).get(
+        upcycling_request.pk,
+        [],
+    )
+
+
+def eligible_artisans_for_requests(upcycling_requests):
+    """Build eligible artisan lists for multiple requests with one aggregate query."""
+    upcycling_requests = list(upcycling_requests)
+    if not upcycling_requests:
+        return {}
+
+    product_codes = {request.product for request in upcycling_requests}
+    candidates_by_product = {product_code: [] for product_code in product_codes}
     candidates = (
         ArtisanProfile.objects.filter(
             is_available=True,
             user__groups__name="Artisan",
-            specializations__code=upcycling_request.product,
+            specializations__code__in=product_codes,
         )
-        .exclude(user_id=upcycling_request.user_id)
+        .annotate(
+            eligible_active_request_count=Count(
+                "upcycling_requests",
+                filter=~Q(
+                    upcycling_requests__status__in=UpcyclingRequest.TERMINAL_STATUSES
+                ),
+                distinct=True,
+            )
+        )
         .select_related("user")
+        .prefetch_related("specializations")
         .distinct()
     )
-    return [
-        artisan
-        for artisan in candidates
-        if artisan.active_request_count() < artisan.max_active_requests
-    ]
+
+    for artisan in candidates:
+        if artisan.eligible_active_request_count >= artisan.max_active_requests:
+            continue
+        for specialization in artisan.specializations.all():
+            if specialization.code in candidates_by_product:
+                candidates_by_product[specialization.code].append(artisan)
+
+    return {
+        request.pk: [
+            artisan
+            for artisan in candidates_by_product.get(request.product, [])
+            if artisan.user_id != request.user_id
+        ]
+        for request in upcycling_requests
+    }
 
 
 @transaction.atomic

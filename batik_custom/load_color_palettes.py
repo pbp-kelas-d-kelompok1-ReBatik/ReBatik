@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db import transaction
 from batik_custom.models import ColorPalette
 
-JSON_PATH = Path(settings.BASE_DIR) / "color_pallete.json"
+JSON_PATH = Path(settings.BASE_DIR) / "backups" / "color_pallete.json"
 
 @transaction.atomic
 def load_color_palettes():

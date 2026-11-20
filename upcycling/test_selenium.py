@@ -98,7 +98,7 @@ class UpcyclingBrowserTests(StaticLiveServerTestCase):
     def test_status_tabs_switch_from_completed_to_all(self):
         """Test behavior: status tabs switch from completed to all."""
         self.create_request(
-            status=UpcyclingRequest.Status.PENDING,
+            status=UpcyclingRequest.Status.PENDING_ASSIGNMENT,
             product="POUCH",
         )
         self.create_request(
@@ -144,7 +144,7 @@ class UpcyclingBrowserTests(StaticLiveServerTestCase):
         """Test behavior: pagination links track filters before results swap."""
         for _ in range(11):
             self.create_request(
-                status=UpcyclingRequest.Status.PENDING,
+                status=UpcyclingRequest.Status.PENDING_ASSIGNMENT,
                 product="POUCH",
             )
         self.open_authenticated_page(reverse("upcycling:request_list"))
