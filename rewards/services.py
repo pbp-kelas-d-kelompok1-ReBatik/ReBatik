@@ -8,7 +8,9 @@ from django.db import transaction
 from django.db.models import Sum
 from django.utils import timezone
 
-from .models import PointTransaction, Reward, RewardRedemption
+from config.rate_limits import consume_user_rate_limit
+
+from .models import PointTransaction, Reward, RewardRedemption, VoucherRedemptionRateLimit
 
 
 class InsufficientPoints(ValueError):
@@ -274,6 +276,11 @@ def user_vouchers(user):
         reward__reward_type=Reward.Type.VOUCHER,
         voucher_code__isnull=False,
     ).select_related("reward")
+
+
+def consume_redemption_attempt(user):
+    """Count a submitted redemption even if the subsequent transaction fails."""
+    return consume_user_rate_limit(user, VoucherRedemptionRateLimit, limit=5, window_seconds=60)
 
 
 @transaction.atomic

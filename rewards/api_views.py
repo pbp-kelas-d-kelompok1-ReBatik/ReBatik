@@ -7,14 +7,12 @@ from rest_framework.permissions import BasePermission, IsAdminUser, IsAuthentica
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from config.rate_limits import consume_user_rate_limit
-
-from .models import Reward, VoucherRedemptionRateLimit
+from .models import Reward
 from .serializers import (
     AdminVoucherSerializer, PointTransactionSerializer, RewardRedemptionSerializer, VoucherSerializer,
 )
 from .services import (
-    InsufficientPoints, RewardUnavailable, available_vouchers, get_available_points,
+    InsufficientPoints, RewardUnavailable, available_vouchers, consume_redemption_attempt, get_available_points,
     point_history, points_overview_data, redeem_reward, user_vouchers,
 )
 
@@ -64,9 +62,7 @@ class MyVouchers(RewardsSessionMixin, generics.ListAPIView):
 
 class RedeemVoucher(RewardsSessionMixin, APIView):
     def post(self, request, reward_id):
-        allowed, retry_after = consume_user_rate_limit(
-            request.user, VoucherRedemptionRateLimit, limit=5, window_seconds=60
-        )
+        allowed, retry_after = consume_redemption_attempt(request.user)
         if not allowed:
             raise Throttled(wait=retry_after)
 

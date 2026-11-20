@@ -54,6 +54,31 @@ class RewardsAPITests(APITestCase):
             self.client.force_login(self.member)
             self.assertEqual(self.client.post(self.redeem_url).status_code, 201)
 
+    def test_api_and_confirmed_web_redemptions_share_one_quota(self):
+        web_url = reverse("rewards:redeem", args=[self.voucher.pk])
+        missing = self.voucher.pk + 1000
+        confirm = {"confirm": "yes", "return_to": "overview"}
+        with patch("config.rate_limits.now", return_value=timezone.now()):
+            self.assertEqual(self.client.post(web_url).status_code, 200)
+            for _ in range(4):
+                self.assertEqual(self.client.post(reverse("api_rewards:redeem", args=[missing])).status_code, 404)
+
+            # The fifth attempt fails on the web but still counts against the API quota.
+            failed = self.client.post(reverse("rewards:redeem", args=[missing]), confirm)
+            self.assertRedirects(failed, reverse("rewards:overview"), fetch_redirect_response=False)
+            api_response = self.client.post(self.redeem_url)
+            self.assertEqual(api_response.status_code, 429)
+            self.assertEqual(api_response["Retry-After"], "60")
+
+            web_response = self.client.post(web_url, confirm)
+            self.assertContains(web_response, "Coba lagi dalam 60 detik", status_code=429)
+            self.assertContains(web_response, reverse("rewards:overview"), status_code=429)
+            self.assertEqual(web_response["Retry-After"], "60")
+        self.assertEqual(get_available_points(self.member), 150)
+        self.voucher.refresh_from_db()
+        self.assertEqual(self.voucher.stock, 2)
+        self.assertFalse(RewardRedemption.objects.exists())
+
     def test_login_and_csrf_required(self):
         client = APIClient(enforce_csrf_checks=True)
         for route in ("overview", "catalog", "history", "my-vouchers", "admin-vouchers"):
@@ -67,7 +92,7 @@ class RewardsAPITests(APITestCase):
 
     def test_catalog_and_overview_exclude_unavailable_rewards(self):
         for overrides in ({"stock": 0}, {"is_active": False}, {"reward_type": Reward.Type.PHYSICAL}):
-            fields = {"reward_type": Reward.Type.VOUCHER, "stock": 1, **overrides}
+            fields = {"reward_type": Reward.Type.VOUCHER, "stock": 1, "discount_value": 10000, **overrides}
             Reward.objects.create(name="Hidden", points_required=1, **fields)
         catalog = self.client.get(reverse("api_rewards:catalog")).json()
         self.assertEqual([item["id"] for item in catalog], [self.voucher.pk])

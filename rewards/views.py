@@ -16,6 +16,7 @@ from .services import (
     RewardUnavailable,
     get_available_points,
     available_vouchers,
+    consume_redemption_attempt,
     point_history,
     points_overview_data,
     redeem_reward,
@@ -115,6 +116,16 @@ def redeem_reward_view(request, reward_id):
             }
         )
         return render(request, "rewards/catalog.html", context)
+
+    allowed, retry_after = consume_redemption_attempt(request.user)
+    if not allowed:
+        response = render(
+            request, "rewards/rate_limited.html",
+            {"retry_after": retry_after, "return_page": _redemption_return_page(request)},
+            status=429,
+        )
+        response["Retry-After"] = str(retry_after)
+        return response
 
     try:
         redemption = redeem_reward(request.user, reward_id)
