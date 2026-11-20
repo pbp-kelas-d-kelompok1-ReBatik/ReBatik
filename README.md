@@ -74,6 +74,102 @@ Untuk memenuhi kebutuhan data lokasi pengumpulan kain secara spesifik dan terint
 Sesuai ketentuan rubrik PBP (minimal 50 data utama saat dideploy ke PWS), aplikasi ReBatik telah dilengkapi dengan dataset inisial yang otomatis diisi ke database saat `python manage.py migrate` dijalankan:
 - **52 Titik Drop-off Point**: Termuat di `marketplace/data/dropoff_points.json`, ter-seed via migrasi `0004_seed_dummy_dropoff_points.py` atau command `python manage.py sync_dropoff_points`.
 
+### 4. API Upcycling dan Rewards
+
+Kedua modul memakai Django REST Framework. Untuk mencoba di Postman atau Flutter, login sekali dan gunakan sesi yang sama untuk panggilan berikutnya.
+
+| Persiapan | Request atau pengaturan | Hasil |
+| --- | --- | --- |
+| Ambil token awal | `GET /api/v1/auth/csrf/` | Simpan cookie `csrftoken` dan nilai `csrfToken` dari JSON. |
+| Login | `POST /api/v1/auth/login/` dengan JSON `{"username":"…","password":"…"}` | Simpan cookie sesi dan CSRF dari respons. Gunakan `csrfToken` terbaru karena login merotasi token. |
+| Panggil endpoint | Kirim cookie dan `Accept: application/json`. Pada `POST` dan `PATCH`, sertakan header `X-CSRFToken`. | Gunakan `application/json` untuk data biasa dan `multipart/form-data` untuk unggahan. |
+
+#### Upcycling
+
+Awalan rute adalah `/api/v1/upcycling/`. Ganti `<id>` dengan UUID dari field `id` pengajuan. [Rute](upcycling/api_urls.py) · [Serializer](upcycling/serializers.py)
+
+| Metode dan rute | Akses dan kondisi | Body atau parameter | Respons sukses |
+| --- | --- | --- | --- |
+| `GET requests/` | Pengguna yang login | — | `200` · Array pengajuan sendiri, terbaru lebih dulu. |
+| `POST requests/` | Pengguna dengan kurang dari 10 pengajuan aktif | Multipart seperti contoh di bawah | `201` · Detail pengajuan dengan status `PENDING_ASSIGNMENT`. |
+| `GET requests/<id>/` | Pemilik | — | `200` · Detail, termasuk `fabric_photos`, `reference_photos`, dan `status_timeline`. |
+| `PATCH requests/<id>/` | Pemilik saat `PENDING_ASSIGNMENT` | Field yang berubah, misalnya `{"quantity":2}`. Gunakan multipart untuk menambah foto. | `200` · Detail terbaru. Foto ditambahkan ke koleksi yang sudah ada. |
+| `POST requests/<id>/fabric-handoff/` | Pemilik saat `AWAITING_FABRIC`, sebelum tenggat | `fabric_delivery_method` berupa `DROP_OFF` atau `SELF_SHIP`. `fabric_delivery_location` opsional. | `200` · Rencana penyerahan kain tersimpan. |
+| `POST requests/<id>/approve-quote/` | Pemilik saat `AWAITING_APPROVAL` dan harga tersedia | Tanpa body | `200` · Status menjadi `AWAITING_DELIVERY_DETAILS`. |
+| `POST requests/<id>/product-delivery/` | Pemilik saat `AWAITING_DELIVERY_DETAILS` | `delivery_method` berupa `DROP_OFF` atau `KURIR`, serta `address`. | `200` · Status menjadi `IN_PROGRESS`. |
+| `POST requests/<id>/confirm-completion/` | Pemilik saat `READY` | Tanpa body | `200` · Status menjadi `COMPLETED`. Pengguna memperoleh 150 poin sekali untuk pengajuan ini. |
+| `POST requests/<id>/cancel/` | Pemilik | `{"action":"cancel"}` saat `PENDING_ASSIGNMENT`, `PENDING_REVIEW`, `AWAITING_FABRIC`, atau `INSPECTION`. Untuk menolak harga saat `AWAITING_APPROVAL`, kirim `{"action":"reject_quote"}`. | `200` · Status menjadi `CANCELLED`. |
+| `GET admin/requests/` | Staf | `status` menerima `PENDING_ASSIGNMENT` (default), `PENDING_REVIEW`, atau `IN_PROGRESS`. Gunakan `page` dan `page_size` (default 50, maksimal 100). | `200` · Objek `count`, `next`, `previous`, `results`. Tiap baris memuat `request` dan `artisan_candidates`. |
+| `POST admin/requests/<id>/assign-artisan/` | Staf, untuk pengajuan yang menunggu penugasan | Contoh `{"artisan_id":3}`. Ambil ID profil dari `artisan_candidates`. | `200` · Detail pengajuan dengan status `PENDING_REVIEW`. |
+| `GET artisan/requests/` | Anggota grup `Artisan` dengan profil upcycling | — | `200` · Array pengajuan yang ditugaskan kepada artisan tersebut. |
+| `POST requests/<id>/artisan-action/` | Artisan yang ditugaskan | Objek JSON dengan `action` dan field sesuai tabel aksi di bawah. | `200` · Detail pengajuan setelah transisi. |
+
+**Contoh multipart untuk membuat tote bag dari celana denim.** Di Postman, pilih `POST /api/v1/upcycling/requests/` lalu **Body → form-data**.
+
+| Field | Tipe di Postman | Contoh | Ketentuan |
+| --- | --- | --- | --- |
+| `fabric` | Text | `DENIM` | Jika `OTHER`, isi juga `fabric_other_description`. |
+| `current_item_form` | Text | `PANTS` | Jika `OTHER`, isi juga `current_item_form_other`. |
+| `has_batik_pattern` | Text | `NO` | Pilih `YES`, `NO`, atau `UNSURE`. |
+| `category` | Text | `TAS` | Menentukan pilihan produk. |
+| `product` | Text | `TOTE_BAG` | Harus cocok dengan kategori. Jika `LAINNYA`, isi `custom_product`. |
+| `quantity` | Text | `1` | Bilangan bulat 1–20. |
+| `whatsapp` | Text | `+6281234567890` | Nomor seluler Indonesia. |
+| `fabric_photos` | File | `denim.jpg` | Wajib 1–3 gambar, maksimal 5 MiB per gambar. Ulangi key untuk setiap file. |
+| `reference_photos` | File | `referensi.jpg` | Opsional, hingga 3 gambar, maksimal 5 MiB per gambar. Saat mengedit, foto lama ikut dihitung dalam batas masing-masing jenis. |
+| `fabric_condition` | Text | `LIGHT_DAMAGE` | Opsional. Pilihan lain adalah `GOOD` dan `FAIR`. |
+
+**Aksi artisan**
+
+| Nilai `action` | Status awal | Data tambahan | Status hasil |
+| --- | --- | --- | --- |
+| `review_accept` | `PENDING_REVIEW` | `notes` opsional | `AWAITING_FABRIC` |
+| `review_reject` | `PENDING_REVIEW` | Alasan wajib di `notes` | `REJECTED` |
+| `receive_fabric` | `AWAITING_FABRIC` | Sebelum tenggat penyerahan. `notes` opsional. | `INSPECTION` |
+| `inspection_pass` | `INSPECTION` | Wajib `work_price`. Jika pengguna meminta aksen batik, isi `batik_material_price`. Jika ada biaya tambahan, kirim `additional_fee_type` dan `additional_fee_amount` bersama. | `AWAITING_APPROVAL` |
+| `inspection_reject` | `INSPECTION` | Alasan kain tidak layak wajib di `notes` | `REJECTED` |
+| `mark_ready` | `IN_PROGRESS` | Tanpa field tambahan | `READY` |
+
+#### Rewards
+
+Awalan rute adalah `/api/v1/rewards/`. Ganti `<id>` dengan ID numerik voucher katalog. [Rute](rewards/api_urls.py) · [Serializer](rewards/serializers.py)
+
+| Metode dan rute | Akses | Body atau parameter | Respons sukses |
+| --- | --- | --- | --- |
+| `GET overview/` | Pengguna yang login | — | `200` · Saldo `available_points`, `lifetime_points`, progres level, hingga 5 transaksi terbaru dan 8 voucher pilihan. |
+| `GET history/` | Pemilik transaksi | `type=all` (default), `in`, atau `out`. Contoh `?type=in&page=1`. | `200` · Objek `count`, `next`, `previous`, `results`, dengan 6 transaksi per halaman. |
+| `GET catalog/` | Pengguna yang login | — | `200` · Array voucher aktif dengan stok, biaya poin, dan nominal diskon positif. |
+| `POST catalog/<id>/redeem/` | Pengguna yang login | Tanpa body. Biaya mengikuti voucher katalog. | `201` · `redemption.voucher_code` memuat kode voucher dan `available_points` memuat sisa saldo. |
+| `GET vouchers/` | Pemilik voucher | — | `200` · Array penukaran milik pengguna, termasuk `voucher_code`, `voucher_status`, `points_spent`, dan `discount_value_snapshot` saat ditukar. |
+| `GET admin/vouchers/` | Staf dengan `view_reward` atau `add_reward` | — | `200` · Array voucher katalog, termasuk yang dinonaktifkan. |
+| `POST admin/vouchers/` | Staf dengan `add_reward` | Contoh `{"name":"Voucher Batik","points_required":50,"stock":3,"discount_value":"15000.00"}`. Voucher aktif secara default dan memerlukan diskon positif. Gunakan multipart untuk field `image`. | `201` · Voucher baru beserta `id`. |
+| `GET admin/vouchers/<id>/` | Staf dengan `view_reward`, `add_reward`, atau `change_reward` | — | `200` · Detail voucher untuk staf. |
+| `PATCH admin/vouchers/<id>/` | Staf dengan `change_reward` | Kirim field yang berubah. Contoh `{"is_active":false}` untuk menonaktifkan voucher. | `200` · Detail voucher terbaru. |
+
+#### Batas percobaan dan respons kesalahan
+
+Kuota berikut berlaku per akun. Untuk aksi yang sama, web dan API menggunakan penghitung database yang sama. Pada respons `429`, header `Retry-After` menyatakan waktu tunggu dalam detik.
+
+| Aksi | Batas per 60 detik | Perilaku |
+| --- | --- | --- |
+| Buat pengajuan upcycling | 5 percobaan | Maksimal 10 pengajuan aktif sekaligus. Jika batas jumlah pengajuan aktif tercapai, responsnya `409`. |
+| Edit pengajuan upcycling | 10 percobaan | Kuota edit terpisah dari kuota buat. Pengajuan harus masih menunggu penugasan. |
+| Tukar voucher | 5 percobaan | Periode dimulai pada percobaan pertama. Percobaan gagal ikut dihitung. Di web, membuka pratinjau bebas kuota dan menekan konfirmasi memakai kuota. Saat dibatasi, API mengirim JSON dengan `detail` dan web menampilkan waktu tunggu. |
+
+| Status HTTP | Contoh penyebab | Yang diperiksa klien |
+| --- | --- | --- |
+| `400 Bad Request` | Field tidak valid, filter salah, poin tidak cukup, atau stok voucher habis. | Baca pesan pada nama field atau `detail`. |
+| `403 Forbidden` | Sesi atau token CSRF tidak valid, atau peran tidak memiliki izin. | Periksa sesi login, header CSRF, dan izin akun. |
+| `404 Not Found` | UUID pengajuan milik pengguna lain, atau ID voucher untuk penukaran tidak ditemukan atau sudah nonaktif. | Periksa ID dan akun yang sedang login. |
+| `409 Conflict` | Status upcycling tidak mengizinkan aksi atau kuota pengajuan aktif tercapai. | Muat ulang detail pengajuan sebelum melanjutkan. |
+| `429 Too Many Requests` | Batas percobaan aksi tercapai. | Tunggu sesuai header `Retry-After`. |
+
+| Pengujian lokal | Perintah |
+| --- | --- |
+| Endpoint upcycling untuk pengguna, artisan, dan staf | `python manage.py test upcycling.tests_api -v 2` |
+| Batas penukaran per akun, saldo dan stok saat ditolak, serta kedaluwarsa kuota | `python manage.py test rewards.tests_api.RewardsAPITests.test_redemption_rate_limit_is_per_user_and_expires -v 2` |
+| Kuota bersama untuk konfirmasi web dan penukaran API | `python manage.py test rewards.tests_api.RewardsAPITests.test_api_and_confirmed_web_redemptions_share_one_quota -v 2` |
+
 ## Jenis/Peran Pengguna Aplikasi
 
 1. **Guest (Pengunjung)**
@@ -91,26 +187,6 @@ Sesuai ketentuan rubrik PBP (minimal 50 data utama saat dideploy ke PWS), aplika
 ## Link Deployment PWS
 
 [Deployment ReBatik](https://alisa-selvia-rebatik.pws.cs.ui.ac.id/)
-
-### API Rewards dan pengujian rate limiting
-
-Semua endpoint di bawah `/api/v1/rewards/` memakai sesi Django. Untuk meminta JSON, kirim `Accept: application/json`. Untuk `POST` atau `PATCH`, kirim juga cookie sesi dan header `X-CSRFToken` dengan token dari respons login.
-
-| Endpoint | Respons |
-| --- | --- |
-| `GET overview/` | Saldo, level, dan aktivitas terbaru. |
-| `GET history/?type=in&page=1` | Riwayat dengan `count`, `next`, `previous`, dan `results`. Filter yang tersedia adalah `all`, `in`, dan `out`. |
-| `GET catalog/` dan `GET vouchers/` | Daftar voucher katalog dan daftar voucher milik pengguna. |
-| `POST catalog/<id>/redeem/` | `201` berisi `redemption` dan `available_points`. |
-| `GET` atau `POST admin/vouchers/`, `GET` atau `PATCH admin/vouchers/<id>/` | Daftar, tambah, baca, atau ubah voucher sesuai izin staf. |
-
-Endpoint penukaran menerima hingga lima percobaan per akun dalam periode 60 detik sejak percobaan pertama, termasuk percobaan yang gagal. Percobaan berikutnya mengembalikan `429 Too Many Requests`, pesan JSON di `detail`, dan header `Retry-After` dalam detik. Seperti pada upcycling, semua worker PWS memakai hitungan dari database PostgreSQL yang sama. Kuota penukaran voucher terpisah dari kuota membuat dan mengubah pengajuan upcycling.
-
-Untuk demo lokal, jalankan tes berikut. Tes memakai dua akun dan database uji untuk memeriksa batas per akun, saldo dan stok saat ditolak, serta penukaran setelah masa tunggu berakhir.
-
-```shell
-python manage.py test rewards.tests_api.RewardsAPITests.test_redemption_rate_limit_is_per_user_and_expires -v 2
-```
 
 ## Link Figma
 
