@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}<link rel="stylesheet" href="{% static 'css/rewards.css' %}">{% endblock %}
+
+{% block content %}
+<main class="rewards-page">
+    <section class="rewards-panel">
+        <h1>Terlalu banyak percobaan penukaran voucher</h1>
+        <p role="alert">Coba lagi dalam {{ retry_after }} detik.</p>
+        <a class="history-back-link" href="{% url return_page %}">Kembali ke Rewards</a>
+    </section>
+</main>
+{% endblock %}

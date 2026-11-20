@@ -8,7 +8,9 @@ from django.db import transaction
 from django.db.models import Sum
 from django.utils import timezone
 
-from .models import PointTransaction, Reward, RewardRedemption
+from config.rate_limits import consume_user_rate_limit
+
+from .models import PointTransaction, Reward, RewardRedemption, VoucherRedemptionRateLimit
 
 
 class InsufficientPoints(ValueError):
@@ -175,6 +177,8 @@ def award_upcycling_completion(user, *, request_reference, upcycling_request=Non
         upcycling_request=upcycling_request,
     )
     return record
+
+
 def get_available_points(user):
     """Return the sum of the user's ledger entries, or zero if there are none."""
     return PointTransaction.objects.filter(user=user).aggregate(total=Sum("points"))["total"] or 0
@@ -190,6 +194,95 @@ def get_lifetime_points(user):
     )
 
 
+def _level_progress(lifetime_points):
+    """Return the current lifetime-points tier and progress toward the next."""
+    if lifetime_points < 2000:
+        current_level = "Penenun Pemula"
+        next_level = "Penenun Mahir"
+        lower_bound, upper_bound = 0, 2000
+    elif lifetime_points < 5000:
+        current_level = "Penenun Mahir"
+        next_level = "Penenun Ahli"
+        lower_bound, upper_bound = 2000, 5000
+    else:
+        current_level = "Penenun Ahli"
+        next_level = None
+        lower_bound = upper_bound = 5000
+
+    earned_in_level = max(0, lifetime_points - lower_bound)
+    required_in_level = upper_bound - lower_bound
+    progress_percent = (
+        min(100, round(earned_in_level * 100 / required_in_level))
+        if required_in_level
+        else 100
+    )
+    return {
+        "current_level": current_level,
+        "next_level": next_level,
+        "level_progress": earned_in_level,
+        "level_target": required_in_level,
+        "level_progress_percent": progress_percent,
+    }
+
+
+def available_vouchers():
+    return Reward.objects.filter(
+        reward_type=Reward.Type.VOUCHER,
+        is_active=True,
+        stock__gt=0,
+        points_required__gt=0,
+        discount_value__gt=0,
+    )
+
+
+def points_overview_data(user):
+    """Balance, lifetime progress, and the five newest transactions."""
+    user_transactions = PointTransaction.objects.filter(user=user)
+    lifetime_points = get_lifetime_points(user)
+    upcycling_count = user_transactions.filter(
+        kind=PointTransaction.Kind.UPCYCLING_COMPLETED
+    ).count()
+    donations = user_transactions.filter(kind=PointTransaction.Kind.DONATION)
+    donated_count = donations.count()
+    saved_weight_kg = donations.aggregate(total=Sum("weight_kg"))["total"]
+    if saved_weight_kg is None:
+        saved_weight_kg = Decimal("0")
+    recent_transactions = user_transactions[:5]
+    return {
+        "available_points": get_available_points(user),
+        "lifetime_points": lifetime_points,
+        "upcycling_count": upcycling_count,
+        "donated_count": donated_count,
+        "saved_weight_kg": saved_weight_kg,
+        "saved_weight_unknown_count": donations.filter(weight_kg__isnull=True).count(),
+        "recent_transactions": recent_transactions,
+        "featured_vouchers": available_vouchers()[:8],
+        **_level_progress(lifetime_points),
+    }
+
+
+def point_history(user, direction):
+    transactions = PointTransaction.objects.filter(user=user)
+    if direction == "in":
+        return transactions.filter(points__gt=0)
+    if direction == "out":
+        return transactions.filter(points__lt=0)
+    return transactions
+
+
+def user_vouchers(user):
+    return RewardRedemption.objects.filter(
+        user=user,
+        reward__reward_type=Reward.Type.VOUCHER,
+        voucher_code__isnull=False,
+    ).select_related("reward")
+
+
+def consume_redemption_attempt(user):
+    """Count a submitted redemption even if the subsequent transaction fails."""
+    return consume_user_rate_limit(user, VoucherRedemptionRateLimit, limit=5, window_seconds=60)
+
+
 @transaction.atomic
 def redeem_reward(user, reward_id):
     """Redeem an active, configured voucher and record its value at issuance."""
@@ -199,7 +292,7 @@ def redeem_reward(user, reward_id):
         raise RewardUnavailable("Reward tidak tersedia.")
     if reward.stock < 1:
         raise RewardUnavailable("Reward sedang habis.")
-    if reward.discount_value is None or reward.discount_value <= 0:
+    if reward.points_required < 1 or reward.discount_value is None or reward.discount_value <= 0:
         raise RewardUnavailable("Voucher belum dikonfigurasi dengan benar.")
     if get_available_points(user) < reward.points_required:
         raise InsufficientPoints("Poin Anda belum mencukupi.")

@@ -83,7 +83,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
+    "rest_framework",
     # ReBatik applications
     "main",
     "marketplace",
@@ -95,7 +95,6 @@ INSTALLED_APPS = [
     "impact_tracker",
     "profiles",
     "landing",
-    "rest_framework",
 ]
 
 

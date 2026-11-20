@@ -3,6 +3,13 @@ from django import forms
 from .models import Reward
 
 
+def normalize_code_prefix(value):
+    prefix = value.strip()
+    if not prefix.isascii() or not prefix.isalnum():
+        raise forms.ValidationError("Awalan hanya boleh berisi huruf dan angka.")
+    return prefix.upper()
+
+
 class RewardAdminForm(forms.ModelForm):
     class Meta:
         model = Reward
@@ -53,10 +60,7 @@ class RewardAdminForm(forms.ModelForm):
         return reward_type
 
     def clean_code_prefix(self):
-        prefix = self.cleaned_data["code_prefix"].strip().upper()
-        if not prefix or not prefix.isascii() or not prefix.isalnum():
-            raise forms.ValidationError("Awalan hanya boleh berisi huruf dan angka.")
-        return prefix
+        return normalize_code_prefix(self.cleaned_data["code_prefix"])
 
     def clean(self):
         cleaned = super().clean()

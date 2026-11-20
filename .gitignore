@@ -11,6 +11,10 @@ __pycache__/
 
 # Generated Tailwind CSS; build locally and in the deployment workflow.
 static/css/tailwind.css
+
+# Generated output from Django collectstatic.
+staticfiles/
+
 node_modules/
 
 # Uploaded donation photos are local/runtime data, not source assets.
