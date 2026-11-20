@@ -281,6 +281,8 @@ class UpcyclingRequestUpdateSerializer(UpcyclingRequestCreateSerializer):
 
 
 class FabricHandoffSerializer(serializers.Serializer):
+    """Validate the owner's fabric delivery method and optional location note."""
+
     fabric_delivery_method = serializers.ChoiceField(
         choices=UpcyclingRequest.FabricDeliveryMethod.choices,
     )
@@ -292,6 +294,8 @@ class FabricHandoffSerializer(serializers.Serializer):
 
 
 class ProductDeliverySerializer(serializers.Serializer):
+    """Validate the owner's chosen method and address for product delivery."""
+
     delivery_method = serializers.ChoiceField(
         choices=UpcyclingRequest.DELIVERY_CHOICES,
     )
@@ -299,6 +303,8 @@ class ProductDeliverySerializer(serializers.Serializer):
 
 
 class CancelUpcyclingRequestSerializer(serializers.Serializer):
+    """Distinguish a normal cancellation from rejecting a pending quote."""
+
     action = serializers.ChoiceField(
         choices=("cancel", "reject_quote"),
         required=False,
@@ -307,6 +313,8 @@ class CancelUpcyclingRequestSerializer(serializers.Serializer):
 
 
 class ArtisanRequestActionSerializer(serializers.Serializer):
+    """Validate artisan workflow actions and inspection quote components."""
+
     action = serializers.ChoiceField(
         choices=(
             "review_accept",
@@ -394,9 +402,13 @@ class ArtisanRequestActionSerializer(serializers.Serializer):
 
 
 class ArtisanAssignmentSerializer(serializers.Serializer):
+    """Validate the ID of an artisan profile selected by staff."""
+
     artisan_id = serializers.IntegerField(min_value=1)
 
 class UpcyclingRequestListSerializer(serializers.ModelSerializer):
+    """Serialize customer-visible summary fields for request lists."""
+
     reference_code = serializers.CharField(read_only=True)
     fabric_label = serializers.CharField(source="get_fabric_display", read_only=True)
     category_label = serializers.CharField(source="get_category_display", read_only=True)
@@ -423,6 +435,8 @@ class UpcyclingRequestListSerializer(serializers.ModelSerializer):
         ]
 
 class UpcyclingRequestDetailSerializer(serializers.ModelSerializer):
+    """Serialize the owner's request details, photos, labels, and timeline."""
+
     reference_code = serializers.CharField(read_only=True)
     product_name = serializers.CharField(
         source="get_product_name",
@@ -521,6 +535,7 @@ class UpcyclingRequestDetailSerializer(serializers.ModelSerializer):
         ]
 
     def _file_url(self, file_field):
+        """Return an absolute URL for an uploaded file when request context exists."""
         if not file_field:
             return None
 
@@ -533,6 +548,7 @@ class UpcyclingRequestDetailSerializer(serializers.ModelSerializer):
         return url
 
     def get_fabric_photos(self, obj):
+        """Return the primary and additional fabric photo URLs."""
         photos = []
 
         if obj.fabric_photo:
@@ -550,6 +566,7 @@ class UpcyclingRequestDetailSerializer(serializers.ModelSerializer):
         ]
 
     def get_reference_photos(self, obj):
+        """Return uploaded reference photo URLs."""
         return [
             self._file_url(photo.image)
             for photo in obj.reference_photos.all()
@@ -557,6 +574,7 @@ class UpcyclingRequestDetailSerializer(serializers.ModelSerializer):
         ]
 
     def get_status_timeline(self, obj):
+        """Build completed, current, and upcoming steps from status history."""
         status_dates = {
             item.to_status: item.changed_at
             for item in obj.status_history.all()
@@ -617,6 +635,8 @@ class UpcyclingRequestDetailSerializer(serializers.ModelSerializer):
 
 
 class ArtisanUpcyclingRequestSerializer(UpcyclingRequestDetailSerializer):
+    """Extend request details with fields visible to the assigned artisan."""
+
     class Meta(UpcyclingRequestDetailSerializer.Meta):
         fields = UpcyclingRequestDetailSerializer.Meta.fields + [
             "whatsapp",
@@ -633,10 +653,13 @@ class ArtisanUpcyclingRequestSerializer(UpcyclingRequestDetailSerializer):
 
 
 class AdminQueueRowSerializer(serializers.Serializer):
+    """Serialize an admin queue row with eligible artisan candidates."""
+
     request = ArtisanUpcyclingRequestSerializer(source="*")
     artisan_candidates = serializers.SerializerMethodField()
 
     def get_artisan_candidates(self, upcycling_request):
+        """List candidates only while an unassigned request awaits assignment."""
         if (
             upcycling_request.status != UpcyclingRequest.Status.PENDING_ASSIGNMENT
             or upcycling_request.artisan_id is not None

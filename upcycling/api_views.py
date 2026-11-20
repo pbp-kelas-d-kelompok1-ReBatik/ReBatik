@@ -46,6 +46,7 @@ from .services import assign_artisan_to_request
 @parser_classes([JSONParser, MultiPartParser, FormParser])
 @permission_classes([IsAuthenticated])
 def my_request_list(request):
+    """List the authenticated user's requests or create a new request."""
     if request.method == "GET":
         upcycling_requests = UpcyclingRequest.objects.filter(
             user=request.user
@@ -62,6 +63,7 @@ def my_request_list(request):
 
 
 def _create_upcycling_request(request):
+    """Validate and create a request while enforcing user and rate limits."""
     action = UpcyclingRateLimitBucket.Action.CREATE
     limit, window_seconds = ACTION_RATE_LIMITS[action]
 
@@ -126,6 +128,7 @@ def _create_upcycling_request(request):
 @parser_classes([JSONParser, MultiPartParser, FormParser])
 @permission_classes([IsAuthenticated])
 def my_request_detail(request, pk):
+    """Retrieve or partially edit the authenticated user's request."""
     if request.method == "PATCH":
         return _update_upcycling_request(request, pk)
 
@@ -146,6 +149,7 @@ def my_request_detail(request, pk):
 
 
 def _update_upcycling_request(request, pk):
+    """Update an owned request only while it awaits artisan assignment."""
     upcycling_request = get_object_or_404(
         UpcyclingRequest.objects.filter(user=request.user),
         pk=pk,
@@ -191,6 +195,7 @@ def _update_upcycling_request(request, pk):
 
 
 def _owned_request_detail_response(upcycling_request, request):
+    """Serialize a request detail response with absolute media URLs."""
     serializer = UpcyclingRequestDetailSerializer(
         upcycling_request,
         context={"request": request},
@@ -199,6 +204,7 @@ def _owned_request_detail_response(upcycling_request, request):
 
 
 def _record_api_status_change(upcycling_request, user, old_status):
+    """Record the actor and both statuses for a workflow transition."""
     UpcyclingStatusHistory.objects.create(
         request=upcycling_request,
         from_status=old_status,
@@ -208,6 +214,7 @@ def _record_api_status_change(upcycling_request, user, old_status):
 
 
 def _owned_locked_request(user, pk):
+    """Fetch and lock a request belonging to the given user."""
     return get_object_or_404(
         UpcyclingRequest.objects.select_for_update().filter(user=user),
         pk=pk,
@@ -215,12 +222,14 @@ def _owned_locked_request(user, pk):
 
 
 def _status_conflict(message):
+    """Return a standard conflict response for an invalid workflow stage."""
     return Response({"detail": message}, status=status.HTTP_409_CONFLICT)
 
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def submit_fabric_handoff_api(request, pk):
+    """Save the owner's fabric handoff plan while fabric is awaited."""
     with transaction.atomic():
         upcycling_request = _owned_locked_request(request.user, pk)
         if upcycling_request.status != UpcyclingRequest.Status.AWAITING_FABRIC:
@@ -251,6 +260,7 @@ def submit_fabric_handoff_api(request, pk):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def approve_quote_api(request, pk):
+    """Approve an available quote and advance the owner's request."""
     with transaction.atomic():
         upcycling_request = _owned_locked_request(request.user, pk)
         if (
@@ -273,6 +283,7 @@ def approve_quote_api(request, pk):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def submit_product_delivery_api(request, pk):
+    """Save the owner's delivery details and start production."""
     with transaction.atomic():
         upcycling_request = _owned_locked_request(request.user, pk)
         if (
@@ -305,6 +316,7 @@ def submit_product_delivery_api(request, pk):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def confirm_completion_api(request, pk):
+    """Complete a ready request, record history, and award its points."""
     with transaction.atomic():
         upcycling_request = _owned_locked_request(request.user, pk)
         if upcycling_request.status != UpcyclingRequest.Status.READY:
@@ -338,6 +350,7 @@ def confirm_completion_api(request, pk):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def cancel_request_api(request, pk):
+    """Cancel an eligible request or reject its pending quote."""
     with transaction.atomic():
         upcycling_request = _owned_locked_request(request.user, pk)
         serializer = CancelUpcyclingRequestSerializer(data=request.data)
@@ -387,6 +400,7 @@ def cancel_request_api(request, pk):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def artisan_request_list_api(request):
+    """List requests assigned to the authenticated artisan profile."""
     try:
         artisan = _get_artisan_profile(request.user)
     except PermissionDenied as exc:
@@ -413,6 +427,7 @@ def artisan_request_list_api(request):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def artisan_request_action_api(request, pk):
+    """Apply an allowed workflow action to a request assigned to the artisan."""
     try:
         artisan = _get_artisan_profile(request.user)
     except PermissionDenied as exc:
@@ -507,6 +522,7 @@ def artisan_request_action_api(request, pk):
 @api_view(["GET"])
 @permission_classes([IsAdminUser])
 def admin_request_list_api(request):
+    """List staff queues and eligible artisans for pending assignments."""
     allowed_statuses = (
         UpcyclingRequest.Status.PENDING_ASSIGNMENT,
         UpcyclingRequest.Status.PENDING_REVIEW,
@@ -545,6 +561,7 @@ def admin_request_list_api(request):
 @api_view(["POST"])
 @permission_classes([IsAdminUser])
 def admin_assign_artisan_api(request, pk):
+    """Assign an eligible artisan to a request as a staff user."""
     serializer = ArtisanAssignmentSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     try:
