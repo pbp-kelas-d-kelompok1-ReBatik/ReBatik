@@ -7,7 +7,7 @@ from django.db import models
 
 # Model Batik Motif
 class BatikMotif(models.Model):
-    id_story = models.UUIDField(default=uuid.uuid4, editable=False,null=True,blank=True)
+    id_story = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     nama=models.CharField(max_length=255, null=False, blank=False)
     ASAL_CHOICES = [
         #Jakarta

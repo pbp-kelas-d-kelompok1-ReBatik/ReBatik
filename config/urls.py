@@ -33,6 +33,12 @@ urlpatterns = [
     path('profile/', include('profiles.urls')),
     path('landing/', include('landing.urls')),
     path("api/v1/upcycling/", include("upcycling.api_urls")),
+
+    # Web service Django REST Framework untuk aplikasi Flutter
+    path('api/v1/auth/', include('main.api_urls')),
+    path('api/v1/batik-story/', include('batik_story.api_urls')),
+    path('api/v1/batik-custom/', include('batik_custom.api_urls')),
+    path('api-auth/', include('rest_framework.urls')),
     # Serve uploaded media files on PWS
     re_path(
         r'^media/(?P<path>.*)$',
