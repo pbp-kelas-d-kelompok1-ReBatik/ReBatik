@@ -100,7 +100,8 @@ class UpcyclingRequestAPITests(APITestCase):
             fabric="DENIM",
             fabric_condition=UpcyclingRequest.FabricCondition.LIGHT_DAMAGE,
             category="TAS",
-            product="TOTE_BAG",
+            product="LAINNYA",
+            custom_product="Tas kamera",
             whatsapp="+6281234567890",
         )
         other_request = UpcyclingRequest.objects.create(
@@ -116,10 +117,13 @@ class UpcyclingRequestAPITests(APITestCase):
         self.assertEqual(list_response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(list_response.data), 1)
         self.assertEqual(list_response.data[0]["id"], str(own_request.pk))
+        self.assertNotIn("whatsapp", list_response.data[0])
 
         own_detail = self.client.get(f"{REQUESTS_URL}{own_request.pk}/")
         self.assertEqual(own_detail.status_code, status.HTTP_200_OK)
         self.assertEqual(own_detail.data["id"], str(own_request.pk))
+        self.assertEqual(own_detail.data["whatsapp"], own_request.whatsapp)
+        self.assertEqual(own_detail.data["custom_product"], "Tas kamera")
         self.assertEqual(
             own_detail.data["fabric_condition"],
             UpcyclingRequest.FabricCondition.LIGHT_DAMAGE,
