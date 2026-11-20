@@ -524,7 +524,9 @@ class UpcyclingRequestDetailSerializer(serializers.ModelSerializer):
             "category",
             "category_label",
             "product",
+            "custom_product",
             "quantity",
+            "whatsapp",
             "delivery_method",
             "delivery_method_label",
             "address",
@@ -639,7 +641,6 @@ class ArtisanUpcyclingRequestSerializer(UpcyclingRequestDetailSerializer):
 
     class Meta(UpcyclingRequestDetailSerializer.Meta):
         fields = UpcyclingRequestDetailSerializer.Meta.fields + (
-            "whatsapp",
             "review_approved_at",
             "fabric_receipt_notes",
             "inspection_notes",
