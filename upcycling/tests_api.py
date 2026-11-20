@@ -98,6 +98,7 @@ class UpcyclingRequestAPITests(APITestCase):
         own_request = UpcyclingRequest.objects.create(
             user=self.user,
             fabric="DENIM",
+            fabric_condition=UpcyclingRequest.FabricCondition.LIGHT_DAMAGE,
             category="TAS",
             product="TOTE_BAG",
             whatsapp="+6281234567890",
@@ -119,6 +120,10 @@ class UpcyclingRequestAPITests(APITestCase):
         own_detail = self.client.get(f"{REQUESTS_URL}{own_request.pk}/")
         self.assertEqual(own_detail.status_code, status.HTTP_200_OK)
         self.assertEqual(own_detail.data["id"], str(own_request.pk))
+        self.assertEqual(
+            own_detail.data["fabric_condition"],
+            UpcyclingRequest.FabricCondition.LIGHT_DAMAGE,
+        )
 
         other_detail = self.client.get(f"{REQUESTS_URL}{other_request.pk}/")
         self.assertEqual(other_detail.status_code, status.HTTP_404_NOT_FOUND)
@@ -388,6 +393,7 @@ class UpcyclingRequestAPITests(APITestCase):
             self.user,
             UpcyclingRequest.Status.PENDING_REVIEW,
             artisan=artisan_profile,
+            fabric_condition=UpcyclingRequest.FabricCondition.LIGHT_DAMAGE,
         )
         unassigned = self.make_request(
             self.other_user,
@@ -399,6 +405,10 @@ class UpcyclingRequestAPITests(APITestCase):
         self.assertEqual(list_response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(list_response.data), 1)
         self.assertEqual(list_response.data[0]["id"], str(assigned.pk))
+        self.assertEqual(
+            list_response.data[0]["fabric_condition"],
+            UpcyclingRequest.FabricCondition.LIGHT_DAMAGE,
+        )
 
         response = self.client.post(
             f"{REQUESTS_URL}{assigned.pk}/artisan-action/",
@@ -490,18 +500,37 @@ class UpcyclingRequestAPITests(APITestCase):
             defaults={"name": "Tote bag"},
         )
         artisan_profile.specializations.add(product_type)
+        self.make_request(
+            self.other_user,
+            UpcyclingRequest.Status.IN_PROGRESS,
+            artisan=artisan_profile,
+        )
         pending = self.make_request(
             self.user,
             UpcyclingRequest.Status.PENDING_ASSIGNMENT,
         )
         self.client.force_authenticate(user=admin)
 
-        list_response = self.client.get("/api/v1/upcycling/admin/requests/")
+        with patch.object(
+            ArtisanProfile,
+            "active_request_count",
+            side_effect=AssertionError(
+                "Admin queue should use the precomputed active request count."
+            ),
+        ):
+            list_response = self.client.get("/api/v1/upcycling/admin/requests/")
         self.assertEqual(list_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(list_response.data), 1)
+        self.assertEqual(list_response.data["count"], 1)
+        self.assertEqual(len(list_response.data["results"]), 1)
         self.assertEqual(
-            list_response.data[0]["artisan_candidates"][0]["id"],
+            list_response.data["results"][0]["artisan_candidates"][0]["id"],
             artisan_profile.pk,
+        )
+        self.assertEqual(
+            list_response.data["results"][0]["artisan_candidates"][0][
+                "active_requests"
+            ],
+            1,
         )
 
         response = self.client.post(
@@ -513,6 +542,31 @@ class UpcyclingRequestAPITests(APITestCase):
         pending.refresh_from_db()
         self.assertEqual(pending.artisan, artisan_profile)
         self.assertEqual(pending.status, UpcyclingRequest.Status.PENDING_REVIEW)
+
+    def test_admin_queue_supports_pagination(self):
+        admin = User.objects.create_superuser(
+            username="upcycling-page-admin",
+            email="page-admin@example.com",
+            password="test-password",
+        )
+        self.make_request(
+            self.user,
+            UpcyclingRequest.Status.PENDING_ASSIGNMENT,
+        )
+        self.make_request(
+            self.other_user,
+            UpcyclingRequest.Status.PENDING_ASSIGNMENT,
+        )
+        self.client.force_authenticate(user=admin)
+
+        response = self.client.get(
+            "/api/v1/upcycling/admin/requests/?page_size=1"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 2)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertIsNotNone(response.data["next"])
 
     def test_non_staff_cannot_access_admin_api(self):
         self.client.force_authenticate(user=self.user)

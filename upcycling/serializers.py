@@ -52,7 +52,7 @@ class UpcyclingRequestCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UpcyclingRequest
-        fields = [
+        fields = (
             "fabric",
             "fabric_other_description",
             "current_item_form",
@@ -71,7 +71,7 @@ class UpcyclingRequestCreateSerializer(serializers.ModelSerializer):
             "whatsapp",
             "fabric_photos",
             "reference_photos",
-        ]
+        )
 
     def validate_fabric_photos(self, photos):
         for photo in photos:
@@ -416,7 +416,7 @@ class UpcyclingRequestListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UpcyclingRequest
-        fields = [
+        fields = (
             "id",
             "reference_code",
             "fabric",
@@ -430,8 +430,8 @@ class UpcyclingRequestListSerializer(serializers.ModelSerializer):
             "status_label",
             "created_at",
             "updated_at",
-            "fabric_photo"
-        ]
+            "fabric_photo",
+        )
 
 class UpcyclingRequestDetailSerializer(serializers.ModelSerializer):
     """Serialize the owner's request details, photos, labels, and timeline."""
@@ -481,7 +481,7 @@ class UpcyclingRequestDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UpcyclingRequest
-        fields = [
+        fields = (
             "id",
             "reference_code",
             "product_name",
@@ -494,6 +494,7 @@ class UpcyclingRequestDetailSerializer(serializers.ModelSerializer):
             "fabric",
             "fabric_label",
             "fabric_other_description",
+            "fabric_condition",
             "current_item_form",
             "current_item_form_label",
             "current_item_form_other",
@@ -531,7 +532,7 @@ class UpcyclingRequestDetailSerializer(serializers.ModelSerializer):
             "rejection_reason",
             "fabric_received_at",
             "approved_at",
-        ]
+        )
 
     def _file_url(self, file_field):
         """Return an absolute URL for an uploaded file when request context exists."""
@@ -637,7 +638,7 @@ class ArtisanUpcyclingRequestSerializer(UpcyclingRequestDetailSerializer):
     """Extend request details with fields visible to the assigned artisan."""
 
     class Meta(UpcyclingRequestDetailSerializer.Meta):
-        fields = UpcyclingRequestDetailSerializer.Meta.fields + [
+        fields = UpcyclingRequestDetailSerializer.Meta.fields + (
             "whatsapp",
             "review_approved_at",
             "fabric_receipt_notes",
@@ -648,7 +649,7 @@ class ArtisanUpcyclingRequestSerializer(UpcyclingRequestDetailSerializer):
             "return_notes",
             "ready_at",
             "completed_at",
-        ]
+        )
 
 
 class AdminQueueRowSerializer(serializers.Serializer):
@@ -664,13 +665,20 @@ class AdminQueueRowSerializer(serializers.Serializer):
             or upcycling_request.artisan_id is not None
         ):
             return []
-        candidates = eligible_artisans_for_request(upcycling_request)
+        candidates_by_request = self.context.get(
+            "artisan_candidates_by_request"
+        )
+        if candidates_by_request is None:
+            candidates = eligible_artisans_for_request(upcycling_request)
+        else:
+            candidates = candidates_by_request.get(upcycling_request.pk, [])
+
         return [
             {
                 "id": artisan.pk,
                 "username": artisan.user.get_username(),
                 "display_name": artisan.user.get_full_name(),
-                "active_requests": artisan.active_request_count(),
+                "active_requests": artisan.eligible_active_request_count,
                 "max_active_requests": artisan.max_active_requests,
             }
             for artisan in candidates

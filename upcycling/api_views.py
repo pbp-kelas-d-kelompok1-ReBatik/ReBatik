@@ -11,6 +11,7 @@ from rest_framework.decorators import (
     permission_classes,
 )
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
@@ -40,7 +41,18 @@ from .views import (
     PENDING_REQUEST_LIMIT,
     _get_artisan_profile,
 )
-from .services import assign_artisan_to_request
+from .services import (
+    assign_artisan_to_request,
+    eligible_artisans_for_requests,
+)
+
+
+class AdminRequestQueuePagination(PageNumberPagination):
+    """Bound admin queue responses and support client-selected page sizes."""
+
+    page_size = 50
+    page_size_query_param = "page_size"
+    max_page_size = 100
 
 @api_view(["GET", "POST"])
 @parser_classes([JSONParser, MultiPartParser, FormParser])
@@ -550,12 +562,22 @@ def admin_request_list_api(request):
         )
         .order_by("created_at")
     )
-    serializer = AdminQueueRowSerializer(
-        requests,
-        many=True,
-        context={"request": request},
+    paginator = AdminRequestQueuePagination()
+    page = paginator.paginate_queryset(requests, request)
+    artisan_candidates_by_request = (
+        eligible_artisans_for_requests(page)
+        if selected_status == UpcyclingRequest.Status.PENDING_ASSIGNMENT
+        else {}
     )
-    return Response(serializer.data)
+    serializer = AdminQueueRowSerializer(
+        page,
+        many=True,
+        context={
+            "request": request,
+            "artisan_candidates_by_request": artisan_candidates_by_request,
+        },
+    )
+    return paginator.get_paginated_response(serializer.data)
 
 
 @api_view(["POST"])
