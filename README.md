@@ -92,6 +92,26 @@ Sesuai ketentuan rubrik PBP (minimal 50 data utama saat dideploy ke PWS), aplika
 
 [Deployment ReBatik](https://alisa-selvia-rebatik.pws.cs.ui.ac.id/)
 
+### API Rewards dan pengujian rate limiting
+
+Semua endpoint di bawah `/api/v1/rewards/` memakai sesi Django. Untuk meminta JSON, kirim `Accept: application/json`. Untuk `POST` atau `PATCH`, kirim juga cookie sesi dan header `X-CSRFToken` dengan token dari respons login.
+
+| Endpoint | Respons |
+| --- | --- |
+| `GET overview/` | Saldo, level, dan aktivitas terbaru. |
+| `GET history/?type=in&page=1` | Riwayat dengan `count`, `next`, `previous`, dan `results`. Filter yang tersedia adalah `all`, `in`, dan `out`. |
+| `GET catalog/` dan `GET vouchers/` | Daftar voucher katalog dan daftar voucher milik pengguna. |
+| `POST catalog/<id>/redeem/` | `201` berisi `redemption` dan `available_points`. |
+| `GET` atau `POST admin/vouchers/`, `GET` atau `PATCH admin/vouchers/<id>/` | Daftar, tambah, baca, atau ubah voucher sesuai izin staf. |
+
+Endpoint penukaran menerima hingga lima percobaan per akun dalam periode 60 detik sejak percobaan pertama, termasuk percobaan yang gagal. Percobaan berikutnya mengembalikan `429 Too Many Requests`, pesan JSON di `detail`, dan header `Retry-After` dalam detik. Seperti pada upcycling, semua worker PWS memakai hitungan dari database PostgreSQL yang sama. Kuota penukaran voucher terpisah dari kuota membuat dan mengubah pengajuan upcycling.
+
+Untuk demo lokal, jalankan tes berikut. Tes memakai dua akun dan database uji untuk memeriksa batas per akun, saldo dan stok saat ditolak, serta penukaran setelah masa tunggu berakhir.
+
+```shell
+python manage.py test rewards.tests_api.RewardsAPITests.test_redemption_rate_limit_is_per_user_and_expires -v 2
+```
+
 ## Link Figma
 
 [Desain Figma ReBatik](https://www.figma.com/team_invite/redeem/xncR93E4zlnRJtCDqu4D7p?t=LXe1ZVPkQu6McFi1-21)

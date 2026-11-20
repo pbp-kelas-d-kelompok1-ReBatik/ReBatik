@@ -22,7 +22,7 @@ from .services import (
     get_lifetime_points,
     redeem_points,
 )
-from .views import _level_progress
+from .services import _level_progress
 from .templatetags.rewards_format import decimal_comma_id
 
 

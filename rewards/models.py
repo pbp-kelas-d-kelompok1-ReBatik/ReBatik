@@ -4,6 +4,12 @@ from django.db import models
 from django.db.models import Q
 
 
+class VoucherRedemptionRateLimit(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, primary_key=True, on_delete=models.CASCADE)
+    window_started_at = models.DateTimeField()
+    request_count = models.PositiveSmallIntegerField(default=0)
+
+
 class Reward(models.Model):
     class Type(models.TextChoices):
         VOUCHER = "VOUCHER", "Voucher diskon"

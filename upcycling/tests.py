@@ -1011,7 +1011,7 @@ class UpcyclingRequestViewTests(TestCase):
         now = datetime(2026, 10, 25, 12, 0, tzinfo=datetime_timezone.utc)
         action = UpcyclingRateLimitBucket.Action.CREATE
 
-        with patch("upcycling.security.timezone.now", return_value=now):
+        with patch("config.rate_limits.now", return_value=now):
             for _ in range(5):
                 allowed, retry_after = consume_upcycling_rate_limit(
                     self.user,
@@ -1032,7 +1032,7 @@ class UpcyclingRequestViewTests(TestCase):
             self.assertEqual(retry_after, 60)
 
         with patch(
-            "upcycling.security.timezone.now",
+            "config.rate_limits.now",
             return_value=now + timedelta(seconds=61),
         ):
             allowed, retry_after = consume_upcycling_rate_limit(

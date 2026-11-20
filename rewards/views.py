@@ -1,90 +1,32 @@
 """Authenticated views for the user's points overview and activity history."""
 
-from decimal import Decimal
-
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect
-from django.db.models import Sum
 from django.shortcuts import render
 from django.views.decorators.http import require_GET, require_POST
 
-from .models import PointTransaction, Reward, RewardRedemption
+from .models import Reward
 from .forms import RewardAdminForm
 from .services import (
     InsufficientPoints,
     RewardUnavailable,
     get_available_points,
-    get_lifetime_points,
+    available_vouchers,
+    point_history,
+    points_overview_data,
     redeem_reward,
+    user_vouchers,
 )
-
-
-def _level_progress(lifetime_points):
-    """Return the current lifetime-points tier and progress toward the next."""
-    if lifetime_points < 2000:
-        current_level = "Penenun Pemula"
-        next_level = "Penenun Mahir"
-        lower_bound, upper_bound = 0, 2000
-    elif lifetime_points < 5000:
-        current_level = "Penenun Mahir"
-        next_level = "Penenun Ahli"
-        lower_bound, upper_bound = 2000, 5000
-    else:
-        current_level = "Penenun Ahli"
-        next_level = None
-        lower_bound = upper_bound = 5000
-
-    earned_in_level = max(0, lifetime_points - lower_bound)
-    required_in_level = upper_bound - lower_bound
-    progress_percent = (
-        min(100, round(earned_in_level * 100 / required_in_level))
-        if required_in_level
-        else 100
-    )
-    return {
-        "current_level": current_level,
-        "next_level": next_level,
-        "level_progress": earned_in_level,
-        "level_target": required_in_level,
-        "level_progress_percent": progress_percent,
-    }
 
 
 @login_required
 def points_overview(request):
-    """Render balance, lifetime progress, and the five newest transactions."""
-    user_transactions = PointTransaction.objects.filter(user=request.user)
-    lifetime_points = get_lifetime_points(request.user)
-    upcycling_count = user_transactions.filter(
-        kind=PointTransaction.Kind.UPCYCLING_COMPLETED
-    ).count()
-    donations = user_transactions.filter(kind=PointTransaction.Kind.DONATION)
-    donated_count = donations.count()
-    saved_weight_kg = donations.aggregate(total=Sum("weight_kg"))["total"]
-    if saved_weight_kg is None:
-        saved_weight_kg = Decimal("0")
-    recent_transactions = user_transactions[:5]
-    featured_vouchers = Reward.objects.filter(
-        reward_type=Reward.Type.VOUCHER,
-        is_active=True,
-        stock__gt=0,
-    )[:8]
-    context = {
-        "available_points": get_available_points(request.user),
-        "lifetime_points": lifetime_points,
-        "upcycling_count": upcycling_count,
-        "donated_count": donated_count,
-        "saved_weight_kg": saved_weight_kg,
-        "saved_weight_unknown_count": donations.filter(weight_kg__isnull=True).count(),
-        "recent_transactions": recent_transactions,
-        "featured_vouchers": featured_vouchers,
-        "voucher_success_message": request.session.pop("voucher_success_message", ""),
-        **_level_progress(lifetime_points),
-    }
+    context = points_overview_data(request.user)
+    context["voucher_success_message"] = request.session.pop("voucher_success_message", "")
     return render(request, "rewards/overview.html", context)
 
 
@@ -95,12 +37,7 @@ def transaction_history(request):
     if active_filter not in {"all", "in", "out"}:
         active_filter = "all"
 
-    transactions = PointTransaction.objects.filter(user=request.user)
-    if active_filter == "in":
-        transactions = transactions.filter(points__gt=0)
-    elif active_filter == "out":
-        transactions = transactions.filter(points__lt=0)
-
+    transactions = point_history(request.user, active_filter)
     transaction_page = Paginator(transactions, 6).get_page(request.GET.get("page"))
     context = {
         "transaction_page": transaction_page,
@@ -123,34 +60,17 @@ def reward_catalog(request):
 
 
 def _voucher_catalog_context(user):
-    voucher_redemptions = RewardRedemption.objects.filter(
-        user=user,
-        reward__reward_type=Reward.Type.VOUCHER,
-        voucher_code__isnull=False,
-    ).select_related("reward")[:5]
     return {
-        "rewards": Reward.objects.filter(
-            reward_type=Reward.Type.VOUCHER,
-            is_active=True,
-            stock__gt=0,
-        ),
+        "rewards": available_vouchers(),
         "available_points": get_available_points(user),
-        "recent_redemptions": voucher_redemptions,
+        "recent_redemptions": user_vouchers(user)[:5],
     }
 
 
 @login_required
 def my_vouchers(request):
     """Show every voucher redemption belonging to the authenticated user."""
-    vouchers = (
-        RewardRedemption.objects.filter(
-            user=request.user,
-            reward__reward_type=Reward.Type.VOUCHER,
-            voucher_code__isnull=False,
-        )
-        .select_related("reward")
-        .order_by("-redeemed_at", "-pk")
-    )
+    vouchers = user_vouchers(request.user)
     return render(request, "rewards/vouchers.html", {"vouchers": vouchers})
 
 
@@ -179,7 +99,7 @@ def redeem_reward_view(request, reward_id):
         if reward.stock < 1:
             messages.error(request, "Voucher sedang habis.")
             return redirect(_redemption_return_page(request))
-        if reward.discount_value is None or reward.discount_value <= 0:
+        if reward.points_required < 1 or reward.discount_value is None or reward.discount_value <= 0:
             messages.error(request, "Voucher belum dikonfigurasi dengan benar.")
             return redirect(_redemption_return_page(request))
         if available_points < reward.points_required:
